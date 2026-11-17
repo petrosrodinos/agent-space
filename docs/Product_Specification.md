@@ -1,6 +1,6 @@
 # Agent Space — Product Specification
 
-**Version:** 1.0
+**Version:** 1.1
 **Date:** 17 November 2026
 **Status:** Ready for implementation
 
@@ -59,14 +59,17 @@ Agent Space is available on the web, as a desktop app (Windows and Mac) and as a
 | **Member** | A person who belongs to an organisation, with a role: Owner, Admin or Member. |
 | **Bot** | An AI assistant with its own name, emoji, colour, instructions (personality and job), tools and memory. |
 | **Conversation** | A chat. Can be one person with one bot, several people with one bot, or a group with several bots and people. |
-| **Connection** | A linked account in another service (e.g. "Gmail – sales@company.com"). Can be **private** or **shared** with the organisation. |
+| **Secret** | An access key or token a user has given Agent Space so bots can use a service. Stored encrypted, never shown again and never seen by bots; managed on the Secrets page (§8.9). |
+| **Connection** | A linked account in another service (e.g. "Gmail – sales@company.com"), connected by signing in or by pasting an access key. Can be **private** or **shared** with the organisation. Bots use connections without ever seeing the passwords, tokens or keys behind them (§8.7). |
 | **Custom tool server** | An additional tool source a user adds themselves (for example their company's internal system), with its own sign-in. |
 | **Built-in tools** | Abilities Agent Space provides itself, such as web search, file creation, reminders, memory and managing the app's own settings. |
 | **Cloud computer** | A private virtual computer given to a bot to browse, run tasks and work with files. Users can watch and control it. |
 | **Skill** | A reusable, step-by-step way of doing a specific job that can be given to any bot. See §6.7. |
 | **Artifact** | A complete app, page, dashboard, document or presentation built by a bot, with its own link, sharing permissions and version history. See §7.5. |
+| **Voice mode** | Chatting with a bot by speaking instead of typing, with the bot answering out loud in real time. The bot can use all the same tools as in text chat. See §7.6. |
+| **File storage** | Where all files in Agent Space are kept (Google Cloud Storage), each one openable only by people who can see where it lives. See §7.7. |
 | **Task** | A piece of work a bot carries out, possibly over several steps and several minutes or hours. |
-| **Automation** | A task that runs on a schedule or when something happens (e.g. "every Monday at 9am" or "when a new lead arrives"). |
+| **Automation** | A job a bot does again and again by itself, on a schedule or when something happens (e.g. "every Monday at 9am" or "when a new lead arrives"), with its own pre-approved actions and memory between runs. See §10. |
 
 ---
 
@@ -258,6 +261,7 @@ A **skill** is a reusable, step-by-step way of doing a specific job, which any b
 - Users can add or remove people and bots at any time (based on their role). Only members of the same organisation can be added; there are no outside guests.
 - In groups, users talk to a specific bot with **@mention** (e.g. "@Marketing draft the launch email"). Without a mention, the most relevant bot answers, or a chosen "lead" bot coordinates.
 - Messages support text, voice notes, images, files, links and pasted screenshots.
+- Users can also switch to **voice mode** to talk with the bot out loud in real time instead of typing (§7.6).
 - Bots reply with text, tables, charts, documents, images, download links and interactive screens (§7.4).
 - Threads/replies, reactions, pin messages, search within a conversation.
 - Users can edit or re-run a request, stop a bot mid-task and branch ("try a different approach").
@@ -292,6 +296,7 @@ A bot can mix both in a single reply (e.g. a building-block summary card plus a 
 - "Help me plan the launch" → an editable checklist with owners and dates.
 - "Collect the team's lunch orders" → a form in the group chat that each member fills in, with live totals.
 - Approval requests (§11) appear as interactive cards with Approve / Edit / Reject.
+- "Here's my Mailchimp API key" → a secure secret box to paste it into, so the key never goes into the chat (§8.8).
 
 **Using interactive replies**
 - Users can click, type, select and submit inside them. Their actions go back to the bot, which continues the work (e.g. submitting a form makes the bot send the emails).
@@ -329,7 +334,7 @@ Artifacts are complete, standalone creations a bot builds for the user — full 
 - **Save information:** artifacts can store what visitors enter (form responses, votes, tracker items, sign-ups). This information is shared by everyone using the artifact and is visible to the artifact's owner and editors, who can also ask a bot to review or summarise it.
 - **Show live data:** for organisation members, an artifact can show live information from connected accounts (e.g. this week's deals). Each viewer sees only what their own access allows, and is asked for permission the first time. Public artifacts never use anyone's connected accounts live; they only show information saved into the artifact.
 - **Use AI:** artifacts can include AI features (e.g. a "summarise" button or a chat box). For organisation members, this counts toward their own usage. For public visitors, it counts toward the artifact owner's usage and can be switched off.
-- **Accept file uploads** from visitors (e.g. CV uploads on a job form), stored with the artifact.
+- **Accept file uploads** from visitors (e.g. CV uploads on a job form), stored with the artifact (§7.7).
 - **Download and export:** as PDF, image or a self-contained web page; slide decks as presentation files; documents as Word files.
 
 **Sharing and permissions**
@@ -382,6 +387,132 @@ Within the organisation, each person or the whole organisation is given a role o
 
 **How it's built (for the development team):** artifacts are React apps using shadcn/ui and the organisation's theme, built and versioned by the platform and served from a separate, isolated domain, each at its own permanent URL.
 
+### 7.6 Voice mode (talking to a bot in real time)
+Voice mode is another way to chat with a bot: the user **speaks instead of typing**, and the bot **answers out loud** in real time, as in a natural back-and-forth conversation. It happens inside the normal conversation. It is not a phone or internet call, and it doesn't involve other people. The bot replies within a moment and can be interrupted mid-sentence.
+
+Voice mode is not a separate, simpler assistant. It is the **same bot in the same conversation**, with the same instructions, memory, connections, skills, approval rules and abilities as when typing. While talking, the bot can search the user's email, update the CRM, book meetings, ask other bots, run skills, use its cloud computer and create artifacts, exactly as it does in text chat. Users can switch between speaking and typing at any moment.
+
+**Turning voice mode on and off**
+- A **voice mode button** (waveform icon) sits next to the message box in every conversation the user can post in. It is separate from the microphone button used for one-off voice notes (§7.2).
+- The first time, the app asks for microphone permission. If permission is refused, the app explains how to enable it and the user keeps chatting by text.
+- While voice mode is on, the conversation stays on screen. The message box is replaced by a voice bar showing the bot's emoji and colour with an animated waveform that reacts to who is speaking, and the controls **Mute mic**, **Stop bot**, **Keyboard** (type a message without leaving voice mode) and **Exit voice mode**. On mobile, users can also expand to a full-screen voice view.
+- Voice mode turns off when the user taps Exit, says "that's all"/"exit voice mode", after **2 minutes of silence**, or when the organisation's maximum session length is reached (the bot warns 1 minute before).
+
+**Talking naturally**
+- **Hands-free by default:** the bot detects when the user has finished speaking and replies. Users can switch to **push-to-talk** (hold the button to speak) in the voice bar or in personal settings.
+- **Interrupting:** if the user starts speaking while the bot is talking, the bot stops immediately and listens. Saying "stop" or tapping **Stop bot** also cancels whatever the bot is doing at that moment, including a tool action that hasn't finished yet.
+- The bot speaks in the user's language (English or Greek) and can switch if the user does.
+- The bot keeps spoken answers short and conversational. Long content (tables, lists, drafts, links) is shown in the chat instead of read out, and the bot says so ("I've put the full list in the chat").
+
+**Using tools in voice mode: same as typing**
+- The bot has exactly the tools it has in text chat: connected accounts (§8), custom tool servers, built-in tools, skills (§6.7), talking to other bots (§6.5), the cloud computer (§9) and artifacts (§7.5).
+- While a tool runs, the bot says a short line ("Checking your calendar…") and the **live activity feed** (§7.3) appears in the chat as usual. A soft working sound plays if a step takes more than about 2 seconds, so the user knows the bot hasn't frozen.
+- **Interactive replies** (§7.4) and artifacts appear in the chat as they are built, and the user can tap them while still talking.
+- **Skills** can be triggered by voice ("Run the client onboarding skill for Acme") or automatically, just as in chat. The bot asks the skill's "Questions to ask first" out loud.
+- **Secrets are never spoken:** if a key or token is needed, the secure secret box (§8.8) appears on screen and the bot asks the user to paste it there. If the user starts reading a secret out loud, the bot stops them and points to the box.
+- **Changing things by asking** (§6.6) works by voice. The change summary is shown in the chat and read out briefly; the user confirms by saying "yes"/"confirm" or by tapping. Anything that can't be changed by chat (§13.5) can't be changed by voice either.
+- **Long jobs:** if a request will take more than about 30 seconds (deep research, a long cloud-computer job, building a large artifact), the bot says it's starting it as a task ("I'll research that and let you know") and keeps talking with the user. The task runs exactly like a task started by text (§10). If it finishes while voice mode is on, the bot tells the user; otherwise the user is notified as usual.
+
+**Approvals by voice**
+- Approval rules (§11) apply unchanged. When an action needs approval, the approval card with the full preview appears in the chat and the bot reads a short summary ("I'll email Anna at Acme saying the contract is ready. Shall I send it?").
+- The user can approve by saying "yes"/"send it"/"go ahead", reject by saying "no"/"cancel", ask for changes by voice ("make it shorter"), or tap Approve / Edit / Reject.
+- **Payments/purchases and entering passwords on websites always need a tap** on the approval card, never voice alone, because speech can be overheard or misheard.
+- If the user's screen is off (e.g. phone in pocket) and an action needs a tap, the bot says so and the approval waits in the chat and notifications as usual.
+
+**How it appears in the conversation**
+- What the user says and what the bot says are saved as **normal chat messages**, written out as text, with a small 🎙 icon showing they were spoken. Tool steps, interactive replies, artifacts and approvals appear in place, exactly as in a typed chat.
+- Text and voice mix freely in one conversation: the bot always has the full history, whether it was typed or spoken.
+- Memory works the same as in chat, subject to the user's memory settings.
+- **Audio is not stored**, only the text. Temporary chats (§7.2) stay temporary: nothing is kept and no memories are created.
+- Spoken messages follow the organisation's data retention settings like any other message.
+
+**Shared bot chats and groups**
+- Voice mode is between one user and one bot. In a group, the user picks which bot to talk to (the lead bot is pre-selected).
+- Other members of the conversation simply see the spoken messages appear as text in real time, as if the user were typing. They can keep typing as normal.
+- A user can have voice mode on in one conversation at a time. Several users can each use voice mode with the same bot at the same time.
+- The bot can still consult other bots (§6.5) as normal.
+
+**Where it works**
+- Web (Chrome, Edge, Safari, Firefox), desktop app and mobile apps.
+- On mobile, voice mode keeps working with the screen locked or while using other apps, shown by a standard "in use" notification, and it works with headphones, Bluetooth and car audio.
+- On desktop, the quick-ask shortcut can open straight into voice mode with the default bot.
+- If the connection drops, the app reconnects automatically for up to 15 seconds and the bot carries on. After that, voice mode turns off and everything said so far stays in the chat.
+
+**Voices**
+- Each bot has its own **voice**, chosen from the available voices with a short preview ("Hear sample"). Templates come with a suitable voice; new bots get the default voice.
+- In personal settings, users can choose one voice for all bots instead, and set the speaking speed.
+
+**Who can use it and cost**
+- Voice mode is available to all roles. Organisations can turn it off or limit it (§13.4).
+- Voice mode counts toward usage like any other bot activity and shows in the usage overview as a separate "Voice" line per member and bot, in minutes and cost. Usage limits (§11) apply; when a limit is reached, the bot says so and voice mode turns off.
+- Voice mode always uses the voice model described below, whatever AI model the bot uses for text. Long jobs handed off as tasks run on the bot's own chosen model (§6.4).
+
+**How it's built (for the development team):**
+- Voice uses the **OpenAI Realtime API** directly (speech-to-speech model `gpt-realtime` at launch), not OpenRouter, because OpenRouter does not provide real-time audio. The platform configures the voice model; it is not chosen per bot.
+- **Audio path:** the client connects to OpenAI over **WebRTC** using a short-lived session key that our API creates for each voice session (the real OpenAI key never reaches the client). The browser or app handles microphone capture, echo cancellation and playback.
+- **Control path:** our API attaches to the same Realtime session with a server-side ("sideband") WebSocket connection. It sets the session's instructions, voice and tools, receives every tool call and executes it through the **same tool layer used by text chat** (Composio connections, custom tool servers, built-in tools, skills, bot-to-bot, cloud computer, artifacts), with the same permission checks, approval engine and activity logging. Tool definitions and results never go through the client.
+- **Instructions:** built the same way as for text chat (organisation instructions, bot instructions, user preferences, memory, assigned skills, recent conversation history), plus voice-specific rules: keep replies short and spoken, don't read out URLs, tables or code, put long content in the chat, and confirm before acting.
+- **Same tool selection as chat:** the voice session gets the same tool set the bot would get for the same message in text chat, using the same mechanism for narrowing large tool lists.
+- **Messages:** the Realtime API's input transcription turns user speech into text, and bot speech is saved from the model's output transcript. Both are saved as normal conversation messages with `source: voice` and streamed to other participants through the existing real-time message channel. Tool calls, interactive replies and approvals use the same message parts as text chat. A message typed while voice mode is on is sent into the Realtime session as a text input.
+- **Approvals:** when a tool needs approval, the server holds the tool call open, creates the normal approval card and tells the model to ask the user. The model calls a dedicated `resolve_approval` tool to record a spoken yes or no. This is accepted only for approvals that allow voice (not payments or passwords). A tapped approval resolves the same pending call.
+- **Long tasks:** a built-in `start_task` tool hands the request to the normal task runner with the bot's chosen model. When a task finishes during a voice session, the server sends it into the session as a system event so the bot can announce it.
+- Turn detection uses the Realtime API's semantic voice activity detection. Push-to-talk turns off automatic turn detection and commits the audio when the button is released.
+- Session limits (silence timeout, maximum length, reconnect window) and usage metering (audio minutes and tokens per session) are enforced server-side.
+
+
+### 7.7 Files and storage
+Every file in Agent Space is kept in **Google Cloud Storage**: files users upload, files bots create, knowledge, skill files, artifacts, replays and exports.
+
+**What's stored**
+| Files | Examples | Who can open them |
+|---|---|---|
+| Chat attachments | Images, documents, screenshots and voice notes sent in conversations | Members of that conversation |
+| Files bots create | Reports, spreadsheets, presentations, PDFs, generated images | Members of the conversation they were created in |
+| Bot knowledge | Files given to a bot as knowledge (§6.2) | Whoever can use or edit that bot |
+| Organisation knowledge library | Company documents all permitted bots can use | Organisation members, as the library's settings allow |
+| Skill files | Templates, examples and guides attached to a skill (§6.7) | Whoever the skill is shared with |
+| Artifacts | Published artifact versions, and files visitors upload to an artifact (§7.5) | As the artifact's sharing settings allow; visitors' uploads only by the artifact's Owner and Editors |
+| Cloud computer replays | Recordings of what a bot did (§9.2) | Whoever can see that bot's cloud computer |
+| Files taken off the cloud computer | Files a user downloads or a bot shares into the chat from its computer | Members of that conversation |
+| Data exports | "Export my data" (§13.2) and activity history exports (§13.4) | Only the person who requested them |
+| Profile pictures, bot images, organisation logos | Avatars and branding | Anyone who can see them in the app |
+
+**Rules for users**
+- Files are never public unless they're part of an artifact with a public link (§7.5).
+- Each file can be opened only by people who can see where it lives (the conversation, bot, skill or artifact). Removing someone from a conversation also removes their access to its files.
+- Download links work only for the signed-in user and expire after a short time. A copied link doesn't give anyone else access.
+- **Maximum file size:** 100 MB per file by default; organisations can lower it (§13.4). Files uploaded to public artifacts are limited to 25 MB.
+- Deleting a message, conversation, knowledge file, skill or artifact deletes its files. They can be restored for 30 days and are then permanently removed.
+- Files follow the organisation's data retention settings (§13.4). Exports are kept for 7 days.
+- Files on a bot's cloud computer stay on that computer while the bot works (§9). They're copied to storage only when downloaded or shared into a chat.
+- Storage used is shown per member and per bot in the usage overview.
+
+**How it's built (for the development team):**
+- **Buckets:** one set of Google Cloud Storage buckets per environment (staging, production), all in an EU region:
+  - `agentspace-<env>-files`: chat attachments, bot-created files, knowledge, skill files, files taken off the cloud computer
+  - `agentspace-<env>-artifacts`: published artifact versions and visitor uploads
+  - `agentspace-<env>-replays`: cloud computer replays
+  - `agentspace-<env>-exports`: data exports, with a lifecycle rule that deletes objects after 7 days
+  - `agentspace-<env>-public`: avatars, bot images and logos, served through Cloud CDN
+- Bucket names and the service-account credentials go in each environment's `.env` file, like the other platform keys. Local development uses the staging buckets.
+- **Access:**
+  - All buckets except `-public` use uniform bucket-level access with public access prevention enforced.
+  - Objects are encrypted at rest with Google-managed keys.
+  - Only the API's service account can read and write. Clients never get bucket permissions.
+- **Object paths:** `orgs/<orgId>/<area>/<fileId>`, where `area` is one of `chat`, `generated`, `knowledge`, `skills`, `computer` (and `artifacts/<artifactId>/<versionId>/…` in the artifacts bucket). IDs are random. The original file name, type, size, owner, the record it belongs to (conversation, bot, skill, artifact) and deletion state live in the database, never in the path.
+- **Uploads:**
+  - The client asks the API for an upload. The API checks permission, size and type, creates the file record, and returns a **V4 signed resumable upload URL** valid for 15 minutes.
+  - The client uploads directly to Cloud Storage. The API then confirms the object exists and matches the declared size and type before marking the file ready.
+  - Executable file types are blocked in public artifact uploads.
+- **Downloads and previews:** the API checks the user's access to the parent record on every request and returns a **V4 signed URL valid for 5 minutes** (with `Content-Disposition` set for downloads). Signed URLs are never stored in messages; messages store only the file ID.
+- **Bots and tools:** bots refer to files by ID. The tool layer reads and writes them through the API's storage service, with the same permission checks as users. When a bot works on a file on its cloud computer, the file is copied in, and results are copied back out to storage when shared.
+- **Artifacts:** published versions are stored as immutable objects per version. The isolated artifact domain (§7.5) serves them through a server that checks the artifact's sharing settings, never from a public bucket.
+- **Deletion and retention:**
+  - Deleting a record soft-deletes its files.
+  - A daily job permanently deletes objects 30 days after soft deletion, and deletes objects past the organisation's retention period (conversations, cloud computer files and replays).
+  - Deleting an organisation deletes its whole `orgs/<orgId>/` prefix in every bucket after the 30-day window.
+- **Limits and usage:** the per-file size limit is checked when the upload URL is created and again on confirmation. A nightly job adds up storage per member, bot and organisation from the database for the usage overview.
+
 ---
 
 ## 8. Connections (Linking Your Tools)
@@ -408,10 +539,17 @@ Within the organisation, each person or the whole organisation is given a role o
 
 ### 8.4 Custom tool servers
 - Users can add their own additional tool sources (for example an internal company system or a specialist service) by entering its address and signing in to it.
+- Sign-in uses the tool server's own sign-in screen when it supports one (standard MCP sign-in). Otherwise the user pastes an access key or token. Either way, it is stored as described in §8.7.
 - Several can be added; each can be private or shared (shared requires Owner/Admin).
 - Once added, its tools appear alongside all other tools and can be given to bots in the same way.
 
-### 8.5 Built-in tools
+### 8.5 Services added by access key
+- For services our connection partner doesn't support, users can add a connection by pasting an **access key** (API key) with a label, e.g. "Mailchimp – Marketing".
+- Keys can be added on the Connections page or **in any chat** using the secure secret box (§8.8).
+- These connections work like any other: private or shared, limited to chosen bots, shown with a status.
+- Once saved, the key is never shown again in full, only masked (e.g. `sk-…a9f2`). Users can replace it or delete it on the Secrets page (§8.9), but not reveal it.
+
+### 8.6 Built-in tools
 Agent Space includes its own tools that work seamlessly next to connected ones:
 - Web search and reading web pages
 - Creating documents, spreadsheets, presentations and PDFs
@@ -426,6 +564,119 @@ Agent Space includes its own tools that work seamlessly next to connected ones:
 
 Users don't need to know which tools are built-in and which are connected — bots simply pick the right one.
 
+### 8.7 How sign-ins and keys are kept safe
+**The rule: bots never see secrets.** Passwords, sign-in tokens and access keys are never shown to the AI model, written into conversations, memory, skills, artifacts, tool results or logs, or placed on the cloud computer. The platform uses a secret on the bot's behalf at the moment a tool runs, and the bot only gets the result (e.g. the list of emails, not the Gmail token).
+
+| What | Where it's kept | Who holds the actual secret |
+|---|---|---|
+| Accounts connected through our connection partner (Gmail, HubSpot, Slack…) | Our connection partner (Composio), encrypted | Composio. Agent Space keeps only a reference to the connection, never the tokens. |
+| Custom tool server sign-ins (§8.4) | Google Cloud Secret Manager | Agent Space, encrypted |
+| Access keys pasted by users (§8.5) | Google Cloud Secret Manager | Agent Space, encrypted |
+| Website passwords used on the cloud computer | **Not stored at all** (see §9.4) | Nobody. Only the signed-in session is kept. |
+| Agent Space's own keys (AI providers, Composio, Daytona, email, sign-in providers) | Each environment's `.env` file on the server | Agent Space |
+
+**What users see and control**
+- Secrets are never shown again after being entered: access keys appear masked, sign-ins appear as "Signed in as …".
+- Users can see, rename, replace or delete all the keys and tokens they've added on the **Secrets** page (§8.9), and re-connect or remove sign-ins on the Connections page. Deleting a secret or connection deletes the stored value immediately.
+- Sign-ins refresh automatically in the background. When one can't be refreshed (e.g. the password was changed or access was revoked), the connection shows **Needs re-connecting** and the user is notified (§8.3).
+- When a member leaves an organisation, all their private connections and keys in that organisation are deleted. Shared connections stay with the organisation.
+- Every use of a secret is recorded in the activity history (§11): which connection, which bot, on whose behalf, which action and when. The secret itself never appears.
+- Data exports (§13.2) and skill exports (§6.7) never include secrets.
+
+**How it's built (for the development team):**
+- **Composio connections:** the database stores only the Composio connected-account ID, its label, owner and status. Tool calls go through Composio's tool execution, so tokens never pass through our services. Connection status is synced from Composio (an `EXPIRED` connection becomes "Needs re-connecting").
+- **Google Cloud Secret Manager** stores every secret users give Agent Space:
+  - **User secrets** (custom tool server tokens, access keys) live in a dedicated GCP project used only for user secrets. Each credential is **one secret** named `cred-<credentialId>`, using a random ID only, never names or emails. It is labelled with `org_id`, `owner_type` (`user`/`org`) and `kind` (`mcp_oauth`, `mcp_token`, `api_key`). The payload is JSON: `{access_token, refresh_token, expires_at, token_type, scope}` for sign-ins, or `{api_key}` for keys. Secrets use customer-managed encryption (CMEK) with a Cloud KMS key in the same project.
+- **Platform keys** (OpenAI, OpenRouter, Composio, Daytona, Resend, OAuth client secrets) stay in each environment's `.env` file, as today (see AGENTS.md); they are not moved to Secret Manager. They are loaded into the API at start-up and never sent to clients, the model, the cloud computer or logs.
+- **The database holds only credential metadata:** ID, label, owner (user or organisation), organisation, kind, status, masked hint (last 4 characters for keys), expiry time, and the Secret Manager resource name and current version. It never holds secret values.
+- **Least-privilege access:**
+  - Only the **tool-execution service's** service account has `secretmanager.secretAccessor` on user secrets.
+  - The main API's service account can create secrets and add versions but **cannot read them**, so a request handler can save a key but never read one back.
+  - Access is granted with IAM conditions on the `cred-` name prefix.
+- **Using a secret:** the tool-execution service loads the credential record, checks that the requesting user and bot may use it (same checks as §8.3), reads the secret, makes the call and returns only the result. Decrypted values are cached only in that service's memory, for at most 5 minutes or until the token expires, whichever is sooner. They are never cached in Redis or the database, and never sent to the client, the model or the cloud computer.
+- **Refreshing sign-ins:** the tool-execution service refreshes a token when it expires within 2 minutes, holding a per-credential lock so only one refresh runs at a time. It saves the new token as a new secret version and destroys the old version. If the refresh fails as unauthorised, the credential is marked "Needs re-connecting".
+- **Custom tool server sign-in** follows the MCP authorization spec (OAuth 2.1 with PKCE and dynamic client registration where the server supports it). Static tokens fall back to the access-key flow.
+- **Saving a pasted key:** the key goes straight from the client to the API over HTTPS. The API writes it to Secret Manager and stores only the masked hint. Request logging excludes these endpoints' bodies.
+- **Redaction:** before any tool result reaches the model, logs or traces, it is scanned for the values of the secrets used in that call, and any matches are replaced with `[secret]`. Error messages from tool servers get the same treatment.
+- **Deletion:** deleting a credential deletes its Secret Manager secret immediately. When a member is removed, a background job deletes their private credentials (and revokes them at the provider when the provider supports revocation).
+- **Never fall back to plain text:** if Secret Manager is unavailable, saving fails with a clear error and tool calls needing that secret fail and are retried. Nothing is written elsewhere instead.
+- **Keys on the cloud computer:** scripts on the cloud computer never receive keys as environment variables or files. They call connected services through an Agent Space proxy reachable only from that computer. The proxy checks that the target service is allowed for that bot, adds the credential to the outgoing request and returns the response.
+
+
+### 8.8 Giving a bot a secret in chat
+Users often want to hand a bot a key in the middle of a conversation ("Here's our Mailchimp API key", "Connect to our internal tool, here's the token"). Instead of the user typing the secret into a message, the bot shows a **secure secret box** in the chat.
+
+**When the box appears**
+- **When the user asks**, e.g. "I want to give you my Stripe key", "Store my OpenWeather API key", "Update the Mailchimp key".
+- **When the bot works out that it needs one**, e.g. while setting up a custom tool server that asks for a token, or when a task needs a service that has no connection yet and only works with a key. The bot explains why it needs the key and shows the box.
+- **When the user pastes a secret into the message box:** before sending, the app spots text that looks like a key, token or password (known key formats such as `sk-…`, `ghp_…`, `xoxb-…`, private key blocks, and long random strings next to words like "key", "token" or "password"). It shows "This looks like a secret. Store it securely instead?" with **Store securely** (the default) and **Send anyway**. Store securely removes the secret from the message, puts it into a secure secret box and sends the rest of the message as normal.
+
+**The secure secret box**
+- It is a card in the chat showing the bot's explanation and these fields:
+  - **Name**, pre-filled by the bot (e.g. "Mailchimp – Marketing")
+  - **Service**, pre-filled when known
+  - **Secret**: a masked input with paste support and a show/hide eye that works only on the user's own screen
+  - **Which bots may use it**: this bot by default
+  - **Private / Shared with the organisation**: Shared is offered only to Owners and Admins
+- The buttons are **Save** and **Cancel**.
+- After saving, the card changes to "🔒 Saved: Mailchimp – Marketing (`…a9f2`)". The secret is never shown again in the chat, on any device or to anyone in the conversation.
+- **The bot never sees the secret.** It only learns that a secret was saved, with its name and the last 4 characters. It can then use it through tools straight away (e.g. "Done. I can now pull your Mailchimp lists").
+- **Updating a secret:** "Update the Mailchimp key" shows the box in **Replace** mode for that saved secret. The old key keeps working until the new one is saved.
+- **In groups**, the box is shown only to the user it's for. Other members see "🔒 Petros is adding a secret" and then "🔒 Petros saved a secret", without the value or hint.
+- **In voice mode** (§7.6), the box appears on screen and secrets are pasted, never spoken.
+- Everything saved through the box appears on the **Secrets** page (§8.9), where it can be renamed, replaced or deleted.
+- This box is for secrets Agent Space stores. **Website passwords** are different: they use the secure sign-in box on the cloud computer and are never stored (§9.4).
+
+**How it's built (for the development team):**
+- **The tool:** a built-in tool `request_secret` with input `{purpose, suggested_label, service?, kind: "api_key" | "mcp_token" | "other", replace_credential_id?}`. The model calls it when the user asks or when a task needs a key. The tool renders a dedicated `secret-input` component, a fixed building block that is never a custom mini-app (§7.4), in the message for the requesting user only. The tool call stays open until the user saves or cancels.
+- **The secret's path:** the card submits the value with a direct authenticated `POST` from the client to the API's credentials endpoint, which writes it to Secret Manager (§8.7). The value never goes through the chat stream, the message store, the agent loop or the model provider. Request-body logging is disabled for this endpoint.
+- **What the model gets back:** only `{credential_id, label, service, masked_hint, status: "saved" | "cancelled"}`. Later tool calls refer to the secret by `credential_id`, and the tool-execution service resolves it at call time.
+- **Detecting pasted secrets:** client-side, before sending, using a shared pattern list (the same kind of rules secret-scanning tools use: known key prefixes plus entropy checks). As a second line of defence, the API runs the same check on every incoming message. If a message sent with "Send anyway" contains a likely secret, the stored copy and the copy sent to the model show it masked (`sk-…a9f2`), and the user is told it wasn't shared with the bot. "Send anyway" exists only for false positives such as hashes or IDs.
+- **No secrets anywhere else:** secret values are never put into message parts, interactive reply state, artifacts, memory, conversation search or exports.
+
+
+### 8.9 Managing secrets (the Secrets page)
+Every user has a **Secrets** page where they can see and manage all the secrets they've added. It's in the main menu under **Connections → Secrets**, and also under **Settings → Secrets**. The 🔒 Saved card in a chat links straight to it.
+
+**What's listed**
+- **My secrets:** every access key and tool server token the user has added, whether through the Connections page, a custom tool server or the secure secret box in chat (§8.8).
+- **Organisation secrets:** shared secrets added by Owners and Admins. Members see this list (name, service, which bots may use it) but can't change it. Owners and Admins can manage it.
+- Each row shows:
+  - Name and service, e.g. "Mailchimp – Marketing"
+  - Type: access key or tool server token
+  - Masked hint: `…a9f2`
+  - Private or Shared
+  - Which bots may use it
+  - Who added it and when
+  - When it was last used, and by which bot
+  - Status: **Active**, **Not working** (the service rejected it), or **Expired** (for tokens with an expiry date)
+- Search, plus filters by service, bot and status.
+- **The value is never shown.** There is no "reveal" button, for anyone, including Owners. To check or change a key, the user replaces it.
+
+**What users can do**
+| Action | What happens |
+|---|---|
+| **Rename** | Change the name and service label |
+| **Replace value** | Opens the secure secret box (§8.8) in Replace mode. The old value keeps working until the new one is saved, then it's destroyed. |
+| **Choose bots** | Pick which of the user's bots may use it. For shared secrets, Owners and Admins pick from all organisation bots. |
+| **Share / Make private** | Owners and Admins only. Making a shared secret private warns which bots and members will lose access. |
+| **Test** | For services that support it, checks the key still works and updates its status. |
+| **Delete** | Shows which bots and tool servers use the secret and asks for confirmation. Deletion is immediate and permanent, and bots that used it will ask for a new one next time they need it. |
+| **History** | When it was added, replaced, renamed, shared and deleted, and every time a bot used it (§8.7). Values are never shown. |
+
+**Managing secrets by asking**
+- Users can also manage secrets by asking any bot: "Which secrets have I added?", "Rename the Mailchimp key to Mailchimp – Newsletter", "Let the Support bot use the Zendesk key", "Delete my old OpenWeather key".
+- The bot shows the list or the change as a card (names and hints only, never values) and asks for confirmation before changing or deleting anything, as with any change by chat (§6.6).
+- "Change the value of the Stripe key" opens the secure secret box. The bot never asks for, or accepts, the value in a normal message.
+
+**How it's built (for the development team):** the Secrets page reads only the credential records in the database (§8.7) and never calls Secret Manager to read values.
+- **Rename, choose bots, share:** update the record only.
+- **Replace:** adds a new Secret Manager version and destroys the previous one.
+- **Delete:** deletes the Secret Manager secret and soft-deletes the record, which keeps its history.
+- **Test:** runs through the tool-execution service and calls a lightweight endpoint for that service, where one is defined.
+- **"Last used":** updated by the tool-execution service on each use.
+- **Chat:** built-in tools `list_secrets`, `update_secret` (name, bots, sharing) and `delete_secret` expose the same actions. They return metadata only. Replacing a value always goes through `request_secret` (§8.8).
+
 ---
 
 ## 9. The Bot's Cloud Computer
@@ -437,12 +688,13 @@ Each bot can get its own secure, private computer in the cloud (provided by our 
 - Work with files: open uploaded files, convert, combine, analyse, and create new ones.
 - Run small programs and scripts to process data or automate repetitive work.
 - Keep a workspace of files that stays between tasks.
+- Bring in files from connected services (e.g. a GitHub repository, a Google Drive folder) and send results back out, without ever holding the sign-in for those services (§9.5).
 
 ### 9.2 Watching and taking control
 - **Live view:** Users can watch the bot's screen in real time, in a side panel or full screen.
-- **Take over:** Users can click "Take control" to use the computer themselves — for example, to enter a password, solve a "prove you're human" check, or show the bot how to do something — and then hand control back.
+- **Take over:** Users can click "Take control" to use the computer themselves — for example, to sign in to a website (§9.4), solve a "prove you're human" check, or show the bot how to do something — and then hand control back.
 - **Explore manually:** Users can open a bot's computer at any time, even when the bot isn't working, to look around, browse or arrange files.
-- **Files panel:** Browse, upload, download and preview the files on the computer.
+- **Files panel:** Browse, upload, download and preview the files on the computer. Downloaded files and files shared into a chat are copied to Agent Space's file storage (§7.7).
 - **Replay:** Review a recording/timeline of what the bot did during a task.
 
 ### 9.3 Safety
@@ -450,25 +702,163 @@ Each bot can get its own secure, private computer in the cloud (provided by our 
 - Computers pause automatically when idle to save cost and resume automatically when the bot or user needs them again. Files are kept while paused.
 - Bots ask before entering passwords, payment details or submitting anything important (see §11).
 
+### 9.4 Signing in to websites
+Bots often need to be signed in to a website that has no connection (e.g. a supplier portal). Agent Space **never stores website passwords**; it keeps the signed-in session instead.
+
+- **Signing in:** when a bot reaches a sign-in page, it pauses and asks the user to sign in. The user can either:
+  - click **Take control** and sign in on the bot's computer themselves, or
+  - use the **secure sign-in box** the bot shows in the chat. What the user types goes straight into the website's field on the cloud computer. It isn't saved anywhere, and it never appears in the chat or reaches the AI model.
+- **Two-step codes** and "prove you're human" checks are handled the same way.
+- **Staying signed in:** after signing in, the website keeps the bot signed in as it would for a normal browser. The session is kept on the bot's computer, including while it's paused, so the bot can use the site again in later tasks without asking.
+- **Signed-in websites list:** each bot's cloud computer settings list the websites it's currently signed in to, with the date of each sign-in. Users can **Sign out** of any site (which removes that site's session from the computer) or **Sign out of all**.
+- **Replays and live view:** recording pauses while the user has control or is typing in the secure sign-in box, and the replay shows "Sign-in hidden" for that part.
+- The bot can see the page like a person can, but password fields are masked by the website. It never reads saved passwords from the browser, and the browser's own "save password" feature is turned off.
+
+**How it's built (for the development team):** each bot's browser runs with a persistent profile on the computer's disk, which Daytona encrypts and keeps across pauses. Saving passwords and autofill are disabled in the browser policy. The secure sign-in box sends keystrokes over the live-view control channel directly to the focused field on the computer. They are not passed to the agent loop, saved in messages or logged. The signed-in websites list is read from the profile's cookie store, grouped by site. Sign out deletes that site's cookies and storage. Replay recording is paused whenever the user has control or the secure sign-in box is open.
+
+
+### 9.5 Bringing files from connected services
+Many jobs need data from a connected service on the cloud computer, e.g. a GitHub repository to scan, a folder of invoices from Google Drive, an export from Shopify, or email attachments. The bot can bring these files onto its computer, and send results back, **without the sign-in for that service ever reaching the computer or the bot**.
+
+- **Bringing files in:** the bot asks for something from a connected service, e.g. "repository x from GitHub – Work", "the Invoices/October folder from Google Drive", or "attachments from emails labelled Receipts". Agent Space fetches it using the connection and places it in a folder on the bot's computer. The activity feed shows "Copying repository x from GitHub to the computer…".
+- **Sending results out:** files created on the computer can be shared into the chat, saved to file storage (§7.7), or sent to a connected service through its tools, e.g. uploaded to Google Drive, attached to an email, posted to Slack, or committed to a GitHub branch and opened as a pull request.
+- The usual rules apply: the bot can only use connections it's allowed to use (§8.3), and sending anything out follows the approval rules (§11), or the automation's pre-approved actions (§10.3).
+- Each transfer is limited to **1 GB**, within the computer's storage limit (§13.4).
+
+**How it's built (for the development team):**
+- Two built-in tools: `copy_to_computer` and `copy_from_computer`.
+- **`copy_to_computer({source, destination_path})`**: `source` is one of:
+  1. **A stored file** (file ID in Cloud Storage, §7.7).
+  2. **A Composio connection:** either a Composio tool whose result is file content or a download link (e.g. Google Drive download, Gmail attachment), or a raw API request sent through **Composio's proxy execution**, which makes the call with the stored sign-in (e.g. `GET /repos/{owner}/{repo}/tarball/{ref}` for a GitHub repository).
+  3. **An access-key connection** (§8.5), fetched through the Agent Space proxy (§8.7).
+  4. **A public URL.**
+- **How the copy runs:** it runs entirely in our API. The API fetches the data (following any short-lived download links itself), streams it into the Daytona sandbox through the Daytona file API, and unpacks archives when asked. The computer receives only the files, never tokens or signed download links.
+- **`copy_from_computer({path, destination})`**: reads the file from the sandbox through the Daytona file API. It then saves it to Cloud Storage and attaches it to the chat, or passes it to a connected service's tool. That tool call goes through the normal approval checks.
+- **Limits and logging:** the size limit is enforced while streaming. Every transfer is recorded in the activity history (§11) with the connection, source, destination and size.
+
 ---
 
 ## 10. Tasks and Automations
 
+### 10.1 Tasks
 - **Long tasks:** Users can give a bot a big job ("Research the 30 top competitors and build a comparison spreadsheet") and leave. The bot keeps working and notifies them when done or when it needs input.
 - **Task list:** A "Tasks" page shows everything running, waiting for approval, finished or failed, across all bots.
-- **Scheduled automations:** "Every morning at 8, summarise my unread emails and today's meetings."
-- **Triggered automations:** "When a new deal is created in HubSpot, research the company and post a summary in the Sales group."
-- Automations are created by asking a bot in plain words, and can be paused, edited or deleted from the Automations page.
+
+### 10.2 Automations
+An automation is a job a bot does again and again by itself, either on a schedule or when something happens. It can combine everything a bot can do in a chat: connected services, custom tool servers, skills, other bots, the cloud computer and artifacts.
+
+- **Scheduled:** "Every morning at 8, summarise my unread emails and today's meetings."
+- **Triggered:** "When a new deal is created in HubSpot, research the company and post a summary in the Sales group."
+- **Place-based (mobile app):** "When I arrive at the office, brief me on today's meetings." (§14.3)
+- **Multi-step with the cloud computer:** "Every Friday, export last week's orders from Shopify, build a sales report in a spreadsheet and email it to the team." / "Every day, scan the x repository on GitHub for vulnerabilities and post the results in Slack channel y." (See the worked example in §10.6.)
+
+**Creating an automation**
+- Users create automations by asking a bot in plain words, or from a skill ("Run /weekly-sales-report every Friday at 4pm").
+- Before saving, the bot works out everything the automation needs and sorts it out with the user, so later runs never get stuck:
+  - **When:** the schedule or trigger, in the user's time zone.
+  - **Connections:** which accounts it will use. If one is missing, the bot asks the user to connect it. If a key is needed, it shows the secure secret box (§8.8).
+  - **Cloud computer:** whether it needs one. If the bot's computer is off, the bot asks to turn it on.
+  - **Actions to pre-approve:** see §10.3.
+  - **What to remember between runs:** see §10.4.
+  - **Where results go:** this conversation, another conversation, email, or a connected service (e.g. a Slack channel).
+- The bot shows all of this as a summary card. The automation is saved only when the user confirms.
+
+**What an automation contains**
+| Part | Example |
+|---|---|
+| Name | "Daily vulnerability scan – x" |
+| Bot | The bot that runs it, with that bot's instructions, model, skills and tools |
+| When | Schedule (e.g. every day at 07:00) or trigger (e.g. new HubSpot deal) |
+| Instructions | What to do on each run, in plain language (written by the bot from the user's request, and editable) |
+| Skill | Optional: a skill to follow on each run |
+| Connections | The accounts it uses, e.g. "GitHub – Work", "Slack – Company" |
+| Pre-approved actions | e.g. "Post messages to #security in Slack – Company" |
+| Memory | What it keeps between runs (§10.4) |
+| Results go to | e.g. Slack #security, plus a copy in the bot's conversation |
+| Runs as | The user who created it. It can only use what that user can access. |
+
+**Managing automations**
+- The **Automations** page lists every automation the user owns: its status (**Active**, **Paused**, **Needs attention**), its next and last run, and its results.
+- Automations can be paused, resumed, run now, edited (in the page or by asking a bot), duplicated or deleted.
+- Each automation has a **run history**. For every run it shows the status (succeeded, failed, waiting for approval), its duration, the activity steps (as in §7.3), the results, and the cloud computer replay when one was used.
+
+### 10.3 Pre-approved actions
+An automation runs while nobody is watching, so actions that would normally need approval (§11) are approved **once, when the automation is created**.
+- Each pre-approval covers one kind of action **to one specific place**, e.g. "Post messages to #security in Slack – Company" or "Create issues in GitHub repository x". It doesn't cover similar actions elsewhere: posting to a different channel still needs approval.
+- Pre-approvals apply only to that automation, never to the bot's chats or other automations.
+- When a run tries an action that wasn't pre-approved and needs approval, the run **waits** and the user gets a normal approval card (§11). It follows the user's approval timeout setting (§13.2); if the approval is cancelled, the run ends as failed and the next run goes ahead as scheduled.
+- **Organisation-enforced approvals** (§13.4, e.g. emails to people outside the company, payments) can never be pre-approved. If an automation needs one, the bot says so when creating it, and every run waits for approval at that step.
+- Changing an automation's instructions, connections or results destination asks the user to confirm its pre-approvals again. Pre-approvals are listed on the automation's page, and the user can remove any of them at any time.
+
+### 10.4 Automation memory
+Automations often need to remember what happened last time, e.g. "only report new findings", "skip leads already contacted" or "compare with last week".
+- Each automation has its own **memory** that it reads at the start of every run and updates at the end. It can hold notes (e.g. "last report sent on 3 Nov") and files (e.g. the previous run's results).
+- The bot decides what to remember based on the instructions, and tells the user what it plans to keep when the automation is created.
+- The automation's page shows its memory. The user can view it, edit notes, or **Reset memory** so the next run starts fresh.
+- Automation memory is separate from the bot's memory (§6.3). It's used only by that automation and deleted with it.
+
+### 10.5 When things go wrong
+- If a run fails (e.g. a service is down), it's retried once after 10 minutes. If that also fails, the user is notified with the reason.
+- After **3 failed runs in a row**, the automation is paused, marked **Needs attention**, and the user is notified.
+- If a connection the automation uses needs re-connecting, or the user loses access to something it needs, the automation is paused and the user is told exactly what to fix. It resumes when they fix it and click Resume.
+- A run that is still going when the next one is due is never doubled up: the next run is skipped and noted in the run history.
+- Runs count toward the usage limits of the user and bot (§11), including cloud computer time. If a limit is reached, the automation is paused.
+
+### 10.6 Worked example: daily vulnerability scan
+The user asks: *"Scan the x repository on my GitHub every day for possible vulnerabilities and send the results to Slack channel y."*
+
+**Setting it up**
+1. The bot checks that the user has **GitHub** and **Slack** connected (§8) and that its cloud computer is on (§9). It asks for anything missing.
+2. It asks the open questions: what time to run (default 07:00 in the user's time zone), and whether to report everything or only new findings (default: new and fixed findings, plus a total).
+3. It shows the summary card:
+   - Name: "Daily vulnerability scan – x"
+   - When: every day at 07:00
+   - Uses: GitHub – Work (read repository x), Slack – Company
+   - Pre-approved: "Post messages to #y in Slack – Company"
+   - Remembers: the previous run's findings, to report only what's new or fixed
+   - Results: Slack #y, plus a copy in this conversation
+4. The user confirms.
+
+**Each run**
+1. **Brings the code to the cloud computer** (§9.5). The platform downloads repository x through the GitHub connection and places it on the bot's computer. The GitHub sign-in never reaches the computer or the bot.
+2. **Scans it** on the computer with standard open-source security tools: code pattern checks (e.g. Semgrep), leaked-key checks (e.g. Gitleaks), dependency vulnerability checks (e.g. OSV-Scanner, `npm audit`, `pip-audit`) and configuration checks (e.g. Trivy). The bot installs them the first time; they stay on the computer for later runs.
+3. **Adds GitHub's own alerts** (Dependabot, code scanning, secret scanning) through the GitHub connection, if the repository has them turned on.
+4. **Reviews the results:** the bot removes duplicates and obvious false positives, ranks findings by severity, and compares them with the automation's memory to mark each one as **new**, **still open** or **fixed**.
+5. **Reports:** posts a short summary to Slack #y (pre-approved), with the full report attached as a file or linked as an artifact (§7.5), and saves this run's findings to the automation's memory.
+
+The same building blocks (connections, bringing files to the cloud computer, pre-approved actions, automation memory and delivery to a connected service) work for any similar job, for example:
+- "Every Monday, download last week's invoices from Google Drive, check them against our purchase orders and email me the differences."
+- "Every night, export new Shopify orders, update the stock spreadsheet and alert #ops in Slack if anything runs low."
+- "When a new contract lands in the Legal folder in Dropbox, check it against our standard terms and post a review in the Legal group."
+
+**How it's built (for the development team):**
+- **Data model:** automations are stored with:
+  - the trigger (cron expression plus time zone, or a Composio trigger subscription)
+  - bot ID, owner user ID, instructions, optional skill ID
+  - connection IDs
+  - pre-approvals as `{action_type, connection_id, target}`, e.g. `{send_message, slack-company, channel:#y}`
+  - results destinations and status
+- **Runs:** each run is a normal task (§10.1) on the bot's model, executed on behalf of the owner with the owner's permissions.
+- **Approvals:** the approval engine checks a run's actions against the automation's pre-approvals before applying the usual approval rules. Organisation-enforced rules are checked first and can't be overridden.
+- **Automation memory:**
+  - Notes are a JSON document of at most 1 MB per automation, kept in the database.
+  - Files are kept in Cloud Storage under `orgs/<orgId>/automations/<automationId>/`.
+  - The model reads memory with `automation_memory_read` and writes it with `automation_memory_write`, both available only during that automation's runs.
+- **Scheduling:**
+  - A single scheduler enqueues runs and refuses a run while another run of the same automation is active.
+  - The retry and auto-pause rules in §10.5 are enforced by the scheduler.
+  - The organisation's "Most frequent schedule allowed" (§13.4) is checked when an automation is saved.
 
 ---
 
 ## 11. Trust, Safety and Control
 
-- **Approvals:** By default, bots ask before actions that are hard to undo or that go outside the company — sending emails, posting publicly, deleting things, making purchases, sharing files. Users can relax or tighten this per bot ("Always ask", "Ask for important actions", "Don't ask").
+- **Approvals:** By default, bots ask before actions that are hard to undo or that go outside the company — sending emails, posting publicly, deleting things, making purchases, sharing files. Users can relax or tighten this per bot ("Always ask", "Ask for important actions", "Don't ask"). Automations use actions pre-approved when they're created (§10.3).
 - **Approval cards:** Approval requests appear in chat and as notifications with a clear preview (e.g. the exact email to be sent) and Approve / Edit / Reject buttons.
 - **Transparency:** Every action a bot takes is logged with what, when, which account and on whose behalf.
 - **Activity history:** Owners and Admins can review organisation-wide activity.
 - **Privacy:** Bots only use the connections and conversations the user is allowed to access. Private connections are never visible to other members.
+- **Secrets:** Bots never see passwords, sign-in tokens or access keys. Sign-ins and keys are stored encrypted and used only on the bot's behalf, and website passwords are never stored (§8.7, §9.4). In chat, secrets are entered only through the secure secret box (§8.8).
 - **Data control:** Users can export or delete their conversations and memories. Organisations can set how long data is kept.
 - **Usage limits:** Organisations can set spending/usage limits per member or per bot.
 
@@ -556,9 +946,11 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Setting | Options |
 |---|---|
 | Read replies aloud | **Off**, On for voice messages only, Always |
-| Bot voice | Choice of several voices |
+| Bot voice | **Use each bot's voice**, or one chosen voice for all bots |
 | Speaking speed | Slower, **Normal**, Faster |
 | Send voice message automatically when I stop talking | **Off** |
+| Voice mode input | **Hands-free**, Push-to-talk (§7.6) |
+| Keep spoken messages as text in the chat | **On** (Off keeps only the bot's actions and results, not what was said) |
 
 **Memory and personalisation**
 | Setting | Options |
@@ -580,13 +972,15 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 |---|---|
 | Open live view automatically when a bot starts using its computer | **Off** |
 | Notify me when a bot needs me to take control | **On** |
-| Keep replays of bot sessions | **On** (subject to organisation retention) |
+| Keep replays of bot sessions | **On** (subject to organisation retention; sign-ins are never recorded) |
 
 **Connections**
 | Setting | Options |
 |---|---|
 | Default account per service | e.g. "Use Gmail – Work unless I say otherwise" |
 | Connection problem alerts | **On** |
+| Secrets | Opens the Secrets page (§8.9): view, rename, replace, choose bots for, or delete your keys and tokens |
+| Alert me when a secret stops working | **On** |
 
 **Tasks and automations**
 | Setting | Options |
@@ -611,6 +1005,18 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Export my data | Download my conversations, files and memories |
 | Delete my conversation history | All, or older than a chosen date |
 | Auto-delete my conversations after | **Never**, 30 days, 90 days, 1 year (cannot be longer than the organisation's limit) |
+
+**Devices** (desktop and mobile apps)
+| Setting | Options |
+|---|---|
+| My devices | List of devices signed in to Agent Space (name, platform, app version, last seen); rename or sign out |
+| Device tools | Per device and per tool: **Ask each time**, Always allow, Never (§14.3) |
+| Allowed folders (desktop) | Folders bots may use on this computer (**none**) |
+| Local tool servers (desktop) | Add, edit or remove tool servers that run on this computer (**none**) |
+| Launch at start-up (desktop) | **On** |
+| Quick-ask shortcut (desktop) | **Ctrl/Cmd+Shift+Space**, or a chosen shortcut |
+| Places for place-based automations (mobile) | Saved places, e.g. Office, Home (up to 20) |
+| Approve from the lock screen (mobile) | **On** |
 
 **Security** (settings screen only, never by chat)
 | Setting | Options |
@@ -653,10 +1059,18 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Interactive replies | **Building blocks and custom mini-apps**, Building blocks only, Off |
 | Create artifacts | **On** |
 | Cloud computer | **Off** for new bots (On for the Researcher template) |
+| Signed-in websites | List of websites the bot's computer is signed in to; sign out of one or all (§9.4) |
 | Knowledge | Files, documents and links it should know |
 | Skills | Which skills it has (add or remove at any time) |
 | Use skills automatically | **On** — the bot picks a matching skill by itself; Off means skills are only used when mentioned with `/` |
 | Organisation knowledge | **On** — uses the company knowledge library |
+
+**Voice**
+| Setting | Options |
+|---|---|
+| Voice mode | **On** |
+| Voice | Choice of available voices with a sample (**Default voice**; templates set their own) |
+| Spoken reply style | **Short and conversational**, Detailed |
 
 **Memory**
 | Setting | Options |
@@ -729,8 +1143,19 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Shared connections | Add, label, limit to specific bots, remove |
 | Services members may connect | **All**, Approved list only, All except a block list |
 | Members may add private custom tool servers | **On** |
+| Members may add connections by access key (§8.5) | **On** |
+| Organisation secrets | Manage shared keys and tokens on the Secrets page (§8.9) |
 | Built-in tools | Turn web search, image generation and document creation on/off for the whole organisation (**all On**) |
 | Interactive replies | **Building blocks and custom mini-apps**, Building blocks only, Off |
+
+**Device tools**
+| Setting | Options |
+|---|---|
+| Device tools | **On** (§14.3) |
+| Allowed device tools | **All**, or choose: local files, look at my screen, local tool servers, clipboard, open, camera and scanner, contacts, send via phone apps, device calendar, location |
+| Members may add local tool servers | **On** |
+| Automations may use desktop tools | **On** |
+| Require Face ID / fingerprint for approvals on mobile | Payments and website passwords (**always**), plus optionally: all approvals, emails outside the company, deleting data |
 
 **Cloud computers**
 | Setting | Options |
@@ -771,11 +1196,22 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Allow embedding in other websites | **On** |
 | Default artifact design | **Organisation brand colour and logo**, Neutral |
 
+**Voice mode**
+| Setting | Options |
+|---|---|
+| Voice mode | **On** (uses OpenAI's real-time voice service; see §7.6) |
+| Who can use it | **Everyone**, Owners and Admins only |
+| Maximum voice session length | 15 min, **30 min**, 60 min |
+| Approve actions by voice | **On** (payments and passwords always need a tap); Off means every approval needs a tap |
+| Keep spoken messages as text | **On** |
+
 **Automations**
 | Setting | Options |
 |---|---|
 | Automations | **On** |
 | Maximum active automations per member | **No limit**, or a number |
+| Automations may use the cloud computer | **On** |
+| Pre-approved actions in automations | **On** — Off means every approval-needing step in an automation waits for the user (§10.3) |
 | Most frequent schedule allowed | Every 15 min, **Every hour**, Daily |
 
 **Usage and limits**
@@ -791,6 +1227,7 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 |---|---|
 | Keep conversations for | **Forever**, 1 year, 90 days, 30 days |
 | Keep cloud computer files and replays for | 30 days, **90 days**, 1 year |
+| Maximum file size | 25 MB, 50 MB, **100 MB** (public artifact uploads are always limited to 25 MB; §7.7) |
 | Members may export their data | **On** |
 | Temporary chats allowed | **On** |
 
@@ -822,15 +1259,177 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Platform | Notes |
 |---|---|
 | **Web** | Full experience in any modern browser. |
-| **Desktop (Windows, Mac)** | Same as web, plus: launch at start-up, system notifications, a global shortcut to open a quick-ask window, drag-and-drop files from the computer. |
-| **Mobile (iPhone, Android)** | Full chat, approvals, notifications, voice input, camera/photo upload, share-to-bot from other apps, live view of the cloud computer (view and basic control). |
+| **Desktop (Windows, Mac)** | Same as web, plus: launch at start-up, system notifications, a global shortcut to open a quick-ask window (by text or in voice mode), quick-ask with selected text or a screenshot, drag-and-drop files from the computer, and desktop device tools such as local files, "look at my screen" and local tool servers (§14.2, §14.3). |
+| **Mobile (iPhone, Android)** | Full chat, approvals (including from the lock screen, with Face ID / fingerprint for sensitive ones), notifications, voice input, voice mode that keeps working with the screen locked, camera, photo upload and document scanner, share-to-bot from other apps, Siri / Google Assistant shortcuts, widgets, live progress of long tasks, live view of the cloud computer (view and basic control), and mobile device tools such as contacts, device calendar and location (§14.2, §14.3). |
 
 **Design principles**
 - Feels like a modern messaging app: conversation list on the left, chat in the centre, optional side panel on the right (cloud computer, files, task details).
 - Clean, friendly and fast; bots are recognisable by their emoji and colour.
 - Works in light and dark mode; accessible (keyboard navigation, screen readers, good contrast).
-- Voice: talk to bots and optionally hear replies read aloud.
+- Voice: send voice notes, hear replies read aloud, or talk with a bot in real time using voice mode (§7.6).
 - Languages: the app is available in English and Greek. Bots reply in the language the user writes in.
+
+### 14.1 One app for every platform
+Agent Space is **one app**: the same React code runs on the web, inside the desktop app and inside the mobile apps. The first release ships on the web only (§17), but it is built from day one so that the desktop and mobile apps can be added later without rewriting screens or changing how the app talks to the server.
+
+**How it's built (for the development team):** these rules apply from the first release.
+
+- **One codebase, packaged three ways.**
+  - `app/` (Vite + React + React Router) is a client-only single-page app. It must build to static files that work without a web server, with no server-side rendering and no server-side URL rewrites the app depends on.
+  - The same build will later be packaged for mobile and desktop. All screens, interactive replies (§7.4), artifact previews, live view and voice mode live in this one codebase.
+- **The platform layer.**
+  - Every feature that differs between web, desktop and mobile goes through one module, `app/src/platform/`. Each capability has a TypeScript interface and, for now, a web implementation. Desktop and mobile implementations are added later behind the same interface.
+  - Capabilities from day one:
+
+    | Capability | Web implementation now |
+    |---|---|
+    | `storage` (secure key-value, e.g. sign-in tokens) | httpOnly cookie for the refresh token; memory for the access token |
+    | `files` (pick, upload, download, save) | File input; download links |
+    | `share` (share out of the app) | Web Share API, or copy link |
+    | `clipboard` | Clipboard API |
+    | `notifications` (permission, register device, show) | Web Push + Notification API |
+    | `media` (microphone, camera, audio session) | `getUserMedia` |
+    | `voice` (voice-mode connection, §7.6) | Browser WebRTC |
+    | `links` (open external links, OAuth sign-in windows, deep links) | `window.open`, redirects |
+    | `appInfo` (platform, app version, device ID) | Browser |
+    | `lifecycle` (foreground/background, online/offline) | Page Visibility and online/offline events |
+
+  - Feature code asks `platform.is('web' | 'desktop' | 'ios' | 'android')` and `platform.supports('<capability>')`. It never assumes a feature exists. Interface elements for unsupported features are hidden, not broken.
+- **Automated checks:**
+  - ESLint rules (`no-restricted-imports`, `no-restricted-globals`, `no-restricted-properties`) block, outside `app/src/platform/`:
+    - direct imports of `@capacitor/*` and `electron`
+    - direct use of `navigator.clipboard`, `navigator.mediaDevices`, `navigator.share`, `Notification`, `window.open`, and `localStorage`/`sessionStorage` for sign-in data
+  - CI fails on any violation.
+  - CI also checks that the production build loads from the static files alone, with the API address coming only from configuration.
+- **Talking to the API from any app.**
+  - Every API call uses an absolute address from configuration. Nothing relies on the app and the API sharing an origin.
+  - Sign-in uses short-lived Bearer access tokens plus refresh tokens kept through `platform.storage`. Cookies are not the only sign-in method.
+  - The API's allowed-origins list (CORS) is configurable per environment, so the mobile and desktop app origins can be added later without code changes.
+- **Sign-in and connection redirects.** Sign-in with Google, Microsoft or Apple, Composio connections (§8.1) and custom tool server sign-ins (§8.4) all take a **return address** parameter and finish on an app route (`/auth/callback`, `/connections/callback`). This lets the mobile and desktop apps later run them in the system browser and return through a deep link.
+- **Every screen has its own address.** Every conversation, bot, artifact, skill, automation, approval and setting has a stable path (e.g. `/c/<conversationId>`, `/approvals/<id>`). Notifications and emails link to these paths, and later the desktop and mobile apps will open them from deep links.
+- **Devices are recorded from the start.**
+  - The API keeps a `devices` table: user, platform (`web`/`desktop`/`ios`/`android`), app version, push token and provider (`webpush` now; `apns`/`fcm` later), supported capabilities and last seen.
+  - Notifications (§12) are sent per device through a provider interface, so APNs and FCM can be added later as new providers.
+- **Version check.** The API publishes the minimum supported app version per platform. The app checks it on start-up and asks the user to update if it's too old. This applies to web too: "Reload to update".
+- **Tools know where they run.** Every tool in the tool layer has a `runs_on` field. In the first release this is always `server`. The value `device` is reserved, so tools running on the user's own computer or phone can be added later without changing the tool layer.
+- **Mobile-ready layout and input:**
+  - Every screen works from **360 px wide** upwards and respects the screen's safe areas (`env(safe-area-inset-*)`).
+  - Touch targets are at least **44 × 44 px**.
+  - Nothing works only on hover; every hover action has a tap equivalent.
+  - The message box and voice bar stay visible above the on-screen keyboard.
+  - Long lists (conversations, messages) are virtualised.
+- **Unreliable connections.** Real-time connections (chat streaming, live activity, voice mode) reconnect automatically and resume where they stopped when the app comes back to the foreground or online, through `platform.lifecycle`.
+- **Testing.** End-to-end tests run at desktop (1280 px) and phone (390 px) sizes, in Chromium and WebKit, the browser engine used on iPhone.
+
+
+### 14.2 Desktop and mobile apps
+- **Desktop (Windows, Mac):** the Agent Space web app inside a desktop app. It adds:
+  - launch at start-up and system notifications
+  - a global shortcut for quick-ask (by text or in voice mode)
+  - quick-ask with the selected text or a screenshot
+  - drag-and-drop of files
+  - deep links that open Agent Space links in the app
+  - automatic updates
+  - the desktop device tools (§14.3)
+- **Mobile (iPhone, Android):** the Agent Space app from the App Store and Google Play. It adds:
+  - push notifications, including **approving from the lock screen**
+  - Face ID / fingerprint for sensitive approvals
+  - camera and a document scanner
+  - share-to-bot from other apps
+  - voice mode that keeps working with the screen locked (§7.6)
+  - Siri and Google Assistant shortcuts, home-screen widgets, and live progress of long tasks on the lock screen
+  - the mobile device tools (§14.3)
+- The apps look and work the same as the web app, and everything a user does in one shows up in the others straight away.
+
+**How it's built (for the development team):**
+- **Packaging:** the same `app/` build (§14.1) is packaged with **Capacitor** for iPhone and Android and with **Electron** for Windows and Mac. Expo/React Native and Tauri are not used. React Native would need a second codebase; Tauri makes local tool servers and screen capture harder.
+- **Capacitor (mobile):**
+  - **Bundled code:** the app's code is bundled inside the app, never loaded from the website. This avoids App Store rejection for being a "wrapped website". Web-code-only fixes may be shipped as over-the-air updates, as Apple's and Google's rules allow for code that doesn't change the app's purpose. Anything touching native code goes through a store release.
+  - **Platform implementations:** native versions of the platform capabilities (§14.1) use Capacitor plugins:
+
+    | Capability | Plugin |
+    |---|---|
+    | Push and lock-screen actions | `@capacitor/push-notifications`, `@capacitor/local-notifications` (action buttons) |
+    | Camera | `@capacitor/camera` |
+    | Location | `@capacitor/geolocation` |
+    | Sharing | `@capacitor/share` |
+    | Clipboard | `@capacitor/clipboard` |
+    | Sign-in tokens | Secure storage in iOS Keychain / Android Keystore |
+    | Contacts | `@capacitor-community/contacts` |
+    | Biometrics | A biometrics plugin |
+    | Receiving shares | A share-receiving plugin with an iOS Share Extension and an Android intent filter |
+    | Document scanner | An ML Kit / VisionKit document-scanner plugin |
+    | Calendar and reminders | A calendar plugin (EventKit / CalendarContract) |
+    | Place-based triggers | A background-geolocation plugin |
+
+  - **Community plugins:** each is pinned to a version and reviewed before adoption. If one is unmaintained or can't support a feature, that capability is built as our own native plugin behind the same interface.
+  - **Native voice plugin:** `@agentspace/voice` (Swift and Kotlin) implements `platform.voice` on mobile. On iPhone the built-in browser view stops audio when the app is in the background, so the plugin runs the OpenAI Realtime WebRTC connection natively instead:
+    - iOS: `AVAudioSession` play-and-record with the `audio` background mode.
+    - Android: a foreground service of type microphone + media playback.
+    - The plugin passes events (speaking state, transcripts, connection state) to the web interface.
+    - Server-side control of the session (§7.6) is unchanged.
+  - **Native extras:** Siri App Intents and Android App Actions, home-screen widgets, and Live Activities / ongoing notifications are small native targets in Swift and Kotlin. They talk to the API using the app's stored sign-in.
+  - **Push providers:** APNs for iPhone and FCM for Android are added as push providers (§14.1). Lock-screen Approve / Reject actions require the device to be unlocked. Approvals that need biometrics (§11) open the app.
+- **Electron (desktop):**
+  - **Security:** `contextIsolation` on, `sandbox` on, `nodeIntegration` off. The web app reaches native features only through a typed preload bridge that implements the platform interfaces (§14.1).
+  - **Main process:** local file access, screen capture, local tool server processes and the global shortcut run there, never in the page.
+  - **Updates and signing:** automatic updates through `electron-updater`. Builds are code-signed (Apple notarisation on Mac, a signed installer on Windows).
+- **Deep links:** the `agentspace://` scheme plus universal links / Android App Links on the web domain open the matching path (§14.1). Sign-in and connection flows on mobile and desktop run in the system browser and return through these links.
+- **Release process:** CI builds the web bundle once and packages it for the web, Capacitor (iOS, Android) and Electron (Mac, Windows). The minimum supported version per platform (§14.1) is raised whenever the API drops support for an old app.
+
+### 14.3 Device tools
+Device tools let a bot use things that only exist on the user's own computer or phone: local files, the screen, phone contacts, location and so on. Everything else (email, calendar, CRM, browsing, scripts) already works through connections (§8) and the cloud computer (§9), so device tools cover only what the cloud can't reach.
+
+**Desktop tools**
+| Tool | What the bot can do |
+|---|---|
+| **Local files** | List, search, read, create, move and rename files, **only inside folders the user has allowed** (e.g. Documents/Reports, Downloads). Nothing outside them is visible. Deleting or overwriting a file needs approval. |
+| **Look at my screen** | Take a picture of a window or area the user picks, **only when asked** ("what's this error?"). Each time, the user sees a picker and can cancel. Also used for screen sharing in voice mode. |
+| **Local tool servers** | Run tool servers (MCP) that exist only on the user's computer or company network, e.g. an internal system behind the company VPN or a local database. They're added in the desktop app, are private to that computer, and appear next to the other tools labelled "on Petros's MacBook". |
+| **Clipboard** | Put results on the clipboard ("copy the table"). Reading the clipboard is only done when the user asks. |
+| **Open** | Open files, links and apps on the computer ("open the report", "open the deal in HubSpot"). |
+
+**Mobile tools**
+| Tool | What the bot can do |
+|---|---|
+| **Camera and document scanner** | Ask the user to take a photo or scan a document (receipts, business cards, contracts, whiteboards). The text is recognised so the bot can read it. The user always takes the picture; the bot can't use the camera by itself. |
+| **Contacts** | Search the phone's contacts for a name, number or email ("text Anna I'm late"). It can't read the whole address book at once. |
+| **Send via phone apps** | Prepare a text message, WhatsApp message, email or phone call and open it in that app with everything filled in. **The user taps Send**; the bot can't send through these apps by itself. |
+| **Device calendar and reminders** | Read and add events and reminders in calendars on the phone (including iCloud and work calendars not connected in §8). Adding or changing events follows the usual approval rules. |
+| **Location** | Get the current location once, when asked ("cafés near me"). Also used for **place-based automations** (§10.2), e.g. "when I arrive at the office, brief me on today". |
+
+**Mobile features that aren't bot tools**
+- Approve from the lock screen, with Face ID / fingerprint for sensitive approvals: payments, entering passwords on websites, and anything the organisation adds (§13.4).
+- **Siri / Google Assistant:** "Ask Sales Sam…", "Start voice mode with Sales Sam", "Run my morning briefing".
+- **Home-screen widgets:** quick-ask, voice mode, and the number of approvals waiting.
+- **Live progress of long tasks** on the lock screen ("Researching… 12 of 30 done").
+
+**Not offered:** reading text messages or call history, tracking location continuously (other than the user's own place-based automations), health data, and sending messages or making calls without the user tapping.
+
+**Permissions**
+- **Three layers:**
+  1. The operating system's own permission prompt.
+  2. An Agent Space switch per device and per tool.
+  3. Organisation settings that can turn device tools off (§13.4).
+- **Each tool switch** has three options: **Ask each time** (default), **Always allow** and **Never**. With "Ask each time", the bot shows a card on that device: "Sales Sam wants to search your Contacts on this iPhone — Allow once / Always allow / Don't allow".
+- **Desktop folders and local tool servers** are only available once the user has added them. There are no defaults.
+- **Logging:** every use of a device tool appears in the activity feed (§7.3) and the activity history (§11), showing which device and which tool.
+- **Online only:** device tools work only while that device is online with Agent Space signed in. The bot sees them as available only then, e.g. "Petros's MacBook (online)".
+- **Several devices online:** the bot uses the device the user is currently using, or asks if it's unclear.
+- **In automations:**
+  - Automations may use desktop tools. If the computer is offline when a run needs it, the run waits up to 1 hour and then fails with a notification (§10.5).
+  - Mobile device tools are not used in automations, apart from location for place-based triggers.
+
+**How it's built (for the development team):**
+- **Tool definitions:** device tools are ordinary tools with `runs_on: device` (§14.1) and a `platforms` list. They are offered to the model only when an online device of the right platform has them enabled.
+- **Routing:**
+  - The tool layer sends the call to the target device over the existing real-time channel.
+  - The device runs it through the platform layer, applying the permission switches and showing any prompts, and returns the result.
+  - If there's no response within 30 seconds (2 minutes for anything waiting on the user), the call fails as "device not responding".
+- **Results:** device results pass through the same redaction, logging and approval checks as server tools. Files or images over 1 MB are uploaded to file storage (§7.7) and returned as file IDs.
+- **Permission storage:** switches are saved per device in the `devices` table (§14.1) and synced, so the server knows which tools to offer. The device enforces them again locally before running anything.
+- **Local tool servers:** started by the Electron main process from a command and arguments the user enters, connected over stdio, and their tools listed to the server marked `runs_on: device`. They stop when the app quits.
+- **Place-based triggers:** use the operating system's geofencing (up to 20 places per user, the iPhone limit). The device reports "arrived" / "left" events to the API, which starts the automation.
 
 ---
 
@@ -845,6 +1444,8 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 7. **Multiple accounts:** User connects two Gmail accounts → tells the Sales bot to use only the work one → asks the Personal bot to manage the other.
 8. **Publishing an artifact:** "Build a sign-up page for our webinar on 5 December." → bot builds the page in the side panel → user asks for a few changes → shares it with the Marketing team as Editors → turns on a public link and adds it to the company website → sign-ups are collected in the artifact → later, user asks "How many people signed up?" and restores an earlier version after a teammate's unwanted change.
 9. **Creating and using a skill:** User walks the Sales bot through onboarding a new client → says "Turn what we just did into a skill" → bot drafts "🤝 Client onboarding", user confirms → "Give this skill to the Support bot too" → next week, types "/client-onboarding for Acme Ltd" in the Support chat → bot asks for the start date and completes all steps → later: "Add a step to create a Slack channel" → bot updates the skill as a new version.
+10. **Voice mode on the move:** User taps the voice mode button in the Sales bot chat while walking to a meeting → "What's the latest with Acme?" → bot checks HubSpot and Gmail (activity shown on screen) and answers out loud → "Email Anna that I'll be 10 minutes late" → bot reads a short summary of the draft → user says "send it" → email is sent → "And book a follow-up next Tuesday afternoon" → bot checks both calendars and books it → user exits voice mode → everything that was said, plus the email and meeting, is in the chat as text.
+11. **Daily automation with the cloud computer:** "Scan the x repository on my GitHub every day for vulnerabilities and send the results to Slack channel y." → bot checks GitHub and Slack are connected and its computer is on → asks the run time and "new findings only?" → shows the summary with "Post to #y" pre-approved → user confirms → every morning the code is copied to the bot's computer, scanned, compared with yesterday and a summary of new and fixed issues is posted to #y → one day GitHub needs re-connecting, the automation pauses and tells the user → user re-connects and resumes. (Full example in §10.6.)
 
 ---
 
@@ -857,11 +1458,14 @@ These go beyond the original idea and are recommended for the roadmap:
 - **Knowledge library** — upload company documents once; all permitted bots can use them.
 - **Scheduled reports** delivered to a conversation, email or Slack.
 - **Built-in slash commands** (`/summarise`, `/remind`, `/watch`) shown in the same `/` menu as skills.
-- **Quick-ask window** on desktop and a home-screen widget on mobile.
+- **Control my own computer** — let a bot use the apps on the user's own desktop, like the cloud computer (off by default; Owners and Admins can block it).
+- **Local terminal commands** on desktop for developers, behind a "Developer mode" switch, with approval for every command.
 - **Message from anywhere** — talk to bots through email, Slack or WhatsApp in addition to the app.
 - **Undo** for actions where the connected service allows it.
+- **Password manager connection** (e.g. 1Password, Bitwarden) — the bot's computer fills in a website password straight from the user's password manager, still without the bot ever seeing it.
 - **More bot templates**, starting with Recruiting and Finance.
 - **More languages** beyond English and Greek.
+- **Camera and screen sharing in voice mode** — show the bot what you're looking at while talking to it.
 
 ---
 
@@ -870,25 +1474,32 @@ These go beyond the original idea and are recommended for the roadmap:
 **Phase 1 — Foundation (MVP)**
 - Sign up, organisations, invitations, three fixed roles
 - Bots with name, emoji, colour, instructions and a chosen AI model; direct and group conversations
-- Private and shared connections, including multiple accounts per service
+- Private and shared connections, including multiple accounts per service and connections by access key
+- Secure storage of sign-ins and keys in Google Cloud Secret Manager; bots never see secrets (§8.7)
+- File storage on Google Cloud Storage with signed upload and download links (§7.7)
+- Secure secret box in chat, and warning when a secret is typed into a message (§8.8)
+- Secrets page to view, rename, replace, share and delete secrets, in the app or by chat (§8.9)
 - Built-in core tools (web search, files, memory, app management by chat)
 - Approvals for sensitive actions
 - Interactive replies using ready-made building blocks
-- Web app
+- Web app, built as one cross-platform app with the platform layer, checks and device records described in §14.1, ready for the desktop and mobile apps
 
 **Phase 2 — Cloud computer and teamwork**
 - Cloud computer with live view, take control, file panel
+- Bringing files from connected services onto the cloud computer and sending results back (§9.5)
+- Website sign-ins on the cloud computer: secure sign-in box, kept sessions and the signed-in websites list (§9.4)
 - Bots consulting other bots
 - Custom tool servers
 - Task list, long-running tasks, notifications
 - Custom mini-apps in interactive replies; pinning and saved widgets
 - Artifacts with links, sharing permissions, public links, version history and comments
 - Skills: create, edit, delete and assign in the app or by chat; `/` mentions; starter library; versions and sharing
-- Desktop app
+- Voice mode (§7.6) on web and desktop
+- Desktop app (Electron) with quick-ask with selection, deep links, auto-update and desktop device tools: local files, look at my screen, local tool servers, clipboard, open (§14.2, §14.3)
 
 **Phase 3 — Automation and mobile**
-- Scheduled and triggered automations
-- Mobile apps
+- Scheduled and triggered automations, with pre-approved actions, automation memory, run history and automatic pausing on failure (§10)
+- Mobile apps (Capacitor) for iPhone and Android: push with lock-screen approvals, Face ID / fingerprint, camera and document scanner, share-to-bot, native voice plugin for voice mode with the screen locked, Siri / Google Assistant shortcuts, widgets, live task progress, and mobile device tools: contacts, send via phone apps, device calendar and reminders, location and place-based automations (§14.2, §14.3)
 - Activity history, usage limits, billing
 - Selected suggested enhancements from §16
 
@@ -904,3 +1515,4 @@ These go beyond the original idea and are recommended for the roadmap:
 - Number of connections per user and share using multiple accounts
 - Team expansion (members per organisation)
 - Customer satisfaction score on completed tasks
+- Voice mode sessions per active user per week, and share of sessions in which the bot completed at least one action

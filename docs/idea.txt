@@ -1,0 +1,23 @@
+I want to create a web, desktop and mobile app using React, Electron and Capacitor that works like AI agents such as Grok bot, Muse, Dots, etc., but also includes my own custom functionality and ideas.
+
+Integrations and infrastructure:
+- We need to use Composio for connecting with providers.
+- We need to use Daytona.io (https://www.daytona.io/docs/) to provide the agents with a VM to work on. Users should also be able to view the VM's desktop and explore it manually, as Grok bot does, and the agents should be able to run scripts, use browser automation, work with files, etc.
+- We need to support multiple connections to the same provider, such as multiple Gmail accounts.
+- For simplicity, we will only use Composio-connected accounts for Google etc., not our own custom ones.
+- Users should be able to add multiple custom MCPs and authenticate to them, ideally using Composio.
+- Users should be able to add Composio connections that are either shared among the organisation's members or private.
+- The app should also have its own built-in tools that work seamlessly with the Composio tools.
+
+Organisations and roles:
+- A user can create and belong to multiple organisations and invite members with built-in roles: Owner, Admin and Member.
+- For now, there should be no custom roles. The UI should not allow changing role permissions or display a permissions grid, but the API should support it.
+
+Bots and conversations:
+- Each user can create multiple one-to-one and group bot conversations. For example, we can create one bot for sales and one for marketing, and then create a group conversation with both bots.
+- Each bot conversation can have a name, an emoji and a colour for the chat avatar, as well as its own prompt.
+- Users can add other users to a bot conversation or a group, or keep it to themselves.
+- Each bot should have access to the other bots' chats and be able to communicate with other bots when needed.
+- Users should be able to update their bots' details and prompts, and all of their profile details and settings (except personal and security information), directly by asking any bot.
+
+Overall, we need to create a personal AI agent for my company, inspired by Grok bot. Please research and enhance this prompt as needed, because I might not have included all the necessary details, and feel free to add any features you think are suitable for this project.

@@ -126,8 +126,42 @@ exports.Prisma.UserScalarFieldEnum = {
   phone: 'phone',
   password: 'password',
   role: 'role',
+  name: 'name',
+  avatar_file_id: 'avatar_file_id',
+  job_title: 'job_title',
+  about_me: 'about_me',
+  timezone: 'timezone',
+  working_hours: 'working_hours',
+  email_verified_at: 'email_verified_at',
+  two_factor_enabled: 'two_factor_enabled',
+  two_factor_secret: 'two_factor_secret',
+  last_active_at: 'last_active_at',
+  deleted_at: 'deleted_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
+};
+
+exports.Prisma.AuthIdentityScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  provider: 'provider',
+  provider_user_id: 'provider_user_id',
+  provider_email: 'provider_email',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.SessionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  device_id: 'device_id',
+  refresh_token_hash: 'refresh_token_hash',
+  ip_address: 'ip_address',
+  user_agent: 'user_agent',
+  expires_at: 'expires_at',
+  last_used_at: 'last_used_at',
+  revoked_at: 'revoked_at',
+  created_at: 'created_at'
 };
 
 exports.Prisma.PasswordResetTokenScalarFieldEnum = {
@@ -151,14 +185,1209 @@ exports.Prisma.DocumentScalarFieldEnum = {
   created_at: 'created_at'
 };
 
+exports.Prisma.DeviceScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  name: 'name',
+  platform: 'platform',
+  app_version: 'app_version',
+  push_provider: 'push_provider',
+  push_token: 'push_token',
+  capabilities: 'capabilities',
+  is_online: 'is_online',
+  last_seen_at: 'last_seen_at',
+  allowed_folders: 'allowed_folders',
+  launch_at_startup: 'launch_at_startup',
+  quick_ask_shortcut: 'quick_ask_shortcut',
+  approve_from_lock_screen: 'approve_from_lock_screen',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.DeviceToolSettingScalarFieldEnum = {
+  id: 'id',
+  device_id: 'device_id',
+  tool: 'tool',
+  permission: 'permission',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.LocalToolServerScalarFieldEnum = {
+  id: 'id',
+  device_id: 'device_id',
+  name: 'name',
+  command: 'command',
+  args: 'args',
+  env_keys: 'env_keys',
+  enabled: 'enabled',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.DevicePlaceScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  name: 'name',
+  latitude: 'latitude',
+  longitude: 'longitude',
+  radius_meters: 'radius_meters',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.UserSettingsScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  theme: 'theme',
+  text_size: 'text_size',
+  layout_density: 'layout_density',
+  app_language: 'app_language',
+  reply_language: 'reply_language',
+  time_format: 'time_format',
+  currency: 'currency',
+  units: 'units',
+  reply_length: 'reply_length',
+  reply_tone: 'reply_tone',
+  reply_formatting: 'reply_formatting',
+  emoji_usage: 'emoji_usage',
+  show_sources: 'show_sources',
+  suggested_follow_ups: 'suggested_follow_ups',
+  clarifying_questions: 'clarifying_questions',
+  proactive_suggestions: 'proactive_suggestions',
+  suggest_skills: 'suggest_skills',
+  activity_steps_display: 'activity_steps_display',
+  interactive_replies: 'interactive_replies',
+  artifact_default_sharing: 'artifact_default_sharing',
+  artifact_open_mode: 'artifact_open_mode',
+  artifact_notify_changes: 'artifact_notify_changes',
+  default_bot_id: 'default_bot_id',
+  send_with: 'send_with',
+  group_reply_mode: 'group_reply_mode',
+  show_typing_indicators: 'show_typing_indicators',
+  read_aloud: 'read_aloud',
+  voice_override: 'voice_override',
+  speaking_speed: 'speaking_speed',
+  auto_send_voice_note: 'auto_send_voice_note',
+  voice_input_mode: 'voice_input_mode',
+  keep_spoken_messages: 'keep_spoken_messages',
+  memory_enabled: 'memory_enabled',
+  use_past_conversations: 'use_past_conversations',
+  default_approval_level: 'default_approval_level',
+  approval_timeout: 'approval_timeout',
+  approval_channel: 'approval_channel',
+  auto_open_live_view: 'auto_open_live_view',
+  notify_take_control: 'notify_take_control',
+  keep_replays: 'keep_replays',
+  connection_problem_alerts: 'connection_problem_alerts',
+  secret_problem_alerts: 'secret_problem_alerts',
+  notify_task_finished: 'notify_task_finished',
+  task_check_in: 'task_check_in',
+  automation_results_to: 'automation_results_to',
+  daily_briefing_enabled: 'daily_briefing_enabled',
+  daily_briefing_time: 'daily_briefing_time',
+  quiet_hours_enabled: 'quiet_hours_enabled',
+  quiet_hours_start: 'quiet_hours_start',
+  quiet_hours_end: 'quiet_hours_end',
+  daily_email_digest: 'daily_email_digest',
+  sounds_enabled: 'sounds_enabled',
+  auto_delete_conversations: 'auto_delete_conversations',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.NotificationPreferenceScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  event: 'event',
+  enabled: 'enabled',
+  channels: 'channels',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.UserServiceDefaultScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  organization_id: 'organization_id',
+  service_key: 'service_key',
+  connection_id: 'connection_id',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.OrganizationScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  slug: 'slug',
+  logo_file_id: 'logo_file_id',
+  brand_color: 'brand_color',
+  is_personal: 'is_personal',
+  created_by_id: 'created_by_id',
+  stripe_customer_id: 'stripe_customer_id',
+  deleted_at: 'deleted_at',
+  purge_after: 'purge_after',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.OrganizationSettingsScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  default_language: 'default_language',
+  default_timezone: 'default_timezone',
+  default_working_hours: 'default_working_hours',
+  invite_links_enabled: 'invite_links_enabled',
+  default_invite_role: 'default_invite_role',
+  auto_join_domain: 'auto_join_domain',
+  invitation_expiry: 'invitation_expiry',
+  company_instructions: 'company_instructions',
+  who_can_create_bots: 'who_can_create_bots',
+  max_bots_per_member: 'max_bots_per_member',
+  default_model_id: 'default_model_id',
+  model_policy: 'model_policy',
+  model_auto_fallback: 'model_auto_fallback',
+  model_compare_enabled: 'model_compare_enabled',
+  service_policy: 'service_policy',
+  service_list: 'service_list',
+  members_private_tool_servers: 'members_private_tool_servers',
+  members_api_key_connections: 'members_api_key_connections',
+  builtin_web_search: 'builtin_web_search',
+  builtin_image_generation: 'builtin_image_generation',
+  builtin_document_creation: 'builtin_document_creation',
+  interactive_replies_mode: 'interactive_replies_mode',
+  device_tools_enabled: 'device_tools_enabled',
+  allowed_device_tools: 'allowed_device_tools',
+  members_local_tool_servers: 'members_local_tool_servers',
+  automations_desktop_tools: 'automations_desktop_tools',
+  biometric_approval_scopes: 'biometric_approval_scopes',
+  cloud_computers_enabled: 'cloud_computers_enabled',
+  cloud_computers_who: 'cloud_computers_who',
+  computer_idle_pause: 'computer_idle_pause',
+  computer_max_session: 'computer_max_session',
+  computer_storage_limit_bytes: 'computer_storage_limit_bytes',
+  members_take_control: 'members_take_control',
+  record_replays: 'record_replays',
+  blocked_websites: 'blocked_websites',
+  min_approval_level: 'min_approval_level',
+  enforced_approvals: 'enforced_approvals',
+  bots_consulting_enabled: 'bots_consulting_enabled',
+  approval_timeout_minutes: 'approval_timeout_minutes',
+  who_can_create_skills: 'who_can_create_skills',
+  starter_skills_enabled: 'starter_skills_enabled',
+  skill_import_enabled: 'skill_import_enabled',
+  artifacts_enabled: 'artifacts_enabled',
+  public_link_policy: 'public_link_policy',
+  public_link_require_password: 'public_link_require_password',
+  public_link_max_lifetime: 'public_link_max_lifetime',
+  public_artifact_ai_enabled: 'public_artifact_ai_enabled',
+  public_artifact_uploads: 'public_artifact_uploads',
+  artifact_embedding_enabled: 'artifact_embedding_enabled',
+  artifact_design_default: 'artifact_design_default',
+  voice_mode_enabled: 'voice_mode_enabled',
+  voice_mode_who: 'voice_mode_who',
+  voice_max_session: 'voice_max_session',
+  voice_approvals_enabled: 'voice_approvals_enabled',
+  voice_keep_transcripts: 'voice_keep_transcripts',
+  automations_enabled: 'automations_enabled',
+  max_automations_per_member: 'max_automations_per_member',
+  automations_cloud_computer: 'automations_cloud_computer',
+  automation_pre_approvals: 'automation_pre_approvals',
+  max_schedule_frequency: 'max_schedule_frequency',
+  usage_alert_thresholds: 'usage_alert_thresholds',
+  limit_reached_action: 'limit_reached_action',
+  conversation_retention: 'conversation_retention',
+  computer_retention: 'computer_retention',
+  max_file_size: 'max_file_size',
+  members_may_export: 'members_may_export',
+  temporary_chats_allowed: 'temporary_chats_allowed',
+  require_two_factor: 'require_two_factor',
+  allowed_sign_in_methods: 'allowed_sign_in_methods',
+  session_inactivity: 'session_inactivity',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.OrganizationMemberScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  role: 'role',
+  joined_at: 'joined_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.InvitationScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  email: 'email',
+  token_hash: 'token_hash',
+  is_link: 'is_link',
+  role: 'role',
+  status: 'status',
+  invited_by_id: 'invited_by_id',
+  accepted_by_id: 'accepted_by_id',
+  expires_at: 'expires_at',
+  accepted_at: 'accepted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.AiModelScalarFieldEnum = {
+  id: 'id',
+  openrouter_id: 'openrouter_id',
+  name: 'name',
+  provider: 'provider',
+  labels: 'labels',
+  cost_tier: 'cost_tier',
+  input_price_per_m: 'input_price_per_m',
+  output_price_per_m: 'output_price_per_m',
+  context_length: 'context_length',
+  supports_vision: 'supports_vision',
+  supports_tools: 'supports_tools',
+  is_recommended: 'is_recommended',
+  is_available: 'is_available',
+  fallback_model_id: 'fallback_model_id',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.OrganizationAllowedModelScalarFieldEnum = {
+  organization_id: 'organization_id',
+  model_id: 'model_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.BotTemplateScalarFieldEnum = {
+  id: 'id',
+  key: 'key',
+  name: 'name',
+  emoji: 'emoji',
+  color: 'color',
+  description: 'description',
+  instructions: 'instructions',
+  welcome_message: 'welcome_message',
+  conversation_starters: 'conversation_starters',
+  suggested_services: 'suggested_services',
+  model_id: 'model_id',
+  voice: 'voice',
+  approval_level: 'approval_level',
+  cloud_computer: 'cloud_computer',
+  sort_order: 'sort_order',
+  is_active: 'is_active',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.BotTemplateSkillScalarFieldEnum = {
+  template_id: 'template_id',
+  skill_id: 'skill_id'
+};
+
+exports.Prisma.OrganizationTemplateScalarFieldEnum = {
+  organization_id: 'organization_id',
+  template_id: 'template_id',
+  enabled: 'enabled'
+};
+
+exports.Prisma.BotScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  created_by_id: 'created_by_id',
+  template_id: 'template_id',
+  duplicated_from_id: 'duplicated_from_id',
+  name: 'name',
+  emoji: 'emoji',
+  color: 'color',
+  description: 'description',
+  image_file_id: 'image_file_id',
+  welcome_message: 'welcome_message',
+  conversation_starters: 'conversation_starters',
+  instructions: 'instructions',
+  model_id: 'model_id',
+  creativity: 'creativity',
+  style_override: 'style_override',
+  reply_length: 'reply_length',
+  reply_tone: 'reply_tone',
+  reply_formatting: 'reply_formatting',
+  emoji_usage: 'emoji_usage',
+  lock_style: 'lock_style',
+  reply_language: 'reply_language',
+  clarifying_questions: 'clarifying_questions',
+  group_response: 'group_response',
+  web_search_enabled: 'web_search_enabled',
+  image_generation_enabled: 'image_generation_enabled',
+  document_creation_enabled: 'document_creation_enabled',
+  interactive_replies_mode: 'interactive_replies_mode',
+  artifacts_enabled: 'artifacts_enabled',
+  cloud_computer_enabled: 'cloud_computer_enabled',
+  use_skills_automatically: 'use_skills_automatically',
+  org_knowledge_enabled: 'org_knowledge_enabled',
+  voice_mode_enabled: 'voice_mode_enabled',
+  voice: 'voice',
+  spoken_reply_style: 'spoken_reply_style',
+  memory_enabled: 'memory_enabled',
+  memory_scope: 'memory_scope',
+  can_ask_other_bots: 'can_ask_other_bots',
+  can_be_asked: 'can_be_asked',
+  is_sensitive: 'is_sensitive',
+  approval_level: 'approval_level',
+  max_task_duration: 'max_task_duration',
+  monthly_usage_limit: 'monthly_usage_limit',
+  visibility: 'visibility',
+  edit_policy: 'edit_policy',
+  is_archived: 'is_archived',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.BotApprovalRuleScalarFieldEnum = {
+  id: 'id',
+  bot_id: 'bot_id',
+  action_type: 'action_type',
+  override: 'override',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.BotConnectionScalarFieldEnum = {
+  id: 'id',
+  bot_id: 'bot_id',
+  connection_id: 'connection_id',
+  is_default_for_service: 'is_default_for_service',
+  created_at: 'created_at'
+};
+
+exports.Prisma.BotToolServerScalarFieldEnum = {
+  bot_id: 'bot_id',
+  tool_server_id: 'tool_server_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.BotCredentialScalarFieldEnum = {
+  bot_id: 'bot_id',
+  credential_id: 'credential_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.BotSkillScalarFieldEnum = {
+  bot_id: 'bot_id',
+  skill_id: 'skill_id',
+  assigned_at: 'assigned_at'
+};
+
+exports.Prisma.KnowledgeItemScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  scope: 'scope',
+  bot_id: 'bot_id',
+  kind: 'kind',
+  title: 'title',
+  file_id: 'file_id',
+  url: 'url',
+  content: 'content',
+  added_by_id: 'added_by_id',
+  indexed_at: 'indexed_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.KnowledgeLinkScalarFieldEnum = {
+  id: 'id',
+  knowledge_item_id: 'knowledge_item_id',
+  url: 'url',
+  title: 'title',
+  fetched_at: 'fetched_at',
+  fetched_by_id: 'fetched_by_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.MemoryScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  kind: 'kind',
+  bot_id: 'bot_id',
+  user_id: 'user_id',
+  content: 'content',
+  source_conversation_id: 'source_conversation_id',
+  source_message_id: 'source_message_id',
+  last_recalled_at: 'last_recalled_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ConversationFolderScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  name: 'name',
+  sort_order: 'sort_order',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ConversationScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  type: 'type',
+  name: 'name',
+  emoji: 'emoji',
+  color: 'color',
+  lead_bot_id: 'lead_bot_id',
+  created_by_id: 'created_by_id',
+  is_temporary: 'is_temporary',
+  last_message_at: 'last_message_at',
+  message_count: 'message_count',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ConversationParticipantScalarFieldEnum = {
+  id: 'id',
+  conversation_id: 'conversation_id',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  folder_id: 'folder_id',
+  is_favourite: 'is_favourite',
+  is_archived: 'is_archived',
+  is_muted: 'is_muted',
+  last_read_at: 'last_read_at',
+  unread_count: 'unread_count',
+  joined_at: 'joined_at',
+  left_at: 'left_at'
+};
+
+exports.Prisma.MessageScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  conversation_id: 'conversation_id',
+  author_type: 'author_type',
+  author_user_id: 'author_user_id',
+  author_bot_id: 'author_bot_id',
+  source: 'source',
+  status: 'status',
+  content: 'content',
+  parts: 'parts',
+  run_id: 'run_id',
+  parent_message_id: 'parent_message_id',
+  branch_from_message_id: 'branch_from_message_id',
+  branch_index: 'branch_index',
+  model_id: 'model_id',
+  is_pinned: 'is_pinned',
+  pinned_by_id: 'pinned_by_id',
+  pinned_at: 'pinned_at',
+  edited_at: 'edited_at',
+  secret_masked: 'secret_masked',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.MessageFileScalarFieldEnum = {
+  message_id: 'message_id',
+  file_id: 'file_id',
+  sort_order: 'sort_order'
+};
+
+exports.Prisma.MessageReactionScalarFieldEnum = {
+  id: 'id',
+  message_id: 'message_id',
+  user_id: 'user_id',
+  emoji: 'emoji',
+  created_at: 'created_at'
+};
+
+exports.Prisma.MessageMentionScalarFieldEnum = {
+  id: 'id',
+  message_id: 'message_id',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  skill_id: 'skill_id'
+};
+
+exports.Prisma.InteractiveResponseScalarFieldEnum = {
+  id: 'id',
+  message_id: 'message_id',
+  component_id: 'component_id',
+  user_id: 'user_id',
+  payload: 'payload',
+  created_at: 'created_at'
+};
+
+exports.Prisma.SavedWidgetScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  conversation_id: 'conversation_id',
+  source_message_id: 'source_message_id',
+  title: 'title',
+  spec: 'spec',
+  refresh_prompt: 'refresh_prompt',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.RunScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  conversation_id: 'conversation_id',
+  bot_id: 'bot_id',
+  user_id: 'user_id',
+  type: 'type',
+  status: 'status',
+  priority: 'priority',
+  title: 'title',
+  trigger_message_id: 'trigger_message_id',
+  parent_run_id: 'parent_run_id',
+  requested_by_bot_id: 'requested_by_bot_id',
+  automation_run_id: 'automation_run_id',
+  voice_session_id: 'voice_session_id',
+  model_id: 'model_id',
+  fallback_used: 'fallback_used',
+  skill_id: 'skill_id',
+  uses_computer: 'uses_computer',
+  state: 'state',
+  error: 'error',
+  input_tokens: 'input_tokens',
+  output_tokens: 'output_tokens',
+  cost: 'cost',
+  queued_at: 'queued_at',
+  started_at: 'started_at',
+  finished_at: 'finished_at',
+  deadline_at: 'deadline_at',
+  last_check_in_at: 'last_check_in_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.RunStepScalarFieldEnum = {
+  id: 'id',
+  run_id: 'run_id',
+  sequence: 'sequence',
+  type: 'type',
+  status: 'status',
+  title: 'title',
+  tool_name: 'tool_name',
+  runs_on: 'runs_on',
+  connection_id: 'connection_id',
+  device_id: 'device_id',
+  skill_id: 'skill_id',
+  consulted_bot_id: 'consulted_bot_id',
+  input: 'input',
+  output: 'output',
+  error: 'error',
+  started_at: 'started_at',
+  finished_at: 'finished_at',
+  duration_ms: 'duration_ms'
+};
+
+exports.Prisma.ApprovalScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  run_id: 'run_id',
+  conversation_id: 'conversation_id',
+  message_id: 'message_id',
+  bot_id: 'bot_id',
+  requested_from_id: 'requested_from_id',
+  action_type: 'action_type',
+  title: 'title',
+  preview: 'preview',
+  tool_call_id: 'tool_call_id',
+  status: 'status',
+  is_urgent: 'is_urgent',
+  requires_tap: 'requires_tap',
+  requires_biometric: 'requires_biometric',
+  resolved_via_voice: 'resolved_via_voice',
+  edited_payload: 'edited_payload',
+  resolved_by_id: 'resolved_by_id',
+  resolved_at: 'resolved_at',
+  timeout_at: 'timeout_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.VoiceSessionScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  conversation_id: 'conversation_id',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  provider_session_id: 'provider_session_id',
+  input_mode: 'input_mode',
+  voice: 'voice',
+  started_at: 'started_at',
+  ended_at: 'ended_at',
+  end_reason: 'end_reason',
+  audio_seconds: 'audio_seconds',
+  input_tokens: 'input_tokens',
+  output_tokens: 'output_tokens',
+  cost: 'cost',
+  created_at: 'created_at'
+};
+
+exports.Prisma.SkillScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_id: 'owner_id',
+  name: 'name',
+  emoji: 'emoji',
+  slug: 'slug',
+  description: 'description',
+  instructions: 'instructions',
+  questions: 'questions',
+  required_tools: 'required_tools',
+  result: 'result',
+  sharing_level: 'sharing_level',
+  is_starter: 'is_starter',
+  starter_key: 'starter_key',
+  imported_from: 'imported_from',
+  current_version: 'current_version',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.SkillVersionScalarFieldEnum = {
+  id: 'id',
+  skill_id: 'skill_id',
+  version: 'version',
+  name: 'name',
+  emoji: 'emoji',
+  description: 'description',
+  instructions: 'instructions',
+  questions: 'questions',
+  required_tools: 'required_tools',
+  result: 'result',
+  change_summary: 'change_summary',
+  created_by_id: 'created_by_id',
+  restored_from_version: 'restored_from_version',
+  created_at: 'created_at'
+};
+
+exports.Prisma.SkillShareScalarFieldEnum = {
+  id: 'id',
+  skill_id: 'skill_id',
+  user_id: 'user_id',
+  role: 'role',
+  created_at: 'created_at'
+};
+
+exports.Prisma.SkillFileScalarFieldEnum = {
+  skill_id: 'skill_id',
+  file_id: 'file_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.OrganizationStarterSkillScalarFieldEnum = {
+  organization_id: 'organization_id',
+  skill_id: 'skill_id',
+  enabled: 'enabled'
+};
+
+exports.Prisma.ArtifactScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_id: 'owner_id',
+  conversation_id: 'conversation_id',
+  message_id: 'message_id',
+  duplicated_from_id: 'duplicated_from_id',
+  title: 'title',
+  slug: 'slug',
+  type: 'type',
+  description: 'description',
+  sharing_level: 'sharing_level',
+  public_enabled: 'public_enabled',
+  public_password_hash: 'public_password_hash',
+  public_expires_at: 'public_expires_at',
+  allow_search_engines: 'allow_search_engines',
+  allow_embedding: 'allow_embedding',
+  public_ai_enabled: 'public_ai_enabled',
+  public_uploads_enabled: 'public_uploads_enabled',
+  review_before_publish: 'review_before_publish',
+  current_version_id: 'current_version_id',
+  draft_version_id: 'draft_version_id',
+  view_count: 'view_count',
+  use_count: 'use_count',
+  is_pinned_by: 'is_pinned_by',
+  taken_down_at: 'taken_down_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ArtifactVersionScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  version: 'version',
+  status: 'status',
+  label: 'label',
+  change_summary: 'change_summary',
+  source: 'source',
+  bundle_path: 'bundle_path',
+  created_by_id: 'created_by_id',
+  run_id: 'run_id',
+  restored_from_version: 'restored_from_version',
+  published_at: 'published_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.ArtifactShareScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  user_id: 'user_id',
+  role: 'role',
+  created_at: 'created_at'
+};
+
+exports.Prisma.ArtifactCommentScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  author_id: 'author_id',
+  parent_comment_id: 'parent_comment_id',
+  anchor: 'anchor',
+  content: 'content',
+  mentioned_bot_id: 'mentioned_bot_id',
+  resolved_at: 'resolved_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ArtifactRecordScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  collection: 'collection',
+  data: 'data',
+  submitted_by_id: 'submitted_by_id',
+  visitor_id: 'visitor_id',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ArtifactReportScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  reporter_id: 'reporter_id',
+  reporter_email: 'reporter_email',
+  reason: 'reason',
+  status: 'status',
+  reviewed_at: 'reviewed_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.ConnectionScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_id: 'owner_id',
+  kind: 'kind',
+  service_key: 'service_key',
+  service_name: 'service_name',
+  label: 'label',
+  account_identifier: 'account_identifier',
+  visibility: 'visibility',
+  restricted_to_bots: 'restricted_to_bots',
+  status: 'status',
+  status_message: 'status_message',
+  composio_connected_account_id: 'composio_connected_account_id',
+  composio_auth_config_id: 'composio_auth_config_id',
+  credential_id: 'credential_id',
+  tool_server_id: 'tool_server_id',
+  last_synced_at: 'last_synced_at',
+  last_used_at: 'last_used_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ConnectionBotRestrictionScalarFieldEnum = {
+  connection_id: 'connection_id',
+  bot_id: 'bot_id',
+  created_at: 'created_at'
+};
+
+exports.Prisma.CredentialScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_type: 'owner_type',
+  owner_id: 'owner_id',
+  kind: 'kind',
+  label: 'label',
+  service_key: 'service_key',
+  service_name: 'service_name',
+  visibility: 'visibility',
+  status: 'status',
+  masked_hint: 'masked_hint',
+  expires_at: 'expires_at',
+  scope: 'scope',
+  secret_resource_name: 'secret_resource_name',
+  secret_version: 'secret_version',
+  last_tested_at: 'last_tested_at',
+  last_used_at: 'last_used_at',
+  last_used_bot_id: 'last_used_bot_id',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CredentialEventScalarFieldEnum = {
+  id: 'id',
+  credential_id: 'credential_id',
+  type: 'type',
+  actor_user_id: 'actor_user_id',
+  actor_bot_id: 'actor_bot_id',
+  run_id: 'run_id',
+  action: 'action',
+  metadata: 'metadata',
+  created_at: 'created_at'
+};
+
+exports.Prisma.ToolServerScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_id: 'owner_id',
+  name: 'name',
+  url: 'url',
+  auth_kind: 'auth_kind',
+  credential_id: 'credential_id',
+  visibility: 'visibility',
+  status: 'status',
+  status_message: 'status_message',
+  tool_count: 'tool_count',
+  last_listed_at: 'last_listed_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.FileScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  uploaded_by_id: 'uploaded_by_id',
+  bucket: 'bucket',
+  area: 'area',
+  object_path: 'object_path',
+  filename: 'filename',
+  mimetype: 'mimetype',
+  size: 'size',
+  status: 'status',
+  checksum: 'checksum',
+  conversation_id: 'conversation_id',
+  bot_id: 'bot_id',
+  skill_id: 'skill_id',
+  artifact_id: 'artifact_id',
+  automation_id: 'automation_id',
+  run_id: 'run_id',
+  computer_session_id: 'computer_session_id',
+  is_public_upload: 'is_public_upload',
+  visitor_id: 'visitor_id',
+  deleted_at: 'deleted_at',
+  purge_after: 'purge_after',
+  expires_at: 'expires_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.CloudComputerScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  bot_id: 'bot_id',
+  daytona_sandbox_id: 'daytona_sandbox_id',
+  status: 'status',
+  status_message: 'status_message',
+  storage_used_bytes: 'storage_used_bytes',
+  storage_limit_bytes: 'storage_limit_bytes',
+  last_active_at: 'last_active_at',
+  paused_at: 'paused_at',
+  session_started_at: 'session_started_at',
+  total_minutes: 'total_minutes',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.ComputerSessionScalarFieldEnum = {
+  id: 'id',
+  cloud_computer_id: 'cloud_computer_id',
+  kind: 'kind',
+  run_id: 'run_id',
+  user_id: 'user_id',
+  started_at: 'started_at',
+  ended_at: 'ended_at',
+  minutes: 'minutes',
+  replay_file_id: 'replay_file_id',
+  hidden_ranges: 'hidden_ranges',
+  control_events: 'control_events',
+  created_at: 'created_at'
+};
+
+exports.Prisma.SignedInWebsiteScalarFieldEnum = {
+  id: 'id',
+  cloud_computer_id: 'cloud_computer_id',
+  domain: 'domain',
+  signed_in_at: 'signed_in_at',
+  last_seen_at: 'last_seen_at'
+};
+
+exports.Prisma.ComputerTransferScalarFieldEnum = {
+  id: 'id',
+  cloud_computer_id: 'cloud_computer_id',
+  run_id: 'run_id',
+  direction: 'direction',
+  source_kind: 'source_kind',
+  connection_id: 'connection_id',
+  file_id: 'file_id',
+  source: 'source',
+  destination: 'destination',
+  size_bytes: 'size_bytes',
+  succeeded: 'succeeded',
+  error: 'error',
+  created_at: 'created_at'
+};
+
+exports.Prisma.AutomationScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  owner_id: 'owner_id',
+  bot_id: 'bot_id',
+  name: 'name',
+  instructions: 'instructions',
+  skill_id: 'skill_id',
+  trigger_kind: 'trigger_kind',
+  cron_expression: 'cron_expression',
+  timezone: 'timezone',
+  device_place_id: 'device_place_id',
+  place_event: 'place_event',
+  uses_cloud_computer: 'uses_cloud_computer',
+  status: 'status',
+  status_reason: 'status_reason',
+  source_conversation_id: 'source_conversation_id',
+  results_conversation_id: 'results_conversation_id',
+  memory_notes: 'memory_notes',
+  memory_plan: 'memory_plan',
+  consecutive_failures: 'consecutive_failures',
+  next_run_at: 'next_run_at',
+  last_run_at: 'last_run_at',
+  run_count: 'run_count',
+  pre_approvals_confirmed_at: 'pre_approvals_confirmed_at',
+  deleted_at: 'deleted_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.AutomationConnectionScalarFieldEnum = {
+  automation_id: 'automation_id',
+  connection_id: 'connection_id'
+};
+
+exports.Prisma.AutomationPreApprovalScalarFieldEnum = {
+  id: 'id',
+  automation_id: 'automation_id',
+  action_type: 'action_type',
+  connection_id: 'connection_id',
+  target: 'target',
+  created_at: 'created_at'
+};
+
+exports.Prisma.AutomationResultDestinationScalarFieldEnum = {
+  id: 'id',
+  automation_id: 'automation_id',
+  kind: 'kind',
+  conversation_id: 'conversation_id',
+  email: 'email',
+  connection_id: 'connection_id',
+  target: 'target'
+};
+
+exports.Prisma.AutomationTriggerSubscriptionScalarFieldEnum = {
+  id: 'id',
+  automation_id: 'automation_id',
+  connection_id: 'connection_id',
+  trigger_key: 'trigger_key',
+  composio_trigger_id: 'composio_trigger_id',
+  config: 'config',
+  created_at: 'created_at'
+};
+
+exports.Prisma.AutomationRunScalarFieldEnum = {
+  id: 'id',
+  automation_id: 'automation_id',
+  status: 'status',
+  attempt: 'attempt',
+  is_retry: 'is_retry',
+  trigger_event_id: 'trigger_event_id',
+  scheduled_for: 'scheduled_for',
+  started_at: 'started_at',
+  finished_at: 'finished_at',
+  duration_ms: 'duration_ms',
+  result_summary: 'result_summary',
+  error: 'error',
+  created_at: 'created_at'
+};
+
+exports.Prisma.NotificationScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  event: 'event',
+  title: 'title',
+  body: 'body',
+  link_path: 'link_path',
+  data: 'data',
+  is_urgent: 'is_urgent',
+  read_at: 'read_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.NotificationDeliveryScalarFieldEnum = {
+  id: 'id',
+  notification_id: 'notification_id',
+  channel: 'channel',
+  device_id: 'device_id',
+  status: 'status',
+  scheduled_for: 'scheduled_for',
+  sent_at: 'sent_at',
+  error: 'error',
+  attempts: 'attempts',
+  created_at: 'created_at'
+};
+
+exports.Prisma.UsageRecordScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  model_id: 'model_id',
+  artifact_id: 'artifact_id',
+  run_id: 'run_id',
+  kind: 'kind',
+  period: 'period',
+  day: 'day',
+  quantity: 'quantity',
+  cost: 'cost',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.UsageLimitScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  scope: 'scope',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  monthly_limit: 'monthly_limit',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.UsageAlertScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  scope: 'scope',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  period: 'period',
+  threshold: 'threshold',
+  sent_at: 'sent_at'
+};
+
+exports.Prisma.SubscriptionScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  plan: 'plan',
+  status: 'status',
+  stripe_subscription_id: 'stripe_subscription_id',
+  stripe_price_id: 'stripe_price_id',
+  seats: 'seats',
+  current_period_start: 'current_period_start',
+  current_period_end: 'current_period_end',
+  cancel_at: 'cancel_at',
+  trial_ends_at: 'trial_ends_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.InvoiceScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  stripe_invoice_id: 'stripe_invoice_id',
+  number: 'number',
+  status: 'status',
+  currency: 'currency',
+  amount_due: 'amount_due',
+  amount_paid: 'amount_paid',
+  usage_amount: 'usage_amount',
+  hosted_url: 'hosted_url',
+  pdf_url: 'pdf_url',
+  period_start: 'period_start',
+  period_end: 'period_end',
+  issued_at: 'issued_at',
+  paid_at: 'paid_at',
+  created_at: 'created_at'
+};
+
+exports.Prisma.ActivityLogScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  actor_type: 'actor_type',
+  actor_user_id: 'actor_user_id',
+  actor_bot_id: 'actor_bot_id',
+  on_behalf_of_id: 'on_behalf_of_id',
+  action: 'action',
+  target_type: 'target_type',
+  target_id: 'target_id',
+  connection_id: 'connection_id',
+  run_id: 'run_id',
+  device_id: 'device_id',
+  metadata: 'metadata',
+  ip_address: 'ip_address',
+  created_at: 'created_at'
+};
+
+exports.Prisma.DataExportScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  kind: 'kind',
+  status: 'status',
+  params: 'params',
+  file_id: 'file_id',
+  error: 'error',
+  expires_at: 'expires_at',
+  completed_at: 'completed_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
+exports.Prisma.AppVersionPolicyScalarFieldEnum = {
+  platform: 'platform',
+  minimum_version: 'minimum_version',
+  latest_version: 'latest_version',
+  update_url: 'update_url',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.NullableJsonNullValueInput = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull
+};
+
+exports.Prisma.JsonNullValueInput = {
+  JsonNull: Prisma.JsonNull
+};
+
 exports.Prisma.QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
+};
+
+exports.Prisma.JsonNullValueFilter = {
+  DbNull: Prisma.DbNull,
+  JsonNull: Prisma.JsonNull,
+  AnyNull: Prisma.AnyNull
 };
 
 exports.Prisma.NullsOrder = {
@@ -172,6 +1401,13 @@ exports.AuthRole = exports.$Enums.AuthRole = {
   SUPPORT: 'SUPPORT'
 };
 
+exports.AuthProvider = exports.$Enums.AuthProvider = {
+  EMAIL: 'EMAIL',
+  GOOGLE: 'GOOGLE',
+  MICROSOFT: 'MICROSOFT',
+  APPLE: 'APPLE'
+};
+
 exports.DocumentType = exports.$Enums.DocumentType = {
   LOGO: 'LOGO',
   BANNER: 'BANNER',
@@ -183,10 +1419,849 @@ exports.DocumentType = exports.$Enums.DocumentType = {
   OTHER: 'OTHER'
 };
 
+exports.Platform = exports.$Enums.Platform = {
+  WEB: 'WEB',
+  DESKTOP: 'DESKTOP',
+  IOS: 'IOS',
+  ANDROID: 'ANDROID'
+};
+
+exports.PushProvider = exports.$Enums.PushProvider = {
+  WEBPUSH: 'WEBPUSH',
+  APNS: 'APNS',
+  FCM: 'FCM'
+};
+
+exports.DeviceToolKind = exports.$Enums.DeviceToolKind = {
+  LOCAL_FILES: 'LOCAL_FILES',
+  SCREEN: 'SCREEN',
+  LOCAL_TOOL_SERVERS: 'LOCAL_TOOL_SERVERS',
+  CLIPBOARD: 'CLIPBOARD',
+  OPEN: 'OPEN',
+  CAMERA_SCANNER: 'CAMERA_SCANNER',
+  CONTACTS: 'CONTACTS',
+  SEND_VIA_APPS: 'SEND_VIA_APPS',
+  DEVICE_CALENDAR: 'DEVICE_CALENDAR',
+  LOCATION: 'LOCATION'
+};
+
+exports.DeviceToolPermission = exports.$Enums.DeviceToolPermission = {
+  ASK_EACH_TIME: 'ASK_EACH_TIME',
+  ALWAYS_ALLOW: 'ALWAYS_ALLOW',
+  NEVER: 'NEVER'
+};
+
+exports.Theme = exports.$Enums.Theme = {
+  SYSTEM: 'SYSTEM',
+  LIGHT: 'LIGHT',
+  DARK: 'DARK'
+};
+
+exports.TextSize = exports.$Enums.TextSize = {
+  SMALL: 'SMALL',
+  MEDIUM: 'MEDIUM',
+  LARGE: 'LARGE'
+};
+
+exports.LayoutDensity = exports.$Enums.LayoutDensity = {
+  COMFORTABLE: 'COMFORTABLE',
+  COMPACT: 'COMPACT'
+};
+
+exports.AppLanguage = exports.$Enums.AppLanguage = {
+  EN: 'EN',
+  EL: 'EL'
+};
+
+exports.ReplyLanguage = exports.$Enums.ReplyLanguage = {
+  SAME_AS_MESSAGE: 'SAME_AS_MESSAGE',
+  ALWAYS_EN: 'ALWAYS_EN',
+  ALWAYS_EL: 'ALWAYS_EL'
+};
+
+exports.TimeFormat = exports.$Enums.TimeFormat = {
+  REGION: 'REGION',
+  H24: 'H24',
+  H12: 'H12'
+};
+
+exports.ReplyLength = exports.$Enums.ReplyLength = {
+  SHORT: 'SHORT',
+  BALANCED: 'BALANCED',
+  DETAILED: 'DETAILED'
+};
+
+exports.ReplyTone = exports.$Enums.ReplyTone = {
+  CASUAL: 'CASUAL',
+  FRIENDLY_PROFESSIONAL: 'FRIENDLY_PROFESSIONAL',
+  FORMAL: 'FORMAL'
+};
+
+exports.ReplyFormatting = exports.$Enums.ReplyFormatting = {
+  MIXED: 'MIXED',
+  MOSTLY_BULLETS: 'MOSTLY_BULLETS',
+  MOSTLY_PARAGRAPHS: 'MOSTLY_PARAGRAPHS'
+};
+
+exports.EmojiUsage = exports.$Enums.EmojiUsage = {
+  NONE: 'NONE',
+  OCCASIONALLY: 'OCCASIONALLY',
+  OFTEN: 'OFTEN'
+};
+
+exports.ClarifyingQuestions = exports.$Enums.ClarifyingQuestions = {
+  ASK_MORE_OFTEN: 'ASK_MORE_OFTEN',
+  BALANCED: 'BALANCED',
+  ASSUME_AND_PROCEED: 'ASSUME_AND_PROCEED'
+};
+
+exports.ActivityStepsDisplay = exports.$Enums.ActivityStepsDisplay = {
+  COLLAPSED: 'COLLAPSED',
+  EXPANDED: 'EXPANDED',
+  HIDDEN: 'HIDDEN'
+};
+
+exports.ArtifactSharingLevel = exports.$Enums.ArtifactSharingLevel = {
+  PRIVATE: 'PRIVATE',
+  SPECIFIC_MEMBERS: 'SPECIFIC_MEMBERS',
+  ORGANIZATION: 'ORGANIZATION',
+  PUBLIC_LINK: 'PUBLIC_LINK'
+};
+
+exports.ArtifactOpenMode = exports.$Enums.ArtifactOpenMode = {
+  SIDE_PANEL: 'SIDE_PANEL',
+  FULL_SCREEN: 'FULL_SCREEN',
+  NEW_TAB: 'NEW_TAB'
+};
+
+exports.SendWithKey = exports.$Enums.SendWithKey = {
+  ENTER: 'ENTER',
+  CTRL_ENTER: 'CTRL_ENTER'
+};
+
+exports.GroupReplyMode = exports.$Enums.GroupReplyMode = {
+  MOST_RELEVANT: 'MOST_RELEVANT',
+  ONLY_WHEN_MENTIONED: 'ONLY_WHEN_MENTIONED'
+};
+
+exports.ReadAloudMode = exports.$Enums.ReadAloudMode = {
+  OFF: 'OFF',
+  VOICE_MESSAGES_ONLY: 'VOICE_MESSAGES_ONLY',
+  ALWAYS: 'ALWAYS'
+};
+
+exports.SpeakingSpeed = exports.$Enums.SpeakingSpeed = {
+  SLOWER: 'SLOWER',
+  NORMAL: 'NORMAL',
+  FASTER: 'FASTER'
+};
+
+exports.VoiceInputMode = exports.$Enums.VoiceInputMode = {
+  HANDS_FREE: 'HANDS_FREE',
+  PUSH_TO_TALK: 'PUSH_TO_TALK'
+};
+
+exports.ApprovalLevel = exports.$Enums.ApprovalLevel = {
+  ALWAYS_ASK: 'ALWAYS_ASK',
+  IMPORTANT_ACTIONS: 'IMPORTANT_ACTIONS',
+  DONT_ASK: 'DONT_ASK'
+};
+
+exports.ApprovalTimeout = exports.$Enums.ApprovalTimeout = {
+  KEEP_WAITING: 'KEEP_WAITING',
+  CANCEL_AFTER_1H: 'CANCEL_AFTER_1H',
+  CANCEL_AFTER_24H: 'CANCEL_AFTER_24H'
+};
+
+exports.ApprovalChannel = exports.$Enums.ApprovalChannel = {
+  IN_APP_PUSH: 'IN_APP_PUSH',
+  IN_APP_PUSH_EMAIL: 'IN_APP_PUSH_EMAIL'
+};
+
+exports.TaskCheckIn = exports.$Enums.TaskCheckIn = {
+  MIN_15: 'MIN_15',
+  HOUR_1: 'HOUR_1',
+  HOUR_4: 'HOUR_4',
+  NEVER: 'NEVER'
+};
+
+exports.AutomationResultsDestination = exports.$Enums.AutomationResultsDestination = {
+  BOT_CONVERSATION: 'BOT_CONVERSATION',
+  EMAIL: 'EMAIL',
+  BOTH: 'BOTH'
+};
+
+exports.ConversationRetention = exports.$Enums.ConversationRetention = {
+  NEVER: 'NEVER',
+  DAYS_30: 'DAYS_30',
+  DAYS_90: 'DAYS_90',
+  YEAR_1: 'YEAR_1'
+};
+
+exports.NotificationEvent = exports.$Enums.NotificationEvent = {
+  NEW_MESSAGE: 'NEW_MESSAGE',
+  MENTION: 'MENTION',
+  APPROVAL_NEEDED: 'APPROVAL_NEEDED',
+  TASK_FINISHED: 'TASK_FINISHED',
+  TASK_FAILED: 'TASK_FAILED',
+  CONNECTION_NEEDS_RECONNECTING: 'CONNECTION_NEEDS_RECONNECTING',
+  SECRET_NOT_WORKING: 'SECRET_NOT_WORKING',
+  INVITATION_RECEIVED: 'INVITATION_RECEIVED',
+  AUTOMATION_RESULT: 'AUTOMATION_RESULT',
+  AUTOMATION_PAUSED: 'AUTOMATION_PAUSED',
+  ARTIFACT_SHARED: 'ARTIFACT_SHARED',
+  ARTIFACT_COMMENT: 'ARTIFACT_COMMENT',
+  ARTIFACT_EDITED: 'ARTIFACT_EDITED',
+  SKILL_SHARED: 'SKILL_SHARED',
+  SKILL_CHANGED: 'SKILL_CHANGED',
+  TAKE_CONTROL_NEEDED: 'TAKE_CONTROL_NEEDED',
+  USAGE_LIMIT: 'USAGE_LIMIT',
+  MODEL_CHANGED: 'MODEL_CHANGED',
+  EXPORT_READY: 'EXPORT_READY',
+  SYSTEM: 'SYSTEM'
+};
+
+exports.NotificationChannel = exports.$Enums.NotificationChannel = {
+  IN_APP: 'IN_APP',
+  PUSH: 'PUSH',
+  EMAIL: 'EMAIL'
+};
+
+exports.OrganizationRole = exports.$Enums.OrganizationRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+};
+
+exports.InvitationExpiry = exports.$Enums.InvitationExpiry = {
+  DAY_1: 'DAY_1',
+  DAY_3: 'DAY_3',
+  DAY_7: 'DAY_7',
+  DAY_30: 'DAY_30'
+};
+
+exports.WhoCan = exports.$Enums.WhoCan = {
+  EVERYONE: 'EVERYONE',
+  OWNERS_ADMINS: 'OWNERS_ADMINS'
+};
+
+exports.ModelPolicy = exports.$Enums.ModelPolicy = {
+  ALL_MODELS: 'ALL_MODELS',
+  APPROVED_LIST: 'APPROVED_LIST'
+};
+
+exports.ServicePolicy = exports.$Enums.ServicePolicy = {
+  ALL: 'ALL',
+  APPROVED_LIST: 'APPROVED_LIST',
+  BLOCK_LIST: 'BLOCK_LIST'
+};
+
+exports.InteractiveRepliesMode = exports.$Enums.InteractiveRepliesMode = {
+  BLOCKS_AND_MINI_APPS: 'BLOCKS_AND_MINI_APPS',
+  BLOCKS_ONLY: 'BLOCKS_ONLY',
+  OFF: 'OFF'
+};
+
+exports.IdlePause = exports.$Enums.IdlePause = {
+  MIN_5: 'MIN_5',
+  MIN_15: 'MIN_15',
+  MIN_30: 'MIN_30'
+};
+
+exports.MaxSession = exports.$Enums.MaxSession = {
+  HOUR_1: 'HOUR_1',
+  HOUR_4: 'HOUR_4',
+  HOUR_24: 'HOUR_24'
+};
+
+exports.MinApprovalLevel = exports.$Enums.MinApprovalLevel = {
+  NONE: 'NONE',
+  IMPORTANT_ACTIONS: 'IMPORTANT_ACTIONS',
+  ALWAYS_ASK: 'ALWAYS_ASK'
+};
+
+exports.PublicLinkPolicy = exports.$Enums.PublicLinkPolicy = {
+  EVERYONE: 'EVERYONE',
+  OWNERS_ADMINS: 'OWNERS_ADMINS',
+  OFF: 'OFF'
+};
+
+exports.PublicLinkLifetime = exports.$Enums.PublicLinkLifetime = {
+  NO_LIMIT: 'NO_LIMIT',
+  DAYS_7: 'DAYS_7',
+  DAYS_30: 'DAYS_30',
+  DAYS_90: 'DAYS_90'
+};
+
+exports.ArtifactDesignDefault = exports.$Enums.ArtifactDesignDefault = {
+  ORGANIZATION_BRAND: 'ORGANIZATION_BRAND',
+  NEUTRAL: 'NEUTRAL'
+};
+
+exports.VoiceSessionLength = exports.$Enums.VoiceSessionLength = {
+  MIN_15: 'MIN_15',
+  MIN_30: 'MIN_30',
+  MIN_60: 'MIN_60'
+};
+
+exports.ScheduleFrequency = exports.$Enums.ScheduleFrequency = {
+  EVERY_15_MIN: 'EVERY_15_MIN',
+  EVERY_HOUR: 'EVERY_HOUR',
+  DAILY: 'DAILY'
+};
+
+exports.LimitReachedAction = exports.$Enums.LimitReachedAction = {
+  PAUSE_AND_NOTIFY: 'PAUSE_AND_NOTIFY',
+  SWITCH_TO_CHEAPER_MODEL: 'SWITCH_TO_CHEAPER_MODEL',
+  NOTIFY_ONLY: 'NOTIFY_ONLY'
+};
+
+exports.OrgConversationRetention = exports.$Enums.OrgConversationRetention = {
+  FOREVER: 'FOREVER',
+  YEAR_1: 'YEAR_1',
+  DAYS_90: 'DAYS_90',
+  DAYS_30: 'DAYS_30'
+};
+
+exports.ComputerRetention = exports.$Enums.ComputerRetention = {
+  DAYS_30: 'DAYS_30',
+  DAYS_90: 'DAYS_90',
+  YEAR_1: 'YEAR_1'
+};
+
+exports.MaxFileSize = exports.$Enums.MaxFileSize = {
+  MB_25: 'MB_25',
+  MB_50: 'MB_50',
+  MB_100: 'MB_100'
+};
+
+exports.SessionInactivity = exports.$Enums.SessionInactivity = {
+  DAYS_30: 'DAYS_30',
+  DAYS_7: 'DAYS_7',
+  DAY_1: 'DAY_1'
+};
+
+exports.BiometricApprovalScope = exports.$Enums.BiometricApprovalScope = {
+  ALL_APPROVALS: 'ALL_APPROVALS',
+  EXTERNAL_EMAILS: 'EXTERNAL_EMAILS',
+  DELETING_DATA: 'DELETING_DATA'
+};
+
+exports.ActionType = exports.$Enums.ActionType = {
+  SEND_MESSAGE: 'SEND_MESSAGE',
+  POST_PUBLICLY: 'POST_PUBLICLY',
+  EDIT_RECORDS: 'EDIT_RECORDS',
+  DELETE_DATA: 'DELETE_DATA',
+  PURCHASE_PAYMENT: 'PURCHASE_PAYMENT',
+  SHARE_FILES: 'SHARE_FILES',
+  ENTER_PASSWORD: 'ENTER_PASSWORD',
+  EXTERNAL_EMAIL: 'EXTERNAL_EMAIL',
+  CONSULT_SENSITIVE_BOT: 'CONSULT_SENSITIVE_BOT',
+  OTHER: 'OTHER'
+};
+
+exports.InvitationStatus = exports.$Enums.InvitationStatus = {
+  PENDING: 'PENDING',
+  ACCEPTED: 'ACCEPTED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.ModelCostTier = exports.$Enums.ModelCostTier = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+};
+
+exports.Creativity = exports.$Enums.Creativity = {
+  PRECISE: 'PRECISE',
+  BALANCED: 'BALANCED',
+  CREATIVE: 'CREATIVE'
+};
+
+exports.BotClarifyingQuestions = exports.$Enums.BotClarifyingQuestions = {
+  USER_PREFERENCE: 'USER_PREFERENCE',
+  ASK_MORE_OFTEN: 'ASK_MORE_OFTEN',
+  ASSUME_AND_PROCEED: 'ASSUME_AND_PROCEED'
+};
+
+exports.BotGroupResponse = exports.$Enums.BotGroupResponse = {
+  WHEN_RELEVANT_OR_MENTIONED: 'WHEN_RELEVANT_OR_MENTIONED',
+  ONLY_WHEN_MENTIONED: 'ONLY_WHEN_MENTIONED'
+};
+
+exports.SpokenReplyStyle = exports.$Enums.SpokenReplyStyle = {
+  SHORT_CONVERSATIONAL: 'SHORT_CONVERSATIONAL',
+  DETAILED: 'DETAILED'
+};
+
+exports.MemoryScope = exports.$Enums.MemoryScope = {
+  PER_USER: 'PER_USER',
+  SHARED: 'SHARED'
+};
+
+exports.MaxTaskDuration = exports.$Enums.MaxTaskDuration = {
+  MIN_15: 'MIN_15',
+  HOUR_1: 'HOUR_1',
+  HOUR_4: 'HOUR_4',
+  HOUR_24: 'HOUR_24'
+};
+
+exports.BotVisibility = exports.$Enums.BotVisibility = {
+  PRIVATE: 'PRIVATE',
+  ORGANIZATION: 'ORGANIZATION'
+};
+
+exports.BotEditPolicy = exports.$Enums.BotEditPolicy = {
+  CREATOR_ONLY: 'CREATOR_ONLY',
+  CREATOR_AND_ADMINS: 'CREATOR_AND_ADMINS'
+};
+
+exports.ApprovalOverride = exports.$Enums.ApprovalOverride = {
+  ALWAYS_ASK: 'ALWAYS_ASK',
+  DONT_ASK: 'DONT_ASK'
+};
+
+exports.KnowledgeScope = exports.$Enums.KnowledgeScope = {
+  BOT: 'BOT',
+  ORGANIZATION: 'ORGANIZATION'
+};
+
+exports.KnowledgeKind = exports.$Enums.KnowledgeKind = {
+  FILE: 'FILE',
+  LINK: 'LINK',
+  TEXT: 'TEXT'
+};
+
+exports.MemoryKind = exports.$Enums.MemoryKind = {
+  BOT_USER: 'BOT_USER',
+  BOT_SHARED: 'BOT_SHARED',
+  ORGANIZATION: 'ORGANIZATION'
+};
+
+exports.ConversationType = exports.$Enums.ConversationType = {
+  DIRECT: 'DIRECT',
+  SHARED_BOT: 'SHARED_BOT',
+  GROUP: 'GROUP'
+};
+
+exports.MessageAuthorType = exports.$Enums.MessageAuthorType = {
+  USER: 'USER',
+  BOT: 'BOT',
+  SYSTEM: 'SYSTEM'
+};
+
+exports.MessageSource = exports.$Enums.MessageSource = {
+  TEXT: 'TEXT',
+  VOICE: 'VOICE',
+  AUTOMATION: 'AUTOMATION',
+  BOT: 'BOT'
+};
+
+exports.MessageStatus = exports.$Enums.MessageStatus = {
+  PENDING: 'PENDING',
+  STREAMING: 'STREAMING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  STOPPED: 'STOPPED'
+};
+
+exports.RunType = exports.$Enums.RunType = {
+  CHAT_REPLY: 'CHAT_REPLY',
+  TASK: 'TASK',
+  AUTOMATION_RUN: 'AUTOMATION_RUN',
+  BOT_TO_BOT: 'BOT_TO_BOT'
+};
+
+exports.RunStatus = exports.$Enums.RunStatus = {
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  WAITING_APPROVAL: 'WAITING_APPROVAL',
+  WAITING_INPUT: 'WAITING_INPUT',
+  WAITING_DEVICE: 'WAITING_DEVICE',
+  WAITING_COMPUTER: 'WAITING_COMPUTER',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  STOPPED: 'STOPPED'
+};
+
+exports.RunStepType = exports.$Enums.RunStepType = {
+  THINKING: 'THINKING',
+  TOOL_CALL: 'TOOL_CALL',
+  CONNECTION_CALL: 'CONNECTION_CALL',
+  COMPUTER_ACTION: 'COMPUTER_ACTION',
+  DEVICE_TOOL: 'DEVICE_TOOL',
+  SKILL_USED: 'SKILL_USED',
+  BOT_CONSULTED: 'BOT_CONSULTED',
+  FILE_WRITE: 'FILE_WRITE',
+  ARTIFACT_EDIT: 'ARTIFACT_EDIT',
+  APPROVAL: 'APPROVAL',
+  MESSAGE: 'MESSAGE',
+  ERROR: 'ERROR'
+};
+
+exports.RunStepStatus = exports.$Enums.RunStepStatus = {
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+exports.ToolRunsOn = exports.$Enums.ToolRunsOn = {
+  SERVER: 'SERVER',
+  DEVICE: 'DEVICE'
+};
+
+exports.ApprovalStatus = exports.$Enums.ApprovalStatus = {
+  PENDING: 'PENDING',
+  APPROVED: 'APPROVED',
+  EDITED_APPROVED: 'EDITED_APPROVED',
+  REJECTED: 'REJECTED',
+  CANCELLED: 'CANCELLED',
+  EXPIRED: 'EXPIRED'
+};
+
+exports.VoiceSessionEndReason = exports.$Enums.VoiceSessionEndReason = {
+  USER_EXIT: 'USER_EXIT',
+  SILENCE: 'SILENCE',
+  MAX_LENGTH: 'MAX_LENGTH',
+  CONNECTION_LOST: 'CONNECTION_LOST',
+  USAGE_LIMIT: 'USAGE_LIMIT',
+  ERROR: 'ERROR'
+};
+
+exports.SharingLevel = exports.$Enums.SharingLevel = {
+  PRIVATE: 'PRIVATE',
+  SPECIFIC_MEMBERS: 'SPECIFIC_MEMBERS',
+  ORGANIZATION: 'ORGANIZATION'
+};
+
+exports.SkillRole = exports.$Enums.SkillRole = {
+  OWNER: 'OWNER',
+  EDITOR: 'EDITOR',
+  USER: 'USER'
+};
+
+exports.ArtifactType = exports.$Enums.ArtifactType = {
+  WEB_APP: 'WEB_APP',
+  DASHBOARD: 'DASHBOARD',
+  PAGE: 'PAGE',
+  DOCUMENT: 'DOCUMENT',
+  PRESENTATION: 'PRESENTATION',
+  DIAGRAM: 'DIAGRAM',
+  FORM: 'FORM',
+  TOOL: 'TOOL',
+  GAME: 'GAME',
+  OTHER: 'OTHER'
+};
+
+exports.ArtifactVersionStatus = exports.$Enums.ArtifactVersionStatus = {
+  DRAFT: 'DRAFT',
+  PUBLISHED: 'PUBLISHED'
+};
+
+exports.ArtifactRole = exports.$Enums.ArtifactRole = {
+  OWNER: 'OWNER',
+  EDITOR: 'EDITOR',
+  COMMENTER: 'COMMENTER',
+  VIEWER: 'VIEWER'
+};
+
+exports.ArtifactReportStatus = exports.$Enums.ArtifactReportStatus = {
+  OPEN: 'OPEN',
+  REVIEWED: 'REVIEWED',
+  TAKEN_DOWN: 'TAKEN_DOWN',
+  DISMISSED: 'DISMISSED'
+};
+
+exports.ConnectionKind = exports.$Enums.ConnectionKind = {
+  COMPOSIO: 'COMPOSIO',
+  API_KEY: 'API_KEY',
+  MCP: 'MCP'
+};
+
+exports.Visibility = exports.$Enums.Visibility = {
+  PRIVATE: 'PRIVATE',
+  SHARED: 'SHARED'
+};
+
+exports.ConnectionStatus = exports.$Enums.ConnectionStatus = {
+  ACTIVE: 'ACTIVE',
+  NEEDS_RECONNECTING: 'NEEDS_RECONNECTING',
+  ERROR: 'ERROR'
+};
+
+exports.CredentialOwnerType = exports.$Enums.CredentialOwnerType = {
+  USER: 'USER',
+  ORGANIZATION: 'ORGANIZATION'
+};
+
+exports.CredentialKind = exports.$Enums.CredentialKind = {
+  MCP_OAUTH: 'MCP_OAUTH',
+  MCP_TOKEN: 'MCP_TOKEN',
+  API_KEY: 'API_KEY'
+};
+
+exports.CredentialStatus = exports.$Enums.CredentialStatus = {
+  ACTIVE: 'ACTIVE',
+  NOT_WORKING: 'NOT_WORKING',
+  EXPIRED: 'EXPIRED',
+  NEEDS_RECONNECTING: 'NEEDS_RECONNECTING'
+};
+
+exports.CredentialEventType = exports.$Enums.CredentialEventType = {
+  CREATED: 'CREATED',
+  REPLACED: 'REPLACED',
+  RENAMED: 'RENAMED',
+  SHARED: 'SHARED',
+  MADE_PRIVATE: 'MADE_PRIVATE',
+  BOTS_CHANGED: 'BOTS_CHANGED',
+  TESTED: 'TESTED',
+  USED: 'USED',
+  DELETED: 'DELETED'
+};
+
+exports.ToolServerAuthKind = exports.$Enums.ToolServerAuthKind = {
+  NONE: 'NONE',
+  OAUTH: 'OAUTH',
+  TOKEN: 'TOKEN'
+};
+
+exports.ToolServerStatus = exports.$Enums.ToolServerStatus = {
+  ACTIVE: 'ACTIVE',
+  NEEDS_RECONNECTING: 'NEEDS_RECONNECTING',
+  ERROR: 'ERROR'
+};
+
+exports.FileBucket = exports.$Enums.FileBucket = {
+  FILES: 'FILES',
+  ARTIFACTS: 'ARTIFACTS',
+  REPLAYS: 'REPLAYS',
+  EXPORTS: 'EXPORTS',
+  PUBLIC: 'PUBLIC'
+};
+
+exports.FileArea = exports.$Enums.FileArea = {
+  CHAT: 'CHAT',
+  GENERATED: 'GENERATED',
+  KNOWLEDGE: 'KNOWLEDGE',
+  SKILLS: 'SKILLS',
+  COMPUTER: 'COMPUTER',
+  ARTIFACTS: 'ARTIFACTS',
+  REPLAYS: 'REPLAYS',
+  EXPORTS: 'EXPORTS',
+  AUTOMATIONS: 'AUTOMATIONS',
+  PUBLIC: 'PUBLIC'
+};
+
+exports.FileStatus = exports.$Enums.FileStatus = {
+  PENDING: 'PENDING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+};
+
+exports.CloudComputerStatus = exports.$Enums.CloudComputerStatus = {
+  OFF: 'OFF',
+  STARTING: 'STARTING',
+  RUNNING: 'RUNNING',
+  PAUSED: 'PAUSED',
+  ERROR: 'ERROR'
+};
+
+exports.ComputerSessionKind = exports.$Enums.ComputerSessionKind = {
+  BOT_RUN: 'BOT_RUN',
+  USER_EXPLORE: 'USER_EXPLORE'
+};
+
+exports.TransferDirection = exports.$Enums.TransferDirection = {
+  TO_COMPUTER: 'TO_COMPUTER',
+  FROM_COMPUTER: 'FROM_COMPUTER'
+};
+
+exports.TransferSourceKind = exports.$Enums.TransferSourceKind = {
+  STORED_FILE: 'STORED_FILE',
+  COMPOSIO: 'COMPOSIO',
+  API_KEY_CONNECTION: 'API_KEY_CONNECTION',
+  PUBLIC_URL: 'PUBLIC_URL',
+  CHAT: 'CHAT',
+  STORAGE: 'STORAGE',
+  CONNECTED_SERVICE: 'CONNECTED_SERVICE'
+};
+
+exports.AutomationTriggerKind = exports.$Enums.AutomationTriggerKind = {
+  SCHEDULE: 'SCHEDULE',
+  COMPOSIO_TRIGGER: 'COMPOSIO_TRIGGER',
+  PLACE: 'PLACE'
+};
+
+exports.AutomationStatus = exports.$Enums.AutomationStatus = {
+  ACTIVE: 'ACTIVE',
+  PAUSED: 'PAUSED',
+  NEEDS_ATTENTION: 'NEEDS_ATTENTION'
+};
+
+exports.ResultDestinationKind = exports.$Enums.ResultDestinationKind = {
+  CONVERSATION: 'CONVERSATION',
+  EMAIL: 'EMAIL',
+  CONNECTION: 'CONNECTION'
+};
+
+exports.AutomationRunStatus = exports.$Enums.AutomationRunStatus = {
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  WAITING_APPROVAL: 'WAITING_APPROVAL',
+  SUCCEEDED: 'SUCCEEDED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED',
+  STOPPED: 'STOPPED'
+};
+
+exports.DeliveryStatus = exports.$Enums.DeliveryStatus = {
+  QUEUED: 'QUEUED',
+  SENT: 'SENT',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+};
+
+exports.UsageKind = exports.$Enums.UsageKind = {
+  MODEL_TOKENS: 'MODEL_TOKENS',
+  COMPUTER_MINUTES: 'COMPUTER_MINUTES',
+  VOICE_MINUTES: 'VOICE_MINUTES',
+  STORAGE_BYTES: 'STORAGE_BYTES',
+  ARTIFACT_AI: 'ARTIFACT_AI'
+};
+
+exports.UsageLimitScope = exports.$Enums.UsageLimitScope = {
+  ORGANIZATION: 'ORGANIZATION',
+  MEMBER: 'MEMBER',
+  BOT: 'BOT'
+};
+
+exports.PlanTier = exports.$Enums.PlanTier = {
+  FREE: 'FREE',
+  STARTER: 'STARTER',
+  TEAM: 'TEAM',
+  BUSINESS: 'BUSINESS',
+  ENTERPRISE: 'ENTERPRISE'
+};
+
+exports.SubscriptionStatus = exports.$Enums.SubscriptionStatus = {
+  TRIALING: 'TRIALING',
+  ACTIVE: 'ACTIVE',
+  PAST_DUE: 'PAST_DUE',
+  CANCELLED: 'CANCELLED',
+  PAUSED: 'PAUSED'
+};
+
+exports.InvoiceStatus = exports.$Enums.InvoiceStatus = {
+  DRAFT: 'DRAFT',
+  OPEN: 'OPEN',
+  PAID: 'PAID',
+  VOID: 'VOID',
+  UNCOLLECTIBLE: 'UNCOLLECTIBLE'
+};
+
+exports.ActorType = exports.$Enums.ActorType = {
+  USER: 'USER',
+  BOT: 'BOT',
+  SYSTEM: 'SYSTEM'
+};
+
+exports.ExportKind = exports.$Enums.ExportKind = {
+  USER_DATA: 'USER_DATA',
+  ACTIVITY_HISTORY: 'ACTIVITY_HISTORY',
+  SKILL: 'SKILL'
+};
+
+exports.ExportStatus = exports.$Enums.ExportStatus = {
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  READY: 'READY',
+  FAILED: 'FAILED',
+  EXPIRED: 'EXPIRED'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
+  AuthIdentity: 'AuthIdentity',
+  Session: 'Session',
   PasswordResetToken: 'PasswordResetToken',
-  Document: 'Document'
+  Document: 'Document',
+  Device: 'Device',
+  DeviceToolSetting: 'DeviceToolSetting',
+  LocalToolServer: 'LocalToolServer',
+  DevicePlace: 'DevicePlace',
+  UserSettings: 'UserSettings',
+  NotificationPreference: 'NotificationPreference',
+  UserServiceDefault: 'UserServiceDefault',
+  Organization: 'Organization',
+  OrganizationSettings: 'OrganizationSettings',
+  OrganizationMember: 'OrganizationMember',
+  Invitation: 'Invitation',
+  AiModel: 'AiModel',
+  OrganizationAllowedModel: 'OrganizationAllowedModel',
+  BotTemplate: 'BotTemplate',
+  BotTemplateSkill: 'BotTemplateSkill',
+  OrganizationTemplate: 'OrganizationTemplate',
+  Bot: 'Bot',
+  BotApprovalRule: 'BotApprovalRule',
+  BotConnection: 'BotConnection',
+  BotToolServer: 'BotToolServer',
+  BotCredential: 'BotCredential',
+  BotSkill: 'BotSkill',
+  KnowledgeItem: 'KnowledgeItem',
+  KnowledgeLink: 'KnowledgeLink',
+  Memory: 'Memory',
+  ConversationFolder: 'ConversationFolder',
+  Conversation: 'Conversation',
+  ConversationParticipant: 'ConversationParticipant',
+  Message: 'Message',
+  MessageFile: 'MessageFile',
+  MessageReaction: 'MessageReaction',
+  MessageMention: 'MessageMention',
+  InteractiveResponse: 'InteractiveResponse',
+  SavedWidget: 'SavedWidget',
+  Run: 'Run',
+  RunStep: 'RunStep',
+  Approval: 'Approval',
+  VoiceSession: 'VoiceSession',
+  Skill: 'Skill',
+  SkillVersion: 'SkillVersion',
+  SkillShare: 'SkillShare',
+  SkillFile: 'SkillFile',
+  OrganizationStarterSkill: 'OrganizationStarterSkill',
+  Artifact: 'Artifact',
+  ArtifactVersion: 'ArtifactVersion',
+  ArtifactShare: 'ArtifactShare',
+  ArtifactComment: 'ArtifactComment',
+  ArtifactRecord: 'ArtifactRecord',
+  ArtifactReport: 'ArtifactReport',
+  Connection: 'Connection',
+  ConnectionBotRestriction: 'ConnectionBotRestriction',
+  Credential: 'Credential',
+  CredentialEvent: 'CredentialEvent',
+  ToolServer: 'ToolServer',
+  File: 'File',
+  CloudComputer: 'CloudComputer',
+  ComputerSession: 'ComputerSession',
+  SignedInWebsite: 'SignedInWebsite',
+  ComputerTransfer: 'ComputerTransfer',
+  Automation: 'Automation',
+  AutomationConnection: 'AutomationConnection',
+  AutomationPreApproval: 'AutomationPreApproval',
+  AutomationResultDestination: 'AutomationResultDestination',
+  AutomationTriggerSubscription: 'AutomationTriggerSubscription',
+  AutomationRun: 'AutomationRun',
+  Notification: 'Notification',
+  NotificationDelivery: 'NotificationDelivery',
+  UsageRecord: 'UsageRecord',
+  UsageLimit: 'UsageLimit',
+  UsageAlert: 'UsageAlert',
+  Subscription: 'Subscription',
+  Invoice: 'Invoice',
+  ActivityLog: 'ActivityLog',
+  DataExport: 'DataExport',
+  AppVersionPolicy: 'AppVersionPolicy'
 };
 
 /**

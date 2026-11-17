@@ -1,8 +1,12 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+// Agent Space — Prisma schema
+// Source of truth: docs/Product_Specification.md (v1.2)
+//
+// Conventions
+// - Table names are snake_case plural via @@map; columns are snake_case.
+// - Primary keys are UUID strings. Foreign keys are named <relation>_id.
+// - Soft deletes use deleted_at (30-day restore window for skills, artifacts, files, credentials).
+// - Settings that are "the source of truth" live here as typed columns; Redis only holds counters/caches.
+// - Secret VALUES are never stored here (only Secret Manager resource names and masked hints). See §8.7.
 
 generator client {
   provider = "prisma-client-js"
@@ -13,11 +17,22 @@ datasource db {
   provider = "postgresql"
 }
 
+// =====================================================================
+// ENUMS — platform / auth
+// =====================================================================
+
 enum AuthRole {
   USER
   ADMIN
   SUPER_ADMIN
   SUPPORT
+}
+
+enum AuthProvider {
+  EMAIL
+  GOOGLE
+  MICROSOFT
+  APPLE
 }
 
 enum DocumentType {
@@ -31,26 +46,916 @@ enum DocumentType {
   OTHER
 }
 
+enum Platform {
+  WEB
+  DESKTOP
+  IOS
+  ANDROID
+}
+
+enum PushProvider {
+  WEBPUSH
+  APNS
+  FCM
+}
+
+enum DeviceToolKind {
+  LOCAL_FILES
+  SCREEN
+  LOCAL_TOOL_SERVERS
+  CLIPBOARD
+  OPEN
+  CAMERA_SCANNER
+  CONTACTS
+  SEND_VIA_APPS
+  DEVICE_CALENDAR
+  LOCATION
+}
+
+enum DeviceToolPermission {
+  ASK_EACH_TIME
+  ALWAYS_ALLOW
+  NEVER
+}
+
+// =====================================================================
+// ENUMS — personal settings (§13.2)
+// =====================================================================
+
+enum Theme {
+  SYSTEM
+  LIGHT
+  DARK
+}
+
+enum TextSize {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum LayoutDensity {
+  COMFORTABLE
+  COMPACT
+}
+
+enum AppLanguage {
+  EN
+  EL
+}
+
+enum ReplyLanguage {
+  SAME_AS_MESSAGE
+  ALWAYS_EN
+  ALWAYS_EL
+}
+
+enum TimeFormat {
+  REGION
+  H24
+  H12
+}
+
+enum ReplyLength {
+  SHORT
+  BALANCED
+  DETAILED
+}
+
+enum ReplyTone {
+  CASUAL
+  FRIENDLY_PROFESSIONAL
+  FORMAL
+}
+
+enum ReplyFormatting {
+  MIXED
+  MOSTLY_BULLETS
+  MOSTLY_PARAGRAPHS
+}
+
+enum EmojiUsage {
+  NONE
+  OCCASIONALLY
+  OFTEN
+}
+
+enum ClarifyingQuestions {
+  ASK_MORE_OFTEN
+  BALANCED
+  ASSUME_AND_PROCEED
+}
+
+enum ActivityStepsDisplay {
+  COLLAPSED
+  EXPANDED
+  HIDDEN
+}
+
+enum ArtifactOpenMode {
+  SIDE_PANEL
+  FULL_SCREEN
+  NEW_TAB
+}
+
+enum SendWithKey {
+  ENTER
+  CTRL_ENTER
+}
+
+enum GroupReplyMode {
+  MOST_RELEVANT
+  ONLY_WHEN_MENTIONED
+}
+
+enum ReadAloudMode {
+  OFF
+  VOICE_MESSAGES_ONLY
+  ALWAYS
+}
+
+enum SpeakingSpeed {
+  SLOWER
+  NORMAL
+  FASTER
+}
+
+enum VoiceInputMode {
+  HANDS_FREE
+  PUSH_TO_TALK
+}
+
+enum ApprovalLevel {
+  ALWAYS_ASK
+  IMPORTANT_ACTIONS
+  DONT_ASK
+}
+
+enum ApprovalTimeout {
+  KEEP_WAITING
+  CANCEL_AFTER_1H
+  CANCEL_AFTER_24H
+}
+
+enum ApprovalChannel {
+  IN_APP_PUSH
+  IN_APP_PUSH_EMAIL
+}
+
+enum TaskCheckIn {
+  MIN_15
+  HOUR_1
+  HOUR_4
+  NEVER
+}
+
+enum AutomationResultsDestination {
+  BOT_CONVERSATION
+  EMAIL
+  BOTH
+}
+
+enum ConversationRetention {
+  NEVER
+  DAYS_30
+  DAYS_90
+  YEAR_1
+}
+
+// =====================================================================
+// ENUMS — organisation settings (§13.4)
+// =====================================================================
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  CANCELLED
+  EXPIRED
+}
+
+enum InvitationExpiry {
+  DAY_1
+  DAY_3
+  DAY_7
+  DAY_30
+}
+
+enum WhoCan {
+  EVERYONE
+  OWNERS_ADMINS
+}
+
+enum ModelPolicy {
+  ALL_MODELS
+  APPROVED_LIST
+}
+
+enum ServicePolicy {
+  ALL
+  APPROVED_LIST
+  BLOCK_LIST
+}
+
+enum InteractiveRepliesMode {
+  BLOCKS_AND_MINI_APPS
+  BLOCKS_ONLY
+  OFF
+}
+
+enum IdlePause {
+  MIN_5
+  MIN_15
+  MIN_30
+}
+
+enum MaxSession {
+  HOUR_1
+  HOUR_4
+  HOUR_24
+}
+
+enum MinApprovalLevel {
+  NONE
+  IMPORTANT_ACTIONS
+  ALWAYS_ASK
+}
+
+enum PublicLinkPolicy {
+  EVERYONE
+  OWNERS_ADMINS
+  OFF
+}
+
+enum PublicLinkLifetime {
+  NO_LIMIT
+  DAYS_7
+  DAYS_30
+  DAYS_90
+}
+
+enum ArtifactDesignDefault {
+  ORGANIZATION_BRAND
+  NEUTRAL
+}
+
+enum VoiceSessionLength {
+  MIN_15
+  MIN_30
+  MIN_60
+}
+
+enum ScheduleFrequency {
+  EVERY_15_MIN
+  EVERY_HOUR
+  DAILY
+}
+
+enum LimitReachedAction {
+  PAUSE_AND_NOTIFY
+  SWITCH_TO_CHEAPER_MODEL
+  NOTIFY_ONLY
+}
+
+enum OrgConversationRetention {
+  FOREVER
+  YEAR_1
+  DAYS_90
+  DAYS_30
+}
+
+enum ComputerRetention {
+  DAYS_30
+  DAYS_90
+  YEAR_1
+}
+
+enum MaxFileSize {
+  MB_25
+  MB_50
+  MB_100
+}
+
+enum SessionInactivity {
+  DAYS_30
+  DAYS_7
+  DAY_1
+}
+
+enum BiometricApprovalScope {
+  ALL_APPROVALS
+  EXTERNAL_EMAILS
+  DELETING_DATA
+}
+
+// =====================================================================
+// ENUMS — bots (§6, §13.3)
+// =====================================================================
+
+enum BotVisibility {
+  PRIVATE
+  ORGANIZATION
+}
+
+enum BotEditPolicy {
+  CREATOR_ONLY
+  CREATOR_AND_ADMINS
+}
+
+enum Creativity {
+  PRECISE
+  BALANCED
+  CREATIVE
+}
+
+enum BotClarifyingQuestions {
+  USER_PREFERENCE
+  ASK_MORE_OFTEN
+  ASSUME_AND_PROCEED
+}
+
+enum BotGroupResponse {
+  WHEN_RELEVANT_OR_MENTIONED
+  ONLY_WHEN_MENTIONED
+}
+
+enum SpokenReplyStyle {
+  SHORT_CONVERSATIONAL
+  DETAILED
+}
+
+enum MemoryScope {
+  PER_USER
+  SHARED
+}
+
+enum MaxTaskDuration {
+  MIN_15
+  HOUR_1
+  HOUR_4
+  HOUR_24
+}
+
+enum ActionType {
+  SEND_MESSAGE
+  POST_PUBLICLY
+  EDIT_RECORDS
+  DELETE_DATA
+  PURCHASE_PAYMENT
+  SHARE_FILES
+  ENTER_PASSWORD
+  EXTERNAL_EMAIL
+  CONSULT_SENSITIVE_BOT
+  OTHER
+}
+
+enum ApprovalOverride {
+  ALWAYS_ASK
+  DONT_ASK
+}
+
+enum KnowledgeScope {
+  BOT
+  ORGANIZATION
+}
+
+enum KnowledgeKind {
+  FILE
+  LINK
+  TEXT
+}
+
+enum MemoryKind {
+  BOT_USER
+  BOT_SHARED
+  ORGANIZATION
+}
+
+enum ModelCostTier {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+// =====================================================================
+// ENUMS — conversations, runs, approvals (§7, §10, §11)
+// =====================================================================
+
+enum ConversationType {
+  DIRECT
+  SHARED_BOT
+  GROUP
+}
+
+enum MessageAuthorType {
+  USER
+  BOT
+  SYSTEM
+}
+
+enum MessageSource {
+  TEXT
+  VOICE
+  AUTOMATION
+  BOT
+}
+
+enum MessageStatus {
+  PENDING
+  STREAMING
+  COMPLETED
+  FAILED
+  STOPPED
+}
+
+enum RunType {
+  CHAT_REPLY
+  TASK
+  AUTOMATION_RUN
+  BOT_TO_BOT
+}
+
+enum RunStatus {
+  QUEUED
+  RUNNING
+  WAITING_APPROVAL
+  WAITING_INPUT
+  WAITING_DEVICE
+  WAITING_COMPUTER
+  COMPLETED
+  FAILED
+  STOPPED
+}
+
+enum RunStepType {
+  THINKING
+  TOOL_CALL
+  CONNECTION_CALL
+  COMPUTER_ACTION
+  DEVICE_TOOL
+  SKILL_USED
+  BOT_CONSULTED
+  FILE_WRITE
+  ARTIFACT_EDIT
+  APPROVAL
+  MESSAGE
+  ERROR
+}
+
+enum RunStepStatus {
+  RUNNING
+  COMPLETED
+  FAILED
+  SKIPPED
+}
+
+enum ApprovalStatus {
+  PENDING
+  APPROVED
+  EDITED_APPROVED
+  REJECTED
+  CANCELLED
+  EXPIRED
+}
+
+enum VoiceSessionEndReason {
+  USER_EXIT
+  SILENCE
+  MAX_LENGTH
+  CONNECTION_LOST
+  USAGE_LIMIT
+  ERROR
+}
+
+// =====================================================================
+// ENUMS — skills, artifacts (§6.7, §7.5)
+// =====================================================================
+
+enum SharingLevel {
+  PRIVATE
+  SPECIFIC_MEMBERS
+  ORGANIZATION
+}
+
+enum SkillRole {
+  OWNER
+  EDITOR
+  USER
+}
+
+enum ArtifactType {
+  WEB_APP
+  DASHBOARD
+  PAGE
+  DOCUMENT
+  PRESENTATION
+  DIAGRAM
+  FORM
+  TOOL
+  GAME
+  OTHER
+}
+
+enum ArtifactSharingLevel {
+  PRIVATE
+  SPECIFIC_MEMBERS
+  ORGANIZATION
+  PUBLIC_LINK
+}
+
+enum ArtifactRole {
+  OWNER
+  EDITOR
+  COMMENTER
+  VIEWER
+}
+
+enum ArtifactVersionStatus {
+  DRAFT
+  PUBLISHED
+}
+
+enum ArtifactReportStatus {
+  OPEN
+  REVIEWED
+  TAKEN_DOWN
+  DISMISSED
+}
+
+// =====================================================================
+// ENUMS — connections, credentials, tool servers (§8)
+// =====================================================================
+
+enum ConnectionKind {
+  COMPOSIO
+  API_KEY
+  MCP
+}
+
+enum Visibility {
+  PRIVATE
+  SHARED
+}
+
+enum ConnectionStatus {
+  ACTIVE
+  NEEDS_RECONNECTING
+  ERROR
+}
+
+enum CredentialOwnerType {
+  USER
+  ORGANIZATION
+}
+
+enum CredentialKind {
+  MCP_OAUTH
+  MCP_TOKEN
+  API_KEY
+}
+
+enum CredentialStatus {
+  ACTIVE
+  NOT_WORKING
+  EXPIRED
+  NEEDS_RECONNECTING
+}
+
+enum CredentialEventType {
+  CREATED
+  REPLACED
+  RENAMED
+  SHARED
+  MADE_PRIVATE
+  BOTS_CHANGED
+  TESTED
+  USED
+  DELETED
+}
+
+enum ToolServerAuthKind {
+  NONE
+  OAUTH
+  TOKEN
+}
+
+enum ToolServerStatus {
+  ACTIVE
+  NEEDS_RECONNECTING
+  ERROR
+}
+
+enum ToolRunsOn {
+  SERVER
+  DEVICE
+}
+
+// =====================================================================
+// ENUMS — files, cloud computers (§7.7, §9)
+// =====================================================================
+
+enum FileBucket {
+  FILES
+  ARTIFACTS
+  REPLAYS
+  EXPORTS
+  PUBLIC
+}
+
+enum FileArea {
+  CHAT
+  GENERATED
+  KNOWLEDGE
+  SKILLS
+  COMPUTER
+  ARTIFACTS
+  REPLAYS
+  EXPORTS
+  AUTOMATIONS
+  PUBLIC
+}
+
+enum FileStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+enum CloudComputerStatus {
+  OFF
+  STARTING
+  RUNNING
+  PAUSED
+  ERROR
+}
+
+enum ComputerSessionKind {
+  BOT_RUN
+  USER_EXPLORE
+}
+
+enum TransferDirection {
+  TO_COMPUTER
+  FROM_COMPUTER
+}
+
+enum TransferSourceKind {
+  STORED_FILE
+  COMPOSIO
+  API_KEY_CONNECTION
+  PUBLIC_URL
+  CHAT
+  STORAGE
+  CONNECTED_SERVICE
+}
+
+// =====================================================================
+// ENUMS — automations, notifications, usage, billing, activity
+// =====================================================================
+
+enum AutomationTriggerKind {
+  SCHEDULE
+  COMPOSIO_TRIGGER
+  PLACE
+}
+
+enum AutomationStatus {
+  ACTIVE
+  PAUSED
+  NEEDS_ATTENTION
+}
+
+enum AutomationRunStatus {
+  QUEUED
+  RUNNING
+  WAITING_APPROVAL
+  SUCCEEDED
+  FAILED
+  SKIPPED
+  STOPPED
+}
+
+enum ResultDestinationKind {
+  CONVERSATION
+  EMAIL
+  CONNECTION
+}
+
+enum NotificationEvent {
+  NEW_MESSAGE
+  MENTION
+  APPROVAL_NEEDED
+  TASK_FINISHED
+  TASK_FAILED
+  CONNECTION_NEEDS_RECONNECTING
+  SECRET_NOT_WORKING
+  INVITATION_RECEIVED
+  AUTOMATION_RESULT
+  AUTOMATION_PAUSED
+  ARTIFACT_SHARED
+  ARTIFACT_COMMENT
+  ARTIFACT_EDITED
+  SKILL_SHARED
+  SKILL_CHANGED
+  TAKE_CONTROL_NEEDED
+  USAGE_LIMIT
+  MODEL_CHANGED
+  EXPORT_READY
+  SYSTEM
+}
+
+enum NotificationChannel {
+  IN_APP
+  PUSH
+  EMAIL
+}
+
+enum DeliveryStatus {
+  QUEUED
+  SENT
+  FAILED
+  SKIPPED
+}
+
+enum UsageKind {
+  MODEL_TOKENS
+  COMPUTER_MINUTES
+  VOICE_MINUTES
+  STORAGE_BYTES
+  ARTIFACT_AI
+}
+
+enum UsageLimitScope {
+  ORGANIZATION
+  MEMBER
+  BOT
+}
+
+enum PlanTier {
+  FREE
+  STARTER
+  TEAM
+  BUSINESS
+  ENTERPRISE
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELLED
+  PAUSED
+}
+
+enum InvoiceStatus {
+  DRAFT
+  OPEN
+  PAID
+  VOID
+  UNCOLLECTIBLE
+}
+
+enum ActorType {
+  USER
+  BOT
+  SYSTEM
+}
+
+enum ExportKind {
+  USER_DATA
+  ACTIVITY_HISTORY
+  SKILL
+}
+
+enum ExportStatus {
+  QUEUED
+  RUNNING
+  READY
+  FAILED
+  EXPIRED
+}
+
+// =====================================================================
+// USERS, AUTH, DEVICES
+// =====================================================================
+
 model User {
-  id                  String  @id @default(uuid())
-  email     String   @unique
-  phone     String?   @unique
-  password  String
+  id                 String    @id @default(uuid())
+  email              String    @unique
+  phone              String?   @unique
+  password           String
+  role               AuthRole  @default(USER)
+  name               String?
+  avatar_file_id     String?   @unique
+  job_title          String?
+  about_me           String?
+  timezone           String    @default("UTC")
+  working_hours      Json? // { days: [1..5], start: "09:00", end: "18:00" }
+  email_verified_at  DateTime?
+  two_factor_enabled Boolean   @default(false)
+  two_factor_secret  String?
+  last_active_at     DateTime?
+  deleted_at         DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
 
-  role      AuthRole
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  password_reset_tokens PasswordResetToken[]
+  avatar                  File?                     @relation("UserAvatar", fields: [avatar_file_id], references: [id], onDelete: SetNull)
+  settings                UserSettings?
+  identities              AuthIdentity[]
+  sessions                Session[]
+  password_reset_tokens   PasswordResetToken[]
+  devices                 Device[]
+  device_places           DevicePlace[]
+  notification_prefs      NotificationPreference[]
+  memberships             OrganizationMember[]
+  owned_organizations     Organization[]            @relation("OrganizationCreator")
+  invitations_sent        Invitation[]              @relation("InvitationInviter")
+  invitations_accepted    Invitation[]              @relation("InvitationAcceptor")
+  bots_created            Bot[]                     @relation("BotCreator")
+  bot_connection_defaults UserServiceDefault[]
+  conversations_created   Conversation[]            @relation("ConversationCreator")
+  conversation_folders    ConversationFolder[]
+  participations          ConversationParticipant[]
+  messages                Message[]                 @relation("MessageUserAuthor")
+  pinned_messages         Message[]                 @relation("MessagePinnedBy")
+  reactions               MessageReaction[]
+  saved_widgets           SavedWidget[]
+  runs                    Run[]                     @relation("RunUser")
+  approvals_resolved      Approval[]                @relation("ApprovalResolver")
+  voice_sessions          VoiceSession[]
+  memories                Memory[]
+  skills_owned            Skill[]                   @relation("SkillOwner")
+  skill_versions          SkillVersion[]
+  skill_shares            SkillShare[]
+  artifacts_owned         Artifact[]                @relation("ArtifactOwner")
+  artifact_versions       ArtifactVersion[]
+  artifact_shares         ArtifactShare[]
+  artifact_comments       ArtifactComment[]
+  artifact_reports        ArtifactReport[]
+  connections             Connection[]              @relation("ConnectionOwner")
+  credentials             Credential[]              @relation("CredentialOwner")
+  credential_events       CredentialEvent[]
+  tool_servers            ToolServer[]              @relation("ToolServerOwner")
+  files_uploaded          File[]                    @relation("FileUploader")
+  computer_sessions       ComputerSession[]
+  automations             Automation[]
+  notifications           Notification[]
+  usage_records           UsageRecord[]
+  activity_logs           ActivityLog[]
+  data_exports            DataExport[]
+  knowledge_items         KnowledgeItem[]
+  knowledge_links         KnowledgeLink[]
 
   @@index([email])
   @@index([phone])
-  @@index([id])
+  @@index([deleted_at])
   @@map("users")
 }
 
+model AuthIdentity {
+  id               String       @id @default(uuid())
+  user_id          String
+  provider         AuthProvider
+  provider_user_id String
+  provider_email   String?
+  created_at       DateTime     @default(now())
+  updated_at       DateTime     @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider, provider_user_id])
+  @@index([user_id])
+  @@map("auth_identities")
+}
+
+model Session {
+  id                 String    @id @default(uuid())
+  user_id            String
+  device_id          String?
+  refresh_token_hash String    @unique
+  ip_address         String?
+  user_agent         String?
+  expires_at         DateTime
+  last_used_at       DateTime  @default(now())
+  revoked_at         DateTime?
+  created_at         DateTime  @default(now())
+
+  user   User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  device Device? @relation(fields: [device_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id])
+  @@index([device_id])
+  @@index([expires_at])
+  @@map("sessions")
+}
+
 model PasswordResetToken {
-  id         String  @id @default(uuid())
+  id         String    @id @default(uuid())
   token_hash String    @unique
   user_uuid  String
   expires_at DateTime
@@ -64,21 +969,2230 @@ model PasswordResetToken {
   @@map("password_reset_tokens")
 }
 
+/// Legacy upload record kept for backwards compatibility with existing code. New files use `File`.
 model Document {
-  id                 String  @id @default(uuid())
-  user_uuid          String
-  filename           String
-  mimetype           String
-  size               Int
-  url                String
-  path               String
-  type               DocumentType  @default(LOGO)
-  created_at         DateTime      @default(now())
+  id         String       @id @default(uuid())
+  user_uuid  String
+  filename   String
+  mimetype   String
+  size       Int
+  url        String
+  path       String
+  type       DocumentType @default(LOGO)
+  created_at DateTime     @default(now())
 
   @@index([user_uuid])
-  @@index([id])
   @@map("documents")
 }
 
+/// §14.1 — one row per signed-in device (web browser, desktop app, phone).
+model Device {
+  id                       String        @id @default(uuid())
+  user_id                  String
+  name                     String
+  platform                 Platform
+  app_version              String?
+  push_provider            PushProvider?
+  push_token               String?
+  capabilities             String[]      @default([])
+  is_online                Boolean       @default(false)
+  last_seen_at             DateTime      @default(now())
+  // Desktop-only (§13.2 Devices)
+  allowed_folders          String[]      @default([])
+  launch_at_startup        Boolean       @default(true)
+  quick_ask_shortcut       String?
+  // Mobile-only
+  approve_from_lock_screen Boolean       @default(true)
+  created_at               DateTime      @default(now())
+  updated_at               DateTime      @updatedAt
 
+  user                    User                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  sessions                Session[]
+  tool_permissions        DeviceToolSetting[]
+  local_tool_servers      LocalToolServer[]
+  run_steps               RunStep[]
+  notification_deliveries NotificationDelivery[]
+  activity_logs           ActivityLog[]
 
+  @@index([user_id])
+  @@index([push_token])
+  @@map("devices")
+}
+
+model DeviceToolSetting {
+  id         String               @id @default(uuid())
+  device_id  String
+  tool       DeviceToolKind
+  permission DeviceToolPermission @default(ASK_EACH_TIME)
+  updated_at DateTime             @updatedAt
+
+  device Device @relation(fields: [device_id], references: [id], onDelete: Cascade)
+
+  @@unique([device_id, tool])
+  @@map("device_tool_settings")
+}
+
+/// §14.3 — tool servers (MCP) running on the user's own computer. Private to that device.
+model LocalToolServer {
+  id         String   @id @default(uuid())
+  device_id  String
+  name       String
+  command    String
+  args       String[] @default([])
+  env_keys   String[] @default([]) // names only, never values
+  enabled    Boolean  @default(true)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  device Device @relation(fields: [device_id], references: [id], onDelete: Cascade)
+
+  @@index([device_id])
+  @@map("local_tool_servers")
+}
+
+/// §13.2 / §14.3 — saved places for place-based automations (max 20 per user).
+model DevicePlace {
+  id            String   @id @default(uuid())
+  user_id       String
+  name          String
+  latitude      Float
+  longitude     Float
+  radius_meters Int      @default(150)
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user        User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  automations Automation[]
+
+  @@index([user_id])
+  @@map("device_places")
+}
+
+// =====================================================================
+// PERSONAL SETTINGS (§13.2)
+// =====================================================================
+
+model UserSettings {
+  id      String @id @default(uuid())
+  user_id String @unique
+
+  // Appearance
+  theme          Theme         @default(SYSTEM)
+  text_size      TextSize      @default(MEDIUM)
+  layout_density LayoutDensity @default(COMFORTABLE)
+
+  // Language and region
+  app_language   AppLanguage   @default(EN)
+  reply_language ReplyLanguage @default(SAME_AS_MESSAGE)
+  time_format    TimeFormat    @default(REGION)
+  currency       String? // null = based on region
+  units          String? // "metric" | "imperial" | null = region
+
+  // How bots reply to me
+  reply_length           ReplyLength          @default(BALANCED)
+  reply_tone             ReplyTone            @default(FRIENDLY_PROFESSIONAL)
+  reply_formatting       ReplyFormatting      @default(MIXED)
+  emoji_usage            EmojiUsage           @default(OCCASIONALLY)
+  show_sources           Boolean              @default(true)
+  suggested_follow_ups   Boolean              @default(true)
+  clarifying_questions   ClarifyingQuestions  @default(BALANCED)
+  proactive_suggestions  Boolean              @default(true)
+  suggest_skills         Boolean              @default(true)
+  activity_steps_display ActivityStepsDisplay @default(COLLAPSED)
+  interactive_replies    Boolean              @default(true)
+
+  // Artifacts
+  artifact_default_sharing ArtifactSharingLevel @default(PRIVATE)
+  artifact_open_mode       ArtifactOpenMode     @default(SIDE_PANEL)
+  artifact_notify_changes  Boolean              @default(true)
+
+  // Chat behaviour
+  default_bot_id         String?
+  send_with              SendWithKey    @default(ENTER)
+  group_reply_mode       GroupReplyMode @default(MOST_RELEVANT)
+  show_typing_indicators Boolean        @default(true)
+
+  // Voice
+  read_aloud           ReadAloudMode  @default(OFF)
+  voice_override       String? // null = use each bot's voice
+  speaking_speed       SpeakingSpeed  @default(NORMAL)
+  auto_send_voice_note Boolean        @default(false)
+  voice_input_mode     VoiceInputMode @default(HANDS_FREE)
+  keep_spoken_messages Boolean        @default(true)
+
+  // Memory and personalisation
+  memory_enabled         Boolean @default(true)
+  use_past_conversations Boolean @default(true)
+
+  // Approvals
+  default_approval_level ApprovalLevel   @default(IMPORTANT_ACTIONS)
+  approval_timeout       ApprovalTimeout @default(KEEP_WAITING)
+  approval_channel       ApprovalChannel @default(IN_APP_PUSH)
+
+  // Cloud computer
+  auto_open_live_view Boolean @default(false)
+  notify_take_control Boolean @default(true)
+  keep_replays        Boolean @default(true)
+
+  // Connections
+  connection_problem_alerts Boolean @default(true)
+  secret_problem_alerts     Boolean @default(true)
+
+  // Tasks and automations
+  notify_task_finished   Boolean                      @default(true)
+  task_check_in          TaskCheckIn                  @default(HOUR_1)
+  automation_results_to  AutomationResultsDestination @default(BOT_CONVERSATION)
+  daily_briefing_enabled Boolean                      @default(false)
+  daily_briefing_time    String? // "08:00" in user's timezone
+
+  // Notifications
+  quiet_hours_enabled Boolean @default(false)
+  quiet_hours_start   String? // "22:00"
+  quiet_hours_end     String? // "07:00"
+  daily_email_digest  Boolean @default(false)
+  sounds_enabled      Boolean @default(true)
+
+  // Privacy and data
+  auto_delete_conversations ConversationRetention @default(NEVER)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  user        User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  default_bot Bot? @relation("UserDefaultBot", fields: [default_bot_id], references: [id], onDelete: SetNull)
+
+  @@index([default_bot_id])
+  @@map("user_settings")
+}
+
+/// §12 — per event: on/off and channels.
+model NotificationPreference {
+  id         String                @id @default(uuid())
+  user_id    String
+  event      NotificationEvent
+  enabled    Boolean               @default(true)
+  channels   NotificationChannel[] @default([IN_APP, PUSH])
+  updated_at DateTime              @updatedAt
+
+  user User @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, event])
+  @@map("notification_preferences")
+}
+
+/// §13.2 Connections — "Default account per service".
+model UserServiceDefault {
+  id              String   @id @default(uuid())
+  user_id         String
+  organization_id String
+  service_key     String
+  connection_id   String
+  updated_at      DateTime @updatedAt
+
+  user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  connection   Connection   @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, organization_id, service_key])
+  @@index([connection_id])
+  @@map("user_service_defaults")
+}
+
+// =====================================================================
+// ORGANISATIONS (§5, §13.4)
+// =====================================================================
+
+model Organization {
+  id                 String    @id @default(uuid())
+  name               String
+  slug               String    @unique
+  logo_file_id       String?   @unique
+  brand_color        String?
+  is_personal        Boolean   @default(false)
+  created_by_id      String?
+  stripe_customer_id String?   @unique
+  deleted_at         DateTime?
+  purge_after        DateTime?
+  created_at         DateTime  @default(now())
+  updated_at         DateTime  @updatedAt
+
+  logo              File?                      @relation("OrganizationLogo", fields: [logo_file_id], references: [id], onDelete: SetNull)
+  created_by        User?                      @relation("OrganizationCreator", fields: [created_by_id], references: [id], onDelete: SetNull)
+  settings          OrganizationSettings?
+  members           OrganizationMember[]
+  invitations       Invitation[]
+  allowed_models    OrganizationAllowedModel[]
+  allowed_templates OrganizationTemplate[]
+  starter_skills    OrganizationStarterSkill[]
+  bots              Bot[]
+  conversations     Conversation[]
+  folders           ConversationFolder[]
+  messages          Message[]
+  runs              Run[]
+  approvals         Approval[]
+  voice_sessions    VoiceSession[]
+  memories          Memory[]
+  knowledge_items   KnowledgeItem[]
+  skills            Skill[]
+  artifacts         Artifact[]
+  connections       Connection[]
+  credentials       Credential[]
+  tool_servers      ToolServer[]
+  files             File[]
+  cloud_computers   CloudComputer[]
+  automations       Automation[]
+  notifications     Notification[]
+  usage_records     UsageRecord[]
+  usage_limits      UsageLimit[]
+  usage_alerts      UsageAlert[]
+  subscription      Subscription?
+  invoices          Invoice[]
+  activity_logs     ActivityLog[]
+  data_exports      DataExport[]
+  service_defaults  UserServiceDefault[]
+  saved_widgets     SavedWidget[]
+
+  @@index([created_by_id])
+  @@index([deleted_at])
+  @@map("organizations")
+}
+
+model OrganizationSettings {
+  id              String @id @default(uuid())
+  organization_id String @unique
+
+  // General
+  default_language      AppLanguage @default(EN)
+  default_timezone      String      @default("UTC")
+  default_working_hours Json?
+
+  // Members and invitations
+  invite_links_enabled Boolean          @default(true)
+  default_invite_role  OrganizationRole @default(MEMBER)
+  auto_join_domain     String?
+  invitation_expiry    InvitationExpiry @default(DAY_7)
+
+  // Bots
+  company_instructions String?
+  who_can_create_bots  WhoCan  @default(EVERYONE)
+  max_bots_per_member  Int?
+
+  // AI models
+  default_model_id      String?
+  model_policy          ModelPolicy @default(ALL_MODELS)
+  model_auto_fallback   Boolean     @default(true)
+  model_compare_enabled Boolean     @default(true)
+
+  // Connections and tools
+  service_policy               ServicePolicy          @default(ALL)
+  service_list                 String[]               @default([]) // approved or blocked keys depending on policy
+  members_private_tool_servers Boolean                @default(true)
+  members_api_key_connections  Boolean                @default(true)
+  builtin_web_search           Boolean                @default(true)
+  builtin_image_generation     Boolean                @default(true)
+  builtin_document_creation    Boolean                @default(true)
+  interactive_replies_mode     InteractiveRepliesMode @default(BLOCKS_AND_MINI_APPS)
+
+  // Device tools
+  device_tools_enabled       Boolean                  @default(true)
+  allowed_device_tools       DeviceToolKind[]         @default([LOCAL_FILES, SCREEN, LOCAL_TOOL_SERVERS, CLIPBOARD, OPEN, CAMERA_SCANNER, CONTACTS, SEND_VIA_APPS, DEVICE_CALENDAR, LOCATION])
+  members_local_tool_servers Boolean                  @default(true)
+  automations_desktop_tools  Boolean                  @default(true)
+  biometric_approval_scopes  BiometricApprovalScope[] @default([])
+
+  // Cloud computers
+  cloud_computers_enabled      Boolean    @default(true)
+  cloud_computers_who          WhoCan     @default(EVERYONE)
+  computer_idle_pause          IdlePause  @default(MIN_15)
+  computer_max_session         MaxSession @default(HOUR_4)
+  computer_storage_limit_bytes BigInt?
+  members_take_control         Boolean    @default(true)
+  record_replays               Boolean    @default(true)
+  blocked_websites             String[]   @default([])
+
+  // Approvals and safety
+  min_approval_level       MinApprovalLevel @default(NONE)
+  enforced_approvals       ActionType[]     @default([EXTERNAL_EMAIL, PURCHASE_PAYMENT])
+  bots_consulting_enabled  Boolean          @default(true)
+  approval_timeout_minutes Int? // null = keep waiting
+
+  // Skills
+  who_can_create_skills  WhoCan  @default(EVERYONE)
+  starter_skills_enabled Boolean @default(true)
+  skill_import_enabled   Boolean @default(true)
+
+  // Artifacts
+  artifacts_enabled            Boolean               @default(true)
+  public_link_policy           PublicLinkPolicy      @default(EVERYONE)
+  public_link_require_password Boolean               @default(false)
+  public_link_max_lifetime     PublicLinkLifetime    @default(NO_LIMIT)
+  public_artifact_ai_enabled   Boolean               @default(true)
+  public_artifact_uploads      Boolean               @default(true)
+  artifact_embedding_enabled   Boolean               @default(true)
+  artifact_design_default      ArtifactDesignDefault @default(ORGANIZATION_BRAND)
+
+  // Voice mode
+  voice_mode_enabled      Boolean            @default(true)
+  voice_mode_who          WhoCan             @default(EVERYONE)
+  voice_max_session       VoiceSessionLength @default(MIN_30)
+  voice_approvals_enabled Boolean            @default(true)
+  voice_keep_transcripts  Boolean            @default(true)
+
+  // Automations
+  automations_enabled        Boolean           @default(true)
+  max_automations_per_member Int?
+  automations_cloud_computer Boolean           @default(true)
+  automation_pre_approvals   Boolean           @default(true)
+  max_schedule_frequency     ScheduleFrequency @default(EVERY_HOUR)
+
+  // Usage and limits
+  usage_alert_thresholds Int[]              @default([80, 100])
+  limit_reached_action   LimitReachedAction @default(PAUSE_AND_NOTIFY)
+
+  // Data and privacy
+  conversation_retention  OrgConversationRetention @default(FOREVER)
+  computer_retention      ComputerRetention        @default(DAYS_90)
+  max_file_size           MaxFileSize              @default(MB_100)
+  members_may_export      Boolean                  @default(true)
+  temporary_chats_allowed Boolean                  @default(true)
+
+  // Security
+  require_two_factor      Boolean           @default(false)
+  allowed_sign_in_methods AuthProvider[]    @default([EMAIL, GOOGLE, MICROSOFT, APPLE])
+  session_inactivity      SessionInactivity @default(DAYS_30)
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  organization  Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  default_model AiModel?     @relation(fields: [default_model_id], references: [id], onDelete: SetNull)
+
+  @@index([default_model_id])
+  @@map("organization_settings")
+}
+
+model OrganizationMember {
+  id              String           @id @default(uuid())
+  organization_id String
+  user_id         String
+  role            OrganizationRole @default(MEMBER)
+  joined_at       DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([organization_id, user_id])
+  @@index([user_id])
+  @@map("organization_members")
+}
+
+model Invitation {
+  id              String           @id @default(uuid())
+  organization_id String
+  email           String?
+  token_hash      String           @unique
+  is_link         Boolean          @default(false)
+  role            OrganizationRole @default(MEMBER)
+  status          InvitationStatus @default(PENDING)
+  invited_by_id   String?
+  accepted_by_id  String?
+  expires_at      DateTime
+  accepted_at     DateTime?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  invited_by   User?        @relation("InvitationInviter", fields: [invited_by_id], references: [id], onDelete: SetNull)
+  accepted_by  User?        @relation("InvitationAcceptor", fields: [accepted_by_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, status])
+  @@index([email])
+  @@index([invited_by_id])
+  @@index([accepted_by_id])
+  @@map("invitations")
+}
+
+// =====================================================================
+// AI MODELS (§6.4)
+// =====================================================================
+
+/// Catalogue of models available through OpenRouter, refreshed hourly (§14.4 caches), persisted for references.
+model AiModel {
+  id                 String        @id @default(uuid())
+  openrouter_id      String        @unique // e.g. "anthropic/claude-sonnet-4"
+  name               String
+  provider           String // Anthropic, OpenAI, Google, xAI, Meta, Mistral…
+  labels             String[]      @default([]) // "fast", "smart", "writing", "coding", "vision"
+  cost_tier          ModelCostTier @default(MEDIUM)
+  input_price_per_m  Decimal?      @db.Decimal(12, 6)
+  output_price_per_m Decimal?      @db.Decimal(12, 6)
+  context_length     Int?
+  supports_vision    Boolean       @default(false)
+  supports_tools     Boolean       @default(true)
+  is_recommended     Boolean       @default(false)
+  is_available       Boolean       @default(true)
+  fallback_model_id  String?
+  created_at         DateTime      @default(now())
+  updated_at         DateTime      @updatedAt
+
+  fallback_model AiModel?                   @relation("ModelFallback", fields: [fallback_model_id], references: [id], onDelete: SetNull)
+  fallbacks_for  AiModel[]                  @relation("ModelFallback")
+  bots           Bot[]
+  bot_templates  BotTemplate[]
+  org_defaults   OrganizationSettings[]
+  org_allowed    OrganizationAllowedModel[]
+  runs           Run[]
+  usage_records  UsageRecord[]
+
+  @@index([fallback_model_id])
+  @@index([is_available, is_recommended])
+  @@map("ai_models")
+}
+
+model OrganizationAllowedModel {
+  organization_id String
+  model_id        String
+  created_at      DateTime @default(now())
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  model        AiModel      @relation(fields: [model_id], references: [id], onDelete: Cascade)
+
+  @@id([organization_id, model_id])
+  @@index([model_id])
+  @@map("organization_allowed_models")
+}
+
+// =====================================================================
+// BOTS (§6, §13.3)
+// =====================================================================
+
+/// §6.1 — six launch templates (Personal Assistant, Sales, Marketing, Support, Researcher, Executive Assistant).
+model BotTemplate {
+  id                    String        @id @default(uuid())
+  key                   String        @unique
+  name                  String
+  emoji                 String
+  color                 String
+  description           String
+  instructions          String
+  welcome_message       String?
+  conversation_starters String[]      @default([])
+  suggested_services    String[]      @default([])
+  model_id              String?
+  voice                 String?
+  approval_level        ApprovalLevel @default(IMPORTANT_ACTIONS)
+  cloud_computer        Boolean       @default(false)
+  sort_order            Int           @default(0)
+  is_active             Boolean       @default(true)
+  created_at            DateTime      @default(now())
+  updated_at            DateTime      @updatedAt
+
+  model          AiModel?               @relation(fields: [model_id], references: [id], onDelete: SetNull)
+  starter_skills BotTemplateSkill[]
+  bots           Bot[]
+  organizations  OrganizationTemplate[]
+
+  @@index([model_id])
+  @@map("bot_templates")
+}
+
+model BotTemplateSkill {
+  template_id String
+  skill_id    String
+
+  template BotTemplate @relation(fields: [template_id], references: [id], onDelete: Cascade)
+  skill    Skill       @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+
+  @@id([template_id, skill_id])
+  @@index([skill_id])
+  @@map("bot_template_skills")
+}
+
+/// §13.4 Bots — "Available templates": which templates members of an org see.
+model OrganizationTemplate {
+  organization_id String
+  template_id     String
+  enabled         Boolean @default(true)
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  template     BotTemplate  @relation(fields: [template_id], references: [id], onDelete: Cascade)
+
+  @@id([organization_id, template_id])
+  @@index([template_id])
+  @@map("organization_templates")
+}
+
+model Bot {
+  id                 String  @id @default(uuid())
+  organization_id    String
+  created_by_id      String?
+  template_id        String?
+  duplicated_from_id String?
+
+  // Identity
+  name                  String
+  emoji                 String   @default("🤖")
+  color                 String   @default("#6366F1")
+  description           String?
+  image_file_id         String?  @unique
+  welcome_message       String?
+  conversation_starters String[] @default([]) // max 4
+
+  // Behaviour
+  instructions         String
+  model_id             String? // null = organisation default / Recommended
+  creativity           Creativity             @default(BALANCED)
+  style_override       Boolean                @default(false)
+  reply_length         ReplyLength?
+  reply_tone           ReplyTone?
+  reply_formatting     ReplyFormatting?
+  emoji_usage          EmojiUsage?
+  lock_style           Boolean                @default(false)
+  reply_language       AppLanguage? // null = same as the user's message
+  clarifying_questions BotClarifyingQuestions @default(USER_PREFERENCE)
+  group_response       BotGroupResponse       @default(WHEN_RELEVANT_OR_MENTIONED)
+
+  // Abilities
+  web_search_enabled        Boolean                @default(true)
+  image_generation_enabled  Boolean                @default(true)
+  document_creation_enabled Boolean                @default(true)
+  interactive_replies_mode  InteractiveRepliesMode @default(BLOCKS_AND_MINI_APPS)
+  artifacts_enabled         Boolean                @default(true)
+  cloud_computer_enabled    Boolean                @default(false)
+  use_skills_automatically  Boolean                @default(true)
+  org_knowledge_enabled     Boolean                @default(true)
+
+  // Voice
+  voice_mode_enabled Boolean          @default(true)
+  voice              String? // null = default voice
+  spoken_reply_style SpokenReplyStyle @default(SHORT_CONVERSATIONAL)
+
+  // Memory
+  memory_enabled Boolean     @default(true)
+  memory_scope   MemoryScope @default(PER_USER)
+
+  // Working with other bots
+  can_ask_other_bots Boolean @default(true)
+  can_be_asked       Boolean @default(true)
+  is_sensitive       Boolean @default(false)
+
+  // Approvals
+  approval_level ApprovalLevel @default(IMPORTANT_ACTIONS)
+
+  // Limits
+  max_task_duration   MaxTaskDuration @default(HOUR_1)
+  monthly_usage_limit Decimal?        @db.Decimal(12, 4)
+
+  // Sharing
+  visibility  BotVisibility @default(PRIVATE)
+  edit_policy BotEditPolicy @default(CREATOR_ONLY)
+
+  is_archived Boolean   @default(false)
+  deleted_at  DateTime?
+  created_at  DateTime  @default(now())
+  updated_at  DateTime  @updatedAt
+
+  organization    Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  created_by      User?        @relation("BotCreator", fields: [created_by_id], references: [id], onDelete: SetNull)
+  template        BotTemplate? @relation(fields: [template_id], references: [id], onDelete: SetNull)
+  duplicated_from Bot?         @relation("BotDuplicate", fields: [duplicated_from_id], references: [id], onDelete: SetNull)
+  duplicates      Bot[]        @relation("BotDuplicate")
+  model           AiModel?     @relation(fields: [model_id], references: [id], onDelete: SetNull)
+  image           File?        @relation("BotImage", fields: [image_file_id], references: [id], onDelete: SetNull)
+
+  approval_rules            BotApprovalRule[]
+  bot_connections           BotConnection[]
+  bot_tool_servers          BotToolServer[]
+  bot_credentials           BotCredential[]
+  bot_skills                BotSkill[]
+  knowledge_items           KnowledgeItem[]
+  memories                  Memory[]
+  cloud_computer            CloudComputer?
+  participations            ConversationParticipant[]
+  lead_conversations        Conversation[]             @relation("ConversationLeadBot")
+  messages                  Message[]                  @relation("MessageBotAuthor")
+  runs                      Run[]                      @relation("RunBot")
+  consultations             Run[]                      @relation("RunRequestedByBot")
+  approvals                 Approval[]
+  voice_sessions            VoiceSession[]
+  automations               Automation[]
+  usage_records             UsageRecord[]
+  usage_limits              UsageLimit[]
+  activity_logs             ActivityLog[]
+  default_for_users         UserSettings[]             @relation("UserDefaultBot")
+  connection_restrictions   ConnectionBotRestriction[]
+  credential_last_used      Credential[]               @relation("CredentialLastUsedBot")
+  artifact_comment_mentions ArtifactComment[]          @relation("ArtifactCommentBotMention")
+
+  @@index([organization_id, visibility])
+  @@index([created_by_id])
+  @@index([template_id])
+  @@index([model_id])
+  @@index([duplicated_from_id])
+  @@index([deleted_at])
+  @@map("bots")
+}
+
+/// §13.3 Approvals — per action type override.
+model BotApprovalRule {
+  id          String           @id @default(uuid())
+  bot_id      String
+  action_type ActionType
+  override    ApprovalOverride
+  updated_at  DateTime         @updatedAt
+
+  bot Bot @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+
+  @@unique([bot_id, action_type])
+  @@map("bot_approval_rules")
+}
+
+/// Which connected accounts a bot may use, and the default per service (§13.3 Abilities).
+model BotConnection {
+  id                     String   @id @default(uuid())
+  bot_id                 String
+  connection_id          String
+  is_default_for_service Boolean  @default(false)
+  created_at             DateTime @default(now())
+
+  bot        Bot        @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  connection Connection @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+
+  @@unique([bot_id, connection_id])
+  @@index([connection_id])
+  @@map("bot_connections")
+}
+
+model BotToolServer {
+  bot_id         String
+  tool_server_id String
+  created_at     DateTime @default(now())
+
+  bot         Bot        @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  tool_server ToolServer @relation(fields: [tool_server_id], references: [id], onDelete: Cascade)
+
+  @@id([bot_id, tool_server_id])
+  @@index([tool_server_id])
+  @@map("bot_tool_servers")
+}
+
+/// §8.9 "Choose bots" — which bots may use a secret.
+model BotCredential {
+  bot_id        String
+  credential_id String
+  created_at    DateTime @default(now())
+
+  bot        Bot        @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  credential Credential @relation(fields: [credential_id], references: [id], onDelete: Cascade)
+
+  @@id([bot_id, credential_id])
+  @@index([credential_id])
+  @@map("bot_credentials")
+}
+
+model BotSkill {
+  bot_id      String
+  skill_id    String
+  assigned_at DateTime @default(now())
+
+  bot   Bot   @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  skill Skill @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+
+  @@id([bot_id, skill_id])
+  @@index([skill_id])
+  @@map("bot_skills")
+}
+
+/// §6.2 Knowledge and §13.4 organisation knowledge library. Files, links or text.
+model KnowledgeItem {
+  id              String         @id @default(uuid())
+  organization_id String
+  scope           KnowledgeScope
+  bot_id          String?
+  kind            KnowledgeKind
+  title           String
+  file_id         String?        @unique
+  url             String?
+  content         String?
+  added_by_id     String?
+  indexed_at      DateTime?
+  deleted_at      DateTime?
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  organization Organization    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  bot          Bot?            @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  file         File?           @relation(fields: [file_id], references: [id], onDelete: SetNull)
+  added_by     User?           @relation(fields: [added_by_id], references: [id], onDelete: SetNull)
+  links        KnowledgeLink[]
+
+  @@index([organization_id, scope])
+  @@index([bot_id])
+  @@index([added_by_id])
+  @@map("knowledge_items")
+}
+
+/// Links in a knowledge item that were crawled (one row per fetched page).
+model KnowledgeLink {
+  id                String    @id @default(uuid())
+  knowledge_item_id String
+  url               String
+  title             String?
+  fetched_at        DateTime?
+  fetched_by_id     String?
+  created_at        DateTime  @default(now())
+
+  knowledge_item KnowledgeItem @relation(fields: [knowledge_item_id], references: [id], onDelete: Cascade)
+  fetched_by     User?         @relation(fields: [fetched_by_id], references: [id], onDelete: SetNull)
+
+  @@index([knowledge_item_id])
+  @@index([fetched_by_id])
+  @@map("knowledge_links")
+}
+
+/// §6.3 — bot memory (per user or shared) and organisation-level memory.
+model Memory {
+  id                     String     @id @default(uuid())
+  organization_id        String
+  kind                   MemoryKind
+  bot_id                 String?
+  user_id                String?
+  content                String
+  source_conversation_id String?
+  source_message_id      String?
+  last_recalled_at       DateTime?
+  created_at             DateTime   @default(now())
+  updated_at             DateTime   @updatedAt
+
+  organization        Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  bot                 Bot?          @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  user                User?         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  source_conversation Conversation? @relation(fields: [source_conversation_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, kind])
+  @@index([bot_id, user_id])
+  @@index([user_id])
+  @@index([source_conversation_id])
+  @@map("memories")
+}
+
+// =====================================================================
+// CONVERSATIONS AND MESSAGES (§7)
+// =====================================================================
+
+model ConversationFolder {
+  id              String   @id @default(uuid())
+  organization_id String
+  user_id         String
+  name            String
+  sort_order      Int      @default(0)
+  created_at      DateTime @default(now())
+  updated_at      DateTime @updatedAt
+
+  organization Organization              @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User                      @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  participants ConversationParticipant[]
+
+  @@index([user_id, organization_id])
+  @@index([organization_id])
+  @@map("conversation_folders")
+}
+
+model Conversation {
+  id              String           @id @default(uuid())
+  organization_id String
+  type            ConversationType
+  name            String?
+  emoji           String?
+  color           String?
+  lead_bot_id     String?
+  created_by_id   String?
+  is_temporary    Boolean          @default(false)
+  last_message_at DateTime?
+  message_count   Int              @default(0)
+  deleted_at      DateTime?
+  created_at      DateTime         @default(now())
+  updated_at      DateTime         @updatedAt
+
+  organization        Organization              @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  lead_bot            Bot?                      @relation("ConversationLeadBot", fields: [lead_bot_id], references: [id], onDelete: SetNull)
+  created_by          User?                     @relation("ConversationCreator", fields: [created_by_id], references: [id], onDelete: SetNull)
+  participants        ConversationParticipant[]
+  messages            Message[]
+  runs                Run[]
+  approvals           Approval[]
+  voice_sessions      VoiceSession[]
+  memories            Memory[]
+  artifacts           Artifact[]
+  files               File[]
+  automations_results Automation[]              @relation("AutomationResultConversation")
+  automations_source  Automation[]              @relation("AutomationSourceConversation")
+  saved_widgets       SavedWidget[]
+
+  @@index([organization_id, type])
+  @@index([lead_bot_id])
+  @@index([created_by_id])
+  @@index([last_message_at])
+  @@index([deleted_at])
+  @@map("conversations")
+}
+
+/// A user or a bot in a conversation. Exactly one of user_id / bot_id is set.
+model ConversationParticipant {
+  id              String    @id @default(uuid())
+  conversation_id String
+  user_id         String?
+  bot_id          String?
+  folder_id       String?
+  is_favourite    Boolean   @default(false)
+  is_archived     Boolean   @default(false)
+  is_muted        Boolean   @default(false)
+  last_read_at    DateTime?
+  unread_count    Int       @default(0)
+  joined_at       DateTime  @default(now())
+  left_at         DateTime?
+
+  conversation Conversation        @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  user         User?               @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  bot          Bot?                @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  folder       ConversationFolder? @relation(fields: [folder_id], references: [id], onDelete: SetNull)
+
+  @@unique([conversation_id, user_id])
+  @@unique([conversation_id, bot_id])
+  @@index([user_id, is_archived])
+  @@index([bot_id])
+  @@index([folder_id])
+  @@map("conversation_participants")
+}
+
+model Message {
+  id                     String            @id @default(uuid())
+  organization_id        String
+  conversation_id        String
+  author_type            MessageAuthorType
+  author_user_id         String?
+  author_bot_id          String?
+  source                 MessageSource     @default(TEXT)
+  status                 MessageStatus     @default(COMPLETED)
+  /// Plain-text content (also the fallback for interactive replies). Secrets are masked before storage (§8.8).
+  content                String?
+  /// Vercel AI SDK message parts: text, tool-invocation, interactive (json-render spec / mini-app), approval, secret-input, file…
+  parts                  Json?
+  run_id                 String?
+  parent_message_id      String? // thread reply
+  branch_from_message_id String? // "try a different approach"
+  branch_index           Int               @default(0)
+  model_id               String? // which model produced it (for compare / retry)
+  is_pinned              Boolean           @default(false)
+  pinned_by_id           String?
+  pinned_at              DateTime?
+  edited_at              DateTime?
+  secret_masked          Boolean           @default(false)
+  deleted_at             DateTime?
+  created_at             DateTime          @default(now())
+  updated_at             DateTime          @updatedAt
+
+  organization          Organization          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  conversation          Conversation          @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  author_user           User?                 @relation("MessageUserAuthor", fields: [author_user_id], references: [id], onDelete: SetNull)
+  author_bot            Bot?                  @relation("MessageBotAuthor", fields: [author_bot_id], references: [id], onDelete: SetNull)
+  run                   Run?                  @relation("RunMessages", fields: [run_id], references: [id], onDelete: SetNull)
+  parent                Message?              @relation("MessageThread", fields: [parent_message_id], references: [id], onDelete: SetNull)
+  replies               Message[]             @relation("MessageThread")
+  branch_from           Message?              @relation("MessageBranch", fields: [branch_from_message_id], references: [id], onDelete: SetNull)
+  branches              Message[]             @relation("MessageBranch")
+  pinned_by             User?                 @relation("MessagePinnedBy", fields: [pinned_by_id], references: [id], onDelete: SetNull)
+  files                 MessageFile[]
+  reactions             MessageReaction[]
+  mentions              MessageMention[]
+  approvals             Approval[]
+  interactive_responses InteractiveResponse[]
+  saved_widgets         SavedWidget[]
+  artifacts             Artifact[]
+  triggered_runs        Run[]                 @relation("RunTriggerMessage")
+
+  @@index([conversation_id, created_at])
+  @@index([organization_id])
+  @@index([author_user_id])
+  @@index([author_bot_id])
+  @@index([run_id])
+  @@index([parent_message_id])
+  @@index([branch_from_message_id])
+  @@index([pinned_by_id])
+  @@index([conversation_id, is_pinned])
+  @@map("messages")
+}
+
+model MessageFile {
+  message_id String
+  file_id    String
+  sort_order Int    @default(0)
+
+  message Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  file    File    @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+  @@id([message_id, file_id])
+  @@index([file_id])
+  @@map("message_files")
+}
+
+model MessageReaction {
+  id         String   @id @default(uuid())
+  message_id String
+  user_id    String
+  emoji      String
+  created_at DateTime @default(now())
+
+  message Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([message_id, user_id, emoji])
+  @@index([user_id])
+  @@map("message_reactions")
+}
+
+/// @mentions of users/bots and /mentions of skills inside a message.
+model MessageMention {
+  id         String  @id @default(uuid())
+  message_id String
+  user_id    String?
+  bot_id     String?
+  skill_id   String?
+
+  message Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+  skill   Skill?  @relation(fields: [skill_id], references: [id], onDelete: SetNull)
+
+  @@index([message_id])
+  @@index([user_id])
+  @@index([bot_id])
+  @@index([skill_id])
+  @@map("message_mentions")
+}
+
+/// §7.4 — a user's input into an interactive reply (form submission, vote, click). Combined in groups.
+model InteractiveResponse {
+  id           String   @id @default(uuid())
+  message_id   String
+  component_id String
+  user_id      String
+  payload      Json
+  created_at   DateTime @default(now())
+
+  message Message @relation(fields: [message_id], references: [id], onDelete: Cascade)
+
+  @@index([message_id, component_id])
+  @@index([user_id])
+  @@map("interactive_responses")
+}
+
+/// §7.4 — an interactive reply saved as a widget, refreshed each time it's opened.
+model SavedWidget {
+  id                String   @id @default(uuid())
+  organization_id   String
+  user_id           String
+  conversation_id   String?
+  source_message_id String?
+  title             String
+  spec              Json // json-render spec or mini-app source + data query
+  refresh_prompt    String?
+  created_at        DateTime @default(now())
+  updated_at        DateTime @updatedAt
+
+  organization   Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user           User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  conversation   Conversation? @relation(fields: [conversation_id], references: [id], onDelete: SetNull)
+  source_message Message?      @relation(fields: [source_message_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id, organization_id])
+  @@index([organization_id])
+  @@index([conversation_id])
+  @@index([source_message_id])
+  @@map("saved_widgets")
+}
+
+// =====================================================================
+// RUNS, STEPS, APPROVALS, VOICE (§7.3, §10.1, §11, §7.6, §14.4)
+// =====================================================================
+
+/// A bot run: chat reply, long task, automation run or bot-to-bot request. Job ID in `agent-runs` = run ID.
+model Run {
+  id                  String    @id @default(uuid())
+  organization_id     String
+  conversation_id     String?
+  bot_id              String
+  user_id             String? // on whose behalf
+  type                RunType
+  status              RunStatus @default(QUEUED)
+  priority            Int       @default(3)
+  title               String?
+  trigger_message_id  String?
+  parent_run_id       String? // bot-to-bot: the run that asked
+  requested_by_bot_id String?
+  automation_run_id   String?   @unique
+  voice_session_id    String?
+  model_id            String?
+  fallback_used       Boolean   @default(false)
+  skill_id            String?
+  uses_computer       Boolean   @default(false)
+  /// Saved loop state while waiting (§14.4 "Waiting doesn't hold a worker").
+  state               Json?
+  error               String?
+  input_tokens        Int       @default(0)
+  output_tokens       Int       @default(0)
+  cost                Decimal   @default(0) @db.Decimal(12, 6)
+  queued_at           DateTime  @default(now())
+  started_at          DateTime?
+  finished_at         DateTime?
+  deadline_at         DateTime?
+  last_check_in_at    DateTime?
+  created_at          DateTime  @default(now())
+  updated_at          DateTime  @updatedAt
+
+  organization      Organization       @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  conversation      Conversation?      @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  bot               Bot                @relation("RunBot", fields: [bot_id], references: [id], onDelete: Cascade)
+  user              User?              @relation("RunUser", fields: [user_id], references: [id], onDelete: SetNull)
+  trigger_message   Message?           @relation("RunTriggerMessage", fields: [trigger_message_id], references: [id], onDelete: SetNull)
+  parent_run        Run?               @relation("RunParent", fields: [parent_run_id], references: [id], onDelete: SetNull)
+  child_runs        Run[]              @relation("RunParent")
+  requested_by_bot  Bot?               @relation("RunRequestedByBot", fields: [requested_by_bot_id], references: [id], onDelete: SetNull)
+  automation_run    AutomationRun?     @relation(fields: [automation_run_id], references: [id], onDelete: SetNull)
+  voice_session     VoiceSession?      @relation(fields: [voice_session_id], references: [id], onDelete: SetNull)
+  model             AiModel?           @relation(fields: [model_id], references: [id], onDelete: SetNull)
+  skill             Skill?             @relation(fields: [skill_id], references: [id], onDelete: SetNull)
+  messages          Message[]          @relation("RunMessages")
+  steps             RunStep[]
+  approvals         Approval[]
+  computer_sessions ComputerSession[]
+  transfers         ComputerTransfer[]
+  usage_records     UsageRecord[]
+  activity_logs     ActivityLog[]
+  artifact_versions ArtifactVersion[]
+  files             File[]
+
+  @@index([organization_id, status])
+  @@index([conversation_id, bot_id, status])
+  @@index([bot_id])
+  @@index([user_id, status])
+  @@index([trigger_message_id])
+  @@index([parent_run_id])
+  @@index([requested_by_bot_id])
+  @@index([voice_session_id])
+  @@index([model_id])
+  @@index([skill_id])
+  @@index([type, status])
+  @@map("runs")
+}
+
+/// §7.3 — the live activity feed. Also published to the conversation's Redis Stream.
+model RunStep {
+  id               String        @id @default(uuid())
+  run_id           String
+  sequence         Int
+  type             RunStepType
+  status           RunStepStatus @default(RUNNING)
+  title            String // "Searching your Gmail (sales@)…"
+  tool_name        String?
+  runs_on          ToolRunsOn    @default(SERVER)
+  connection_id    String?
+  device_id        String?
+  skill_id         String?
+  consulted_bot_id String?
+  /// Redacted input/output (§8.7 redaction applied before storage).
+  input            Json?
+  output           Json?
+  error            String?
+  started_at       DateTime      @default(now())
+  finished_at      DateTime?
+  duration_ms      Int?
+
+  run        Run         @relation(fields: [run_id], references: [id], onDelete: Cascade)
+  connection Connection? @relation(fields: [connection_id], references: [id], onDelete: SetNull)
+  device     Device?     @relation(fields: [device_id], references: [id], onDelete: SetNull)
+  skill      Skill?      @relation(fields: [skill_id], references: [id], onDelete: SetNull)
+
+  @@unique([run_id, sequence])
+  @@index([connection_id])
+  @@index([device_id])
+  @@index([skill_id])
+  @@index([consulted_bot_id])
+  @@map("run_steps")
+}
+
+/// §11 — an approval request. Delayed `approvals.timeout` job ID = approval:<id>.
+model Approval {
+  id                 String         @id @default(uuid())
+  organization_id    String
+  run_id             String
+  conversation_id    String?
+  message_id         String?
+  bot_id             String
+  requested_from_id  String? // the user who must answer
+  action_type        ActionType
+  title              String
+  /// The exact preview shown on the card (e.g. the email to be sent). Secrets never included.
+  preview            Json
+  /// Tool call held open until resolved.
+  tool_call_id       String?
+  status             ApprovalStatus @default(PENDING)
+  is_urgent          Boolean        @default(false)
+  requires_tap       Boolean        @default(false) // payments / passwords: never voice alone
+  requires_biometric Boolean        @default(false)
+  resolved_via_voice Boolean        @default(false)
+  edited_payload     Json?
+  resolved_by_id     String?
+  resolved_at        DateTime?
+  timeout_at         DateTime?
+  created_at         DateTime       @default(now())
+  updated_at         DateTime       @updatedAt
+
+  organization Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  run          Run           @relation(fields: [run_id], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  message      Message?      @relation(fields: [message_id], references: [id], onDelete: SetNull)
+  bot          Bot           @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  resolved_by  User?         @relation("ApprovalResolver", fields: [resolved_by_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, status])
+  @@index([run_id])
+  @@index([conversation_id])
+  @@index([message_id])
+  @@index([bot_id])
+  @@index([requested_from_id, status])
+  @@index([resolved_by_id])
+  @@index([timeout_at])
+  @@map("approvals")
+}
+
+/// §7.6 — one real-time voice session (OpenAI Realtime). Audio is never stored.
+model VoiceSession {
+  id                  String                 @id @default(uuid())
+  organization_id     String
+  conversation_id     String
+  user_id             String
+  bot_id              String
+  provider_session_id String?
+  input_mode          VoiceInputMode         @default(HANDS_FREE)
+  voice               String?
+  started_at          DateTime               @default(now())
+  ended_at            DateTime?
+  end_reason          VoiceSessionEndReason?
+  audio_seconds       Int                    @default(0)
+  input_tokens        Int                    @default(0)
+  output_tokens       Int                    @default(0)
+  cost                Decimal                @default(0) @db.Decimal(12, 6)
+  created_at          DateTime               @default(now())
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  conversation Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  bot          Bot          @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  runs         Run[]
+
+  @@index([organization_id, started_at])
+  @@index([conversation_id])
+  @@index([user_id])
+  @@index([bot_id])
+  @@map("voice_sessions")
+}
+
+// =====================================================================
+// SKILLS (§6.7)
+// =====================================================================
+
+model Skill {
+  id              String       @id @default(uuid())
+  organization_id String? // null = platform starter skill
+  owner_id        String?
+  name            String
+  emoji           String?
+  slug            String // "/client-onboarding"
+  description     String
+  instructions    String
+  /// Questions to ask first: [{ key, question, required }]
+  questions       Json         @default("[]")
+  /// Tools and connections needed: [{ service_key, tools? }]
+  required_tools  Json         @default("[]")
+  result          String?
+  sharing_level   SharingLevel @default(PRIVATE)
+  is_starter      Boolean      @default(false)
+  starter_key     String?      @unique
+  imported_from   String?
+  current_version Int          @default(1)
+  deleted_at      DateTime?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  organization Organization?              @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner        User?                      @relation("SkillOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  versions     SkillVersion[]
+  shares       SkillShare[]
+  files        SkillFile[]
+  bots         BotSkill[]
+  templates    BotTemplateSkill[]
+  runs         Run[]
+  run_steps    RunStep[]
+  mentions     MessageMention[]
+  automations  Automation[]
+  starter_orgs OrganizationStarterSkill[]
+
+  @@unique([organization_id, slug])
+  @@index([organization_id, sharing_level])
+  @@index([owner_id])
+  @@index([is_starter])
+  @@index([deleted_at])
+  @@map("skills")
+}
+
+/// Every change creates a version; earlier versions can be viewed and restored.
+model SkillVersion {
+  id                    String   @id @default(uuid())
+  skill_id              String
+  version               Int
+  name                  String
+  emoji                 String?
+  description           String
+  instructions          String
+  questions             Json
+  required_tools        Json
+  result                String?
+  change_summary        String?
+  created_by_id         String?
+  restored_from_version Int?
+  created_at            DateTime @default(now())
+
+  skill      Skill @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+  created_by User? @relation(fields: [created_by_id], references: [id], onDelete: SetNull)
+
+  @@unique([skill_id, version])
+  @@index([created_by_id])
+  @@map("skill_versions")
+}
+
+model SkillShare {
+  id         String    @id @default(uuid())
+  skill_id   String
+  user_id    String
+  role       SkillRole @default(USER)
+  created_at DateTime  @default(now())
+
+  skill Skill @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([skill_id, user_id])
+  @@index([user_id])
+  @@map("skill_shares")
+}
+
+model SkillFile {
+  skill_id   String
+  file_id    String
+  created_at DateTime @default(now())
+
+  skill Skill @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+  file  File  @relation(fields: [file_id], references: [id], onDelete: Cascade)
+
+  @@id([skill_id, file_id])
+  @@index([file_id])
+  @@map("skill_files")
+}
+
+/// §13.4 Skills — which starter skills an organisation shows its members.
+model OrganizationStarterSkill {
+  organization_id String
+  skill_id        String
+  enabled         Boolean @default(true)
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  skill        Skill        @relation(fields: [skill_id], references: [id], onDelete: Cascade)
+
+  @@id([organization_id, skill_id])
+  @@index([skill_id])
+  @@map("organization_starter_skills")
+}
+
+// =====================================================================
+// ARTIFACTS (§7.5)
+// =====================================================================
+
+model Artifact {
+  id                     String               @id @default(uuid())
+  organization_id        String
+  owner_id               String?
+  conversation_id        String?
+  message_id             String?
+  duplicated_from_id     String?
+  title                  String
+  slug                   String // readable link ".../a/q4-webinar"
+  type                   ArtifactType         @default(OTHER)
+  description            String?
+  sharing_level          ArtifactSharingLevel @default(PRIVATE)
+  // Public link
+  public_enabled         Boolean              @default(false)
+  public_password_hash   String?
+  public_expires_at      DateTime?
+  allow_search_engines   Boolean              @default(false)
+  allow_embedding        Boolean              @default(true)
+  public_ai_enabled      Boolean              @default(true)
+  public_uploads_enabled Boolean              @default(true)
+  // Publishing
+  review_before_publish  Boolean              @default(false)
+  current_version_id     String?              @unique
+  draft_version_id       String?              @unique
+  // Stats
+  view_count             Int                  @default(0)
+  use_count              Int                  @default(0)
+  is_pinned_by           Json? // { userId: true } — per-user pins; kept small
+  taken_down_at          DateTime?
+  deleted_at             DateTime?
+  created_at             DateTime             @default(now())
+  updated_at             DateTime             @updatedAt
+
+  organization    Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner           User?             @relation("ArtifactOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  conversation    Conversation?     @relation(fields: [conversation_id], references: [id], onDelete: SetNull)
+  message         Message?          @relation(fields: [message_id], references: [id], onDelete: SetNull)
+  duplicated_from Artifact?         @relation("ArtifactDuplicate", fields: [duplicated_from_id], references: [id], onDelete: SetNull)
+  duplicates      Artifact[]        @relation("ArtifactDuplicate")
+  current_version ArtifactVersion?  @relation("ArtifactCurrentVersion", fields: [current_version_id], references: [id], onDelete: SetNull)
+  draft_version   ArtifactVersion?  @relation("ArtifactDraftVersion", fields: [draft_version_id], references: [id], onDelete: SetNull)
+  versions        ArtifactVersion[] @relation("ArtifactVersions")
+  shares          ArtifactShare[]
+  comments        ArtifactComment[]
+  records         ArtifactRecord[]
+  reports         ArtifactReport[]
+  files           File[]
+  usage_records   UsageRecord[]
+
+  @@unique([organization_id, slug])
+  @@index([organization_id, sharing_level])
+  @@index([owner_id])
+  @@index([conversation_id])
+  @@index([message_id])
+  @@index([duplicated_from_id])
+  @@index([public_enabled])
+  @@index([deleted_at])
+  @@map("artifacts")
+}
+
+/// Immutable published build per version, stored at artifacts/<artifactId>/<versionId>/ in the artifacts bucket.
+model ArtifactVersion {
+  id                    String                @id @default(uuid())
+  artifact_id           String
+  version               Int
+  status                ArtifactVersionStatus @default(PUBLISHED)
+  label                 String? // "Sent to client"
+  change_summary        String?
+  /// Source (React + shadcn) for editing / diffing.
+  source                Json
+  bundle_path           String?
+  created_by_id         String?
+  run_id                String?
+  restored_from_version Int?
+  published_at          DateTime?
+  created_at            DateTime              @default(now())
+
+  artifact   Artifact  @relation("ArtifactVersions", fields: [artifact_id], references: [id], onDelete: Cascade)
+  created_by User?     @relation(fields: [created_by_id], references: [id], onDelete: SetNull)
+  run        Run?      @relation(fields: [run_id], references: [id], onDelete: SetNull)
+  current_of Artifact? @relation("ArtifactCurrentVersion")
+  draft_of   Artifact? @relation("ArtifactDraftVersion")
+
+  @@unique([artifact_id, version])
+  @@index([created_by_id])
+  @@index([run_id])
+  @@map("artifact_versions")
+}
+
+/// Per-member role, or organisation-wide role when user_id is null.
+model ArtifactShare {
+  id          String       @id @default(uuid())
+  artifact_id String
+  user_id     String?
+  role        ArtifactRole @default(VIEWER)
+  created_at  DateTime     @default(now())
+
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  user     User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([artifact_id, user_id])
+  @@index([user_id])
+  @@map("artifact_shares")
+}
+
+model ArtifactComment {
+  id                String    @id @default(uuid())
+  artifact_id       String
+  author_id         String?
+  parent_comment_id String?
+  /// Where in the artifact (element selector / version anchor).
+  anchor            Json?
+  content           String
+  mentioned_bot_id  String?
+  resolved_at       DateTime?
+  deleted_at        DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
+
+  artifact      Artifact          @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  author        User?             @relation(fields: [author_id], references: [id], onDelete: SetNull)
+  parent        ArtifactComment?  @relation("ArtifactCommentThread", fields: [parent_comment_id], references: [id], onDelete: Cascade)
+  replies       ArtifactComment[] @relation("ArtifactCommentThread")
+  mentioned_bot Bot?              @relation("ArtifactCommentBotMention", fields: [mentioned_bot_id], references: [id], onDelete: SetNull)
+
+  @@index([artifact_id, created_at])
+  @@index([author_id])
+  @@index([parent_comment_id])
+  @@index([mentioned_bot_id])
+  @@map("artifact_comments")
+}
+
+/// §7.5 "Save information" — stored data entered by visitors/members (form responses, votes, tracker items).
+model ArtifactRecord {
+  id              String    @id @default(uuid())
+  artifact_id     String
+  collection      String
+  data            Json
+  submitted_by_id String? // null for public visitors
+  visitor_id      String? // anonymous visitor cookie id
+  deleted_at      DateTime?
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+
+  @@index([artifact_id, collection])
+  @@index([submitted_by_id])
+  @@map("artifact_records")
+}
+
+model ArtifactReport {
+  id             String               @id @default(uuid())
+  artifact_id    String
+  reporter_id    String?
+  reporter_email String?
+  reason         String
+  status         ArtifactReportStatus @default(OPEN)
+  reviewed_at    DateTime?
+  created_at     DateTime             @default(now())
+
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  reporter User?    @relation(fields: [reporter_id], references: [id], onDelete: SetNull)
+
+  @@index([artifact_id, status])
+  @@index([reporter_id])
+  @@map("artifact_reports")
+}
+
+// =====================================================================
+// CONNECTIONS, CREDENTIALS, TOOL SERVERS (§8)
+// =====================================================================
+
+/// A linked account. COMPOSIO rows hold only the Composio connected-account ID; API_KEY/MCP rows point to a Credential.
+model Connection {
+  id                            String           @id @default(uuid())
+  organization_id               String
+  owner_id                      String? // null when shared and owner left
+  kind                          ConnectionKind
+  service_key                   String // "gmail", "hubspot", "mailchimp"…
+  service_name                  String
+  label                         String // "Gmail – Sales"
+  account_identifier            String? // email / username shown in the UI
+  visibility                    Visibility       @default(PRIVATE)
+  restricted_to_bots            Boolean          @default(false)
+  status                        ConnectionStatus @default(ACTIVE)
+  status_message                String?
+  composio_connected_account_id String?          @unique
+  composio_auth_config_id       String?
+  credential_id                 String?          @unique
+  tool_server_id                String?          @unique
+  last_synced_at                DateTime?
+  last_used_at                  DateTime?
+  deleted_at                    DateTime?
+  created_at                    DateTime         @default(now())
+  updated_at                    DateTime         @updatedAt
+
+  organization          Organization                    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner                 User?                           @relation("ConnectionOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  credential            Credential?                     @relation(fields: [credential_id], references: [id], onDelete: SetNull)
+  tool_server           ToolServer?                     @relation(fields: [tool_server_id], references: [id], onDelete: SetNull)
+  bot_connections       BotConnection[]
+  bot_restrictions      ConnectionBotRestriction[]
+  run_steps             RunStep[]
+  automation_links      AutomationConnection[]
+  pre_approvals         AutomationPreApproval[]
+  result_destinations   AutomationResultDestination[]
+  transfers             ComputerTransfer[]
+  activity_logs         ActivityLog[]
+  user_defaults         UserServiceDefault[]
+  trigger_subscriptions AutomationTriggerSubscription[]
+
+  @@index([organization_id, visibility, status])
+  @@index([owner_id])
+  @@index([service_key])
+  @@index([deleted_at])
+  @@map("connections")
+}
+
+/// §8.3 — a shared connection "limited to specific bots".
+model ConnectionBotRestriction {
+  connection_id String
+  bot_id        String
+  created_at    DateTime @default(now())
+
+  connection Connection @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+  bot        Bot        @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+
+  @@id([connection_id, bot_id])
+  @@index([bot_id])
+  @@map("connection_bot_restrictions")
+}
+
+/// §8.7 / §8.9 — credential METADATA only. The value lives in Secret Manager as `cred-<id>`.
+model Credential {
+  id                   String              @id @default(uuid())
+  organization_id      String
+  owner_type           CredentialOwnerType @default(USER)
+  owner_id             String?
+  kind                 CredentialKind
+  label                String
+  service_key          String?
+  service_name         String?
+  visibility           Visibility          @default(PRIVATE)
+  status               CredentialStatus    @default(ACTIVE)
+  masked_hint          String? // "…a9f2"
+  expires_at           DateTime?
+  scope                String?
+  secret_resource_name String              @unique // projects/<p>/secrets/cred-<id>
+  secret_version       String?
+  last_tested_at       DateTime?
+  last_used_at         DateTime?
+  last_used_bot_id     String?
+  deleted_at           DateTime?
+  created_at           DateTime            @default(now())
+  updated_at           DateTime            @updatedAt
+
+  organization  Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner         User?             @relation("CredentialOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  last_used_bot Bot?              @relation("CredentialLastUsedBot", fields: [last_used_bot_id], references: [id], onDelete: SetNull)
+  connection    Connection?
+  tool_server   ToolServer?
+  bots          BotCredential[]
+  events        CredentialEvent[]
+
+  @@index([organization_id, visibility, status])
+  @@index([owner_id])
+  @@index([last_used_bot_id])
+  @@index([deleted_at])
+  @@map("credentials")
+}
+
+/// §8.9 "History" — every lifecycle event and every use. Values never recorded.
+model CredentialEvent {
+  id            String              @id @default(uuid())
+  credential_id String
+  type          CredentialEventType
+  actor_user_id String?
+  actor_bot_id  String?
+  run_id        String?
+  action        String?
+  metadata      Json?
+  created_at    DateTime            @default(now())
+
+  credential Credential @relation(fields: [credential_id], references: [id], onDelete: Cascade)
+  actor_user User?      @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+
+  @@index([credential_id, created_at])
+  @@index([actor_user_id])
+  @@index([actor_bot_id])
+  @@map("credential_events")
+}
+
+/// §8.4 — custom MCP tool server. Tools are listed from the server and cached in Redis.
+model ToolServer {
+  id              String             @id @default(uuid())
+  organization_id String
+  owner_id        String?
+  name            String
+  url             String
+  auth_kind       ToolServerAuthKind @default(NONE)
+  credential_id   String?            @unique
+  visibility      Visibility         @default(PRIVATE)
+  status          ToolServerStatus   @default(ACTIVE)
+  status_message  String?
+  tool_count      Int                @default(0)
+  last_listed_at  DateTime?
+  deleted_at      DateTime?
+  created_at      DateTime           @default(now())
+  updated_at      DateTime           @updatedAt
+
+  organization Organization    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner        User?           @relation("ToolServerOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  credential   Credential?     @relation(fields: [credential_id], references: [id], onDelete: SetNull)
+  connection   Connection?
+  bots         BotToolServer[]
+
+  @@index([organization_id, visibility])
+  @@index([owner_id])
+  @@index([deleted_at])
+  @@map("tool_servers")
+}
+
+// =====================================================================
+// FILES (§7.7)
+// =====================================================================
+
+model File {
+  id                  String     @id @default(uuid())
+  organization_id     String?
+  uploaded_by_id      String?
+  bucket              FileBucket
+  area                FileArea
+  object_path         String     @unique // orgs/<orgId>/<area>/<fileId>
+  filename            String
+  mimetype            String
+  size                BigInt
+  status              FileStatus @default(PENDING)
+  checksum            String?
+  // Parent record (at most one set)
+  conversation_id     String?
+  bot_id              String?
+  skill_id            String?
+  artifact_id         String?
+  automation_id       String?
+  run_id              String?
+  computer_session_id String?
+  is_public_upload    Boolean    @default(false)
+  visitor_id          String?
+  deleted_at          DateTime?
+  purge_after         DateTime?
+  expires_at          DateTime? // exports: 7 days
+  created_at          DateTime   @default(now())
+  updated_at          DateTime   @updatedAt
+
+  organization     Organization?      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  uploaded_by      User?              @relation("FileUploader", fields: [uploaded_by_id], references: [id], onDelete: SetNull)
+  conversation     Conversation?      @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  skill            SkillFile[]
+  artifact         Artifact?          @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  automation       Automation?        @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  run              Run?               @relation(fields: [run_id], references: [id], onDelete: SetNull)
+  computer_session ComputerSession?   @relation("ComputerSessionFiles", fields: [computer_session_id], references: [id], onDelete: SetNull)
+  messages         MessageFile[]
+  knowledge_item   KnowledgeItem?
+  user_avatar      User?              @relation("UserAvatar")
+  org_logo         Organization?      @relation("OrganizationLogo")
+  bot_image        Bot?               @relation("BotImage")
+  replay_of        ComputerSession?   @relation("ComputerSessionReplay")
+  export           DataExport?
+  transfers        ComputerTransfer[]
+
+  @@index([organization_id, area])
+  @@index([uploaded_by_id])
+  @@index([conversation_id])
+  @@index([bot_id])
+  @@index([skill_id])
+  @@index([artifact_id])
+  @@index([automation_id])
+  @@index([run_id])
+  @@index([computer_session_id])
+  @@index([status])
+  @@index([deleted_at, purge_after])
+  @@index([expires_at])
+  @@map("files")
+}
+
+// =====================================================================
+// CLOUD COMPUTERS (§9)
+// =====================================================================
+
+/// One Daytona sandbox per bot (when enabled). Idle-pause job ID = computer-idle:<botId>.
+model CloudComputer {
+  id                  String              @id @default(uuid())
+  organization_id     String
+  bot_id              String              @unique
+  daytona_sandbox_id  String?             @unique
+  status              CloudComputerStatus @default(OFF)
+  status_message      String?
+  storage_used_bytes  BigInt              @default(0)
+  storage_limit_bytes BigInt?
+  last_active_at      DateTime?
+  paused_at           DateTime?
+  session_started_at  DateTime?
+  total_minutes       Int                 @default(0)
+  created_at          DateTime            @default(now())
+  updated_at          DateTime            @updatedAt
+
+  organization       Organization       @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  bot                Bot                @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  sessions           ComputerSession[]
+  signed_in_websites SignedInWebsite[]
+  transfers          ComputerTransfer[]
+
+  @@index([organization_id, status])
+  @@map("cloud_computers")
+}
+
+/// A period of use: a bot run, or a user exploring manually. Replay is a File in the replays bucket.
+model ComputerSession {
+  id                String              @id @default(uuid())
+  cloud_computer_id String
+  kind              ComputerSessionKind
+  run_id            String?
+  user_id           String? // who explored / took control
+  started_at        DateTime            @default(now())
+  ended_at          DateTime?
+  minutes           Int                 @default(0)
+  replay_file_id    String?             @unique
+  /// [{ from, to, reason: "take_control" | "secure_sign_in" }] — hidden in replay (§9.4)
+  hidden_ranges     Json?
+  control_events    Json? // [{ at, event: "take_control" | "hand_back" }]
+  created_at        DateTime            @default(now())
+
+  cloud_computer CloudComputer @relation(fields: [cloud_computer_id], references: [id], onDelete: Cascade)
+  run            Run?          @relation(fields: [run_id], references: [id], onDelete: SetNull)
+  user           User?         @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  replay_file    File?         @relation("ComputerSessionReplay", fields: [replay_file_id], references: [id], onDelete: SetNull)
+  files          File[]        @relation("ComputerSessionFiles")
+
+  @@index([cloud_computer_id, started_at])
+  @@index([run_id])
+  @@index([user_id])
+  @@map("computer_sessions")
+}
+
+/// §9.4 — websites the bot's browser profile is signed in to (from the cookie store, grouped by site).
+model SignedInWebsite {
+  id                String   @id @default(uuid())
+  cloud_computer_id String
+  domain            String
+  signed_in_at      DateTime @default(now())
+  last_seen_at      DateTime @default(now())
+
+  cloud_computer CloudComputer @relation(fields: [cloud_computer_id], references: [id], onDelete: Cascade)
+
+  @@unique([cloud_computer_id, domain])
+  @@map("signed_in_websites")
+}
+
+/// §9.5 — every copy_to_computer / copy_from_computer, with connection, source, destination and size.
+model ComputerTransfer {
+  id                String             @id @default(uuid())
+  cloud_computer_id String
+  run_id            String?
+  direction         TransferDirection
+  source_kind       TransferSourceKind
+  connection_id     String?
+  file_id           String?
+  source            String // path, URL or tool reference (no tokens / signed URLs)
+  destination       String
+  size_bytes        BigInt             @default(0)
+  succeeded         Boolean            @default(true)
+  error             String?
+  created_at        DateTime           @default(now())
+
+  cloud_computer CloudComputer @relation(fields: [cloud_computer_id], references: [id], onDelete: Cascade)
+  run            Run?          @relation(fields: [run_id], references: [id], onDelete: SetNull)
+  connection     Connection?   @relation(fields: [connection_id], references: [id], onDelete: SetNull)
+  file           File?         @relation(fields: [file_id], references: [id], onDelete: SetNull)
+
+  @@index([cloud_computer_id, created_at])
+  @@index([run_id])
+  @@index([connection_id])
+  @@index([file_id])
+  @@map("computer_transfers")
+}
+
+// =====================================================================
+// AUTOMATIONS (§10)
+// =====================================================================
+
+model Automation {
+  id                         String                @id @default(uuid())
+  organization_id            String
+  owner_id                   String
+  bot_id                     String
+  name                       String
+  instructions               String
+  skill_id                   String?
+  trigger_kind               AutomationTriggerKind
+  cron_expression            String?
+  timezone                   String?
+  device_place_id            String?
+  place_event                String? // "arrive" | "leave"
+  uses_cloud_computer        Boolean               @default(false)
+  status                     AutomationStatus      @default(ACTIVE)
+  status_reason              String?
+  source_conversation_id     String?
+  results_conversation_id    String?
+  /// Notes memory (JSON, max 1 MB). Files live in Cloud Storage under automations/<id>/.
+  memory_notes               Json?
+  memory_plan                String? // what the bot said it would remember
+  consecutive_failures       Int                   @default(0)
+  next_run_at                DateTime?
+  last_run_at                DateTime?
+  run_count                  Int                   @default(0)
+  pre_approvals_confirmed_at DateTime?
+  deleted_at                 DateTime?
+  created_at                 DateTime              @default(now())
+  updated_at                 DateTime              @updatedAt
+
+  organization          Organization                    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner                 User                            @relation(fields: [owner_id], references: [id], onDelete: Cascade)
+  bot                   Bot                             @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  skill                 Skill?                          @relation(fields: [skill_id], references: [id], onDelete: SetNull)
+  device_place          DevicePlace?                    @relation(fields: [device_place_id], references: [id], onDelete: SetNull)
+  source_conversation   Conversation?                   @relation("AutomationSourceConversation", fields: [source_conversation_id], references: [id], onDelete: SetNull)
+  results_conversation  Conversation?                   @relation("AutomationResultConversation", fields: [results_conversation_id], references: [id], onDelete: SetNull)
+  connections           AutomationConnection[]
+  pre_approvals         AutomationPreApproval[]
+  result_destinations   AutomationResultDestination[]
+  trigger_subscriptions AutomationTriggerSubscription[]
+  runs                  AutomationRun[]
+  files                 File[]
+
+  @@index([organization_id, status])
+  @@index([owner_id])
+  @@index([bot_id])
+  @@index([skill_id])
+  @@index([device_place_id])
+  @@index([source_conversation_id])
+  @@index([results_conversation_id])
+  @@index([next_run_at])
+  @@index([deleted_at])
+  @@map("automations")
+}
+
+model AutomationConnection {
+  automation_id String
+  connection_id String
+
+  automation Automation @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  connection Connection @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+
+  @@id([automation_id, connection_id])
+  @@index([connection_id])
+  @@map("automation_connections")
+}
+
+/// §10.3 — { action_type, connection_id, target }, e.g. { SEND_MESSAGE, slack-company, "channel:#y" }.
+model AutomationPreApproval {
+  id            String     @id @default(uuid())
+  automation_id String
+  action_type   ActionType
+  connection_id String?
+  target        String
+  created_at    DateTime   @default(now())
+
+  automation Automation  @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  connection Connection? @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+
+  @@unique([automation_id, action_type, connection_id, target])
+  @@index([connection_id])
+  @@map("automation_pre_approvals")
+}
+
+model AutomationResultDestination {
+  id              String                @id @default(uuid())
+  automation_id   String
+  kind            ResultDestinationKind
+  conversation_id String?
+  email           String?
+  connection_id   String?
+  target          String? // e.g. "channel:#security"
+
+  automation Automation  @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  connection Connection? @relation(fields: [connection_id], references: [id], onDelete: SetNull)
+
+  @@index([automation_id])
+  @@index([connection_id])
+  @@map("automation_result_destinations")
+}
+
+/// Composio trigger subscription for triggered automations.
+model AutomationTriggerSubscription {
+  id                  String   @id @default(uuid())
+  automation_id       String
+  connection_id       String
+  trigger_key         String // e.g. "HUBSPOT_NEW_DEAL"
+  composio_trigger_id String?  @unique
+  config              Json?
+  created_at          DateTime @default(now())
+
+  automation Automation @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  connection Connection @relation(fields: [connection_id], references: [id], onDelete: Cascade)
+
+  @@index([automation_id])
+  @@index([connection_id])
+  @@map("automation_trigger_subscriptions")
+}
+
+/// §10.2 run history. Skipped ticks are recorded here without a Run.
+model AutomationRun {
+  id               String              @id @default(uuid())
+  automation_id    String
+  status           AutomationRunStatus @default(QUEUED)
+  attempt          Int                 @default(1)
+  is_retry         Boolean             @default(false)
+  trigger_event_id String?
+  scheduled_for    DateTime?
+  started_at       DateTime?
+  finished_at      DateTime?
+  duration_ms      Int?
+  result_summary   String?
+  error            String?
+  created_at       DateTime            @default(now())
+
+  automation Automation @relation(fields: [automation_id], references: [id], onDelete: Cascade)
+  run        Run?
+
+  @@index([automation_id, created_at])
+  @@index([status])
+  @@map("automation_runs")
+}
+
+// =====================================================================
+// NOTIFICATIONS (§12)
+// =====================================================================
+
+model Notification {
+  id              String            @id @default(uuid())
+  organization_id String?
+  user_id         String
+  event           NotificationEvent
+  title           String
+  body            String?
+  link_path       String? // "/c/<id>", "/approvals/<id>"
+  data            Json?
+  is_urgent       Boolean           @default(false)
+  read_at         DateTime?
+  created_at      DateTime          @default(now())
+
+  organization Organization?          @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User                   @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  deliveries   NotificationDelivery[]
+
+  @@index([user_id, read_at, created_at])
+  @@index([organization_id])
+  @@map("notifications")
+}
+
+model NotificationDelivery {
+  id              String              @id @default(uuid())
+  notification_id String
+  channel         NotificationChannel
+  device_id       String?
+  status          DeliveryStatus      @default(QUEUED)
+  scheduled_for   DateTime? // delayed by quiet hours
+  sent_at         DateTime?
+  error           String?
+  attempts        Int                 @default(0)
+  created_at      DateTime            @default(now())
+
+  notification Notification @relation(fields: [notification_id], references: [id], onDelete: Cascade)
+  device       Device?      @relation(fields: [device_id], references: [id], onDelete: SetNull)
+
+  @@index([notification_id])
+  @@index([device_id])
+  @@index([status, scheduled_for])
+  @@map("notification_deliveries")
+}
+
+// =====================================================================
+// USAGE, LIMITS, BILLING (§11, §13.4)
+// =====================================================================
+
+/// Flushed from Redis counters every minute (usage.flush-counters). One row per (period, kind, org, user, bot, model, day).
+model UsageRecord {
+  id              String    @id @default(uuid())
+  organization_id String
+  user_id         String?
+  bot_id          String?
+  model_id        String?
+  artifact_id     String?
+  run_id          String?
+  kind            UsageKind
+  period          String // "2026-11"
+  day             DateTime  @db.Date
+  quantity        Decimal   @db.Decimal(18, 4) // tokens, minutes, bytes
+  cost            Decimal   @default(0) @db.Decimal(12, 6)
+  created_at      DateTime  @default(now())
+  updated_at      DateTime  @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User?        @relation(fields: [user_id], references: [id], onDelete: SetNull)
+  bot          Bot?         @relation(fields: [bot_id], references: [id], onDelete: SetNull)
+  model        AiModel?     @relation(fields: [model_id], references: [id], onDelete: SetNull)
+  artifact     Artifact?    @relation(fields: [artifact_id], references: [id], onDelete: SetNull)
+  run          Run?         @relation(fields: [run_id], references: [id], onDelete: SetNull)
+
+  @@unique([organization_id, period, day, kind, user_id, bot_id, model_id, artifact_id])
+  @@index([organization_id, period])
+  @@index([user_id, period])
+  @@index([bot_id, period])
+  @@index([model_id])
+  @@index([artifact_id])
+  @@index([run_id])
+  @@map("usage_records")
+}
+
+model UsageLimit {
+  id              String          @id @default(uuid())
+  organization_id String
+  scope           UsageLimitScope
+  user_id         String? // MEMBER scope
+  bot_id          String? // BOT scope
+  monthly_limit   Decimal         @db.Decimal(12, 4)
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  bot          Bot?         @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+
+  @@unique([organization_id, scope, user_id, bot_id])
+  @@index([user_id])
+  @@index([bot_id])
+  @@map("usage_limits")
+}
+
+model UsageAlert {
+  id              String          @id @default(uuid())
+  organization_id String
+  scope           UsageLimitScope
+  user_id         String?
+  bot_id          String?
+  period          String
+  threshold       Int // 80 / 100
+  sent_at         DateTime        @default(now())
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@unique([organization_id, scope, user_id, bot_id, period, threshold])
+  @@map("usage_alerts")
+}
+
+model Subscription {
+  id                     String             @id @default(uuid())
+  organization_id        String             @unique
+  plan                   PlanTier           @default(FREE)
+  status                 SubscriptionStatus @default(ACTIVE)
+  stripe_subscription_id String?            @unique
+  stripe_price_id        String?
+  seats                  Int                @default(1)
+  current_period_start   DateTime?
+  current_period_end     DateTime?
+  cancel_at              DateTime?
+  trial_ends_at          DateTime?
+  created_at             DateTime           @default(now())
+  updated_at             DateTime           @updatedAt
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id                String        @id @default(uuid())
+  organization_id   String
+  stripe_invoice_id String        @unique
+  number            String?
+  status            InvoiceStatus
+  currency          String        @default("eur")
+  amount_due        Decimal       @db.Decimal(12, 2)
+  amount_paid       Decimal       @default(0) @db.Decimal(12, 2)
+  usage_amount      Decimal       @default(0) @db.Decimal(12, 2)
+  hosted_url        String?
+  pdf_url           String?
+  period_start      DateTime?
+  period_end        DateTime?
+  issued_at         DateTime?
+  paid_at           DateTime?
+  created_at        DateTime      @default(now())
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@index([organization_id, issued_at])
+  @@map("invoices")
+}
+
+// =====================================================================
+// ACTIVITY HISTORY AND EXPORTS (§11, §13.4)
+// =====================================================================
+
+/// Every bot action and admin change: what, when, which account, on whose behalf. Secrets never appear.
+model ActivityLog {
+  id              String    @id @default(uuid())
+  organization_id String
+  actor_type      ActorType
+  actor_user_id   String?
+  actor_bot_id    String?
+  on_behalf_of_id String?
+  action          String // "message.sent", "connection.used", "member.role_changed", "secret.used", "device_tool.used"…
+  target_type     String?
+  target_id       String?
+  connection_id   String?
+  run_id          String?
+  device_id       String?
+  metadata        Json?
+  ip_address      String?
+  created_at      DateTime  @default(now())
+
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  actor_user   User?        @relation(fields: [actor_user_id], references: [id], onDelete: SetNull)
+  actor_bot    Bot?         @relation(fields: [actor_bot_id], references: [id], onDelete: SetNull)
+  connection   Connection?  @relation(fields: [connection_id], references: [id], onDelete: SetNull)
+  run          Run?         @relation(fields: [run_id], references: [id], onDelete: SetNull)
+  device       Device?      @relation(fields: [device_id], references: [id], onDelete: SetNull)
+
+  @@index([organization_id, created_at])
+  @@index([organization_id, action])
+  @@index([actor_user_id])
+  @@index([actor_bot_id])
+  @@index([on_behalf_of_id])
+  @@index([target_type, target_id])
+  @@index([connection_id])
+  @@index([run_id])
+  @@index([device_id])
+  @@map("activity_logs")
+}
+
+/// "Export my data", activity exports and skill exports. Files expire after 7 days.
+model DataExport {
+  id              String       @id @default(uuid())
+  organization_id String?
+  user_id         String
+  kind            ExportKind
+  status          ExportStatus @default(QUEUED)
+  params          Json?
+  file_id         String?      @unique
+  error           String?
+  expires_at      DateTime?
+  completed_at    DateTime?
+  created_at      DateTime     @default(now())
+  updated_at      DateTime     @updatedAt
+
+  organization Organization? @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  file         File?         @relation(fields: [file_id], references: [id], onDelete: SetNull)
+
+  @@index([user_id, created_at])
+  @@index([organization_id])
+  @@index([status])
+  @@map("data_exports")
+}
+
+// =====================================================================
+// PLATFORM
+// =====================================================================
+
+/// §14.1 — minimum supported app version per platform.
+model AppVersionPolicy {
+  platform        Platform @id
+  minimum_version String
+  latest_version  String?
+  update_url      String?
+  updated_at      DateTime @updatedAt
+
+  @@map("app_version_policies")
+}

@@ -1,6 +1,6 @@
 # Agent Space — Product Specification
 
-**Version:** 1.1
+**Version:** 1.2
 **Date:** 17 November 2026
 **Status:** Ready for implementation
 
@@ -275,6 +275,8 @@ While a bot works, the chat shows a clear, friendly activity feed:
 - Each step can be expanded to see details.
 - A **"Watch"** button opens the bot's cloud computer screen live.
 
+**How it's built (for the development team):** the bot run executes in a queue worker and publishes each step to the conversation's Redis Stream; the API instance holding the user's connection forwards it, and a reconnecting client resumes from the last step it received (§14.4).
+
 ### 7.4 Interactive replies
 Bots don't only reply with text. When it helps, a bot builds a small interactive screen right inside the chat: a form, a chart, a dashboard, a comparison table, a calculator or a mini-app. These appear as the bot writes, piece by piece, just like text.
 
@@ -455,7 +457,7 @@ Voice mode is not a separate, simpler assistant. It is the **same bot in the sam
 - **Same tool selection as chat:** the voice session gets the same tool set the bot would get for the same message in text chat, using the same mechanism for narrowing large tool lists.
 - **Messages:** the Realtime API's input transcription turns user speech into text, and bot speech is saved from the model's output transcript. Both are saved as normal conversation messages with `source: voice` and streamed to other participants through the existing real-time message channel. Tool calls, interactive replies and approvals use the same message parts as text chat. A message typed while voice mode is on is sent into the Realtime session as a text input.
 - **Approvals:** when a tool needs approval, the server holds the tool call open, creates the normal approval card and tells the model to ask the user. The model calls a dedicated `resolve_approval` tool to record a spoken yes or no. This is accepted only for approvals that allow voice (not payments or passwords). A tapped approval resolves the same pending call.
-- **Long tasks:** a built-in `start_task` tool hands the request to the normal task runner with the bot's chosen model. When a task finishes during a voice session, the server sends it into the session as a system event so the bot can announce it.
+- **Long tasks:** a built-in `start_task` tool hands the request to the normal task runner (an `agent-runs` job, §14.4) with the bot's chosen model. When a task finishes during a voice session, the server sends it into the session as a system event so the bot can announce it.
 - Turn detection uses the Realtime API's semantic voice activity detection. Push-to-talk turns off automatic turn detection and commits the audio when the button is released.
 - Session limits (silence timeout, maximum length, reconnect window) and usage metering (audio minutes and tokens per session) are enforced server-side.
 
@@ -509,9 +511,9 @@ Every file in Agent Space is kept in **Google Cloud Storage**: files users uploa
 - **Artifacts:** published versions are stored as immutable objects per version. The isolated artifact domain (§7.5) serves them through a server that checks the artifact's sharing settings, never from a public bucket.
 - **Deletion and retention:**
   - Deleting a record soft-deletes its files.
-  - A daily job permanently deletes objects 30 days after soft deletion, and deletes objects past the organisation's retention period (conversations, cloud computer files and replays).
-  - Deleting an organisation deletes its whole `orgs/<orgId>/` prefix in every bucket after the 30-day window.
-- **Limits and usage:** the per-file size limit is checked when the upload URL is created and again on confirmation. A nightly job adds up storage per member, bot and organisation from the database for the usage overview.
+  - A daily job (`storage.purge-deleted` and `storage.apply-retention`, §14.4) permanently deletes objects 30 days after soft deletion, and deletes objects past the organisation's retention period (conversations, cloud computer files and replays).
+  - Deleting an organisation deletes its whole `orgs/<orgId>/` prefix in every bucket after the 30-day window, through a delayed job in the `storage` queue.
+- **Limits and usage:** the per-file size limit is checked when the upload URL is created and again on confirmation. A nightly job (`storage.aggregate-usage`, §14.4) adds up storage per member, bot and organisation from the database for the usage overview.
 
 ---
 
@@ -598,7 +600,8 @@ Users don't need to know which tools are built-in and which are connected — bo
 - **Custom tool server sign-in** follows the MCP authorization spec (OAuth 2.1 with PKCE and dynamic client registration where the server supports it). Static tokens fall back to the access-key flow.
 - **Saving a pasted key:** the key goes straight from the client to the API over HTTPS. The API writes it to Secret Manager and stores only the masked hint. Request logging excludes these endpoints' bodies.
 - **Redaction:** before any tool result reaches the model, logs or traces, it is scanned for the values of the secrets used in that call, and any matches are replaced with `[secret]`. Error messages from tool servers get the same treatment.
-- **Deletion:** deleting a credential deletes its Secret Manager secret immediately. When a member is removed, a background job deletes their private credentials (and revokes them at the provider when the provider supports revocation).
+- **Deletion:** deleting a credential deletes its Secret Manager secret immediately. When a member is removed, a `connections.revoke-and-delete-credentials` job (§14.4) deletes their private credentials (and revokes them at the provider when the provider supports revocation), retrying until it succeeds.
+- **Refreshing:** custom tool server sign-ins are refreshed by a delayed `connections.refresh-token` job 5 minutes before they expire, and Composio connection status is synced every 15 minutes (§14.4). Refreshed tokens are written straight to Secret Manager as a new version; the job payload holds only the credential ID.
 - **Never fall back to plain text:** if Secret Manager is unavailable, saving fails with a clear error and tool calls needing that secret fail and are retried. Nothing is written elsewhere instead.
 - **Keys on the cloud computer:** scripts on the cloud computer never receive keys as environment variables or files. They call connected services through an Agent Space proxy reachable only from that computer. The proxy checks that the target service is allowed for that bot, adds the credential to the outgoing request and returns the response.
 
@@ -744,6 +747,8 @@ Many jobs need data from a connected service on the cloud computer, e.g. a GitHu
 - **Long tasks:** Users can give a bot a big job ("Research the 30 top competitors and build a comparison spreadsheet") and leave. The bot keeps working and notifies them when done or when it needs input.
 - **Task list:** A "Tasks" page shows everything running, waiting for approval, finished or failed, across all bots.
 
+**How it's built (for the development team):** every task is a job in the BullMQ `agent-runs` queue, run by a worker process rather than the API request, so it keeps going when the user closes the app or an API instance restarts. A task waiting for approval or input frees its worker and is resumed by a new job. The Tasks page is updated live through the user's Redis event stream (§14.4).
+
 ### 10.2 Automations
 An automation is a job a bot does again and again by itself, either on a schedule or when something happens. It can combine everything a bot can do in a chat: connected services, custom tool servers, skills, other bots, the cloud computer and artifacts.
 
@@ -844,9 +849,10 @@ The same building blocks (connections, bringing files to the cloud computer, pre
   - Notes are a JSON document of at most 1 MB per automation, kept in the database.
   - Files are kept in Cloud Storage under `orgs/<orgId>/automations/<automationId>/`.
   - The model reads memory with `automation_memory_read` and writes it with `automation_memory_write`, both available only during that automation's runs.
-- **Scheduling:**
-  - A single scheduler enqueues runs and refuses a run while another run of the same automation is active.
-  - The retry and auto-pause rules in §10.5 are enforced by the scheduler.
+- **Scheduling (BullMQ and Redis, §14.4):**
+  - Each active scheduled automation has one BullMQ job scheduler (`automation:<automationId>`) with its cron expression and time zone. Saving or resuming upserts it; pausing or deleting removes it. Composio triggers and place-based events arrive through the `triggers` queue.
+  - Every scheduled or triggered start is a `tick` job in the `automations` queue, which checks status, access and usage limits and refuses a run while another run of the same automation is active (recording it as skipped), then adds the run to `agent-runs`.
+  - The retry and auto-pause rules in §10.5 are enforced by the `automations` queue: one `retry` job delayed by 10 minutes, and pausing (with the scheduler removed) after 3 failed runs in a row.
   - The organisation's "Most frequent schedule allowed" (§13.4) is checked when an automation is saved.
 
 ---
@@ -869,6 +875,8 @@ The same building blocks (connections, bringing files to the cloud computer, pre
 - In-app, push (desktop and mobile) and email notifications.
 - Events: new message/mention, approval needed, task finished/failed, connection needs re-connecting, invitation received, automation results, artifact shared with me, comment or edit on my artifact, skill shared with me or changed.
 - Per-user settings: which events, which channels, quiet hours. Can be changed in settings or by asking a bot.
+
+**How it's built (for the development team):** every notification is a `dispatch` job in the BullMQ `notifications` queue. It applies the user's settings, sends the in-app notification through the user's Redis event stream, and adds one `email` or `push` job per channel, delayed until quiet hours end where needed and retried on failure (§14.4).
 
 ---
 
@@ -1423,13 +1431,115 @@ Device tools let a bot use things that only exist on the user's own computer or 
 **How it's built (for the development team):**
 - **Tool definitions:** device tools are ordinary tools with `runs_on: device` (§14.1) and a `platforms` list. They are offered to the model only when an online device of the right platform has them enabled.
 - **Routing:**
-  - The tool layer sends the call to the target device over the existing real-time channel.
+  - The tool layer sends the call to the target device over the existing real-time channel, routed through Redis to the API instance holding that device's connection (§14.4).
   - The device runs it through the platform layer, applying the permission switches and showing any prompts, and returns the result.
   - If there's no response within 30 seconds (2 minutes for anything waiting on the user), the call fails as "device not responding".
 - **Results:** device results pass through the same redaction, logging and approval checks as server tools. Files or images over 1 MB are uploaded to file storage (§7.7) and returned as file IDs.
 - **Permission storage:** switches are saved per device in the `devices` table (§14.1) and synced, so the server knows which tools to offer. The device enforces them again locally before running anything.
 - **Local tool servers:** started by the Electron main process from a command and arguments the user enters, connected over stdio, and their tools listed to the server marked `runs_on: device`. They stop when the app quits.
 - **Place-based triggers:** use the operating system's geofencing (up to 20 places per user, the iPhone limit). The device reports "arrived" / "left" events to the API, which starts the automation.
+
+### 14.4 Background work, queues and Redis (for the development team)
+
+Bots keep working after the user leaves, automations run while nobody is watching, and the API runs as several instances. Anything that is slow, must survive a restart, must run on a schedule, or must reach a client connected to a different API instance goes through **Redis** and **BullMQ**. Everything else stays a plain request to the API and the database.
+
+**What uses BullMQ and Redis, and what doesn't**
+| Use BullMQ / Redis for | Keep as a normal request or in-process |
+|---|---|
+| Bot runs: chat replies, long tasks, automation runs, bot-to-bot requests | Reading and saving records (settings, bots, connections, messages already written) |
+| Anything on a schedule or delay: automations, approval timeouts, idle pause of cloud computers, token refresh, clean-up, reports | Creating signed upload/download URLs (§7.7) |
+| Anything that must retry: email, push, provider revocation, webhook handling | Writing a pasted secret to Secret Manager (§8.7, §8.8) |
+| Live events that must reach whichever API instance holds the user's connection: streaming replies, live activity, task list, approvals, device tool calls | The voice-mode sideband connection and its tool calls (§7.6), which must answer within the same live session |
+| Short-lived shared state: locks, rate-limit counters, usage counters, non-secret caches | Anything that is the source of truth: the database (Postgres) always is |
+
+**Redis**
+- One Redis 7 instance per environment (staging, production), in the same EU region as the API, with persistence (AOF) on. Locally, Redis runs in Docker; `REDIS_URL` is set in each environment's `.env` file.
+- `maxmemory-policy` is `noeviction`, as BullMQ requires. Every non-queue key therefore has a TTL.
+- All keys are prefixed `as:<env>:` (BullMQ queues use the same prefix through the queue `prefix` option), so staging and production can never collide even if they share an instance.
+- The existing `RedisModule` (`api/src/core/databases/redis/`) provides the connection options; `QueuesModule` (`api/src/core/queues/`) connects BullMQ with them. The API refuses to start without `REDIS_URL` outside local development.
+- **Never in Redis:** secret values, decrypted tokens (§8.7), signed URLs, or message content beyond the live event streams below. Job payloads contain **IDs only** (run ID, automation ID, credential ID); workers load everything else from the database when the job runs.
+
+**Processes**
+- The API and the workers are the same NestJS codebase, started with `PROCESS_ROLE`:
+  - `api`: serves HTTP, GraphQL and real-time connections, and adds jobs to queues. It runs no queue workers.
+  - `worker`: runs the queue processors and no HTTP server except `/health`.
+  - `all` (local development only): both in one process.
+- Processors live in `api/src/background/<queue>/` (per the API rules), one processor class per queue. Queue names and job names are constants in `api/src/core/queues/queues.constants.ts`.
+- Workers scale horizontally; BullMQ ensures each job runs on only one worker. On shutdown, workers stop taking new jobs and wait up to 60 seconds for running jobs; unfinished jobs are picked up again by another worker (a job that stops reporting progress is marked stalled after 30 seconds and retried).
+- **Recurring work uses BullMQ job schedulers** (`queue.upsertJobScheduler`), never `@nestjs/schedule` `@Cron`, so a recurring job runs once across all instances, not once per instance. Platform schedulers are upserted at worker start-up from a single list in code.
+
+**Queues**
+| Queue | Jobs | Concurrency per worker | Retries | Notes |
+|---|---|---|---|---|
+| `agent-runs` | `run` (chat reply, task, automation run, bot-to-bot request), `resume` (after an approval or user input) | 20 | None automatically (see below) | Job ID = run ID, so a run can never be queued twice |
+| `automations` | `tick` (a scheduled or triggered start), `retry` | 20 | 3, exponential from 5 s | Decides whether a run starts; never does the work itself |
+| `triggers` | `composio-event`, `device-place-event` | 20 | 5, exponential from 5 s | Job ID = provider event ID, so repeated webhook deliveries are ignored |
+| `approvals` | `timeout` | 10 | 3 | Delayed job per pending approval with a timeout (§13.2, §13.4) |
+| `notifications` | `dispatch`, `email`, `push` | 20 | 5, exponential from 30 s | `dispatch` applies the user's settings and quiet hours, then adds one job per channel |
+| `connections` | `sync-composio-status`, `refresh-token`, `revoke-and-delete-credentials` | 10 | 5, exponential from 1 min | |
+| `cloud-computers` | `idle-pause`, `session-limit`, `process-replay` | 10 | 3 | |
+| `storage` | `purge-deleted`, `apply-retention`, `aggregate-usage` | 2 | 3 | |
+| `exports` | `user-data-export`, `activity-export` | 2 | 2 | The user is notified with a download link when done (§11, §13.4) |
+| `usage` | `flush-counters`, `limit-alerts` | 2 | 3 | |
+
+- Completed jobs are kept for 24 hours (at most 1,000 per queue); failed jobs for 14 days, for debugging.
+- Each job records its run, automation or user ID in its data and in log lines, so a job can be traced from Bull Board to the run history and back.
+
+**Bot runs (`agent-runs`)**
+- Every bot run executes in a worker, never inside the HTTP request: sending a message saves it, creates a run record (`queued`) and adds a `run` job, then returns. This is what lets the user close the app and come back (§10.1), and keeps runs going when an API instance restarts.
+- **One run at a time per bot per conversation.** The worker takes a Redis lock `as:<env>:lock:conv:<conversationId>:bot:<botId>` (renewed every 10 seconds, expiring after 30). If the lock is held, the job is moved back to delayed for 2 seconds. A message sent while the bot is still replying is therefore answered after the current reply, in order.
+- **One run at a time per cloud computer.** A run that needs the bot's computer (§9) takes `as:<env>:lock:computer:<botId>` the same way. Other runs for that bot wait for it; the activity feed shows "Waiting for the computer to be free".
+- **Waiting doesn't hold a worker.** When a run needs approval (§11), user input (an interactive reply, the secure secret box) or an offline device (§14.3), its state is saved to the database, the run is marked `waiting`, and the job completes. The approval, answer or device coming online adds a `resume` job for the same run.
+- **Stopping:** "Stop" (§7.2) sets `as:<env>:run:<runId>:cancel`; the run loop checks it between steps and before every tool call, and ends the run as `stopped`.
+- **Failures:** chat replies and tasks are not retried automatically, since a retry could repeat actions already taken; the run is marked failed and the user can re-run it (§7.2). Automation runs follow §10.5, handled by the `automations` queue, not by BullMQ retries.
+- **Priority:** chat replies have priority 1, bot-to-bot requests 2, tasks 3 and automation runs 5, so people waiting in a chat are served first when workers are busy.
+
+**Automations (`automations`, `triggers`)**
+- **Schedules:** each active scheduled automation has one BullMQ job scheduler with ID `automation:<automationId>`, using its cron expression and time zone (§10.6). Saving or resuming an automation upserts it; pausing or deleting removes it. A nightly `reconcile-schedulers` job compares schedulers with the database and fixes any difference.
+- **Triggers:** Composio webhooks are verified in the API and added to `triggers` with the event ID as job ID. The job finds the subscribed automations and adds a `tick` for each. Place-based events from devices (§14.3) do the same.
+- **Each `tick`:**
+  - Checks the automation is still active and its owner still has access to everything it uses; otherwise pauses it and notifies (§10.5).
+  - Checks usage limits (§11).
+  - If a run of this automation is still active, records "skipped" in the run history and stops (§10.5). This check uses the run records plus a lock `as:<env>:lock:automation:<automationId>` held for the length of the run.
+  - Otherwise creates the run record and adds an `agent-runs` job with priority 5.
+- **Retry and auto-pause (§10.5):** when an automation run fails, the automation service adds a `retry` job delayed by 10 minutes, once. If the retry also fails, the user is notified, and after 3 failed runs in a row the automation is paused and its scheduler removed.
+- **Most frequent schedule allowed** (§13.4) is checked on save, from the cron expression.
+
+**Live events across API instances**
+- Clients keep one real-time connection to whichever API instance they reached. Workers publish events to Redis; every API instance reads the ones its connected clients need.
+- **Conversation events** (message parts as they stream, live activity steps, interactive replies, approval cards) go to a Redis Stream per conversation, `as:<env>:stream:conv:<conversationId>`, capped at about 5,000 entries and expiring 24 hours after the last event. Each event carries the stream entry ID.
+- **Resuming:** when a client reconnects (§14.1, "Unreliable connections"), it sends the last entry ID it received, and the API replays everything after it from the stream before sending live events. If the ID is older than the stream, the client reloads the conversation from the database. Messages are written to the database at the end of every step, so the stream is never the only copy of a finished message.
+- **User events** (notifications, Tasks page updates, connection status, "a task finished" during voice mode) use a Redis Stream per user, `as:<env>:stream:user:<userId>`, in the same way.
+- **Device tool calls (§14.3):** the tool layer publishes the call on `as:<env>:device:<deviceId>` (Redis pub/sub). The API instance holding that device's connection forwards it; the result comes back on a reply key the waiting run reads with `BLPOP`, using the timeouts in §14.3.
+- **Voice mode (§7.6):** the sideband connection stays in the API instance that opened it. Its tool calls run in that instance through the shared tool layer, because they must answer within the live session. `start_task` adds a normal `agent-runs` job, and the result reaches the voice session through the user's event stream.
+
+**Other timed jobs**
+- **Approval timeouts:** creating an approval with a timeout adds a delayed `approvals.timeout` job with ID `approval:<approvalId>`; resolving the approval removes it.
+- **Cloud computer idle pause (§9.3, §13.4):** every bot or user action on the computer replaces a delayed `idle-pause` job (ID `computer-idle:<botId>`) set to the organisation's idle time. A `session-limit` job enforces the maximum continuous session.
+- **Sign-in refresh (§8.7):** after every refresh of a custom tool server sign-in, a `refresh-token` job is added for 5 minutes before the new expiry. A Composio status sync runs every 15 minutes, and also immediately when Composio reports an expired connection.
+- **Member removal (§8.7):** adds `revoke-and-delete-credentials` for that member.
+- **Notifications (§12):** quiet hours delay the channel jobs until quiet hours end, except approvals marked urgent. The `email` job is rate-limited with BullMQ's queue limiter to stay inside the email provider's sending limits.
+- **Platform schedules** (all times UTC):
+  | Job | When |
+  |---|---|
+  | `storage.purge-deleted` (§7.7) | Daily 02:00 |
+  | `storage.apply-retention` (§7.7, §13.4) | Daily 02:30 |
+  | `storage.aggregate-usage` (§7.7) | Daily 03:00 |
+  | `automations.reconcile-schedulers` | Daily 03:30 |
+  | `connections.sync-composio-status` | Every 15 minutes |
+  | `usage.flush-counters` | Every minute |
+  | `usage.limit-alerts` | Every 5 minutes |
+
+**Caching, locks and limits in Redis**
+- **Locks:** the locks above use a single Redis key set with `SET NX PX` and a random token, released only by the holder (checked in a Lua script).
+- **Rate limits:** API request rate limiting (per user and per IP for sign-in, public artifact and webhook endpoints) uses the NestJS throttler with Redis storage, so the limits apply across instances.
+- **Usage counters (§11, §13.4):** every model call, cloud computer minute and voice minute increments counters per organisation, member and bot for the current month (`as:<env>:usage:<orgId>:<yyyymm>:…`). Limit checks before and during runs read these counters. `usage.flush-counters` writes them to the database every minute; the database is the record used for billing and the usage overview.
+- **Caches** (via the existing `AppCacheModule` with the Redis store), each with a TTL: the OpenRouter model list (1 hour), tool lists of custom tool servers (10 minutes, cleared when the server is edited), Composio connection status (5 minutes), and the effective settings for a user and bot (§13.1; 5 minutes, cleared on any settings change). Decrypted secrets are never cached in Redis (§8.7).
+
+**Operations**
+- **Bull Board** is served at `/admin/queues` behind basic auth (`BULL_BOARD_USER` / `BULL_BOARD_PASSWORD`) in every environment, with every queue above registered. In production it is reachable only from the internal network.
+- **Health:** `/health` on API and worker processes checks the Redis connection. Workers also report each queue's waiting, active, delayed and failed counts.
+- **Alerts:** a queue with more than 500 waiting jobs or 50 failed jobs in an hour, an `agent-runs` job waiting longer than 30 seconds, or Redis memory above 75% raises an alert to the team.
 
 ---
 
@@ -1482,6 +1592,7 @@ These go beyond the original idea and are recommended for the roadmap:
 - Built-in core tools (web search, files, memory, app management by chat)
 - Approvals for sensitive actions
 - Interactive replies using ready-made building blocks
+- Background work on BullMQ and Redis: queue workers, bot runs outside the request, live event streams across API instances, locks, rate limits, usage counters and Bull Board (§14.4)
 - Web app, built as one cross-platform app with the platform layer, checks and device records described in §14.1, ready for the desktop and mobile apps
 
 **Phase 2 — Cloud computer and teamwork**

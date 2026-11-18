@@ -30,6 +30,10 @@ import { useVoiceSession } from "@/features/voice/hooks/use-voice-session";
 import { MessageItem, type MessageActions } from "../../components/message-item";
 import { ConversationHeader } from "../../components/conversation-header";
 import { ConversationInfoPanel } from "../../components/conversation-info-panel";
+import { BotPanel } from "../../components/bot-panel";
+import { ConversationMenu } from "../../components/conversation-menu";
+import { ResizableAside } from "@/components/ui/resizable-aside";
+import { CONVERSATION_PANEL_WIDTH, useUiStore } from "@/stores/ui";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { ConversationTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfaces/tasks.interfaces";
@@ -49,7 +53,7 @@ function isWorking(m: Message, runStatus: RunStatusMap | undefined) {
 }
 
 const MessagesSkeleton: FC = () => (
-  <div className="mx-auto w-full max-w-[760px] space-y-6 px-4 pb-6 pt-20 md:pt-6">
+  <div className="mx-auto w-full max-w-[760px] space-y-6 px-4 pb-6 pt-20">
     {Array.from({ length: 4 }).map((_, i) => (
       <div key={i} className={i % 2 ? "flex justify-end" : "flex gap-3"}>
         {i % 2 === 0 && <Skeleton className="h-10 w-10 rounded-md" />}
@@ -83,7 +87,14 @@ const ConversationPage: FC = () => {
   const deleteConv = useDeleteConversation();
 
   const isDesktop = useMediaQuery("(min-width: 1200px)");
-  const [panel, setPanel] = useState(false);
+  // Desktop: the panel sits beside the chat and is remembered across chats. Below 1200px it is a sheet that starts closed.
+  const desktopPanel = useUiStore((s) => s.conversation_panel_open);
+  const setDesktopPanel = useUiStore((s) => s.setConversationPanelOpen);
+  const panelWidth = useUiStore((s) => s.conversation_panel_width);
+  const setPanelWidth = useUiStore((s) => s.setConversationPanelWidth);
+  const [sheetPanel, setSheetPanel] = useState(false);
+  const panel = isDesktop ? desktopPanel : sheetPanel;
+  const setPanel = useCallback((v: boolean) => (isDesktop ? setDesktopPanel(v) : setSheetPanel(v)), [isDesktop, setDesktopPanel]);
   const [searchOpen, setSearchOpen] = useState(false);
   const [pinnedOpen, setPinnedOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -221,7 +232,22 @@ const ConversationPage: FC = () => {
   const starters = conversation?.type === ConversationTypes.DIRECT ? (leadBot?.conversation_starters ?? []) : [];
   const activityMode = me?.settings.activity_steps_display ?? ActivityStepsDisplays.COLLAPSED;
 
-  const panelContent = conversation && <ConversationInfoPanel conversation={conversation} meId={me?.user.id ?? ""} onClose={() => setPanel(false)} />;
+  const menu = conversation && (
+    <ConversationMenu
+      conversation={conversation}
+      onPinned={() => setPinnedOpen(true)}
+      onFavourite={() => updateMine.mutate({ id: conversation.id, is_favourite: !conversation.me?.is_favourite })}
+      onArchive={() => updateMine.mutate({ id: conversation.id, is_archived: !conversation.me?.is_archived }, { onSuccess: () => navigate(Routes.chat.root) })}
+      onDelete={() => setConfirmDelete(true)}
+    />
+  );
+  const panelContent =
+    conversation &&
+    (conversation.type === ConversationTypes.DIRECT && leadBotId ? (
+      <BotPanel botId={leadBotId} working={working.includes(leadBotId)} onClose={() => setPanel(false)} menu={menu} />
+    ) : (
+      <ConversationInfoPanel conversation={conversation} meId={me?.user.id ?? ""} onClose={() => setPanel(false)} menu={menu} />
+    ));
 
   return (
     <div className="flex h-full min-h-0">
@@ -230,17 +256,13 @@ const ConversationPage: FC = () => {
           <ConversationHeader
             conversation={conversation}
             working={working}
-            onInfo={() => setPanel((p) => !p)}
+            panelOpen={panel}
+            onInfo={() => setPanel(!panel)}
             onSearch={() => setSearchOpen(true)}
-            onPinned={() => setPinnedOpen(true)}
-            onFavourite={() => updateMine.mutate({ id: conversation.id, is_favourite: !conversation.me?.is_favourite })}
-            onArchive={() => updateMine.mutate({ id: conversation.id, is_archived: !conversation.me?.is_archived }, { onSuccess: () => navigate(Routes.chat.root) })}
-            onDelete={() => setConfirmDelete(true)}
           />
         ) : (
-          <div className="absolute inset-x-0 top-0 z-30 flex h-[68px] items-center gap-3 px-3 md:static md:h-16 md:border-b md:border-hairline md:px-4">
-            <Skeleton className="h-10 w-10 rounded-md" />
-            <Skeleton className="h-5 w-40" />
+          <div className="absolute inset-x-0 top-0 z-30 flex h-[68px] items-center gap-3 px-3 md:justify-center">
+            <Skeleton className="h-11 w-48 rounded-full" />
           </div>
         )}
 
@@ -248,7 +270,7 @@ const ConversationPage: FC = () => {
           {messagesQuery.isPending || convPending ? (
             <MessagesSkeleton />
           ) : (
-            <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-[calc(72px+env(safe-area-inset-top))] sm:px-4 md:pt-4">
+            <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-[calc(72px+env(safe-area-inset-top))] sm:px-4 md:pt-[72px]">
               {messagesQuery.isFetchingNextPage && <Skeleton className="mx-auto mb-4 h-6 w-32 rounded-full" />}
               {!messagesQuery.hasNextPage && conversation && (
                 <div className="mb-6 flex flex-col items-center pt-6 text-center">
@@ -333,10 +355,14 @@ const ConversationPage: FC = () => {
       </div>
 
       {/* Side panel: pushes the chat on desktop, overlays as a sheet below 1200px (DESIGN.MD). */}
-      {conversation && isDesktop && panel && <aside className="w-[380px] shrink-0 animate-slide-up border-l border-hairline bg-surface xl:w-[420px]">{panelContent}</aside>}
+      {conversation && isDesktop && (
+        <ResizableAside open={panel} width={panelWidth} min={CONVERSATION_PANEL_WIDTH.MIN} max={CONVERSATION_PANEL_WIDTH.MAX} onWidthChange={setPanelWidth} className="bg-canvas" handleLabel="Resize side panel">
+          {panelContent}
+        </ResizableAside>
+      )}
       {conversation && !isDesktop && (
         <Sheet open={panel} onOpenChange={setPanel}>
-          <SheetContent side="right" className="w-full p-0 sm:max-w-[420px]">
+          <SheetContent side="right" className="w-full p-0 sm:max-w-[420px] [&>button:last-child]:hidden">
             <SheetTitle className="sr-only">Conversation details</SheetTitle>
             <SheetDescription className="sr-only">People, bots and settings for this conversation</SheetDescription>
             {panelContent}

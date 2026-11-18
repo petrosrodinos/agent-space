@@ -1,7 +1,7 @@
 import { useMemo, type FC } from "react";
 import { NavLink } from "react-router-dom";
 import { Star } from "lucide-react";
-import { BotAvatar, BotAvatarStack } from "@/components/ui/bot-avatar";
+import { ConversationAvatar } from "@/components/ui/bot-avatar";
 import { Skeleton } from "@/components/ui/skeleton";
 import { botSoftColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import type { Conversation } from "@/features/conversations/interfaces/conversations.interfaces";
@@ -32,15 +32,7 @@ export const ConversationRow: FC<{ c: Conversation; collapsed?: boolean; large?:
       style={{ ["--row-soft" as string]: c.type === ConversationTypes.DIRECT ? botSoftColor(lead?.color) : "var(--primary-soft)" }}
     >
       <span className="relative">
-        {c.type === ConversationTypes.GROUP ? (
-          <span className={cn("inline-flex items-center justify-center", large ? "h-14 w-14 rounded-lg text-[34px]" : "h-10 w-10 rounded-md text-2xl")} style={{ backgroundColor: c.color }}>
-            {c.emoji}
-          </span>
-        ) : lead ? (
-          <BotAvatar emoji={lead.emoji} color={lead.color} name={lead.name} working={working} size={large ? 56 : 40} />
-        ) : (
-          <BotAvatarStack bots={c.bots} />
-        )}
+        <ConversationAvatar conversation={c} working={working} size={large ? 56 : 40} followCursor />
         {collapsed && (unread > 0 || attention) && <span className={cn("absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full border-2 border-surface-soft", attention ? "bg-sunshine" : "bg-primary")} />}
       </span>
       {!collapsed && (

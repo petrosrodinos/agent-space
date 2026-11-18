@@ -115,7 +115,7 @@ export class RunsService {
         return { ok: true };
     }
 
-    async listTasks(actor: Actor, q: { status?: string; page: number; limit: number }) {
+    async listTasks(actor: Actor, q: { status?: string; bot_id?: string; type?: 'TASK' | 'CHAT_REPLY' | 'AUTOMATION_RUN'; page: number; limit: number }) {
         const statusFilter: Prisma.RunWhereInput =
             q.status === 'active'
                 ? { status: { in: ['QUEUED', 'RUNNING'] } }
@@ -129,7 +129,8 @@ export class RunsService {
         const where: Prisma.RunWhereInput = {
             organization_id: actor.organization_id,
             user_id: actor.user_id,
-            type: { in: ['TASK', 'CHAT_REPLY', 'AUTOMATION_RUN'] },
+            type: q.type ?? { in: ['TASK', 'CHAT_REPLY', 'AUTOMATION_RUN'] },
+            ...(q.bot_id ? { bot_id: q.bot_id } : {}),
             ...statusFilter,
         };
         const [rows, total] = await Promise.all([

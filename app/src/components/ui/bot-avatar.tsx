@@ -1,6 +1,7 @@
 import { useRef, type FC } from "react";
 import { useCursorFollow } from "@/hooks/use-cursor-follow";
 import { cn } from "@/lib/utils";
+import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 import { isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
 
 const SIZES = { 24: "h-6 w-6 rounded-sm text-[14px]", 32: "h-8 w-8 rounded-sm text-[19px]", 40: "h-10 w-10 rounded-md text-[24px]", 56: "h-14 w-14 rounded-lg text-[34px]", 88: "h-[88px] w-[88px] rounded-xl text-[52px]", 120: "h-[120px] w-[120px] rounded-2xl text-[72px]" } as const;
@@ -19,7 +20,9 @@ interface BotAvatarProps {
 /** Bots are squircles filled with their colour, emoji at 60% (DESIGN.MD). A soft ring pulses while the bot works. */
 export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working = false, className, name, followCursor = false }) => {
   const emojiRef = useRef<HTMLSpanElement>(null);
-  useCursorFollow(emojiRef, { enabled: followCursor });
+  // Scale the pull and tilt down for small avatars so the emoji stays inside its squircle.
+  const scale = Math.min(1, size / 88);
+  useCursorFollow(emojiRef, { enabled: followCursor, maxShift: Math.max(2, 10 * scale), maxTilt: Math.max(6, 12 * scale) });
   return (
     <span
       role="img"
@@ -34,7 +37,23 @@ export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working
   );
 };
 
-const PERSON_SIZES = { 24: "h-6 w-6 text-[10px]", 32: "h-8 w-8 text-xs", 40: "h-10 w-10 text-sm", 56: "h-14 w-14 text-lg", 88: "h-[88px] w-[88px] text-3xl" } as const;
+interface ConversationAvatarProps {
+  conversation: { type: string; emoji?: string | null; color?: string | null; name: string; bots: { id: string; emoji: string; color: string; name: string }[] };
+  size?: keyof typeof SIZES;
+  working?: boolean;
+  followCursor?: boolean;
+  className?: string;
+}
+
+/** Shared conversation avatar: groups use their own emoji and colour, direct chats the lead bot, otherwise a stack. */
+export const ConversationAvatar: FC<ConversationAvatarProps> = ({ conversation: c, size = 40, working, followCursor, className }) => {
+  const lead = c.bots[0];
+  if (c.type === ConversationTypes.GROUP && c.emoji && c.color) return <BotAvatar emoji={c.emoji} color={c.color} name={c.name} size={size} working={working} followCursor={followCursor} className={className} />;
+  if (lead) return <BotAvatar emoji={lead.emoji} color={lead.color} name={lead.name} size={size} working={working} followCursor={followCursor} className={className} />;
+  return <BotAvatarStack bots={c.bots} />;
+};
+
+const PERSON_SIZES ={ 24: "h-6 w-6 text-[10px]", 32: "h-8 w-8 text-xs", 40: "h-10 w-10 text-sm", 56: "h-14 w-14 text-lg", 88: "h-[88px] w-[88px] text-3xl" } as const;
 const PERSON_TINTS = ["#EEEAFF", "#FFEADF", "#DBF7EC", "#FFE3F1", "#DDF2FF", "#F2EBFF", "#D9F4F3", "#E1E9FF"];
 const PERSON_INK = ["#4A2FD6", "#B54A16", "#0E7D57", "#B3246E", "#1468A3", "#6B44C9", "#0E7A76", "#2747B8"];
 

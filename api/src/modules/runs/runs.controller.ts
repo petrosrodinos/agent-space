@@ -13,7 +13,11 @@ import { TasksService } from './tasks.service';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
 
-const TaskQuerySchema = PaginationQuerySchema.extend({ status: z.enum(['active', 'waiting', 'done', 'failed']).optional() });
+const TaskQuerySchema = PaginationQuerySchema.extend({
+    status: z.enum(['active', 'waiting', 'done', 'failed']).optional(),
+    bot_id: z.string().uuid().optional(),
+    type: z.enum(['TASK', 'CHAT_REPLY', 'AUTOMATION_RUN']).optional(),
+});
 type TaskQuery = z.infer<typeof TaskQuerySchema>;
 
 class ProvideInputDto {

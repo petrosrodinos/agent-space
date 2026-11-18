@@ -94,13 +94,39 @@ export class KnowledgeService {
         return this.shape(await this.prisma.knowledgeItem.findUniqueOrThrow({ where: { id: item.id }, include: this.include }));
     }
 
-    async update(actor: Actor, id: string, dto: { title?: string; content?: string }) {
+    /** One item including its full text (any kind), so the editor can show everything bots read. */
+    async one(actor: Actor, id: string) {
+        const item = await this.prisma.knowledgeItem.findFirst({ where: { id, organization_id: actor.organization_id, deleted_at: null }, include: this.include });
+        if (!item) throw new NotFoundException('Knowledge not found');
+        if (item.bot_id) await this.access.requireUsableBot(actor.organization_id, actor.user_id, item.bot_id);
+        return { ...this.shape(item), content: item.content ?? '' };
+    }
+
+    async update(actor: Actor, id: string, dto: { title?: string; content?: string; url?: string }) {
         const item = await this.prisma.knowledgeItem.findFirst({ where: { id, organization_id: actor.organization_id, deleted_at: null } });
         if (!item) throw new NotFoundException('Knowledge not found');
         await this.requireCanEdit(actor, item.bot_id);
         const data: Prisma.KnowledgeItemUpdateInput = {};
         if (dto.title?.trim()) data.title = dto.title.trim().slice(0, 200);
-        if (dto.content !== undefined && item.kind === 'TEXT') data.content = dto.content;
+        if (dto.content !== undefined) {
+            if (item.kind === 'TEXT' && !dto.content.trim()) throw new BadRequestException('Write some text');
+            data.content = item.kind === 'TEXT' ? dto.content : dto.content.trim() || null;
+            data.indexed_at = data.content ? new Date() : null;
+        }
+        if (dto.url && item.kind === 'LINK' && dto.url !== item.url) {
+            data.url = dto.url;
+            if (dto.content === undefined) {
+                try {
+                    const page = await fetchReadable(dto.url, 200_000);
+                    data.content = page.text;
+                    data.indexed_at = page.text ? new Date() : null;
+                } catch (e) {
+                    this.logger.warn(`Knowledge link fetch failed: ${(e as Error).message}`);
+                    data.content = null;
+                    data.indexed_at = null;
+                }
+            }
+        }
         const updated = await this.prisma.knowledgeItem.update({ where: { id }, data, include: this.include });
         return this.shape(updated);
     }

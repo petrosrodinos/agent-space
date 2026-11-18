@@ -5,13 +5,14 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useVoices } from "@/features/voice/hooks/use-voice-session";
 import { getVoiceSample } from "@/features/voice/services/voice.services";
 import { toast } from "@/hooks/use-toast";
+import { cn } from "@/lib/utils";
 
 const DEFAULT = "__default__";
 const SampleStates = { LOADING: "loading", PLAYING: "playing" } as const;
 type SampleState = (typeof SampleStates)[keyof typeof SampleStates];
 
 /** Voice picker with "Hear sample" (§7.6 Voices). `value = null` means the default (bot's or platform's) voice. */
-export const VoicePicker: FC<{ value: string | null; onChange: (v: string | null) => void; disabled?: boolean; defaultLabel?: string; ariaLabel?: string }> = ({ value, onChange, disabled, defaultLabel = "Default voice", ariaLabel = "Voice" }) => {
+export const VoicePicker: FC<{ value: string | null; onChange: (v: string | null) => void; disabled?: boolean; defaultLabel?: string; ariaLabel?: string; triggerClassName?: string }> = ({ value, onChange, disabled, defaultLabel = "Default voice", ariaLabel = "Voice", triggerClassName }) => {
   const { data } = useVoices();
   const [playing, setPlaying] = useState<SampleState | null>(null);
   const audio = useRef<HTMLAudioElement | null>(null);
@@ -51,7 +52,7 @@ export const VoicePicker: FC<{ value: string | null; onChange: (v: string | null
   return (
     <div className="flex items-center gap-2">
       <Select value={value ?? DEFAULT} onValueChange={(v) => onChange(v === DEFAULT ? null : v)} disabled={disabled}>
-        <SelectTrigger className="w-[200px]" aria-label={ariaLabel}>
+        <SelectTrigger className={cn("w-[200px]", triggerClassName)} aria-label={ariaLabel}>
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

@@ -12,6 +12,11 @@ import { ALL_FILTER } from "@/config/constants/filters";
 const useOrgReady = () => !!useOrganizationStore((s) => s.current_id);
 
 export const useAutomations = (status?: AutomationStatus) => useQuery({ queryKey: [QueryKeys.AUTOMATIONS, status ?? ALL_FILTER], queryFn: () => getAutomations(status ? { status } : {}), enabled: useOrgReady() });
+/** Automations of one bot (bot side panel). */
+export const useBotAutomations = (botId: string) => {
+  const ready = useOrgReady();
+  return useQuery({ queryKey: [QueryKeys.AUTOMATIONS, "bot", botId], queryFn: () => getAutomations({ bot_id: botId }), enabled: !!botId && ready });
+};
 export const useAutomation = (id: string) => {
   const ready = useOrgReady();
   return useQuery({ queryKey: [QueryKeys.AUTOMATION, id], queryFn: () => getAutomation(id), enabled: !!id && ready });

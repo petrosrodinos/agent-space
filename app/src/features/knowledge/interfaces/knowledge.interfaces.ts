@@ -20,6 +20,12 @@ export interface KnowledgeItem {
   created_at: string;
 }
 
+export interface UpdateKnowledgeDto {
+  title?: string;
+  content?: string;
+  url?: string;
+}
+
 export interface AddKnowledgeDto {
   kind: KnowledgeKind;
   title?: string;

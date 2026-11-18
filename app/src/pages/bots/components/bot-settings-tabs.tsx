@@ -108,10 +108,18 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
               <p className="mb-2 text-sm font-bold text-ink">Conversation starters <span className="font-medium text-muted-foreground">(up to 4)</span></p>
               <div className="space-y-2">
                 {starters.fields.map((f, i) => (
-                  <div key={f.id} className="flex gap-2">
-                    <FormField control={form.control} name={`starters.${i}.value`} render={({ field }) => <Input disabled={ro} {...field} aria-label={`Starter ${i + 1}`} />} />
+                  <div key={f.id} className="flex items-start gap-2">
+                    <FormField
+                      control={form.control}
+                      name={`starters.${i}.value`}
+                      render={({ field }) => (
+                        <div className="min-w-0 flex-1">
+                          <Textarea disabled={ro} rows={2} placeholder="e.g. What can you help me with?" className="min-h-[64px] resize-y" {...field} aria-label={`Starter ${i + 1}`} />
+                        </div>
+                      )}
+                    />
                     {!ro && (
-                      <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0" onClick={() => starters.remove(i)} aria-label="Remove starter">
+                      <Button type="button" variant="ghost" size="icon" className="h-11 w-11 shrink-0" onClick={() => starters.remove(i)} aria-label={`Remove starter ${i + 1}`}>
                         <X />
                       </Button>
                     )}

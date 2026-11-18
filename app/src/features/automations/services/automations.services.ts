@@ -5,7 +5,7 @@ import type { Automation, AutomationInput, AutomationMemory, AutomationRun, Auto
 
 const R = ApiRoutes.automations;
 
-export const getAutomations = (params: { status?: AutomationStatus; search?: string } = {}) => request<Automation[]>(() => axiosInstance.get(R.root, { params }));
+export const getAutomations = (params: { status?: AutomationStatus; bot_id?: string; search?: string } = {}) => request<Automation[]>(() => axiosInstance.get(R.root, { params }));
 export const getAutomation = (id: string) => request<Automation>(() => axiosInstance.get(R.one(id)));
 export const createAutomation = (dto: AutomationInput) => request<Automation>(() => axiosInstance.post(R.root, dto));
 export const updateAutomation = (id: string, dto: AutomationUpdate) => request<Automation>(() => axiosInstance.patch(R.one(id), dto));

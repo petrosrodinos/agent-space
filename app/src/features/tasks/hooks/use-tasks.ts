@@ -4,12 +4,17 @@ import { useOrganizationStore } from "@/stores/organization";
 import { getApproval, getApprovals, getTask, getTasks, resolveApproval, startTask } from "../services/tasks.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { ALL_FILTER, ApprovalFilters, type ApprovalFilter } from "@/config/constants/filters";
-import { ApprovalStatuses } from "@/features/tasks/interfaces/tasks.interfaces";
+import { ApprovalStatuses, RunTypes } from "@/features/tasks/interfaces/tasks.interfaces";
 import { type ApprovalDecision } from "../interfaces/tasks.interfaces";
 
 export const useTasks = (status?: string, page = 1) => {
   const org = useOrganizationStore((s) => s.current_id);
   return useQuery({ queryKey: [QueryKeys.TASKS, status ?? ALL_FILTER, page], queryFn: () => getTasks({ status, page, limit: 20 }), enabled: !!org });
+};
+/** Recent long-running tasks of one bot (bot side panel). */
+export const useBotTasks = (botId: string, limit = 5) => {
+  const org = useOrganizationStore((s) => s.current_id);
+  return useQuery({ queryKey: [QueryKeys.TASKS, "bot", botId, limit], queryFn: () => getTasks({ bot_id: botId, type: RunTypes.TASK, page: 1, limit }), enabled: !!org && !!botId, refetchInterval: 15_000 });
 };
 export const useTask = (id: string) => useQuery({ queryKey: [QueryKeys.TASK, id], queryFn: () => getTask(id), enabled: !!id });
 

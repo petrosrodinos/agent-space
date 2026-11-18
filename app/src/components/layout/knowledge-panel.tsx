@@ -2,14 +2,13 @@ import { useState, type FC } from "react";
 import { FileText, Globe, Loader2, NotebookPen, Pencil, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SettingsCard } from "@/components/ui/setting-row";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
-import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { useAddKnowledge, useDeleteKnowledge, useKnowledge, useUpdateKnowledge } from "@/features/knowledge/hooks/use-knowledge";
+import { KnowledgeEditDialog } from "@/components/layout/knowledge-edit-dialog";
+import { useAddKnowledge, useDeleteKnowledge, useKnowledge } from "@/features/knowledge/hooks/use-knowledge";
 import type { KnowledgeItem, KnowledgeKind } from "@/features/knowledge/interfaces/knowledge.interfaces";
 import { uploadFile } from "@/features/files/services/files.services";
 import { platform } from "@/platform";
@@ -27,14 +26,13 @@ const ACCEPT = ".pdf,.docx,.txt,.md,.csv,.json,.yaml,.yml,.xml,.html";
 export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?: string; description?: string }> = ({ botId, canEdit, title = "Knowledge", description }) => {
   const { data, isPending } = useKnowledge(botId);
   const add = useAddKnowledge(botId);
-  const update = useUpdateKnowledge(botId);
   const remove = useDeleteKnowledge(botId);
   const [mode, setMode] = useState<KnowledgeKind>(KnowledgeKinds.FILE);
   const [url, setUrl] = useState("");
   const [note, setNote] = useState({ title: "", content: "" });
   const [uploading, setUploading] = useState<string | null>(null);
   const [removing, setRemoving] = useState<KnowledgeItem | null>(null);
-  const [editing, setEditing] = useState<{ id: string; title: string; content: string; kind: KnowledgeKind } | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   const pickFiles = async () => {
     const files = await platform.files.pick({ multiple: true, accept: ACCEPT });
@@ -71,13 +69,13 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
           )}
           {mode === KnowledgeKinds.LINK && (
             <form
-              className="flex flex-col gap-2 sm:flex-row"
+              className="space-y-2"
               onSubmit={(e) => {
                 e.preventDefault();
                 if (/^https?:\/\/\S+\.\S+/.test(url)) add.mutate({ kind: KnowledgeKinds.LINK, url }, { onSuccess: () => setUrl("") });
               }}
             >
-              <Input type="url" placeholder="https://example.com/pricing" value={url} onChange={(e) => setUrl(e.target.value)} aria-label="Web page address" />
+              <Input type="url" placeholder="https://example.com/pricing" value={url} onChange={(e) => setUrl(e.target.value)} aria-label="Web page address" className="w-full min-w-0" />
               <Button type="submit" disabled={!/^https?:\/\/\S+\.\S+/.test(url)} loading={add.isPending}>
                 Add page
               </Button>
@@ -92,7 +90,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
               }}
             >
               <Input placeholder="Title (e.g. Refund policy)" value={note.title} onChange={(e) => setNote((n) => ({ ...n, title: e.target.value }))} maxLength={200} aria-label="Note title" />
-              <Textarea rows={4} placeholder="Facts, FAQs, policies…" value={note.content} onChange={(e) => setNote((n) => ({ ...n, content: e.target.value }))} aria-label="Note" />
+              <Textarea rows={6} className="min-h-[140px] resize-y" placeholder="Facts, FAQs, policies…" value={note.content} onChange={(e) => setNote((n) => ({ ...n, content: e.target.value }))} aria-label="Note" />
               <Button type="submit" disabled={!note.content.trim()} loading={add.isPending}>
                 Add note
               </Button>
@@ -127,7 +125,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
                 </span>
                 {canEdit && (
                   <>
-                    <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Edit ${k.title}`} onClick={() => setEditing({ id: k.id, title: k.title, content: k.content ?? "", kind: k.kind })}>
+                    <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Edit ${k.title}`} onClick={() => setEditingId(k.id)}>
                       <Pencil />
                     </Button>
                     <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Remove ${k.title}`} onClick={() => setRemoving(k)}>
@@ -141,40 +139,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
         </ul>
       )}
 
-      <Dialog open={!!editing} onOpenChange={(o) => !o && setEditing(null)}>
-        <DialogContent className="sm:max-w-lg">
-          <DialogHeader>
-            <DialogTitle>Edit knowledge</DialogTitle>
-            <DialogDescription>{editing?.kind === KnowledgeKinds.TEXT ? "Change the title or the note." : "Change how this item is named."}</DialogDescription>
-          </DialogHeader>
-          {editing && (
-            <div className="space-y-3">
-              <div className="space-y-1.5">
-                <Label htmlFor="k-title">Title</Label>
-                <Input id="k-title" value={editing.title} maxLength={200} onChange={(e) => setEditing({ ...editing, title: e.target.value })} />
-              </div>
-              {editing.kind === KnowledgeKinds.TEXT && (
-                <div className="space-y-1.5">
-                  <Label htmlFor="k-content">Note</Label>
-                  <Textarea id="k-content" rows={8} value={editing.content} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
-                </div>
-              )}
-            </div>
-          )}
-          <DialogFooter className="gap-2">
-            <Button variant="outline" onClick={() => setEditing(null)}>
-              Cancel
-            </Button>
-            <Button
-              loading={update.isPending}
-              disabled={!editing?.title.trim()}
-              onClick={() => editing && update.mutate({ id: editing.id, title: editing.title, ...(editing.kind === KnowledgeKinds.TEXT ? { content: editing.content } : {}) }, { onSuccess: () => setEditing(null) })}
-            >
-              Save
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <KnowledgeEditDialog itemId={editingId} botId={botId} onClose={() => setEditingId(null)} />
 
       <ConfirmationDialog
         isOpen={!!removing}

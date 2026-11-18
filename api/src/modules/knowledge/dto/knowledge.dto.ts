@@ -11,5 +11,6 @@ export class AddKnowledgeDto {
 
 export class UpdateKnowledgeDto {
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(200) title?: string;
-    @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(100_000) content?: string;
+    @ApiPropertyOptional({ description: 'The text bots read. Editable for notes, files (extracted text) and web pages (fetched text).' }) @IsOptional() @IsString() @MaxLength(400_000) content?: string;
+    @ApiPropertyOptional({ description: 'LINK only: the web page address. Changing it re-reads the page unless content is sent too.' }) @IsOptional() @IsUrl({ require_protocol: true, protocols: ['http', 'https'] }) url?: string;
 }

@@ -37,6 +37,12 @@ export class KnowledgeController {
         return this.knowledge.add(actor(m), botId, dto);
     }
 
+    /** One item with its full text, for the editor. */
+    @Get(':id')
+    one(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.knowledge.one(actor(m), id);
+    }
+
     @Patch(':id')
     update(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateKnowledgeDto) {
         return this.knowledge.update(actor(m), id, dto);

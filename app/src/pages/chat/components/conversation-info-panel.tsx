@@ -1,4 +1,4 @@
-import { useState, type FC } from "react";
+import { useState, type FC, type ReactNode } from "react";
 import { Crown, Plus, UserMinus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -17,7 +17,7 @@ import { BotEmojiSuggestions } from "@/config/constants/dropdowns/shared/bot-col
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 
 /** Side panel: name/emoji, people and bots (add/remove), lead bot (§7.1, §7.2). */
-export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose: () => void }> = ({ conversation: c, meId, onClose }) => {
+export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose: () => void; menu?: ReactNode }> = ({ conversation: c, meId, onClose, menu }) => {
   const update = useUpdateConversation();
   const add = useAddParticipants();
   const remove = useRemoveParticipant();
@@ -36,9 +36,12 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
         <h2 className="text-[17px] font-bold text-ink" style={{ fontFamily: "var(--font-sans)", letterSpacing: 0 }}>
           Details
         </h2>
-        <Button variant="ghost" size="icon" onClick={onClose} aria-label="Close panel">
-          <X />
-        </Button>
+        <div className="flex items-center gap-2">
+          {menu}
+          <Button variant="outline" size="icon" className="h-10 w-10 rounded-full" onClick={onClose} aria-label="Close panel">
+            <X />
+          </Button>
+        </div>
       </div>
       <div className="scrollbar-thin flex-1 space-y-6 overflow-y-auto p-5">
         <div>

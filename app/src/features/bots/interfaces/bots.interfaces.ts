@@ -157,3 +157,7 @@ export interface Memory {
   created_at: string;
   updated_at: string;
 }
+
+/** Tabs of the bot side panel in a direct chat. */
+export const BotPanelTabs = { ACTIVITY: "activity", LIBRARY: "library" } as const;
+export type BotPanelTab = (typeof BotPanelTabs)[keyof typeof BotPanelTabs];

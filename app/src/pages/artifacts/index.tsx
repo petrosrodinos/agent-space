@@ -1,6 +1,6 @@
 import { useState, type FC } from "react";
-import { useNavigate } from "react-router-dom";
-import { BarChart3, Globe, Lock, Pin, PinOff, Presentation, Puzzle, RotateCcw, Search, Users } from "lucide-react";
+import { Link } from "react-router-dom";
+import { BarChart3, ExternalLink, Globe, Lock, Pin, PinOff, Presentation, Puzzle, RotateCcw, Search, Users } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -15,6 +15,9 @@ import { ArtifactRoleOptions, ArtifactSharingOptions, ArtifactTabOptions, Artifa
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { timeAgo } from "@/lib/date";
 import { Routes } from "@/routes/routes";
+import { getViewUrl } from "@/features/artifacts/services/artifacts.services";
+import { platform } from "@/platform";
+import { toast } from "@/hooks/use-toast";
 import { ArtifactTypeIcon } from "@/pages/artifacts/components/artifact-type-icon";
 import { ArtifactSharingLevels, ArtifactTabs, ArtifactRoles } from "@/features/artifacts/interfaces/artifacts.interfaces";
 import { ALL_FILTER } from "@/config/constants/filters";
@@ -23,23 +26,44 @@ const SharingIcon: FC<{ a: ArtifactSummary }> = ({ a }) =>
   a.public_enabled ? <Globe className="h-3.5 w-3.5" /> : a.sharing_level === ArtifactSharingLevels.PRIVATE ? <Lock className="h-3.5 w-3.5" /> : <Users className="h-3.5 w-3.5" />;
 
 const ArtifactCard: FC<{ a: ArtifactSummary; tab: ArtifactTab }> = ({ a, tab }) => {
-  const navigate = useNavigate();
   const pin = useUpdateArtifact(null);
   const restore = useRestoreArtifact();
   const deleted = tab === ArtifactTabs.DELETED;
-  return (
-    <div className="card-lift group relative flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
-      <button className="flex items-start gap-3 text-left" onClick={() => !deleted && navigate(Routes.artifacts.detail(a.id))} disabled={deleted}>
+  const openLive = async () => {
+    try {
+      const v = await getViewUrl(a.id);
+      platform.links.openExternal(v.url);
+    } catch (e) {
+      toast({ title: "Could not open", description: (e as Error).message, variant: "error" });
+    }
+  };
+  const body = (
+    <>
         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-2xl" aria-hidden>
           <ArtifactTypeIcon type={a.type} className="h-6 w-6" />
         </span>
-        <span className="min-w-0 flex-1 pr-8">
+        <span className="min-w-0 flex-1 pr-16">
           <span className="block truncate text-[17px] font-bold text-ink">{a.title}</span>
           <span className="mt-0.5 block truncate text-xs text-muted-foreground">
             {getDropdownOptionLabel(ArtifactTypeOptions, a.type)} · {a.owner?.name ?? a.owner?.email ?? "—"}
           </span>
         </span>
-      </button>
+    </>
+  );
+  return (
+    <div className="card-lift group relative flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+      {deleted ? (
+        <div className="flex items-start gap-3 text-left">{body}</div>
+      ) : (
+        <Link to={Routes.artifacts.detail(a.id)} className="flex items-start gap-3 text-left">
+          {body}
+        </Link>
+      )}
+      {!deleted && (
+        <Button variant="ghost" size="icon" className="absolute right-11 top-3 h-8 w-8" aria-label="Open in new tab" title="Open in new tab" onClick={openLive}>
+          <ExternalLink />
+        </Button>
+      )}
       {!deleted && (
         <Button
           variant="ghost"

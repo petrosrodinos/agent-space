@@ -1,6 +1,6 @@
 import { useState, type FC } from "react";
-import { useNavigate } from "react-router-dom";
-import { BookOpen, Handshake, Plus, RotateCcw, Search, Upload, Wand2 } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { BookOpen, Eye, Handshake, Plus, RotateCcw, Search, Upload, Wand2 } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,15 +24,24 @@ const SkillCard: FC<{ skill: SkillSummary; tab: SkillTab }> = ({ skill, tab }) =
   const add = useAddStarterSkill();
   const restore = useRestoreSkill();
   const deleted = tab === SkillTabs.DELETED;
-  return (
-    <div className="card-lift flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
-      <button className="flex items-start gap-3 text-left" onClick={() => !deleted && navigate(Routes.skills.detail(skill.id))} disabled={deleted}>
+  const body = (
+    <>
         <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-2xl">{skill.emoji ?? <BookOpen className="h-6 w-6 text-accent-foreground" />}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[17px] font-bold text-ink">{skill.name}</span>
           <span className="mt-0.5 inline-flex items-center rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">/{skill.slug}</span>
         </span>
-      </button>
+    </>
+  );
+  return (
+    <div className="card-lift flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+      {deleted ? (
+        <div className="flex items-start gap-3 text-left">{body}</div>
+      ) : (
+        <Link to={Routes.skills.detail(skill.id)} className="flex items-start gap-3 text-left">
+          {body}
+        </Link>
+      )}
       <p className="mt-3 line-clamp-2 min-h-[40px] text-sm text-body">{skill.description}</p>
       <div className="mt-3 flex items-center justify-between gap-2">
         <div className="flex items-center gap-2">
@@ -42,9 +51,14 @@ const SkillCard: FC<{ skill: SkillSummary; tab: SkillTab }> = ({ skill, tab }) =
         {skill.bots.length > 0 ? <BotAvatarStack bots={skill.bots} size={24} max={4} /> : <span className="text-xs text-muted-foreground">No bots yet</span>}
       </div>
       {skill.is_starter && (
-        <Button className="mt-4 w-full" variant="outline" loading={add.isPending} onClick={() => add.mutate(skill.id, { onSuccess: (s) => navigate(Routes.skills.detail(s.id)) })}>
-          <Plus /> Add to my skills
-        </Button>
+        <div className="mt-4 flex gap-2">
+          <Button className="flex-1" variant="ghost" onClick={() => navigate(Routes.skills.detail(skill.id))}>
+            <Eye /> View
+          </Button>
+          <Button className="flex-1" variant="outline" loading={add.isPending} onClick={() => add.mutate(skill.id, { onSuccess: (s) => navigate(Routes.skills.detail(s.id)) })}>
+            <Plus /> Add to my skills
+          </Button>
+        </div>
       )}
       {deleted && (
         <Button className="mt-4 w-full" variant="outline" loading={restore.isPending} onClick={() => restore.mutate(skill.id)}>

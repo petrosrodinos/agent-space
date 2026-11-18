@@ -46,6 +46,39 @@ sleep 3
 `;
 export const OPEN_BROWSER_PATH = `${HOME}/.agentspace/open-browser.sh`;
 
+/**
+ * Makes the desktop's "Web Browser" launcher (panel icon, links in apps) start the bot's Chromium. Without this XFCE's
+ * exo-open has no default browser and shows "Failed to execute default Web Browser. Input/output error."
+ */
+const BROWSER_DESKTOP_FILE = `[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Web Browser
+Exec=${OPEN_BROWSER_PATH} %u
+Icon=chromium
+Terminal=false
+Categories=Network;WebBrowser;
+MimeType=text/html;x-scheme-handler/http;x-scheme-handler/https;
+`;
+const XFCE_BROWSER_HELPER = `[Desktop Entry]
+NoDisplay=true
+Version=1.0
+Encoding=UTF-8
+Type=X-XFCE-Helper
+X-XFCE-Category=WebBrowser
+X-XFCE-CommandsWithParameter=${OPEN_BROWSER_PATH} "%s"
+Icon=chromium
+Name=Agent Space Browser
+X-XFCE-Commands=${OPEN_BROWSER_PATH}
+`;
+const MIME_DEFAULTS = `[Default Applications]
+text/html=agentspace-browser.desktop
+x-scheme-handler/http=agentspace-browser.desktop
+x-scheme-handler/https=agentspace-browser.desktop
+x-scheme-handler/about=agentspace-browser.desktop
+x-scheme-handler/unknown=agentspace-browser.desktop
+`;
+
 /** Lists the sites with cookies in the browser profile (JSON lines: domain, first-seen µs since 1601). */
 const LIST_SITES_PY = `
 import sqlite3, json, os, shutil, tempfile
@@ -210,6 +243,7 @@ export class ComputersService {
                 throw new BadRequestException('The cloud computer could not start. Please try again.');
             }
             const now = new Date();
+            if (c.status !== 'RUNNING') await this.configureDefaultBrowser(sb);
             if (c.status !== 'RUNNING') c = await this.setStatus(c, 'RUNNING', null, { last_active_at: now, session_started_at: now, paused_at: null });
             else c = await this.prisma.cloudComputer.update({ where: { id: c.id }, data: { last_active_at: now } });
             return { computer: c, sandbox: sb };
@@ -226,6 +260,21 @@ export class ComputersService {
         await sb.fs.createFolder(`${HOME}/.agentspace`, '700').catch(() => undefined);
         await sb.fs.uploadFile(Buffer.from(OPEN_BROWSER), OPEN_BROWSER_PATH);
         await sb.process.executeCommand(`chmod +x ${OPEN_BROWSER_PATH}`);
+        await this.configureDefaultBrowser(sb);
+    }
+
+    /** Idempotent; also run on every resume so computers created before this existed get a working default browser. */
+    private async configureDefaultBrowser(sb: Sandbox) {
+        try {
+            for (const dir of [`${HOME}/.local/share/applications`, `${HOME}/.local/share/xfce4/helpers`, `${HOME}/.config/xfce4`]) await sb.fs.createFolder(dir, '755').catch(() => undefined);
+            await sb.fs.uploadFile(Buffer.from(BROWSER_DESKTOP_FILE), `${HOME}/.local/share/applications/agentspace-browser.desktop`);
+            await sb.fs.uploadFile(Buffer.from(XFCE_BROWSER_HELPER), `${HOME}/.local/share/xfce4/helpers/agentspace-browser.desktop`);
+            await sb.fs.uploadFile(Buffer.from(MIME_DEFAULTS), `${HOME}/.config/mimeapps.list`);
+            await sb.fs.uploadFile(Buffer.from('WebBrowser=agentspace-browser\n'),`${HOME}/.config/xfce4/helpers.rc`);
+            await sb.process.executeCommand(`chmod +x ${OPEN_BROWSER_PATH}; update-desktop-database ${HOME}/.local/share/applications 2>/dev/null || true`);
+        } catch {
+            /* cosmetic: the bot's own tools open the browser through the helper script directly */
+        }
     }
 
     async turnOn(actor: Actor, botId: string) {

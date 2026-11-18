@@ -107,7 +107,7 @@ const AppShell: FC = () => {
         <AppSidebar collapsed showCollapseToggle={false} className="border-r border-hairline" />
       </div>
 
-      <main className={cn("relative flex min-w-0 flex-1 flex-col", !inConversation && "pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0")} key={location.pathname.split("/")[1]}>
+      <main className={cn("scrollbar-thin relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto", !inConversation && "pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0")} key={location.pathname.split("/")[1]}>
         {!connected && (
           <div className="flex items-center justify-center gap-2 bg-warning-soft px-3 py-1 text-xs font-semibold text-warning" role="status">
             <WifiOff className="h-3.5 w-3.5" /> Reconnecting… live updates will resume automatically

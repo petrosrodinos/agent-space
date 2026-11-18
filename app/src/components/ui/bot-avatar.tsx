@@ -1,4 +1,5 @@
-import type { FC } from "react";
+import { useRef, type FC } from "react";
+import { useCursorFollow } from "@/hooks/use-cursor-follow";
 import { cn } from "@/lib/utils";
 import { isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
 
@@ -11,19 +12,27 @@ interface BotAvatarProps {
   working?: boolean;
   className?: string;
   name?: string;
+  /** The emoji leans toward a nearby mouse pointer. Use on large, standalone avatars. */
+  followCursor?: boolean;
 }
 
 /** Bots are squircles filled with their colour, emoji at 60% (DESIGN.MD). A soft ring pulses while the bot works. */
-export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working = false, className, name }) => (
-  <span
-    role="img"
-    aria-label={name ? `${name}, bot` : "bot"}
-    className={cn("relative inline-flex shrink-0 select-none items-center justify-center leading-none", SIZES[size], isLightBotColor(color) && "ring-1 ring-inset ring-[rgba(28,22,51,0.12)]", working && "animate-pulse-ring", className)}
-    style={{ backgroundColor: color, ["--ring-color" as string]: `${color}88` }}
-  >
-    <span aria-hidden>{emoji}</span>
-  </span>
-);
+export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working = false, className, name, followCursor = false }) => {
+  const emojiRef = useRef<HTMLSpanElement>(null);
+  useCursorFollow(emojiRef, { enabled: followCursor });
+  return (
+    <span
+      role="img"
+      aria-label={name ? `${name}, bot` : "bot"}
+      className={cn("relative inline-flex shrink-0 select-none items-center justify-center leading-none", SIZES[size], isLightBotColor(color) && "ring-1 ring-inset ring-[rgba(28,22,51,0.12)]", working && "animate-pulse-ring", className)}
+      style={{ backgroundColor: color, ["--ring-color" as string]: `${color}88` }}
+    >
+      <span ref={emojiRef} aria-hidden className="inline-block">
+        {emoji}
+      </span>
+    </span>
+  );
+};
 
 const PERSON_SIZES = { 24: "h-6 w-6 text-[10px]", 32: "h-8 w-8 text-xs", 40: "h-10 w-10 text-sm", 56: "h-14 w-14 text-lg", 88: "h-[88px] w-[88px] text-3xl" } as const;
 const PERSON_TINTS = ["#EEEAFF", "#FFEADF", "#DBF7EC", "#FFE3F1", "#DDF2FF", "#F2EBFF", "#D9F4F3", "#E1E9FF"];

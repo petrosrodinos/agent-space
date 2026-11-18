@@ -13,6 +13,10 @@ export const botFormSchema = z.object({
 });
 export type BotFormValues = z.infer<typeof botFormSchema>;
 
+/** Quick-create modal: identity only, the rest uses API defaults. */
+export const quickBotSchema = botFormSchema.pick({ name: true, emoji: true, color: true });
+export type QuickBotFormValues = z.infer<typeof quickBotSchema>;
+
 export const describeBotSchema = z.object({
   description: z.string().trim().min(5, "Tell me a bit more about what the bot should do").max(2000),
 });

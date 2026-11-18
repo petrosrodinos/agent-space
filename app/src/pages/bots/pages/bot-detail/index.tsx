@@ -72,7 +72,7 @@ const BotDetailPage: FC = () => {
         <ArrowLeft /> Bots
       </Button>
       <div className="mb-6 flex flex-col gap-4 rounded-[28px] p-5 sm:flex-row sm:items-center" style={{ backgroundColor: botSoftColor(bot.color) }}>
-        <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={88} />
+        <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={88} followCursor />
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-[28px] font-bold leading-tight text-ink">{bot.name}</h1>
           <p className="text-[15px] text-body">{bot.description || "No description yet."}</p>

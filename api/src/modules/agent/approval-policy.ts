@@ -51,7 +51,7 @@ export function classifyToolSlug(slug: string, args: Record<string, unknown>, us
         if (/(MAIL|EMAIL|OUTLOOK)/.test(s)) {
             const recipients = JSON.stringify([args.recipient_email, args.to, args.cc, args.bcc, args.recipients, args.extra_recipients].filter(Boolean)).toLowerCase();
             const domain = userEmail?.split('@')[1]?.toLowerCase();
-            const emails = recipients.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g) ?? [];
+            const emails: string[] = recipients.match(/[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}/g) ?? [];
             if (!domain || emails.some((e) => !e.endsWith(`@${domain}`))) return 'EXTERNAL_EMAIL';
         }
         return 'SEND_MESSAGE';

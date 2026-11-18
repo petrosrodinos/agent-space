@@ -17,6 +17,7 @@ import { CommandPalette } from "./command-palette";
 import { SplashSkeleton } from "./session-gate";
 import { ToastAction } from "@/components/ui/toast";
 import { QueryKeys } from "@/config/constants/query-keys";
+import { NewChatDialog } from "./new-chat/new-chat-dialog";
 import { ShortcutKeys } from "@/config/constants/browser.constants";
 
 const isOlder = (a: string, b: string) => {
@@ -88,7 +89,6 @@ const MobileTab: FC<{ to: string; icon: React.ReactNode; label: string; badge?: 
  */
 const AppShell: FC = () => {
   const { ready } = useShellBootstrap();
-  const collapsed = useUiStore((s) => s.sidebar_collapsed);
   const connected = useRealtimeStatus();
   const inConversation = useMatch(Routes.chat.pattern);
   const { data: approvals } = useApprovals();
@@ -100,11 +100,11 @@ const AppShell: FC = () => {
     <div className="flex h-dvh w-full overflow-hidden bg-canvas">
       {/* Desktop */}
       <div className="hidden desk:flex">
-        <AppSidebar collapsed={collapsed} className="border-r border-hairline" />
+        <AppSidebar className="border-r border-hairline" />
       </div>
       {/* Tablet rail */}
       <div className="hidden md:flex desk:hidden">
-        <AppSidebar collapsed showCollapseToggle={false} className="border-r border-hairline" />
+        <AppSidebar collapsed className="border-r border-hairline" />
       </div>
 
       <main className={cn("scrollbar-thin relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto", !inConversation && "pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0")} key={location.pathname.split("/")[1]}>
@@ -125,6 +125,7 @@ const AppShell: FC = () => {
         </nav>
       )}
       <CommandPalette />
+      <NewChatDialog />
     </div>
   );
 };

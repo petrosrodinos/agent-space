@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback, useRef, useState } from "react";
 
 interface UseUnsavedChangesGuardOptions {
   /** True when the modal's form has data or has been changed (e.g. react-hook-form `formState.isDirty`). */
@@ -13,27 +13,34 @@ interface UseUnsavedChangesGuardOptions {
  * Guards closing a modal that contains a form.
  * Wire `requestClose` to every close path (Dialog `onOpenChange`, Cancel button),
  * and spread `dialogProps` onto `<UnsavedChangesDialog />`.
+ * `requestLeave(action)` guards any other way of leaving the form (e.g. a Back button) the same way.
  */
 export const useUnsavedChangesGuard = ({ isDirty, onClose, disabled = false }: UseUnsavedChangesGuardOptions) => {
   const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+  const pendingAction = useRef<() => void>(onClose);
 
-  const requestClose = useCallback(() => {
-    if (disabled) return;
-    if (isDirty) {
-      setIsConfirmOpen(true);
-      return;
-    }
-    onClose();
-  }, [disabled, isDirty, onClose]);
+  const requestLeave = useCallback(
+    (action: () => void) => {
+      if (disabled) return;
+      if (isDirty) {
+        pendingAction.current = action;
+        setIsConfirmOpen(true);
+        return;
+      }
+      action();
+    },
+    [disabled, isDirty],
+  );
+  const requestClose = useCallback(() => requestLeave(onClose), [requestLeave, onClose]);
 
   const dialogProps = {
     isOpen: isConfirmOpen,
     onKeepEditing: () => setIsConfirmOpen(false),
     onDiscard: () => {
       setIsConfirmOpen(false);
-      onClose();
+      pendingAction.current();
     },
   };
 
-  return { requestClose, dialogProps };
+  return { requestClose, requestLeave, dialogProps };
 };

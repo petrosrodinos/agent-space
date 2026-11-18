@@ -34,20 +34,16 @@ export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElemen
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(({ className, variant, size, loading = false, asChild = false, ...props }, ref) => {
-  const Comp = asChild ? Slot : "button";
-
-  const content = (
-    <>
-      {loading && <Loader className="animate-spin" />}
-      {props.children}
-    </>
-  );
+  // With asChild the Slot must receive the consumer's element as its single child so the styles land on it (e.g. a Link).
+  if (asChild) {
+    return <Slot className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />;
+  }
 
   return (
-    // <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} />
-    <Comp className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} disabled={loading || props.disabled}>
-      {asChild ? <span className="inline-flex items-center gap-2">{content}</span> : content}
-    </Comp>
+    <button className={cn(buttonVariants({ variant, size, className }))} ref={ref} {...props} disabled={loading || props.disabled}>
+      {loading && <Loader className="animate-spin" />}
+      {props.children}
+    </button>
   );
 });
 Button.displayName = "Button";

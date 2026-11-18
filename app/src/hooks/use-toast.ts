@@ -4,6 +4,8 @@ import type { ToastActionElement, ToastProps } from '@/components/ui/toast'
 
 const TOAST_LIMIT = 3
 const TOAST_REMOVE_DELAY = 1000000
+/** Default time a toast stays up. Callers can override it with `duration`. */
+const TOAST_DEFAULT_DURATION_MS = 4000
 
 type ToasterToast = ToastProps & {
   id: string
@@ -147,11 +149,18 @@ function toast({ ...props }: Toast) {
     })
   const dismiss = () => dispatch({ type: 'DISMISS_TOAST', toastId: id })
 
+  // Radix pauses its own timer while the pointer is over the toast, the toast has focus or the window is blurred.
+  // Toasts appear right above the composer where the cursor usually is, so they would never leave. We run the timer
+  // ourselves and hand Radix an infinite duration.
+  const duration = props.duration ?? TOAST_DEFAULT_DURATION_MS
+  if (Number.isFinite(duration)) setTimeout(dismiss, duration)
+
   dispatch({
     type: 'ADD_TOAST',
     toast: {
       ...props,
       id,
+      duration: Infinity,
       open: true,
       onOpenChange: (open) => {
         if (!open) dismiss()

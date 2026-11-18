@@ -19,7 +19,7 @@ const config: CapacitorConfig = {
   ios: { contentInset: "automatic", limitsNavigationsToAppBoundDomains: false },
   plugins: {
     PushNotifications: { presentationOptions: ["badge", "sound", "alert"] },
-    LocalNotifications: { iconColor: "#6B4EFF" },
+    LocalNotifications: { iconColor: "#0A0A0A" },
   },
 };
 

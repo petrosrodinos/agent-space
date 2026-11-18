@@ -11,7 +11,8 @@
     "cap:sync": "npm run build && cap sync",
     "cap:android": "cap open android",
     "cap:ios": "cap open ios",
-    "cap:run:android": "cap run android"
+    "cap:run:android": "cap run android",
+    "icons": "node resources/generate-icons.mjs && capacitor-assets generate --android --ios --iconBackgroundColor '#0A0A0A' --iconBackgroundColorDark '#0A0A0A' --splashBackgroundColor '#FAFAFA' --splashBackgroundColorDark '#0A0A0A'"
   },
   "dependencies": {
     "@aparajita/capacitor-secure-storage": "8.0.1",
@@ -76,6 +77,7 @@
     "zustand": "^5.0.5"
   },
   "devDependencies": {
+    "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "8.6.2",
     "@eslint/js": "^9.32.0",
     "@types/node": "^24.2.1",

@@ -11,6 +11,7 @@ import { findSecrets, guessService, stripSecrets } from "@/lib/secret-detection"
 import { formatBytes } from "@/lib/date";
 import { platform } from "@/platform";
 import { toast } from "@/hooks/use-toast";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { StoreSecretDialog } from "./store-secret-dialog";
 import { ReplyQuote, ReplyQuoteVariants } from "./reply-quote";
@@ -51,6 +52,7 @@ type Picker = { kind: (typeof PickerKinds)[keyof typeof PickerKinds]; query: str
 /** Floating composer (DESIGN.MD): attach, text (grows to 8 lines), @ bot picker, / skill picker, send ↔ stop. */
 export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled, onSend, onStop, prefill, onPrefillUsed, onVoice, replyingTo, onCancelReply, meId }) => {
   const [text, setText] = useState("");
+  const isMobile = useIsMobile();
   const [files, setFiles] = useState<Attachment[]>([]);
   const [picker, setPicker] = useState<Picker>(null);
   const [active, setActive] = useState(0);
@@ -186,6 +188,16 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
     }
   };
 
+  // Phones get a short, single-line hint (Grok-style "Ask …"); wider screens also explain @mentions and /skills.
+  const target = conversation.type === ConversationTypes.GROUP ? conversation.name : (conversation.bots[0]?.name ?? "");
+  const placeholder = replyingTo
+    ? "Write your reply…"
+    : isMobile
+      ? `${conversation.type === ConversationTypes.GROUP ? "Message" : "Ask"} ${target}`
+      : conversation.type === ConversationTypes.GROUP
+        ? `Message ${target} — @mention a bot, / for skills`
+        : `Message ${target}… (/ for skills)`;
+
   return (
     <div
       className="relative"
@@ -201,7 +213,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
       }}
     >
       {picker && options.length > 0 && (
-        <div className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-[20px] border border-hairline bg-popover p-1.5 shadow-pop" role="listbox" aria-label={picker.kind === PickerKinds.MENTION ? "Mention" : "Skills"}>
+        <div className="absolute bottom-full left-0 right-0 z-20 mb-2 overflow-hidden rounded-lg border border-hairline bg-popover p-1.5 shadow-pop" role="listbox" aria-label={picker.kind === PickerKinds.MENTION ? "Mention" : "Skills"}>
           <p className="eyebrow px-2 py-1">{picker.kind === PickerKinds.MENTION ? "Mention" : "Skills"}</p>
           {options.map((o, i) => (
             <button
@@ -213,7 +225,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
                 e.preventDefault();
                 choose(o.insert);
               }}
-              className={cn("flex w-full items-center gap-2.5 rounded-[12px] px-2 py-2 text-left", i === active ? "bg-primary-soft" : "hover:bg-surface-sunken")}
+              className={cn("flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left", i === active ? "bg-primary-soft" : "hover:bg-surface-sunken")}
             >
               {o.bot ? <BotAvatar emoji={o.bot.emoji} color={o.bot.color} size={24} /> : o.user ? <PersonAvatar name={o.user.name} email={o.user.email} size={24} /> : null}
               <span className="min-w-0">
@@ -225,7 +237,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
         </div>
       )}
 
-      <div className={cn("rounded-[28px] border-[1.5px] border-hairline-strong bg-surface p-2 pl-3 shadow-pop transition-[border-color,box-shadow] focus-within:border-primary focus-within:shadow-[var(--sh-pop),0_0_0_4px_rgba(107,78,255,0.22)]", dragOver && "border-primary")}>
+      <div className={cn("rounded-xl border-[1.5px] border-hairline-strong bg-surface p-2 pl-3 shadow-pop transition-[border-color,box-shadow] focus-within:border-primary focus-within:shadow-[var(--sh-pop),0_0_0_4px_rgba(107,78,255,0.22)]", dragOver && "border-primary")}>
         {replyingTo && (
           <div className="mb-2 pr-1 pt-0.5">
             <ReplyQuote reply={replyPreviewOf(replyingTo)!} meId={meId} variant={ReplyQuoteVariants.COMPOSER} onCancel={onCancelReply} />
@@ -266,9 +278,9 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
                 void addFiles(pasted);
               }
             }}
-            placeholder={replyingTo ? "Write your reply…" : conversation.type === ConversationTypes.GROUP ? `Message ${conversation.name} — @mention a bot, / for skills` : `Message ${conversation.bots[0]?.name ?? ""}… (/ for skills)`}
+            placeholder={placeholder}
             aria-label="Message"
-            className="scrollbar-thin max-h-[208px] min-h-[40px] flex-1 resize-none bg-transparent py-2 text-base leading-6 text-ink outline-none placeholder:text-muted-soft md:text-[15px]"
+            className="scrollbar-thin max-h-[208px] min-h-[40px] min-w-0 flex-1 resize-none bg-transparent py-2 text-base leading-6 text-ink outline-none placeholder:text-muted-soft placeholder-shown:overflow-hidden placeholder-shown:text-ellipsis placeholder-shown:whitespace-nowrap md:text-[15px]"
           />
           {onVoice && !disabled && !text.trim() && !files.length && (
             conversation.bots.length > 1 ? (
@@ -278,10 +290,10 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
                     <AudioLines className="!h-5 !w-5" />
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 rounded-[14px] p-1.5">
+                <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
                   <DropdownMenuLabel className="eyebrow px-2">Talk to</DropdownMenuLabel>
                   {conversation.bots.map((b) => (
-                    <DropdownMenuItem key={b.id} onSelect={() => onVoice(b.id)} className="gap-2 rounded-[10px] py-2">
+                    <DropdownMenuItem key={b.id} onSelect={() => onVoice(b.id)} className="gap-2 rounded-sm py-2">
                       <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
                       {conversation.lead_bot?.id === b.id && <span className="ml-auto text-xs text-muted-foreground">Lead</span>}
                     </DropdownMenuItem>

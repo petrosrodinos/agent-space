@@ -21,11 +21,11 @@ export function useSessionBootstrap() {
 export const SplashSkeleton: FC = () => (
   <div className="flex h-dvh w-full bg-canvas">
     <div className="hidden w-[288px] flex-col gap-3 border-r border-hairline bg-surface-soft p-4 md:flex">
-      <Skeleton className="h-10 w-full rounded-[14px]" />
+      <Skeleton className="h-10 w-full rounded-md" />
       <Skeleton className="h-9 w-full rounded-full" />
       {Array.from({ length: 8 }).map((_, i) => (
         <div key={i} className="flex items-center gap-3">
-          <Skeleton className="h-10 w-10 rounded-[14px]" />
+          <Skeleton className="h-10 w-10 rounded-md" />
           <div className="flex-1 space-y-1.5">
             <Skeleton className="h-3.5 w-2/3" />
             <Skeleton className="h-3 w-1/2" />
@@ -34,7 +34,7 @@ export const SplashSkeleton: FC = () => (
       ))}
     </div>
     <div className="flex flex-1 flex-col items-center justify-center gap-3 p-8">
-      <Skeleton className="h-16 w-16 rounded-[20px]" />
+      <Skeleton className="h-16 w-16 rounded-lg" />
       <Skeleton className="h-6 w-64" />
       <Skeleton className="h-4 w-80" />
     </div>

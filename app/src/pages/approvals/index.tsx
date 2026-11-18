@@ -21,7 +21,7 @@ const ApprovalsPage: FC = () => {
       <PageHeader title="Approvals" description="Actions your bots want to take that need your OK first." />
       <SegmentedControl ariaLabel="Filter approvals" value={status} options={FILTERS} onChange={setStatus} className="mb-5" />
       {isPending ? (
-        <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-[20px]" />)}</div>
+        <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-48 rounded-lg" />)}</div>
       ) : !data?.length ? (
         <EmptyState title="Nothing to approve" description="When a bot wants to send, post, delete or change something, you'll see it here." stickers={[{ icon: CheckCircle2, color: "#1FC98E" }, { icon: ShieldCheck, color: "#6B4EFF" }, { icon: Coffee, color: "#FF7A3D" }]} />
       ) : (

@@ -2,6 +2,7 @@ import { useState, type FC } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, Download, Plus, Trash2 } from "lucide-react";
 import { PageContainer } from "@/components/ui/page-header";
+import { BackButton } from "@/components/layout/mobile-top-bar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -30,10 +31,17 @@ const SkillDetailPage: FC = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const navigate = useNavigate();
 
-  const back = (
-    <Button variant="ghost" size="sm" className="mb-3" onClick={() => navigate(Routes.skills.root)}>
+  const desktopBack = (
+    <Button variant="ghost" size="sm" className="mb-3 hidden md:inline-flex" onClick={() => navigate(Routes.skills.root)}>
       <ArrowLeft /> Skills
     </Button>
+  );
+  const mobileBack = <BackButton fallback={Routes.skills.root} className="md:hidden" />;
+  const back = (
+    <>
+      {desktopBack}
+      <div className="mb-3 md:hidden">{mobileBack}</div>
+    </>
   );
 
   if (isNew)
@@ -51,8 +59,8 @@ const SkillDetailPage: FC = () => {
       <PageContainer>
         {back}
         <div className="grid gap-4 lg:grid-cols-[minmax(0,720px)_1fr]">
-          <Skeleton className="h-[600px] rounded-[20px]" />
-          <Skeleton className="h-72 rounded-[20px]" />
+          <Skeleton className="h-[600px] rounded-lg" />
+          <Skeleton className="h-72 rounded-lg" />
         </div>
       </PageContainer>
     );
@@ -79,8 +87,9 @@ const SkillDetailPage: FC = () => {
 
   return (
     <PageContainer wide>
-      {back}
+      {desktopBack}
       <div className="mb-5 flex flex-wrap items-center gap-2">
+        {mobileBack}
         <h1 className="font-display mr-auto text-[28px] font-bold text-ink">
           {skill.emoji ?? DEFAULT_SKILL_EMOJI} {skill.name}
         </h1>

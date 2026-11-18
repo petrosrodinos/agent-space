@@ -50,7 +50,7 @@ export const ApprovalCard: FC<{ approval: Approval; showConversation?: boolean }
   };
 
   return (
-    <article className="rounded-[20px] border-[1.5px] border-sunshine bg-warning-soft p-5 shadow-sticker-strong">
+    <article className="rounded-lg border-[1.5px] border-sunshine bg-warning-soft p-5 shadow-sticker-strong">
       <div className="mb-3 flex items-start gap-3">
         <BotAvatar emoji={approval.bot.emoji} color={approval.bot.color} name={approval.bot.name} size={40} />
         <div className="min-w-0 flex-1">
@@ -63,7 +63,7 @@ export const ApprovalCard: FC<{ approval: Approval; showConversation?: boolean }
       </div>
 
       {editing && editableInput ? (
-        <div className="space-y-3 rounded-[14px] bg-surface/80 p-3">
+        <div className="space-y-3 rounded-md bg-surface/80 p-3">
           {Object.keys(draft).map((k) => {
             const long = draft[k].length > 60 || draft[k].includes("\n");
             return (

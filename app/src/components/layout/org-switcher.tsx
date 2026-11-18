@@ -26,7 +26,7 @@ const OrgMarkSizes = { SM: "sm", MD: "md" } as const;
 type OrgMarkSize = (typeof OrgMarkSizes)[keyof typeof OrgMarkSizes];
 
 const OrgMark: FC<{ name: string; color?: string | null; size?: OrgMarkSize }> = ({ name, color, size = OrgMarkSizes.MD }) => (
-  <span className={cn("inline-flex shrink-0 items-center justify-center rounded-[12px] font-display font-extrabold text-white", size === OrgMarkSizes.MD ? "h-9 w-9 text-base" : "h-7 w-7 text-xs")} style={{ backgroundColor: color || "#1C1633" }}>
+  <span className={cn("inline-flex shrink-0 items-center justify-center rounded-md font-display font-extrabold text-white", size === OrgMarkSizes.MD ? "h-9 w-9 text-base" : "h-7 w-7 text-xs")} style={{ backgroundColor: color || "#1C1633" }}>
     {name.slice(0, 1).toUpperCase()}
   </span>
 );
@@ -45,17 +45,17 @@ export const OrgSubmenu: FC<{ onCreate: () => void }> = ({ onCreate }) => {
 
   return (
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger className="gap-2.5 rounded-[10px] py-1.5">
+      <DropdownMenuSubTrigger className="gap-2.5 rounded-sm py-1.5">
         <OrgMark name={current?.name ?? "A"} color={current?.brand_color} size={OrgMarkSizes.SM} />
         <span className="min-w-0 flex-1">
           <span className="block truncate font-semibold">{current?.name ?? "Agent Space"}</span>
           <span className="block truncate text-xs text-muted-foreground">{getDropdownOptionLabel(OrgRoleFormOptions, current?.role)}</span>
         </span>
       </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent className="w-72 rounded-[14px] p-1.5 shadow-pop">
+      <DropdownMenuSubContent className="w-72 rounded-md p-1.5 shadow-pop">
         <DropdownMenuLabel className="eyebrow px-2">Organisations</DropdownMenuLabel>
         {orgs.map((o) => (
-          <DropdownMenuItem key={o.id} onSelect={() => o.id !== currentId && (switchOrg(o.id), navigate(Routes.home))} className="gap-2.5 rounded-[10px] py-2">
+          <DropdownMenuItem key={o.id} onSelect={() => o.id !== currentId && (switchOrg(o.id), navigate(Routes.home))} className="gap-2.5 rounded-sm py-2">
             <OrgMark name={o.name} color={o.brand_color} size={OrgMarkSizes.SM} />
             <span className="min-w-0 flex-1">
               <span className="block truncate font-semibold">{o.name}</span>
@@ -67,10 +67,10 @@ export const OrgSubmenu: FC<{ onCreate: () => void }> = ({ onCreate }) => {
           </DropdownMenuItem>
         ))}
         <DropdownMenuSeparator />
-        <DropdownMenuItem onSelect={onCreate} className="gap-2 rounded-[10px] py-2">
+        <DropdownMenuItem onSelect={onCreate} className="gap-2 rounded-sm py-2">
           <Plus className="h-4 w-4" /> Create organisation
         </DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => navigate(Routes.settings.organization)} className="gap-2 rounded-[10px] py-2">
+        <DropdownMenuItem onSelect={() => navigate(Routes.settings.organization)} className="gap-2 rounded-sm py-2">
           <Building2 className="h-4 w-4" /> Organisation settings
         </DropdownMenuItem>
       </DropdownMenuSubContent>

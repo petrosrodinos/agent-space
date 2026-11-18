@@ -49,7 +49,7 @@ export const SecretInputCard: FC<{ part: SecretPart }> = ({ part }) => {
       <div className="my-2 inline-flex items-center gap-2 rounded-full border border-hairline bg-surface px-3.5 py-2 text-sm shadow-sticker">
         <Lock className="h-4 w-4 text-success" />
         <span className="font-semibold text-ink">Saved: {part.saved.label}</span>
-        <code className="rounded-[6px] bg-surface-sunken px-1.5 text-xs">{part.saved.masked_hint}</code>
+        <code className="rounded-xs bg-surface-sunken px-1.5 text-xs">{part.saved.masked_hint}</code>
         <Link to={Routes.secrets} className="text-xs font-bold text-primary hover:underline">
           Manage
         </Link>
@@ -67,9 +67,9 @@ export const SecretInputCard: FC<{ part: SecretPart }> = ({ part }) => {
   };
 
   return (
-    <section className="my-2 rounded-[20px] border-[1.5px] border-primary/40 bg-surface p-4 shadow-sticker-strong sm:p-5" aria-label="Secure secret box">
+    <section className="my-2 rounded-lg border-[1.5px] border-primary/40 bg-surface p-4 shadow-sticker-strong sm:p-5" aria-label="Secure secret box">
       <div className="mb-3 flex items-start gap-2.5">
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-primary-soft text-primary">
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-soft text-primary">
           <Lock className="h-5 w-5" />
         </span>
         <div>

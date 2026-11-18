@@ -114,7 +114,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
             const Icon = KIND_ICON[k.kind];
             return (
               <li key={k.id} className="flex items-center gap-3 py-3">
-                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-primary-soft text-accent-foreground">
+                <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-soft text-accent-foreground">
                   <Icon className="h-4 w-4" />
                 </span>
                 <span className="min-w-0 flex-1">

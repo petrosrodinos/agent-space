@@ -14,9 +14,10 @@ import { useBots } from "@/features/bots/hooks/use-bots";
 import { useMembers } from "@/features/organizations/hooks/use-organizations";
 import { useCreateConversation } from "@/features/conversations/hooks/use-conversations";
 import { useMe } from "@/features/users/hooks/use-users";
-import { BotEmojiSuggestions, DEFAULT_GROUP_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { BotColorOptions, DEFAULT_GROUP_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
+import { ColorSwatches, EmojiPicker } from "@/pages/bots/components/bot-pickers";
 import { newGroupSchema, type NewGroupFormData } from "../validation-schemas/group.schema";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 
@@ -34,6 +35,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
     defaultValues: {
       name: "",
       emoji: DEFAULT_GROUP_EMOJI,
+      color: BotColorOptions[0].id,
       bot_ids: [],
       user_ids: [],
     },
@@ -51,6 +53,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
     };
   }, [closeRef, requestClose]);
   const botIds = form.watch("bot_ids");
+  const color = form.watch("color");
   const others = (members ?? []).filter((m) => m.user.id !== me?.user.id);
 
   return (
@@ -79,6 +82,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                 type: ConversationTypes.GROUP,
                 name: v.name,
                 emoji: v.emoji,
+                color: v.color,
                 bot_ids: v.bot_ids,
                 user_ids: v.user_ids,
                 lead_bot_id: v.lead_bot_id ?? v.bot_ids[0],
@@ -92,7 +96,8 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
             ),
           )}
         >
-          <div className="flex gap-3">
+          <div className="flex items-center gap-4">
+            <FormField control={form.control} name="emoji" render={({ field }) => <EmojiPicker value={field.value} color={color} onChange={field.onChange} />} />
             <FormField
               control={form.control}
               name="name"
@@ -109,24 +114,12 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
           </div>
           <FormField
             control={form.control}
-            name="emoji"
+            name="color"
             render={({ field }) => (
               <FormItem>
-                <FormLabel>Emoji</FormLabel>
-                <div className="flex flex-wrap gap-1">
-                  {BotEmojiSuggestions.slice(0, 16).map((e) => (
-                    <button
-                      key={e}
-                      type="button"
-                      onClick={() => field.onChange(e)}
-                      className={cn("inline-flex h-10 w-10 items-center justify-center rounded-[12px] text-xl", field.value === e ? "bg-primary-soft ring-2 ring-primary" : "hover:bg-surface-sunken")}
-                      aria-label={`Emoji ${e}`}
-                      aria-pressed={field.value === e}
-                    >
-                      {e}
-                    </button>
-                  ))}
-                </div>
+                <FormLabel>Colour</FormLabel>
+                <ColorSwatches value={field.value} onChange={field.onChange} />
+                <FormMessage />
               </FormItem>
             )}
           />
@@ -138,7 +131,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                 <FormLabel>Bots</FormLabel>
                 <div className="grid gap-1 sm:grid-cols-2">
                   {(bots ?? []).map((b) => (
-                    <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-2.5 rounded-[12px] border border-hairline px-2.5 hover:bg-surface-sunken">
+                    <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-2.5 rounded-md border border-hairline px-2.5 hover:bg-surface-sunken">
                       <Checkbox checked={field.value.includes(b.id)} onCheckedChange={(v) => field.onChange(v ? [...field.value, b.id] : field.value.filter((x) => x !== b.id))} />
                       <BotAvatar emoji={b.emoji} color={b.color} size={24} />
                       <span className="truncate text-sm font-semibold">{b.name}</span>
@@ -186,7 +179,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                 {others.length ? (
                   <div className="grid gap-1 sm:grid-cols-2">
                     {others.map((m) => (
-                      <label key={m.user.id} className="flex min-h-[44px] cursor-pointer items-center gap-2.5 rounded-[12px] border border-hairline px-2.5 hover:bg-surface-sunken">
+                      <label key={m.user.id} className="flex min-h-[44px] cursor-pointer items-center gap-2.5 rounded-md border border-hairline px-2.5 hover:bg-surface-sunken">
                         <Checkbox checked={field.value.includes(m.user.id)} onCheckedChange={(v) => field.onChange(v ? [...field.value, m.user.id] : field.value.filter((x) => x !== m.user.id))} />
                         <PersonAvatar name={m.user.name} email={m.user.email} size={24} />
                         <span className="truncate text-sm font-semibold">{m.user.name ?? m.user.email}</span>

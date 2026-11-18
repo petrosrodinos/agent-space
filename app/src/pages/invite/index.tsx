@@ -51,8 +51,8 @@ const InvitePage: FC = () => {
         </>
       }
     >
-      <div className="mb-6 flex items-center gap-3 rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
-        <span className="inline-flex h-12 w-12 items-center justify-center rounded-[14px] font-display text-xl font-extrabold text-white" style={{ backgroundColor: data.organization.brand_color || "#1C1633" }}>
+      <div className="mb-6 flex items-center gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
+        <span className="inline-flex h-12 w-12 items-center justify-center rounded-md font-display text-xl font-extrabold text-white" style={{ backgroundColor: data.organization.brand_color || "#1C1633" }}>
           {data.organization.name.slice(0, 1)}
         </span>
         <div>

@@ -36,7 +36,7 @@ import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfac
 import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
 
 const ACTIVE: string[] = ACTIVE_RUN_STATUSES;
-const FLASH_CLASSES = ["bg-primary-soft", "rounded-[20px]", "transition-colors", "duration-500"];
+const FLASH_CLASSES = ["bg-primary-soft", "rounded-lg", "transition-colors", "duration-500"];
 const FLASH_MS = 1400;
 
 /** A bot message counts as "working" while streaming — but not while it waits on the user (approval or secret box). */
@@ -49,11 +49,11 @@ function isWorking(m: Message, runStatus: RunStatusMap | undefined) {
 }
 
 const MessagesSkeleton: FC = () => (
-  <div className="mx-auto w-full max-w-[760px] space-y-6 px-4 py-6">
+  <div className="mx-auto w-full max-w-[760px] space-y-6 px-4 pb-6 pt-20 md:pt-6">
     {Array.from({ length: 4 }).map((_, i) => (
       <div key={i} className={i % 2 ? "flex justify-end" : "flex gap-3"}>
-        {i % 2 === 0 && <Skeleton className="h-10 w-10 rounded-[14px]" />}
-        <Skeleton className={i % 2 ? "h-12 w-2/5 rounded-[20px]" : "h-20 w-3/5 rounded-[20px]"} />
+        {i % 2 === 0 && <Skeleton className="h-10 w-10 rounded-md" />}
+        <Skeleton className={i % 2 ? "h-12 w-2/5 rounded-lg" : "h-20 w-3/5 rounded-lg"} />
       </div>
     ))}
   </div>
@@ -225,7 +225,7 @@ const ConversationPage: FC = () => {
 
   return (
     <div className="flex h-full min-h-0">
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div className="relative flex min-w-0 flex-1 flex-col">
         {conversation ? (
           <ConversationHeader
             conversation={conversation}
@@ -238,8 +238,8 @@ const ConversationPage: FC = () => {
             onDelete={() => setConfirmDelete(true)}
           />
         ) : (
-          <div className="flex h-16 items-center gap-3 border-b border-hairline px-4">
-            <Skeleton className="h-10 w-10 rounded-[14px]" />
+          <div className="absolute inset-x-0 top-0 z-30 flex h-[68px] items-center gap-3 px-3 md:static md:h-16 md:border-b md:border-hairline md:px-4">
+            <Skeleton className="h-10 w-10 rounded-md" />
             <Skeleton className="h-5 w-40" />
           </div>
         )}
@@ -248,14 +248,14 @@ const ConversationPage: FC = () => {
           {messagesQuery.isPending || convPending ? (
             <MessagesSkeleton />
           ) : (
-            <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-4 sm:px-4">
+            <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-[calc(72px+env(safe-area-inset-top))] sm:px-4 md:pt-4">
               {messagesQuery.isFetchingNextPage && <Skeleton className="mx-auto mb-4 h-6 w-32 rounded-full" />}
               {!messagesQuery.hasNextPage && conversation && (
                 <div className="mb-6 flex flex-col items-center pt-6 text-center">
                   {conversation.type === ConversationTypes.DIRECT && conversation.bots[0] ? (
                     <BotAvatar emoji={conversation.bots[0].emoji} color={conversation.bots[0].color} size={88} followCursor />
                   ) : (
-                    <span className="inline-flex h-[88px] w-[88px] items-center justify-center rounded-[28px] text-5xl" style={{ backgroundColor: conversation.color }}>
+                    <span className="inline-flex h-[88px] w-[88px] items-center justify-center rounded-xl text-5xl" style={{ backgroundColor: conversation.color }}>
                       {conversation.emoji}
                     </span>
                   )}
@@ -264,7 +264,7 @@ const ConversationPage: FC = () => {
                   {messages.length === 0 && starters.length > 0 && (
                     <div className="mt-5 grid w-full max-w-lg gap-2 sm:grid-cols-2">
                       {starters.map((s) => (
-                        <button key={s} type="button" onClick={() => send.mutate({ content: s })} className="card-lift min-h-[48px] rounded-[16px] border border-hairline bg-surface px-4 py-3 text-left text-sm font-semibold text-body shadow-sticker">
+                        <button key={s} type="button" onClick={() => send.mutate({ content: s })} className="card-lift min-h-[48px] rounded-lg border border-hairline bg-surface px-4 py-3 text-left text-sm font-semibold text-body shadow-sticker">
                           {s}
                         </button>
                       ))}
@@ -359,7 +359,7 @@ const ConversationPage: FC = () => {
               <button
                 key={m.id}
                 type="button"
-                className="w-full rounded-[12px] p-2 text-left hover:bg-surface-sunken"
+                className="w-full rounded-md p-2 text-left hover:bg-surface-sunken"
                 onClick={() => {
                   setSearchOpen(false);
                   document.getElementById(`msg-${m.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
@@ -384,10 +384,10 @@ const ConversationPage: FC = () => {
           </DialogHeader>
           <div className="max-h-[60vh] space-y-2 overflow-y-auto">
             {pinned.isPending ? (
-              <Skeleton className="h-16 w-full rounded-[14px]" />
+              <Skeleton className="h-16 w-full rounded-md" />
             ) : pinned.data?.length ? (
               pinned.data.map((m) => (
-                <div key={m.id} className="rounded-[14px] border border-hairline bg-surface p-3">
+                <div key={m.id} className="rounded-md border border-hairline bg-surface p-3">
                   <p className="text-xs font-semibold text-muted-foreground">
                     {m.author_bot?.name ?? m.author_user?.name} · {formatDateTime(m.created_at)}
                   </p>

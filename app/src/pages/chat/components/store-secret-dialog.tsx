@@ -42,7 +42,7 @@ export const StoreSecretDialog: FC<Props> = ({ open, secret, service, botIds, on
           <DialogDescription>Store it securely instead? The bot will be able to use it without ever seeing it, and it won't appear in the chat.</DialogDescription>
         </DialogHeader>
         <div className="space-y-3">
-          <div className="rounded-[14px] bg-surface-sunken px-3 py-2 font-mono text-sm text-body">{secret.slice(0, 6)}…{secret.slice(-4)}</div>
+          <div className="rounded-md bg-surface-sunken px-3 py-2 font-mono text-sm text-body">{secret.slice(0, 6)}…{secret.slice(-4)}</div>
           <div className="grid gap-3 sm:grid-cols-2">
             <div className="space-y-1">
               <Label htmlFor="store-secret-label">Name</Label>

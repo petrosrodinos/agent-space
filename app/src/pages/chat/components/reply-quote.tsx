@@ -36,7 +36,7 @@ export const ReplyQuote: FC<Props> = ({ reply, meId, variant, onJump, onCancel }
       </span>
     </>
   );
-  const boxClass = cn("min-w-0 flex-1 rounded-[10px] border-l-[3px] px-2.5 py-1.5 text-left", styles.box);
+  const boxClass = cn("min-w-0 flex-1 rounded-sm border-l-[3px] px-2.5 py-1.5 text-left", styles.box);
 
   return (
     <div className="flex items-start gap-1.5">

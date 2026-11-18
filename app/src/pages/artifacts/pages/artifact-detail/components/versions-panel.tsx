@@ -25,7 +25,7 @@ export const VersionsPanel: FC<Props> = ({ artifact: a, previewId, compareId, on
   const restore = useRestoreVersion();
   const [editing, setEditing] = useState<{ id: string; value: string } | null>(null);
 
-  if (isPending) return <Skeleton className="h-60 rounded-[18px]" />;
+  if (isPending) return <Skeleton className="h-60 rounded-lg" />;
   return (
     <div className="space-y-2">
       {(previewId || compareId) && (
@@ -43,7 +43,7 @@ export const VersionsPanel: FC<Props> = ({ artifact: a, previewId, compareId, on
       )}
       <ul className="space-y-2">
         {(data ?? []).map((v) => (
-          <li key={v.id} className={cn("rounded-[16px] border p-3", previewId === v.id ? "border-primary bg-primary-soft" : "border-hairline")}>
+          <li key={v.id} className={cn("rounded-lg border p-3", previewId === v.id ? "border-primary bg-primary-soft" : "border-hairline")}>
             <div className="flex items-start gap-2.5">
               {v.bot ? <BotAvatar emoji={v.bot.emoji} color={v.bot.color} size={32} /> : <PersonAvatar name={v.created_by?.name} email={v.created_by?.email} size={32} />}
               <div className="min-w-0 flex-1">

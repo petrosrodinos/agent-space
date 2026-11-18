@@ -29,15 +29,15 @@ type Action = (typeof SecretActions)[keyof typeof SecretActions];
 const tone = (s: string) => (s === CredentialStatuses.ACTIVE ? "success" : s === CredentialStatuses.EXPIRED ? "warning" : "error") as "success" | "warning" | "error";
 
 const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: Credential) => void }> = ({ s, isAdmin, onAction }) => (
-  <div className="flex flex-col gap-3 rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker sm:flex-row sm:items-center">
+  <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker sm:flex-row sm:items-center">
     <div className="flex min-w-0 flex-1 items-start gap-3">
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-surface-sunken">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-sunken">
         <Lock className="h-5 w-5 text-muted-foreground" />
       </span>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
           <span className="font-bold text-ink">{s.label}</span>
-          <code className="rounded-[6px] bg-surface-sunken px-1.5 py-0.5 font-mono text-xs text-body">{s.masked_hint ?? "••••"}</code>
+          <code className="rounded-xs bg-surface-sunken px-1.5 py-0.5 font-mono text-xs text-body">{s.masked_hint ?? "••••"}</code>
           <Badge variant="secondary">{s.visibility === Visibilities.SHARED ? <><Users className="h-3 w-3" /> Shared</> : "Private"}</Badge>
         </div>
         <p className="text-sm text-muted-foreground">
@@ -56,16 +56,16 @@ const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: 
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 rounded-[14px] p-1.5">
-          <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => onAction(SecretActions.HISTORY, s)}><History className="h-4 w-4" /> History</DropdownMenuItem>
+        <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
+          <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.HISTORY, s)}><History className="h-4 w-4" /> History</DropdownMenuItem>
           {s.can_manage && (
             <>
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => onAction(SecretActions.RENAME, s)}><Pencil className="h-4 w-4" /> Rename</DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => onAction(SecretActions.REPLACE, s)}><RefreshCw className="h-4 w-4" /> Replace value</DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => onAction(SecretActions.BOTS, s)}><BotIcon className="h-4 w-4" /> Choose bots</DropdownMenuItem>
-              {isAdmin && <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => onAction(SecretActions.SHARE, s)}><Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}</DropdownMenuItem>}
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.RENAME, s)}><Pencil className="h-4 w-4" /> Rename</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.REPLACE, s)}><RefreshCw className="h-4 w-4" /> Replace value</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.BOTS, s)}><BotIcon className="h-4 w-4" /> Choose bots</DropdownMenuItem>
+              {isAdmin && <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.SHARE, s)}><Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}</DropdownMenuItem>}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 rounded-[10px] text-error focus:text-error" onSelect={() => onAction(SecretActions.DELETE, s)}><Trash2 className="h-4 w-4" /> Delete</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={() => onAction(SecretActions.DELETE, s)}><Trash2 className="h-4 w-4" /> Delete</DropdownMenuItem>
             </>
           )}
         </DropdownMenuContent>
@@ -99,7 +99,7 @@ const SecretsPage: FC = () => {
       {hint && <p className="mb-3 text-sm text-muted-foreground">{hint}</p>}
       <div className="space-y-3">
         {list.map((s) => <SecretRow key={s.id} s={s} isAdmin={isAdmin} onAction={(a, x) => setTarget({ a, s: x })} />)}
-        {!list.length && <p className="rounded-[20px] border border-dashed border-hairline-strong p-4 text-sm text-muted-foreground">Nothing here.</p>}
+        {!list.length && <p className="rounded-lg border border-dashed border-hairline-strong p-4 text-sm text-muted-foreground">Nothing here.</p>}
       </div>
     </section>
   );
@@ -141,7 +141,7 @@ const SecretsPage: FC = () => {
         </Select>
       </div>
       {isPending ? (
-        <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-[20px]" />)}</div>
+        <div className="space-y-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-24 rounded-lg" />)}</div>
       ) : !allSecrets?.length ? (
         <EmptyState
           title="No secrets yet"

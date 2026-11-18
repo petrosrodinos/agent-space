@@ -26,7 +26,7 @@ const SkillCard: FC<{ skill: SkillSummary; tab: SkillTab }> = ({ skill, tab }) =
   const deleted = tab === SkillTabs.DELETED;
   const body = (
     <>
-        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-2xl">{skill.emoji ?? <BookOpen className="h-6 w-6 text-accent-foreground" />}</span>
+        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-primary-soft text-2xl">{skill.emoji ?? <BookOpen className="h-6 w-6 text-accent-foreground" />}</span>
         <span className="min-w-0 flex-1">
           <span className="block truncate text-[17px] font-bold text-ink">{skill.name}</span>
           <span className="mt-0.5 inline-flex items-center rounded-full bg-primary-soft px-2.5 py-0.5 text-xs font-semibold text-accent-foreground">/{skill.slug}</span>
@@ -34,7 +34,7 @@ const SkillCard: FC<{ skill: SkillSummary; tab: SkillTab }> = ({ skill, tab }) =
     </>
   );
   return (
-    <div className="card-lift flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+    <div className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
       {deleted ? (
         <div className="flex items-start gap-3 text-left">{body}</div>
       ) : (
@@ -113,7 +113,7 @@ const SkillsPage: FC = () => {
       {isPending ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-48 rounded-[20px]" />
+            <Skeleton key={i} className="h-48 rounded-lg" />
           ))}
         </div>
       ) : !skills?.length ? (

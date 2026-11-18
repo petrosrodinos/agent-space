@@ -26,9 +26,9 @@ async function download(f: FileRef) {
 
 const ImagePreview: FC<{ f: FileRef }> = ({ f }) => {
   const { data, isPending } = useFileUrl(f.id, true);
-  if (isPending) return <Skeleton className="h-40 w-56 rounded-[14px]" />;
+  if (isPending) return <Skeleton className="h-40 w-56 rounded-md" />;
   return (
-    <button type="button" onClick={() => download(f)} className="block overflow-hidden rounded-[14px] border border-hairline" aria-label={`Download ${f.filename}`}>
+    <button type="button" onClick={() => download(f)} className="block overflow-hidden rounded-md border border-hairline" aria-label={`Download ${f.filename}`}>
       {data?.url ? <img src={data.url} alt={f.filename} className="max-h-64 max-w-[min(320px,70vw)] object-cover" loading="lazy" /> : <span className="block p-3 text-sm">{f.filename}</span>}
     </button>
   );
@@ -46,8 +46,8 @@ export const FileChip: FC<{ file: FileRef; tone?: FileChipTone }> = ({ file, ton
       onClick={() => download(file)}
       className={
         tone === FileChipTones.ON_PRIMARY
-          ? "inline-flex max-w-full items-center gap-2 rounded-[14px] bg-white/15 px-3 py-2 text-left text-sm text-white hover:bg-white/25"
-          : "inline-flex max-w-full items-center gap-2.5 rounded-[14px] border border-hairline bg-surface px-3 py-2 text-left text-sm shadow-sticker hover:bg-surface-soft"
+          ? "inline-flex max-w-full items-center gap-2 rounded-md bg-white/15 px-3 py-2 text-left text-sm text-white hover:bg-white/25"
+          : "inline-flex max-w-full items-center gap-2.5 rounded-md border border-hairline bg-surface px-3 py-2 text-left text-sm shadow-sticker hover:bg-surface-soft"
       }
     >
       {/^image\//.test(file.mimetype) ? <ImageIcon className="h-5 w-5 shrink-0" /> : <FileText className="h-5 w-5 shrink-0 text-primary" />}

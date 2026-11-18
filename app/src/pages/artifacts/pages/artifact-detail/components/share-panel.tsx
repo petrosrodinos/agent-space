@@ -85,7 +85,7 @@ export const SharePanel: FC<{ artifact: Artifact; isAdmin: boolean }> = ({ artif
                 disabled={!isOwner}
                 onClick={() => setLevel(o.id)}
                 className={cn(
-                  "flex min-h-[52px] items-center gap-3 rounded-[14px] border px-3 py-2 text-left transition-colors disabled:cursor-default",
+                  "flex min-h-[52px] items-center gap-3 rounded-md border px-3 py-2 text-left transition-colors disabled:cursor-default",
                   level === o.id ? "border-primary bg-primary-soft" : "border-hairline hover:bg-surface-sunken",
                 )}
               >
@@ -112,7 +112,7 @@ export const SharePanel: FC<{ artifact: Artifact; isAdmin: boolean }> = ({ artif
           <p className="eyebrow mb-2">People</p>
           <ul className="space-y-1">
             {a.owner && (
-              <li className="flex items-center gap-3 rounded-[12px] p-1.5">
+              <li className="flex items-center gap-3 rounded-md p-1.5">
                 <PersonAvatar name={a.owner.name} email={a.owner.email} size={32} />
                 <span className="min-w-0 flex-1 truncate text-sm font-semibold text-ink">{a.owner.name ?? a.owner.email}</span>
                 <span className="pr-2 text-xs font-semibold text-muted-foreground">Owner</span>
@@ -121,7 +121,7 @@ export const SharePanel: FC<{ artifact: Artifact; isAdmin: boolean }> = ({ artif
             {shares.map((s) => {
               const u = memberOf(s.user_id);
               return (
-                <li key={s.user_id} className="flex items-center gap-2 rounded-[12px] p-1.5">
+                <li key={s.user_id} className="flex items-center gap-2 rounded-md p-1.5">
                   <PersonAvatar name={u?.name} email={u?.email} size={32} />
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold text-ink">{u?.name ?? u?.email ?? "Member"}</span>
                   <RoleSelect value={s.role} disabled={!isOwner} label={`Role for ${u?.name ?? u?.email}`} onChange={(role) => setShares((list) => list.map((x) => (x.user_id === s.user_id ? { ...x, role } : x)))} />
@@ -170,7 +170,7 @@ export const SharePanel: FC<{ artifact: Artifact; isAdmin: boolean }> = ({ artif
       )}
 
       {(level === ArtifactSharingLevels.PUBLIC_LINK || a.public_link.enabled) && (
-        <section className="space-y-3 rounded-[18px] border border-hairline p-4">
+        <section className="space-y-3 rounded-lg border border-hairline p-4">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-sm font-bold text-ink">Public link</p>

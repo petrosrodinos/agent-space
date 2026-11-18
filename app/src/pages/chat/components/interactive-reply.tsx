@@ -32,7 +32,7 @@ export const InteractiveReply: FC<Props> = ({ messageId, part }) => {
   );
 
   return (
-    <section className="my-2 animate-pop-in rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker sm:p-5" aria-label={part.title || "Interactive reply"}>
+    <section className="my-2 animate-pop-in rounded-lg border border-hairline bg-surface p-4 shadow-sticker sm:p-5" aria-label={part.title || "Interactive reply"}>
       <header className="mb-3 flex items-center gap-2">
         <Sparkles className="h-4 w-4 text-primary" />
         <h3 className="min-w-0 flex-1 truncate text-[15px] font-bold text-ink">{part.title || "Interactive reply"}</h3>

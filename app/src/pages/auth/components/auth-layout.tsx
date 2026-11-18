@@ -14,7 +14,7 @@ export const AuthLayout: FC<{ title: string; subtitle?: ReactNode; children: Rea
       <div className="absolute inset-0 opacity-20" style={{ backgroundImage: "radial-gradient(circle at 1px 1px, white 1px, transparent 0)", backgroundSize: "28px 28px" }} />
       <div className="relative z-10 p-12">
         <div className="flex items-center gap-2.5 text-white">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] bg-white/15"><Bot className="h-6 w-6" /></span>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-white/15"><Bot className="h-6 w-6" /></span>
           <span className="text-lg font-extrabold">Agent Space</span>
         </div>
         <h2 className="mt-16 max-w-md font-display text-[44px] font-bold leading-[1.05] text-white">Your team's AI co-workers, right inside your chats.</h2>
@@ -22,9 +22,9 @@ export const AuthLayout: FC<{ title: string; subtitle?: ReactNode; children: Rea
       </div>
       <div className="absolute inset-x-0 bottom-0 top-[48%]">
         {STICKERS.map((s) => (
-          <div key={s.name} className="absolute w-[300px] animate-pop-in rounded-[20px] bg-white p-3.5 shadow-pop" style={{ left: s.x, top: s.y, transform: `rotate(${s.rotate}deg)` }}>
+          <div key={s.name} className="absolute w-[300px] animate-pop-in rounded-lg bg-white p-3.5 shadow-pop" style={{ left: s.x, top: s.y, transform: `rotate(${s.rotate}deg)` }}>
             <div className="flex items-center gap-2.5">
-              <span className="inline-flex h-9 w-9 items-center justify-center rounded-[12px] text-white" style={{ backgroundColor: s.color }}>
+              <span className="inline-flex h-9 w-9 items-center justify-center rounded-md text-white" style={{ backgroundColor: s.color }}>
                 <s.icon className="h-5 w-5" />
               </span>
               <span className="text-sm font-extrabold text-[#1C1633]">{s.name}</span>
@@ -37,7 +37,7 @@ export const AuthLayout: FC<{ title: string; subtitle?: ReactNode; children: Rea
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-10 sm:px-8">
       <div className="w-full max-w-[400px]">
         <div className="mb-8 flex items-center gap-2.5 lg:hidden">
-          <span className="inline-flex h-10 w-10 items-center justify-center rounded-[14px] bg-primary text-primary-foreground"><Bot className="h-6 w-6" /></span>
+          <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-primary text-primary-foreground"><Bot className="h-6 w-6" /></span>
           <span className="text-lg font-extrabold text-ink">Agent Space</span>
         </div>
         <h1 className="font-display text-[32px] font-bold leading-tight text-ink">{title}</h1>

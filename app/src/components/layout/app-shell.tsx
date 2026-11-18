@@ -1,9 +1,8 @@
 import { useEffect, type FC } from "react";
-import { NavLink, Outlet, useLocation, useMatch, useNavigate } from "react-router-dom";
-import { Bot, ListChecks, MessageCircle, UserRound, WifiOff } from "lucide-react";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { WifiOff } from "lucide-react";
 import { useMe } from "@/features/users/hooks/use-users";
 import { heartbeat, getVersionPolicy } from "@/features/users/services/users.services";
-import { useApprovals } from "@/features/tasks/hooks/use-tasks";
 import { useRealtimeConnection, useRealtimeStatus } from "@/features/realtime/hooks/use-realtime";
 import { useOrganizationStore } from "@/stores/organization";
 import { useUiStore } from "@/stores/ui";
@@ -11,7 +10,6 @@ import { useAppearance } from "@/hooks/use-theme";
 import { toast } from "@/hooks/use-toast";
 import { platform } from "@/platform";
 import { Routes } from "@/routes/routes";
-import { cn } from "@/lib/utils";
 import { AppSidebar } from "./app-sidebar";
 import { CommandPalette } from "./command-palette";
 import { SplashSkeleton } from "./session-gate";
@@ -49,7 +47,16 @@ function useShellBootstrap() {
     void getVersionPolicy()
       .then((p) => {
         if (isOlder(platform.appInfo.version, p.minimum_version))
-          toast({ title: "A new version is available", description: "Reload to update Agent Space.", duration: 60_000, action: <ToastAction altText="Reload" onClick={() => platform.links.redirect(window.location.href)}>Reload</ToastAction> });
+          toast({
+            title: "A new version is available",
+            description: "Reload to update Agent Space.",
+            duration: 60_000,
+            action: (
+              <ToastAction altText="Reload" onClick={() => platform.links.redirect(window.location.href)}>
+                Reload
+              </ToastAction>
+            ),
+          });
       })
       .catch(() => undefined);
   }, []);
@@ -73,25 +80,13 @@ function useShellBootstrap() {
   return { ready: !!me && !!currentOrg };
 }
 
-const MobileTab: FC<{ to: string; icon: React.ReactNode; label: string; badge?: number; end?: boolean }> = ({ to, icon, label, badge, end }) => (
-  <NavLink to={to} end={end} className={({ isActive }) => cn("relative flex min-h-[56px] flex-1 flex-col items-center justify-center gap-0.5 text-[11px] font-bold", isActive ? "text-primary" : "text-muted-foreground")}>
-    <span className="relative [&_svg]:h-6 [&_svg]:w-6">
-      {icon}
-      {!!badge && <span className="absolute -right-2 -top-1 inline-flex h-4 min-w-4 items-center justify-center rounded-full bg-sunshine px-1 text-[10px] font-extrabold text-ink">{badge}</span>}
-    </span>
-    {label}
-  </NavLink>
-);
-
 /**
- * Responsive shell (DESIGN.MD): ≥1200px full sidebar; 768–1199px a 72px rail; <768px one screen at a time with a bottom tab bar
- * (hidden inside a conversation so the composer docks to the bottom).
+ * Responsive shell (DESIGN.MD): ≥1200px full sidebar; 768–1199px a 72px rail; <768px one screen at a time (Grok-style):
+ * Chats is home; every other screen puts a round back button on its own title row (PageHeader / MobileTopBar).
  */
 const AppShell: FC = () => {
   const { ready } = useShellBootstrap();
   const connected = useRealtimeStatus();
-  const inConversation = useMatch(Routes.chat.pattern);
-  const { data: approvals } = useApprovals();
   const location = useLocation();
 
   if (!ready) return <SplashSkeleton />;
@@ -107,7 +102,7 @@ const AppShell: FC = () => {
         <AppSidebar collapsed className="border-r border-hairline" />
       </div>
 
-      <main className={cn("scrollbar-thin relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto", !inConversation && "pb-[calc(56px+env(safe-area-inset-bottom))] md:pb-0")} key={location.pathname.split("/")[1]}>
+      <main className="scrollbar-thin relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto" key={location.pathname.split("/")[1]}>
         {!connected && (
           <div className="flex items-center justify-center gap-2 bg-warning-soft px-3 py-1 text-xs font-semibold text-warning" role="status">
             <WifiOff className="h-3.5 w-3.5" /> Reconnecting… live updates will resume automatically
@@ -116,14 +111,6 @@ const AppShell: FC = () => {
         <Outlet />
       </main>
 
-      {!inConversation && (
-        <nav className="safe-bottom fixed inset-x-0 bottom-0 z-40 flex border-t border-hairline bg-surface/95 backdrop-blur md:hidden" aria-label="Main">
-          <MobileTab to={Routes.chat.root} icon={<MessageCircle />} label="Chats" />
-          <MobileTab to={Routes.tasks.root} icon={<ListChecks />} label="Tasks" badge={approvals?.length} />
-          <MobileTab to={Routes.bots.root} icon={<Bot />} label="Bots" />
-          <MobileTab to={Routes.settings.root} icon={<UserRound />} label="Me" />
-        </nav>
-      )}
       <CommandPalette />
       <NewChatDialog />
     </div>

@@ -70,7 +70,7 @@ export const CommentsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
   return (
     <div className="space-y-4">
       <form
-        className="space-y-2 rounded-[16px] border border-hairline p-3"
+        className="space-y-2 rounded-lg border border-hairline p-3"
         onSubmit={(e) => {
           e.preventDefault();
           if (!text.trim()) return;
@@ -101,13 +101,13 @@ export const CommentsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
       </form>
 
       {isPending ? (
-        <Skeleton className="h-32 rounded-[16px]" />
+        <Skeleton className="h-32 rounded-lg" />
       ) : !threads.length ? (
         <p className="py-4 text-center text-sm text-muted-foreground">{resolvedCount ? "All comments are resolved." : "No comments yet."}</p>
       ) : (
         <ul className="space-y-3">
           {threads.map((t) => (
-            <li key={t.id} className={cn("rounded-[16px] border border-hairline p-3", t.resolved_at && "opacity-70")}>
+            <li key={t.id} className={cn("rounded-lg border border-hairline p-3", t.resolved_at && "opacity-70")}>
               <CommentBody c={t} artifactId={a.id} canModerate={isEditor} resolvable onReply={() => setReplyTo(replyTo === t.id ? null : t.id)} />
               {t.replies.length > 0 && (
                 <ul className="mt-2 space-y-2 border-l-2 border-hairline pl-3">

@@ -51,9 +51,9 @@ export const ComputerHandoffCard: FC<{ part: HandoffPart; runId: string | null; 
   }
 
   return (
-    <section className="my-2 rounded-[20px] border-[1.5px] border-primary/40 bg-surface p-4 shadow-sticker-strong sm:p-5" aria-label="Take control of the cloud computer">
+    <section className="my-2 rounded-lg border-[1.5px] border-primary/40 bg-surface p-4 shadow-sticker-strong sm:p-5" aria-label="Take control of the cloud computer">
       <div className="flex items-start gap-3">
-        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-accent-foreground">
+        <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary-soft text-accent-foreground">
           <MonitorPlay className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -79,7 +79,7 @@ export const ComputerHandoffCard: FC<{ part: HandoffPart; runId: string | null; 
       )}
 
       <Dialog open={open} onOpenChange={setOpen}>
-        <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col gap-3 rounded-none p-3 sm:h-auto sm:max-h-[95vh] sm:max-w-5xl sm:rounded-[24px] sm:p-5">
+        <DialogContent className="flex h-[100dvh] max-h-[100dvh] w-full max-w-full flex-col gap-3 rounded-none p-3 sm:h-auto sm:max-h-[95vh] sm:max-w-5xl sm:rounded-xl sm:p-5">
           <DialogHeader>
             <DialogTitle>{botName}'s computer</DialogTitle>
             <DialogDescription>{part.reason}</DialogDescription>

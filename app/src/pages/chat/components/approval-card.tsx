@@ -41,7 +41,7 @@ export const ApprovalCard: FC<{ part: ApprovalPart; canAnswer: boolean }> = ({ p
 
   return (
     <section
-      className={cn("my-2 rounded-[20px] border-[1.5px] p-4 sm:p-5", pending ? "animate-wiggle border-sunshine bg-warning-soft shadow-sticker-strong" : "border-hairline bg-surface-soft")}
+      className={cn("my-2 rounded-lg border-[1.5px] p-4 sm:p-5", pending ? "animate-wiggle border-sunshine bg-warning-soft shadow-sticker-strong" : "border-hairline bg-surface-soft")}
       aria-label="Approval request"
       role={pending ? "alert" : undefined}
     >
@@ -57,7 +57,7 @@ export const ApprovalCard: FC<{ part: ApprovalPart; canAnswer: boolean }> = ({ p
       </div>
 
       {editing ? (
-        <div className="space-y-3 rounded-[14px] bg-surface p-3">
+        <div className="space-y-3 rounded-md bg-surface p-3">
           {editable.map(([k]) => (
             <div key={k} className="space-y-1">
               <Label htmlFor={`ap-${part.approval_id}-${k}`}>{k.replace(/_/g, " ")}</Label>

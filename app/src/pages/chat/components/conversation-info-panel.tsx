@@ -62,7 +62,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
               </div>
               <div className="flex flex-wrap gap-1 pt-1" aria-label="Emoji">
                 {BotEmojiSuggestions.slice(0, 12).map((e) => (
-                  <button key={e} type="button" onClick={() => update.mutate({ id: c.id, emoji: e })} className={`inline-flex h-9 w-9 items-center justify-center rounded-[10px] text-lg ${c.emoji === e ? "bg-primary-soft ring-2 ring-primary" : "hover:bg-surface-sunken"}`} aria-label={`Emoji ${e}`}>
+                  <button key={e} type="button" onClick={() => update.mutate({ id: c.id, emoji: e })} className={`inline-flex h-9 w-9 items-center justify-center rounded-sm text-lg ${c.emoji === e ? "bg-primary-soft ring-2 ring-primary" : "hover:bg-surface-sunken"}`} aria-label={`Emoji ${e}`}>
                     {e}
                   </button>
                 ))}
@@ -77,7 +77,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
           </div>
           <ul className="space-y-1">
             {c.bots.map((b) => (
-              <li key={b.id} className="flex items-center gap-3 rounded-[14px] p-1.5">
+              <li key={b.id} className="flex items-center gap-3 rounded-md p-1.5">
                 <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-ink">{b.name}</span>
@@ -106,7 +106,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
           <p className="eyebrow mb-2">People</p>
           <ul className="space-y-1">
             {c.users.map((u) => (
-              <li key={u.id} className="flex items-center gap-3 rounded-[14px] p-1.5">
+              <li key={u.id} className="flex items-center gap-3 rounded-md p-1.5">
                 <PersonAvatar name={u.name} email={u.email} size={32} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate font-bold text-ink">
@@ -144,7 +144,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
                 {(bots ?? [])
                   .filter((b) => !c.bots.some((x) => x.id === b.id))
                   .map((b) => (
-                    <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-[12px] px-2 hover:bg-surface-sunken">
+                    <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md px-2 hover:bg-surface-sunken">
                       <Checkbox checked={pickBots.includes(b.id)} onCheckedChange={(v) => setPickBots((s) => (v ? [...s, b.id] : s.filter((x) => x !== b.id)))} />
                       <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
                     </label>
@@ -156,7 +156,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
               {(members ?? [])
                 .filter((m) => !c.users.some((u) => u.id === m.user.id))
                 .map((m) => (
-                  <label key={m.user.id} className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-[12px] px-2 hover:bg-surface-sunken">
+                  <label key={m.user.id} className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md px-2 hover:bg-surface-sunken">
                     <Checkbox checked={pickUsers.includes(m.user.id)} onCheckedChange={(v) => setPickUsers((s) => (v ? [...s, m.user.id] : s.filter((x) => x !== m.user.id)))} />
                     <PersonAvatar name={m.user.name} email={m.user.email} size={24} /> {m.user.name ?? m.user.email}
                   </label>

@@ -8,7 +8,7 @@ import type { Conversation } from "@/features/conversations/interfaces/conversat
 import { cn } from "@/lib/utils";
 
 /** Header button: watch the cloud computer of a bot in this conversation (§9.2). Hidden when no bot has one. */
-export const ComputerButton: FC<{ conversation: Conversation }> = ({ conversation }) => {
+export const ComputerButton: FC<{ conversation: Conversation; className?: string }> = ({ conversation, className }) => {
   const bots = conversation.bots.filter((b) => b.cloud_computer_enabled);
   const [open, setOpen] = useState(false);
   const [botId, setBotId] = useState<string | null>(null);
@@ -16,7 +16,7 @@ export const ComputerButton: FC<{ conversation: Conversation }> = ({ conversatio
   const current = bots.find((b) => b.id === botId) ?? bots[0];
   return (
     <>
-      <Button variant="ghost" size="icon" className="h-10 w-10" onClick={() => setOpen(true)} aria-label="Watch the bot's computer">
+      <Button variant="ghost" size="icon" className={cn("h-10 w-10", className)} onClick={() => setOpen(true)} aria-label="Watch the bot's computer">
         <Monitor className="!h-5 !w-5" />
       </Button>
       <Sheet open={open} onOpenChange={setOpen}>

@@ -12,14 +12,14 @@ import { cn } from "@/lib/utils";
 export const EmojiPicker: FC<{ value: string; color: string; onChange: (v: string) => void; disabled?: boolean }> = ({ value, color, onChange, disabled }) => (
   <Popover>
     <PopoverTrigger asChild disabled={disabled}>
-      <button type="button" className="inline-flex h-14 w-14 items-center justify-center rounded-[18px] text-3xl shadow-sticker transition-transform hover:scale-105 disabled:opacity-60" style={{ backgroundColor: color }} aria-label="Choose emoji">
+      <button type="button" className="inline-flex h-14 w-14 items-center justify-center rounded-lg text-3xl shadow-sticker transition-transform hover:scale-105 disabled:opacity-60" style={{ backgroundColor: color }} aria-label="Choose emoji">
         {value || DEFAULT_BOT_EMOJI}
       </button>
     </PopoverTrigger>
-    <PopoverContent className="w-72 rounded-[14px] p-3">
+    <PopoverContent className="w-72 rounded-md p-3">
       <div className="grid grid-cols-6 gap-1">
         {BotEmojiSuggestions.map((e) => (
-          <button key={e} type="button" onClick={() => onChange(e)} className={cn("h-10 rounded-[10px] text-2xl hover:bg-surface-sunken", value === e && "bg-primary-soft")} aria-label={e}>
+          <button key={e} type="button" onClick={() => onChange(e)} className={cn("h-10 rounded-sm text-2xl hover:bg-surface-sunken", value === e && "bg-primary-soft")} aria-label={e}>
             {e}
           </button>
         ))}
@@ -30,7 +30,7 @@ export const EmojiPicker: FC<{ value: string; color: string; onChange: (v: strin
 );
 
 export const ColorSwatches: FC<{ value: string; onChange: (v: string) => void; disabled?: boolean }> = ({ value, onChange, disabled }) => (
-  <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Bot colour">
+  <div className="flex flex-wrap gap-2" role="radiogroup" aria-label="Colour">
     {BotColorOptions.map((c) => {
       const active = value?.toLowerCase() === c.id.toLowerCase();
       return (
@@ -43,7 +43,7 @@ export const ColorSwatches: FC<{ value: string; onChange: (v: string) => void; d
           title={c.label}
           disabled={disabled}
           onClick={() => onChange(c.id)}
-          className={cn("inline-flex h-9 w-9 items-center justify-center rounded-[12px] transition-transform hover:scale-110 disabled:opacity-60", active && "ring-2 ring-ink ring-offset-2 ring-offset-surface")}
+          className={cn("inline-flex h-9 w-9 items-center justify-center rounded-md transition-transform hover:scale-110 disabled:opacity-60", active && "ring-2 ring-ink ring-offset-2 ring-offset-surface")}
           style={{ backgroundColor: c.id }}
         >
           {active && <Check className="h-4 w-4 text-white drop-shadow" />}

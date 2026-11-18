@@ -15,7 +15,7 @@ export const Markdown: FC<{ children: string; className?: string }> = memo(({ ch
           </a>
         ),
         table: ({ children: c }) => (
-          <div className="my-3 overflow-x-auto rounded-[14px] border border-hairline">
+          <div className="my-3 overflow-x-auto rounded-md border border-hairline">
             <table className="!my-0">{c}</table>
           </div>
         ),

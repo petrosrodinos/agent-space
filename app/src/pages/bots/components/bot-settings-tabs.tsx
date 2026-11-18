@@ -281,7 +281,7 @@ export const ConnectionsTab: FC<TabProps> = ({ bot }) => {
   return (
     <SettingsCard title="Connections" description="Which connected accounts this bot may use. When none are selected, it can use every account you can use.">
       {isPending ? (
-        <div className="space-y-2 py-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-[14px]" />)}</div>
+        <div className="space-y-2 py-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-14 rounded-md" />)}</div>
       ) : !connections?.length ? (
         <p className="py-4 text-sm text-muted-foreground">No connections yet. Connect accounts on the Connections page.</p>
       ) : (
@@ -332,7 +332,7 @@ export const SkillsTab: FC<TabProps> = ({ bot }) => {
   return (
     <SettingsCard title="Skills" description="Step-by-step procedures this bot can follow. It picks one when a request matches.">
       {isPending ? (
-        <div className="space-y-2 py-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-[14px]" />)}</div>
+        <div className="space-y-2 py-3">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-md" />)}</div>
       ) : (
         <div className="divide-y divide-hairline">
           {skills?.map((s) => (
@@ -385,7 +385,7 @@ export const ApprovalsTab: FC<TabProps> = ({ bot }) => {
               aria-checked={bot.approval_level === o.id}
               disabled={ro || update.isPending}
               onClick={() => update.mutate({ approval_level: o.id })}
-              className={`flex w-full items-start gap-3 rounded-[14px] border p-3 text-left transition-colors ${bot.approval_level === o.id ? "border-primary bg-primary-soft" : "border-hairline hover:bg-surface-sunken"}`}
+              className={`flex w-full items-start gap-3 rounded-md border p-3 text-left transition-colors ${bot.approval_level === o.id ? "border-primary bg-primary-soft" : "border-hairline hover:bg-surface-sunken"}`}
             >
               <span className={`mt-1 h-4 w-4 shrink-0 rounded-full border-2 ${bot.approval_level === o.id ? "border-primary bg-primary" : "border-hairline-strong"}`} />
               <span>
@@ -449,7 +449,7 @@ export const MemoryTab: FC<TabProps> = ({ bot }) => {
       }
     >
       {isPending ? (
-        <div className="space-y-2 py-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-[14px]" />)}</div>
+        <div className="space-y-2 py-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-md" />)}</div>
       ) : !memories?.length ? (
         <p className="py-6 text-center text-sm text-muted-foreground">Nothing remembered yet.</p>
       ) : (

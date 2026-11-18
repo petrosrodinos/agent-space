@@ -3,7 +3,7 @@ import { useCursorFollow } from "@/hooks/use-cursor-follow";
 import { cn } from "@/lib/utils";
 import { isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
 
-const SIZES = { 24: "h-6 w-6 rounded-[8px] text-[14px]", 32: "h-8 w-8 rounded-[10px] text-[19px]", 40: "h-10 w-10 rounded-[14px] text-[24px]", 56: "h-14 w-14 rounded-[18px] text-[34px]", 88: "h-[88px] w-[88px] rounded-[28px] text-[52px]" } as const;
+const SIZES = { 24: "h-6 w-6 rounded-sm text-[14px]", 32: "h-8 w-8 rounded-sm text-[19px]", 40: "h-10 w-10 rounded-md text-[24px]", 56: "h-14 w-14 rounded-lg text-[34px]", 88: "h-[88px] w-[88px] rounded-xl text-[52px]", 120: "h-[120px] w-[120px] rounded-2xl text-[72px]" } as const;
 
 interface BotAvatarProps {
   emoji: string;

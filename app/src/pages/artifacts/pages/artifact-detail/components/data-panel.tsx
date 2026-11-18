@@ -28,7 +28,7 @@ export const DataPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
     setTimeout(() => URL.revokeObjectURL(url), 10_000);
   };
 
-  if (isPending) return <Skeleton className="h-60 rounded-[18px]" />;
+  if (isPending) return <Skeleton className="h-60 rounded-lg" />;
   if (!data?.collections.length)
     return <p className="px-1 py-6 text-center text-sm text-muted-foreground">Nothing stored yet. When visitors fill in a form, vote or add items, their entries appear here. Ask a bot to summarise them any time.</p>;
 
@@ -54,7 +54,7 @@ export const DataPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
       </div>
       <ul className="space-y-2">
         {data.records.map((r) => (
-          <li key={r.id} className="rounded-[14px] border border-hairline p-3">
+          <li key={r.id} className="rounded-md border border-hairline p-3">
             <div className="mb-1.5 flex items-center gap-2 text-xs text-muted-foreground">
               <span className="inline-flex items-center gap-1 rounded-full bg-surface-sunken px-2 py-0.5 font-semibold">
                 {r.collection.startsWith("private_") && <Lock className="h-3 w-3" />}

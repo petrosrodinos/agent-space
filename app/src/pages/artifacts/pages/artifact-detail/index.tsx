@@ -48,8 +48,8 @@ const ArtifactDetailPage: FC = () => {
   if (isPending)
     return (
       <div className="flex h-full flex-col gap-3 p-4">
-        <Skeleton className="h-12 rounded-[16px]" />
-        <Skeleton className="flex-1 rounded-[20px]" />
+        <Skeleton className="h-12 rounded-lg" />
+        <Skeleton className="flex-1 rounded-lg" />
       </div>
     );
   if (isError || !a)
@@ -102,7 +102,7 @@ const ArtifactDetailPage: FC = () => {
             </Link>
           </Button>
         )}
-        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-primary-soft text-lg" aria-hidden>
+        <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-soft text-lg" aria-hidden>
           <ArtifactTypeIcon type={a.type} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">
@@ -188,12 +188,12 @@ const ArtifactDetailPage: FC = () => {
       <div className="flex min-h-0 flex-1 flex-col desk:flex-row">
         <div className={cn("flex min-h-[60vh] flex-1 gap-2 bg-surface-sunken p-2 desk:min-h-0 sm:p-3", full && "min-h-0")}>
           {compare && (
-            <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-[16px] border border-hairline shadow-sticker">
+            <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-hairline shadow-sticker">
               <p className="border-b border-hairline bg-surface px-3 py-1.5 text-xs font-bold text-muted-foreground">Version {compare.version}</p>
               <ArtifactFrame artifactId={a.id} versionId={compare.id} title={`${a.title} v${compare.version}`} />
             </div>
           )}
-          <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-[16px] border border-hairline shadow-sticker">
+          <div className="flex min-w-0 flex-1 flex-col overflow-hidden rounded-lg border border-hairline shadow-sticker">
             {compare && <p className="border-b border-hairline bg-surface px-3 py-1.5 text-xs font-bold text-muted-foreground">{preview ? `Version ${preview.version}` : "Live"}</p>}
             <ArtifactFrame artifactId={a.id} versionId={shownVersionId} rev={rev} title={a.title} />
           </div>

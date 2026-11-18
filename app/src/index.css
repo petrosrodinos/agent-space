@@ -17,12 +17,13 @@
   --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  --radius-xs: 6px;
-  --radius-sm: 10px;
-  --radius-md: 14px;
-  --radius-lg: 20px;
-  --radius-xl: 28px;
-  --radius-bubble: 20px;
+  --radius-xs: 4px;
+  --radius-sm: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 20px;
+  --radius-2xl: 28px;
+  --radius-bubble: 16px;
 
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -103,7 +104,7 @@
 }
 
 :root {
-  --radius: 14px;
+  --radius: 10px;
   /* Light surfaces */
   --canvas: #fffbf5;
   --surface: #ffffff;
@@ -287,8 +288,8 @@ html[data-text-size="LARGE"] { font-size: 18px; }
   .prose-chat h1 { @apply text-xl; }
   .prose-chat h2 { @apply text-lg; }
   .prose-chat h3 { @apply text-base; }
-  .prose-chat code { @apply rounded-[6px] bg-surface-sunken px-1.5 py-0.5 text-[13px]; }
-  .prose-chat pre { @apply my-3 overflow-x-auto rounded-[14px] bg-surface-sunken p-3 text-[13px]; }
+  .prose-chat code { @apply rounded-xs bg-surface-sunken px-1.5 py-0.5 text-[13px]; }
+  .prose-chat pre { @apply my-3 overflow-x-auto rounded-md bg-surface-sunken p-3 text-[13px]; }
   .prose-chat pre code { @apply bg-transparent p-0; }
   .prose-chat blockquote { @apply my-2 border-l-4 border-hairline-strong pl-3 text-muted-foreground; }
   .prose-chat table { @apply my-3 w-full border-collapse text-sm; }

@@ -38,7 +38,7 @@ export const ComputerTab: FC<{ bot: Bot }> = ({ bot }) => {
   const [confirmReset, setConfirmReset] = useState(false);
   const [watching, setWatching] = useState(false);
 
-  if (isPending || !computer) return <Skeleton className="h-40 w-full rounded-[20px]" />;
+  if (isPending || !computer) return <Skeleton className="h-40 w-full rounded-lg" />;
   const st = { label: getDropdownOptionLabel(ComputerStatusOptions, computer.status), tone: COMPUTER_STATUS_TONE[computer.status] };
   const running = computer.status === ComputerStatuses.RUNNING;
 
@@ -84,7 +84,7 @@ export const ComputerTab: FC<{ bot: Bot }> = ({ bot }) => {
             {watching || running ? (
               <ComputerViewer botId={bot.id} className="mt-2" />
             ) : (
-              <div className="flex flex-col items-center gap-3 rounded-[16px] bg-surface-sunken p-6 text-center">
+              <div className="flex flex-col items-center gap-3 rounded-lg bg-surface-sunken p-6 text-center">
                 <p className="text-sm text-muted-foreground">The computer is {computer.status === ComputerStatuses.OFF ? "off" : "paused"}. Opening it turns it on.</p>
                 <Button variant="outline" onClick={() => setWatching(true)}>
                   <Play /> Open the computer
@@ -147,13 +147,13 @@ const FilesCard: FC<{ botId: string }> = ({ botId }) => {
       }
     >
       <nav className="flex flex-wrap items-center gap-1 pb-2 text-sm" aria-label="Folder">
-        <button type="button" className="inline-flex items-center gap-1 rounded-[8px] px-1.5 py-0.5 font-semibold text-primary hover:bg-surface-sunken" onClick={() => setPath("/home/daytona")}>
+        <button type="button" className="inline-flex items-center gap-1 rounded-sm px-1.5 py-0.5 font-semibold text-primary hover:bg-surface-sunken" onClick={() => setPath("/home/daytona")}>
           <Home className="h-3.5 w-3.5" /> Home
         </button>
         {crumbs.map((c, i) => (
           <span key={i} className="inline-flex items-center gap-1">
             <ChevronRight className="h-3.5 w-3.5 text-muted-foreground" />
-            <button type="button" className="rounded-[8px] px-1.5 py-0.5 font-semibold text-ink hover:bg-surface-sunken" onClick={() => setPath(`/home/daytona/${crumbs.slice(0, i + 1).join("/")}`)}>
+            <button type="button" className="rounded-sm px-1.5 py-0.5 font-semibold text-ink hover:bg-surface-sunken" onClick={() => setPath(`/home/daytona/${crumbs.slice(0, i + 1).join("/")}`)}>
               {c}
             </button>
           </span>
@@ -308,10 +308,10 @@ const ReplayDialog: FC<{ botId: string; session: ComputerSession | null; onClose
           </DialogDescription>
         </DialogHeader>
         {isPending || !frame ? (
-          <Skeleton className="aspect-[4/3] w-full rounded-[12px]" />
+          <Skeleton className="aspect-[4/3] w-full rounded-md" />
         ) : (
           <div className="space-y-3">
-            <img src={frame.url} alt={frame.label} className="aspect-[4/3] w-full rounded-[12px] border border-hairline bg-[#1C1633] object-contain" />
+            <img src={frame.url} alt={frame.label} className="aspect-[4/3] w-full rounded-md border border-hairline bg-[#1C1633] object-contain" />
             <div className="flex items-center gap-2">
               <Button variant="outline" size="icon" className="h-9 w-9" aria-label="Previous step" disabled={i === 0} onClick={() => setI((v) => Math.max(0, v - 1))}>
                 <ChevronLeft />

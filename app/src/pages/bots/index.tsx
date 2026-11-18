@@ -23,7 +23,7 @@ const BotCard: FC<{ bot: Bot; onDelete: (b: Bot) => void }> = ({ bot, onDelete }
   const openDirect = useOpenDirect();
   const duplicate = useDuplicateBot();
   return (
-    <div className="card-lift flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+    <div className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
       <div className="flex items-start gap-3">
         <button onClick={() => navigate(Routes.bots.detail(bot.id))} aria-label={`${bot.name} settings`}>
           <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={56} />
@@ -48,17 +48,17 @@ const BotCard: FC<{ bot: Bot; onDelete: (b: Bot) => void }> = ({ bot, onDelete }
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="rounded-[14px] p-1.5">
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => navigate(Routes.bots.detail(bot.id))}>
+          <DropdownMenuContent align="end" className="rounded-md p-1.5">
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => navigate(Routes.bots.detail(bot.id))}>
               <Settings className="h-4 w-4" /> Settings
             </DropdownMenuItem>
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => duplicate.mutate(bot.id)}>
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => duplicate.mutate(bot.id)}>
               <Copy className="h-4 w-4" /> Duplicate
             </DropdownMenuItem>
             {bot.can_edit && (
               <>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="gap-2 rounded-[10px] text-error focus:text-error" onSelect={() => onDelete(bot)}>
+                <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={() => onDelete(bot)}>
                   <Trash2 className="h-4 w-4" /> Delete
                 </DropdownMenuItem>
               </>
@@ -99,7 +99,7 @@ const BotsPage: FC = () => {
       {isPending ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-[210px] rounded-[20px]" />
+            <Skeleton key={i} className="h-[210px] rounded-lg" />
           ))}
         </div>
       ) : !bots?.length ? (

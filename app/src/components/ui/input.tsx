@@ -29,7 +29,7 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(({ className, type,
 
   return (
     <div className={`${avatarPreview ? "flex" : "column"} items-center gap-4`}>
-      <input type={type} className={cn("flex h-[42px] w-full rounded-[14px] border-[1.5px] border-hairline-strong bg-surface px-3.5 py-1 text-base text-ink transition-[border-color,box-shadow] file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-glow disabled:cursor-not-allowed disabled:opacity-50 md:text-sm", className)} ref={ref} {...props} onChange={handleFileChange} />
+      <input type={type} className={cn("flex h-[42px] w-full rounded-md border-[1.5px] border-hairline-strong bg-surface px-3.5 py-1 text-base text-ink transition-[border-color,box-shadow] file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-primary focus-visible:shadow-glow disabled:cursor-not-allowed disabled:opacity-50 md:text-sm", className)} ref={ref} {...props} onChange={handleFileChange} />
       {(avatarPreview || fileName) && (
         <div className="relative">
           {avatarPreview && <img src={avatarPreview} alt="Avatar Preview" className="h-16 w-16 rounded-full object-cover border" width={64} height={64} />}

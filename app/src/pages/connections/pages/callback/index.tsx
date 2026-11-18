@@ -47,7 +47,7 @@ const ConnectionCallbackPage: FC = () => {
   const ok = result?.status === ConnectionStatuses.ACTIVE;
   return (
     <PageContainer className="flex min-h-[70dvh] items-center justify-center">
-      <div className="w-full max-w-md rounded-[28px] border border-hairline bg-surface p-8 text-center shadow-pop">
+      <div className="w-full max-w-md rounded-xl border border-hairline bg-surface p-8 text-center shadow-pop">
         {!result && !error ? (
           <div className="flex flex-col items-center gap-3">
             <Skeleton className="h-16 w-16 rounded-full" />

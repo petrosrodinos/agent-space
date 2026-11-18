@@ -17,9 +17,9 @@ export const ArtifactCard: FC<{ part: ArtifactPart }> = ({ part: p }) => {
   const navigate = useNavigate();
   const [open, setOpen] = useState(false);
   return (
-    <div className="my-1.5 w-full max-w-[560px] overflow-hidden rounded-[20px] border border-hairline bg-surface shadow-sticker">
+    <div className="my-1.5 w-full max-w-[560px] overflow-hidden rounded-lg border border-hairline bg-surface shadow-sticker">
       <div className="flex items-center gap-3 p-3">
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-xl" aria-hidden>
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-md bg-primary-soft text-xl" aria-hidden>
           <ArtifactTypeIcon type={p.artifact_type} className="h-5 w-5" />
         </span>
         <div className="min-w-0 flex-1">

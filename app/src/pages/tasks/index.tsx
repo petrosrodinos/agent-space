@@ -29,7 +29,7 @@ const TasksPage: FC = () => {
       <PageHeader title="Tasks" description="Everything your bots are working on, waiting for, finished or failed." actions={<><Button variant="outline" asChild><Link to={Routes.automations.root}><AlarmClock /> Automations</Link></Button><Button onClick={() => setOpen(true)}><Plus /> New task</Button></>} />
       <SegmentedControl ariaLabel="Filter tasks" value={filter} options={TaskFilterOptions} onChange={(v) => { setFilter(v); setPage(1); }} className="mb-5" />
       {isPending ? (
-        <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[76px] rounded-[20px]" />)}</div>
+        <div className="space-y-2">{Array.from({ length: 6 }).map((_, i) => <Skeleton key={i} className="h-[76px] rounded-lg" />)}</div>
       ) : !data?.data.length ? (
         <EmptyState title="All caught up" description="Give a bot a long job and it'll keep working even after you leave." stickers={[{ icon: PartyPopper, color: "#1FC98E" }, { icon: CheckCircle2, color: "#6B4EFF" }, { icon: Coffee, color: "#FF7A3D" }]} action={<Button size="lg" onClick={() => setOpen(true)}><Plus /> New task</Button>} />
       ) : (
@@ -37,7 +37,7 @@ const TasksPage: FC = () => {
           <ul className="space-y-2">
             {data.data.map((t) => (
               <li key={t.id}>
-                <Link to={Routes.tasks.detail(t.id)} className="card-lift flex items-center gap-3 rounded-[20px] border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
+                <Link to={Routes.tasks.detail(t.id)} className="card-lift flex items-center gap-3 rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
                   <BotAvatar emoji={t.bot.emoji} color={t.bot.color} name={t.bot.name} working={t.status === RunStatuses.RUNNING} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-bold text-ink">{t.title}</p>

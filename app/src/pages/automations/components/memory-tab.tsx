@@ -33,7 +33,7 @@ export const MemoryTab: FC<{ automationId: string; plan: string | null }> = ({ a
     }
   };
 
-  if (isPending) return <Skeleton className="h-72 rounded-[20px]" />;
+  if (isPending) return <Skeleton className="h-72 rounded-lg" />;
 
   return (
     <div className="space-y-5">

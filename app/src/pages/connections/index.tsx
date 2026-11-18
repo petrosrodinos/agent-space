@@ -25,9 +25,9 @@ import { ALL_FILTER } from "@/config/constants/filters";
 
 const Logo: FC<{ src?: string | null; name: string; size?: number }> = ({ src, name, size = 40 }) =>
   src ? (
-    <img src={src} alt="" className="shrink-0 rounded-[12px] bg-white object-contain p-1.5 shadow-sticker" style={{ width: size, height: size }} loading="lazy" />
+    <img src={src} alt="" className="shrink-0 rounded-md bg-white object-contain p-1.5 shadow-sticker" style={{ width: size, height: size }} loading="lazy" />
   ) : (
-    <span className="inline-flex shrink-0 items-center justify-center rounded-[12px] bg-surface-sunken font-extrabold text-body" style={{ width: size, height: size }}>
+    <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-sunken font-extrabold text-body" style={{ width: size, height: size }}>
       {name.slice(0, 1).toUpperCase()}
     </span>
   );
@@ -39,7 +39,7 @@ const ConnectionTile: FC<{ c: Connection; logo?: string | null; isAdmin: boolean
   const update = useUpdateConnection();
   const setDefault = useSetServiceDefault();
   return (
-    <div className="flex items-start gap-3 rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+    <div className="flex items-start gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
       <Logo src={logo} name={c.service_name} />
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -72,34 +72,34 @@ const ConnectionTile: FC<{ c: Connection; logo?: string | null; isAdmin: boolean
             <MoreHorizontal />
           </Button>
         </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 rounded-[14px] p-1.5">
+        <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
           {!c.is_default && (
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => setDefault.mutate({ service_key: c.service_key, connection_id: c.id })}>
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => setDefault.mutate({ service_key: c.service_key, connection_id: c.id })}>
               <Star className="h-4 w-4" /> Use by default for {c.service_name}
             </DropdownMenuItem>
           )}
           {c.can_manage && (
             <>
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={onRename}>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onRename}>
                 <Pencil className="h-4 w-4" /> Rename
               </DropdownMenuItem>
               {isAdmin && (
-                <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => update.mutate({ id: c.id, visibility: c.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => update.mutate({ id: c.id, visibility: c.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
                   <Users className="h-4 w-4" /> {c.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}
                 </DropdownMenuItem>
               )}
               {c.visibility === Visibilities.SHARED && (
-                <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={onLimit}>
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onLimit}>
                   <BotIcon className="h-4 w-4" /> Limit to bots
                 </DropdownMenuItem>
               )}
               {c.kind === ConnectionKinds.COMPOSIO && (
-                <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => reconnect.mutate({ id: c.id, return_url: platform.links.returnUrl(Routes.connections.callback) }, { onSuccess: (r) => r.redirect_url && platform.links.redirect(r.redirect_url) })}>
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => reconnect.mutate({ id: c.id, return_url: platform.links.returnUrl(Routes.connections.callback) }, { onSuccess: (r) => r.redirect_url && platform.links.redirect(r.redirect_url) })}>
                   <RefreshCw className="h-4 w-4" /> Reconnect
                 </DropdownMenuItem>
               )}
               <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 rounded-[10px] text-error focus:text-error" onSelect={onDelete}>
+              <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={onDelete}>
                 <Trash2 className="h-4 w-4" /> Disconnect
               </DropdownMenuItem>
             </>
@@ -151,9 +151,9 @@ const ConnectionsPage: FC = () => {
       <section className="mb-10">
         <h2 className="eyebrow mb-3">Your connections</h2>
         {isPending ? (
-          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-[20px]" />)}</div>
+          <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">{Array.from({ length: 3 }).map((_, i) => <Skeleton key={i} className="h-28 rounded-lg" />)}</div>
         ) : !connections?.length ? (
-          <div className="flex items-center gap-3 rounded-[20px] border border-dashed border-hairline-strong p-5 text-sm text-muted-foreground">
+          <div className="flex items-center gap-3 rounded-lg border border-dashed border-hairline-strong p-5 text-sm text-muted-foreground">
             <Plug className="h-5 w-5" /> Nothing connected yet. Pick a service below — Gmail and Google Calendar are a great start.
           </div>
         ) : (
@@ -187,14 +187,14 @@ const ConnectionsPage: FC = () => {
           ))}
         </div>
         {catalog.isPending ? (
-          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-[20px]" />)}</div>
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">{Array.from({ length: 8 }).map((_, i) => <Skeleton key={i} className="h-32 rounded-lg" />)}</div>
         ) : !toolkits.length ? (
           <p className="py-10 text-center text-muted-foreground">No services found{search ? ` for "${search}"` : ""}. You can still add one by access key.</p>
         ) : (
           <>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {toolkits.map((t) => (
-                <div key={t.slug} className="card-lift flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+                <div key={t.slug} className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
                   <div className="flex items-center gap-3">
                     <Logo src={t.logo} name={t.name} />
                     <div className="min-w-0">

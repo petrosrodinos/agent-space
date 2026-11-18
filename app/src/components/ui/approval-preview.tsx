@@ -16,7 +16,7 @@ function renderValue(v: unknown) {
   if (typeof v === "string") return <span className="whitespace-pre-wrap break-words">{v}</span>;
   if (typeof v === "number" || typeof v === "boolean") return <span>{String(v)}</span>;
   if (Array.isArray(v) && v.every((x) => typeof x === "string")) return <span>{(v as string[]).join(", ")}</span>;
-  return <pre className="max-h-40 overflow-auto whitespace-pre-wrap break-words rounded-[10px] bg-surface/70 p-2 font-mono text-[12px]">{JSON.stringify(v, null, 2)}</pre>;
+  return <pre className="max-h-40 overflow-auto whitespace-pre-wrap break-words rounded-sm bg-surface/70 p-2 font-mono text-[12px]">{JSON.stringify(v, null, 2)}</pre>;
 }
 
 /**
@@ -29,7 +29,7 @@ export const ApprovalPreviewBody: FC<{ preview: Record<string, any>; className?:
     const changes = (preview.changes ?? []) as Change[];
     return (
       <div className={cn("space-y-2", className)}>
-        <dl className="divide-y divide-[rgba(28,22,51,0.08)] overflow-hidden rounded-[14px] bg-surface/80">
+        <dl className="divide-y divide-[rgba(28,22,51,0.08)] overflow-hidden rounded-md bg-surface/80">
           {changes.map((c) => (
             <div key={c.field} className="grid grid-cols-[minmax(90px,140px)_1fr] gap-3 px-3 py-2 text-sm">
               <dt className="font-bold text-ink">{pretty(c.field)}</dt>
@@ -43,7 +43,7 @@ export const ApprovalPreviewBody: FC<{ preview: Record<string, any>; className?:
   }
   if (kind === ApprovalPreviewKinds.SKILL) {
     return (
-      <div className={cn("space-y-2 rounded-[14px] bg-surface/80 p-3 text-sm", className)}>
+      <div className={cn("space-y-2 rounded-md bg-surface/80 p-3 text-sm", className)}>
         <p className="font-bold text-ink">
           {preview.emoji ?? DEFAULT_SKILL_EMOJI} {preview.name}
         </p>
@@ -55,7 +55,7 @@ export const ApprovalPreviewBody: FC<{ preview: Record<string, any>; className?:
   }
   if (kind === ApprovalPreviewKinds.CONSULT) {
     return (
-      <div className={cn("rounded-[14px] bg-surface/80 p-3 text-sm", className)}>
+      <div className={cn("rounded-md bg-surface/80 p-3 text-sm", className)}>
         <p className="text-body">
           <strong className="text-ink">{preview.from}</strong> wants to ask <strong className="text-ink">{preview.to}</strong>:
         </p>
@@ -65,9 +65,9 @@ export const ApprovalPreviewBody: FC<{ preview: Record<string, any>; className?:
   }
   if (kind === ApprovalPreviewKinds.COMPUTER) {
     return (
-      <div className={cn("space-y-2 rounded-[14px] bg-surface/80 p-3 text-sm", className)}>
+      <div className={cn("space-y-2 rounded-md bg-surface/80 p-3 text-sm", className)}>
         <p className="flex items-center gap-1.5 font-bold text-ink"><Monitor className="h-4 w-4 shrink-0" /> {preview.description}</p>
-        {preview.screenshot && <img src={preview.screenshot} alt="The cloud computer's screen right now" className="w-full rounded-[10px] border border-hairline" />}
+        {preview.screenshot && <img src={preview.screenshot} alt="The cloud computer's screen right now" className="w-full rounded-sm border border-hairline" />}
         <p className="text-[13px] text-muted-foreground">On the bot's cloud computer. Nothing happens until you approve.</p>
       </div>
     );
@@ -82,7 +82,7 @@ export const ApprovalPreviewBody: FC<{ preview: Record<string, any>; className?:
           {preview.account_identifier ? ` (${preview.account_identifier})` : ""}
         </p>
       )}
-      <dl className="divide-y divide-[rgba(28,22,51,0.08)] overflow-hidden rounded-[14px] bg-surface/80">
+      <dl className="divide-y divide-[rgba(28,22,51,0.08)] overflow-hidden rounded-md bg-surface/80">
         {Object.entries(input).map(([k, v]) => (
           <div key={k} className="grid grid-cols-[minmax(80px,130px)_1fr] gap-3 px-3 py-2 text-sm">
             <dt className="font-bold text-ink">{pretty(k)}</dt>

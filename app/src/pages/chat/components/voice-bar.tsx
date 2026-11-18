@@ -123,7 +123,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
   }
 
   return (
-    <div className="space-y-2 rounded-[28px] border-[1.5px] border-primary bg-surface p-2.5 pl-3 shadow-pop" role="region" aria-label="Voice mode">
+    <div className="space-y-2 rounded-xl border-[1.5px] border-primary bg-surface p-2.5 pl-3 shadow-pop" role="region" aria-label="Voice mode">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
           {bot && <BotAvatar emoji={bot.emoji} color={bot.color} size={40} />}

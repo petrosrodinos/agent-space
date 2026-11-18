@@ -171,7 +171,7 @@ export const HistorySheet: FC<{ secret: Credential | null; onClose: () => void }
           <SheetDescription>{secret?.label} — values are never shown.</SheetDescription>
         </SheetHeader>
         {isPending ? (
-          <div className="mt-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-[14px]" />)}</div>
+          <div className="mt-4 space-y-2">{Array.from({ length: 5 }).map((_, i) => <Skeleton key={i} className="h-12 rounded-md" />)}</div>
         ) : (
           <ol className="mt-4 divide-y divide-hairline">
             {data?.map((e) => (

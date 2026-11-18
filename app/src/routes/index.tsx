@@ -21,6 +21,7 @@ const ConnectionsPage = lazy(() => import("@/pages/connections"));
 const ConnectionCallbackPage = lazy(() => import("@/pages/connections/pages/callback"));
 const ToolServerCallbackPage = lazy(() => import("@/pages/connections/pages/mcp-callback"));
 const SecretsPage = lazy(() => import("@/pages/secrets"));
+const ToolsPage = lazy(() => import("@/pages/tools"));
 const TasksPage = lazy(() => import("@/pages/tasks"));
 const TaskDetailPage = lazy(() => import("@/pages/tasks/pages/task-detail"));
 const ArtifactsPage = lazy(() => import("@/pages/artifacts"));
@@ -37,7 +38,7 @@ const PageFallback = () => (
     <Skeleton className="h-4 w-80" />
     <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
       {Array.from({ length: 6 }).map((_, i) => (
-        <Skeleton key={i} className="h-36 rounded-[20px]" />
+        <Skeleton key={i} className="h-36 rounded-lg" />
       ))}
     </div>
   </div>
@@ -79,6 +80,7 @@ export default function AppRoutes() {
         <Route path={Routes.connections.mcp_callback} element={page(<ToolServerCallbackPage />)} />
         <Route path={Routes.connections.legacy_callback} element={page(<ConnectionCallbackPage />)} />
         <Route path={Routes.secrets} element={page(<SecretsPage />)} />
+        <Route path={Routes.tools} element={page(<ToolsPage />)} />
         <Route path={Routes.tasks.root} element={page(<TasksPage />)} />
         <Route path={Routes.tasks.pattern} element={page(<TaskDetailPage />)} />
         <Route path={Routes.artifacts.root} element={page(<ArtifactsPage />)} />

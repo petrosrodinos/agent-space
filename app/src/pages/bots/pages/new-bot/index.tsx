@@ -49,10 +49,10 @@ const NewBotPage: FC = () => {
 
   return (
     <PageContainer>
-      <Button variant="ghost" size="sm" className="mb-3" onClick={() => navigate(Routes.bots.root)}>
+      <Button variant="ghost" size="sm" className="mb-3 hidden md:inline-flex" onClick={() => navigate(Routes.bots.root)}>
         <ArrowLeft /> Bots
       </Button>
-      <PageHeader title="Create a bot" description="Start from a template, describe what you need, or build it yourself." />
+      <PageHeader backTo={Routes.bots.root} title="Create a bot" description="Start from a template, describe what you need, or build it yourself." />
       <SegmentedControl ariaLabel="How to create the bot" value={mode} options={MODES} onChange={(m) => setMode(m)} className="mb-6" />
 
       {mode === CreateModes.TEMPLATE && (
@@ -60,7 +60,7 @@ const NewBotPage: FC = () => {
           {isPending ? (
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <Skeleton key={i} className="h-44 rounded-[20px]" />
+                <Skeleton key={i} className="h-44 rounded-lg" />
               ))}
             </div>
           ) : (
@@ -73,7 +73,7 @@ const NewBotPage: FC = () => {
                     setPicked(t);
                     setTemplateName(t.name);
                   }}
-                  className={cn("card-lift flex flex-col rounded-[20px] border bg-surface p-4 text-left shadow-sticker", picked?.id === t.id ? "border-primary ring-2 ring-primary/30" : "border-hairline")}
+                  className={cn("card-lift flex flex-col rounded-lg border bg-surface p-4 text-left shadow-sticker", picked?.id === t.id ? "border-primary ring-2 ring-primary/30" : "border-hairline")}
                 >
                   <div className="flex items-center gap-3">
                     <BotAvatar emoji={t.emoji} color={t.color} size={56} name={t.name} />
@@ -97,7 +97,7 @@ const NewBotPage: FC = () => {
             </div>
           )}
           {picked && (
-            <div className="sticky bottom-20 mt-6 flex flex-col gap-3 rounded-[20px] border border-hairline bg-surface p-4 shadow-pop sm:flex-row sm:items-end md:bottom-4">
+            <div className="sticky bottom-20 mt-6 flex flex-col gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-pop sm:flex-row sm:items-end md:bottom-4">
               <div className="flex-1">
                 <label htmlFor="tpl-name" className="mb-1.5 block text-sm font-bold text-ink">
                   Name your {picked.name} bot
@@ -118,7 +118,7 @@ const NewBotPage: FC = () => {
       )}
 
       {mode === CreateModes.DESCRIBE && (
-        <div className="max-w-[720px] rounded-[20px] border border-hairline bg-surface p-5 shadow-sticker sm:p-6">
+        <div className="max-w-[720px] rounded-lg border border-hairline bg-surface p-5 shadow-sticker sm:p-6">
           {!draft ? (
             <Form {...describeForm}>
               <form onSubmit={describeForm.handleSubmit((v) => draftBot.mutate(v.description, { onSuccess: setDraft }))} className="space-y-4">
@@ -158,7 +158,7 @@ const NewBotPage: FC = () => {
       )}
 
       {mode === CreateModes.FORM && (
-        <div className="max-w-[720px] rounded-[20px] border border-hairline bg-surface p-5 shadow-sticker sm:p-6">
+        <div className="max-w-[720px] rounded-lg border border-hairline bg-surface p-5 shadow-sticker sm:p-6">
           <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
             <PenLine className="h-4 w-4" /> Everything can be changed later in the bot's settings — or just by asking it.
           </div>

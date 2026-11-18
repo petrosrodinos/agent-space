@@ -23,7 +23,7 @@ export const EmptyState: FC<EmptyStateProps> = ({ title, description, action, st
       {stickers.slice(0, 3).map(({ icon: Icon, color }, i) => (
         <span
           key={i}
-          className="inline-flex h-16 w-16 items-center justify-center rounded-[20px] text-white shadow-sticker-strong"
+          className="inline-flex h-16 w-16 items-center justify-center rounded-lg text-white shadow-sticker-strong"
           style={{ backgroundColor: color, transform: `rotate(${[-6, 4, -3][i]}deg) translateY(${[4, -6, 2][i]}px)` }}
         >
           <Icon className="h-8 w-8" strokeWidth={2.25} />

@@ -33,7 +33,7 @@ const ToolServerCallbackPage: FC = () => {
   const ok = server?.status === ToolServerStatuses.ACTIVE;
   return (
     <PageContainer className="flex min-h-[70dvh] items-center justify-center">
-      <div className="w-full max-w-md rounded-[28px] border border-hairline bg-surface p-8 text-center shadow-pop">
+      <div className="w-full max-w-md rounded-xl border border-hairline bg-surface p-8 text-center shadow-pop">
         {!server && !error ? (
           <div className="flex flex-col items-center gap-3">
             <Skeleton className="h-16 w-16 rounded-full" />

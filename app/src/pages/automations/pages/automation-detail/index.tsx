@@ -2,6 +2,7 @@ import { useState, type FC } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { ArrowLeft, CalendarClock, Copy, MoreHorizontal, Pause, Play, Trash2, Zap } from "lucide-react";
 import { PageContainer } from "@/components/ui/page-header";
+import { BackButton } from "@/components/layout/mobile-top-bar";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
@@ -34,7 +35,7 @@ const AutomationDetailPage: FC = () => {
     return (
       <PageContainer>
         <Skeleton className="mb-4 h-10 w-64" />
-        <Skeleton className="h-80 rounded-[20px]" />
+        <Skeleton className="h-80 rounded-lg" />
       </PageContainer>
     );
   if (isError || !a)
@@ -46,12 +47,13 @@ const AutomationDetailPage: FC = () => {
 
   return (
     <PageContainer>
-      <Link to={Routes.automations.root} className="mb-4 inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-ink">
+      <Link to={Routes.automations.root} className="mb-4 hidden items-center gap-1.5 text-sm font-semibold text-muted-foreground hover:text-ink md:inline-flex">
         <ArrowLeft className="h-4 w-4" /> Automations
       </Link>
       <div className="mb-5 flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
         <div className="min-w-0">
           <div className="flex flex-wrap items-center gap-2">
+            <BackButton fallback={Routes.automations.root} className="mr-1 md:hidden" />
             <h1 className="min-w-0 break-words font-display text-[26px] font-bold leading-tight text-ink sm:text-[30px]">{a.name}</h1>
             <AutomationStatus status={a.status} />
           </div>

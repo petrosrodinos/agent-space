@@ -32,9 +32,9 @@ export const NewChatDialog: FC = () => {
                   key={target}
                   type="button"
                   onClick={() => setStep(target)}
-                  className="card-lift group flex w-full items-center gap-4 rounded-[20px] border border-hairline bg-surface p-4 text-left shadow-sticker transition-colors hover:border-hairline-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                  className="card-lift group flex w-full items-center gap-4 rounded-lg border border-hairline bg-surface p-4 text-left shadow-sticker transition-colors hover:border-hairline-strong focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 >
-                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-[16px] text-white" style={{ backgroundColor: color }}>
+                  <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-lg text-white" style={{ backgroundColor: color }}>
                     <Icon className="h-6 w-6" />
                   </span>
                   <span className="min-w-0 flex-1">

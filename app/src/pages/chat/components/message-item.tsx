@@ -97,12 +97,12 @@ const ActionsMenu: FC<{ m: Message; mine: boolean; models: AiModel[]; actions: M
 );
 
 const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; actions: MessageActions; onStartEdit: () => void }> = ({ m, mine, models, actions, onStartEdit }) => (
-  <DropdownMenuContent align={ReactionAligns.END} className="w-60 rounded-[14px] p-1.5 shadow-pop">
-    <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => actions.onReply(m)}>
+  <DropdownMenuContent align={ReactionAligns.END} className="w-60 rounded-md p-1.5 shadow-pop">
+    <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => actions.onReply(m)}>
       <Reply className="h-4 w-4" /> Reply
     </DropdownMenuItem>
     <DropdownMenuItem
-      className="gap-2 rounded-[10px]"
+      className="gap-2 rounded-sm"
       onSelect={() => {
         void platform.clipboard.writeText(m.content ?? "");
         toast({ title: "Copied", duration: 1200 });
@@ -111,10 +111,10 @@ const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; act
       <Copy className="h-4 w-4" /> Copy
     </DropdownMenuItem>
     <DropdownMenuSub>
-      <DropdownMenuSubTrigger className="gap-2 rounded-[10px]">
+      <DropdownMenuSubTrigger className="gap-2 rounded-sm">
         <SmilePlus className="h-4 w-4" /> React
       </DropdownMenuSubTrigger>
-      <DropdownMenuSubContent className="flex gap-1 rounded-[14px] p-1.5">
+      <DropdownMenuSubContent className="flex gap-1 rounded-md p-1.5">
         {QUICK_REACTIONS.map((e) => (
           <DropdownMenuItem key={e} className="justify-center rounded-full px-2 text-lg" onSelect={() => actions.onReact(m, e)}>
             {e}
@@ -122,28 +122,28 @@ const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; act
         ))}
       </DropdownMenuSubContent>
     </DropdownMenuSub>
-    <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => actions.onPin(m)}>
+    <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => actions.onPin(m)}>
       <Pin className="h-4 w-4" /> {m.is_pinned ? "Unpin" : "Pin"}
     </DropdownMenuItem>
     {m.author_type === MessageAuthorTypes.BOT && (
       <>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => actions.onRetry(m)}>
+        <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => actions.onRetry(m)}>
           <RefreshCw className="h-4 w-4" /> Try again
         </DropdownMenuItem>
-        <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => actions.onBranch(m)}>
+        <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => actions.onBranch(m)}>
           <GitBranch className="h-4 w-4" /> Try a different approach
         </DropdownMenuItem>
         <DropdownMenuSub>
-          <DropdownMenuSubTrigger className="gap-2 rounded-[10px]">
+          <DropdownMenuSubTrigger className="gap-2 rounded-sm">
             <RefreshCw className="h-4 w-4" /> Retry with another model
           </DropdownMenuSubTrigger>
-          <DropdownMenuSubContent className="max-h-80 w-56 overflow-y-auto rounded-[14px] p-1.5">
+          <DropdownMenuSubContent className="max-h-80 w-56 overflow-y-auto rounded-md p-1.5">
             <DropdownMenuLabel className="text-xs text-muted-foreground">Compare answers</DropdownMenuLabel>
             {models
               .filter((x) => x.allowed)
               .map((x) => (
-                <DropdownMenuItem key={x.id} className="rounded-[10px]" onSelect={() => actions.onRetry(m, x.id)}>
+                <DropdownMenuItem key={x.id} className="rounded-sm" onSelect={() => actions.onRetry(m, x.id)}>
                   {x.name} <span className="ml-auto text-xs text-muted-foreground">{x.provider}</span>
                 </DropdownMenuItem>
               ))}
@@ -154,10 +154,10 @@ const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; act
     {mine && (
       <>
         <DropdownMenuSeparator />
-        <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={onStartEdit}>
+        <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onStartEdit}>
           <Pencil className="h-4 w-4" /> Edit and re-run
         </DropdownMenuItem>
-        <DropdownMenuItem className="gap-2 rounded-[10px] text-error focus:text-error" onSelect={() => actions.onDelete(m)}>
+        <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={() => actions.onDelete(m)}>
           <Trash2 className="h-4 w-4" /> Delete
         </DropdownMenuItem>
       </>
@@ -280,7 +280,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
               </div>
             </div>
           ) : (
-            <div className={cn("relative max-w-[min(560px,88%)] rounded-[20px] rounded-br-[6px] bg-primary px-4 py-2.5 text-[15px] text-primary-foreground shadow-sticker", m.pending && "opacity-70")}>
+            <div className={cn("relative max-w-[min(560px,88%)] rounded-lg rounded-br-xs bg-primary px-4 py-2.5 text-[15px] text-primary-foreground shadow-sticker", m.pending && "opacity-70")}>
               <ActionsMenu m={m} mine models={models} actions={actions} onStartEdit={() => setEditing(true)} />
               {quote}
               {m.source === MessageSources.VOICE && <Mic className="mr-1 inline h-3.5 w-3.5 opacity-80" aria-label="Spoken" />}
@@ -323,7 +323,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
               {timeLine}
             </div>
           )}
-          <div className="relative rounded-[20px] rounded-bl-[6px] bg-surface-sunken px-4 py-2.5 text-[15px] text-ink">
+          <div className="relative rounded-lg rounded-bl-xs bg-surface-sunken px-4 py-2.5 text-[15px] text-ink">
             <ActionsMenu m={m} mine={false} models={models} actions={actions} onStartEdit={() => undefined} />
             {quote}
             <span className="whitespace-pre-wrap break-words">{text}</span>
@@ -351,7 +351,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
     switch (p.type) {
       case MessagePartTypes.TEXT:
         return p.text.trim() ? (
-          <div key={i} className={cn(long ? "py-1" : "rounded-[20px] rounded-tl-[6px] border border-hairline bg-surface px-4 py-3 shadow-sticker", "my-1 w-fit max-w-full")}>
+          <div key={i} className={cn(long ? "py-1" : "rounded-lg rounded-tl-xs border border-hairline bg-surface px-4 py-3 shadow-sticker", "my-1 w-fit max-w-full")}>
             <Markdown>{p.text}</Markdown>
           </div>
         ) : null;
@@ -379,8 +379,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
         return <ArtifactCard key={`${p.artifact_id}-${i}`} part={p} />;
       case MessagePartTypes.AUTOMATION:
         return (
-          <Link key={i} to={Routes.automations.detail(p.automation_id)} className="card-lift my-1.5 flex max-w-sm items-center gap-3 rounded-[16px] border border-hairline bg-surface p-3 shadow-sticker">
-            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-[12px] bg-primary-soft text-accent-foreground"><AlarmClock className="h-5 w-5" /></span>
+          <Link key={i} to={Routes.automations.detail(p.automation_id)} className="card-lift my-1.5 flex max-w-sm items-center gap-3 rounded-lg border border-hairline bg-surface p-3 shadow-sticker">
+            <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-md bg-primary-soft text-accent-foreground"><AlarmClock className="h-5 w-5" /></span>
             <span className="min-w-0">
               <span className="block truncate text-sm font-bold text-ink">{p.name}</span>
               <span className="block truncate text-xs text-muted-foreground">{p.schedule ?? "Automation saved"}{p.next_run_at ? ` · next ${formatDateTime(p.next_run_at)}` : ""}</span>
@@ -419,7 +419,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
         );
       case MessagePartTypes.ERROR:
         return (
-          <div key={i} className="my-1.5 flex flex-wrap items-center gap-2 rounded-[14px] bg-error-soft px-3 py-2 text-sm text-ink">
+          <div key={i} className="my-1.5 flex flex-wrap items-center gap-2 rounded-md bg-error-soft px-3 py-2 text-sm text-ink">
             <AlertCircle className="h-4 w-4 text-error" /> {p.message}
             <Button variant="ghost" size="sm" className="ml-auto" onClick={() => actions.onRetry(m)}>
               <RefreshCw /> Try again

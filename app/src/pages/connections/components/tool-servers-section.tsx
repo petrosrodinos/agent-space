@@ -56,10 +56,10 @@ export const ToolServersSection: FC<{ isAdmin: boolean; membersMayAdd: boolean }
       </div>
       {isPending ? (
         <div className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
-          <Skeleton className="h-28 rounded-[20px]" />
+          <Skeleton className="h-28 rounded-lg" />
         </div>
       ) : !servers?.length ? (
-        <div className="flex items-start gap-3 rounded-[20px] border border-dashed border-hairline-strong p-5 text-sm text-muted-foreground">
+        <div className="flex items-start gap-3 rounded-lg border border-dashed border-hairline-strong p-5 text-sm text-muted-foreground">
           <Server className="mt-0.5 h-5 w-5 shrink-0" />
           <span>
             Connect your own tools, like an internal company system, through an MCP server address. Its tools appear next to your other connections and bots can use them.
@@ -106,8 +106,8 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
   const needsSignIn = s.auth_kind === ToolServerAuthKinds.OAUTH && s.status === ToolServerStatuses.NEEDS_RECONNECTING;
 
   return (
-    <div className="flex items-start gap-3 rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
-      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-[12px] bg-primary-soft text-accent-foreground">
+    <div className="flex items-start gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
+      <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-primary-soft text-accent-foreground">
         <Wrench className="h-5 w-5" />
       </span>
       <div className="min-w-0 flex-1">
@@ -149,28 +149,28 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
               <MoreHorizontal />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56 rounded-[14px] p-1.5">
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => test.mutate(s.id)}>
+          <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => test.mutate(s.id)}>
               <RefreshCw className="h-4 w-4" /> Test connection
             </DropdownMenuItem>
             {s.auth_kind === ToolServerAuthKinds.OAUTH && (
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={startSignIn}>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={startSignIn}>
                 <LogIn className="h-4 w-4" /> Sign in again
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={onEdit}>
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onEdit}>
               <Pencil className="h-4 w-4" /> Edit
             </DropdownMenuItem>
             {isAdmin && (
-              <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => update.mutate({ id: s.id, visibility: s.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => update.mutate({ id: s.id, visibility: s.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
                 <Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={onLimit}>
+            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onLimit}>
               <BotIcon className="h-4 w-4" /> Limit to bots
             </DropdownMenuItem>
             <DropdownMenuSeparator />
-            <DropdownMenuItem className="gap-2 rounded-[10px] text-error focus:text-error" onSelect={onDelete}>
+            <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={onDelete}>
               <Trash2 className="h-4 w-4" /> Remove
             </DropdownMenuItem>
           </DropdownMenuContent>

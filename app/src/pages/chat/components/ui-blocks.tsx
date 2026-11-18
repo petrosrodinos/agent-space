@@ -33,7 +33,7 @@ const ChartBlock: FC<{ block: UiBlock }> = ({ block }) => {
   const x = block.x ?? Object.keys(data[0] ?? {})[0];
   const series: string[] = Array.isArray(block.series) && block.series.length ? block.series : Object.keys(data[0] ?? {}).filter((k) => k !== x && typeof data[0]?.[k] === "number");
   const axis = { stroke: "var(--muted-foreground)", fontSize: 12, tickLine: false, axisLine: false } as const;
-  const tooltip = <Tooltip contentStyle={{ borderRadius: 14, border: "1px solid var(--hairline)", background: "var(--popover)", color: "var(--ink)", boxShadow: "var(--sh-pop)" }} />;
+  const tooltip = <Tooltip contentStyle={{ borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--popover)", color: "var(--ink)", boxShadow: "var(--sh-pop)" }} />;
   return (
     <div className="h-64 w-full" role="img" aria-label={block.title ?? "Chart"}>
       {block.title && <p className="mb-2 text-sm font-bold text-ink">{block.title}</p>}
@@ -150,7 +150,7 @@ const ChecklistBlock: FC<BlockProps> = ({ block, onAction, disabled }) => {
   return (
     <ul className="space-y-1.5">
       {items.map((it, i) => (
-        <li key={i} className="flex items-start gap-2.5 rounded-[12px] px-1 py-1">
+        <li key={i} className="flex items-start gap-2.5 rounded-md px-1 py-1">
           <Checkbox
             checked={!!it.done}
             disabled={disabled}
@@ -180,7 +180,7 @@ export const UiBlockView: FC<BlockProps> = ({ block, onAction, disabled }) => {
       return <hr className="border-hairline" />;
     case UiBlockTypes.CARD:
       return (
-        <div className="rounded-[14px] border border-hairline bg-surface-soft p-4">
+        <div className="rounded-md border border-hairline bg-surface-soft p-4">
           {block.title && <p className="font-bold text-ink">{str(block.title)}</p>}
           {block.body && <Markdown className="mt-1 text-body">{str(block.body)}</Markdown>}
           {block.footer && <p className="mt-2 text-xs text-muted-foreground">{str(block.footer)}</p>}
@@ -190,7 +190,7 @@ export const UiBlockView: FC<BlockProps> = ({ block, onAction, disabled }) => {
       return (
         <div className="grid grid-cols-2 gap-2 sm:grid-cols-[repeat(auto-fit,minmax(140px,1fr))]">
           {(block.items ?? []).map((s: any, i: number) => (
-            <div key={i} className="rounded-[14px] bg-surface-sunken p-3">
+            <div key={i} className="rounded-md bg-surface-sunken p-3">
               <p className="text-xs font-semibold text-muted-foreground">{str(s.label)}</p>
               <p className="mt-1 font-display text-2xl font-bold text-ink">{str(s.value)}</p>
               {s.delta && (
@@ -207,7 +207,7 @@ export const UiBlockView: FC<BlockProps> = ({ block, onAction, disabled }) => {
       const columns: string[] = Array.isArray(block.columns) ? block.columns.map(str) : [];
       const rows: unknown[][] = Array.isArray(block.rows) ? block.rows : [];
       return (
-        <div className="overflow-x-auto rounded-[14px] border border-hairline">
+        <div className="overflow-x-auto rounded-md border border-hairline">
           <table className="w-full text-sm">
             <thead className="bg-surface-soft">
               <tr>
@@ -295,10 +295,10 @@ export const UiBlockView: FC<BlockProps> = ({ block, onAction, disabled }) => {
       );
     }
     case UiBlockTypes.IMAGE:
-      return /^https:\/\//.test(str(block.url)) ? <img src={str(block.url)} alt={str(block.alt)} className="max-h-80 rounded-[14px] object-cover" loading="lazy" referrerPolicy="no-referrer" /> : null;
+      return /^https:\/\//.test(str(block.url)) ? <img src={str(block.url)} alt={str(block.alt)} className="max-h-80 rounded-md object-cover" loading="lazy" referrerPolicy="no-referrer" /> : null;
     case UiBlockTypes.KV:
       return (
-        <dl className="divide-y divide-hairline rounded-[14px] border border-hairline">
+        <dl className="divide-y divide-hairline rounded-md border border-hairline">
           {(block.items ?? []).map((it: any, i: number) => (
             <div key={i} className="grid grid-cols-[minmax(100px,40%)_1fr] gap-3 px-3 py-2 text-sm">
               <dt className="font-semibold text-muted-foreground">{str(it.label)}</dt>
@@ -311,7 +311,7 @@ export const UiBlockView: FC<BlockProps> = ({ block, onAction, disabled }) => {
       const tone = (block.tone ?? "info") as "info" | "success" | "warning" | "error";
       const Icon = { info: Info, success: CheckCircle2, warning: AlertTriangle, error: XCircle }[tone] ?? Circle;
       return (
-        <div className={cn("flex gap-2.5 rounded-[14px] p-3 text-sm", { info: "bg-info-soft", success: "bg-success-soft", warning: "bg-warning-soft", error: "bg-error-soft" }[tone])}>
+        <div className={cn("flex gap-2.5 rounded-md p-3 text-sm", { info: "bg-info-soft", success: "bg-success-soft", warning: "bg-warning-soft", error: "bg-error-soft" }[tone])}>
           <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", { info: "text-info", success: "text-success", warning: "text-warning", error: "text-error" }[tone])} />
           <Markdown className="text-sm">{str(block.text)}</Markdown>
         </div>

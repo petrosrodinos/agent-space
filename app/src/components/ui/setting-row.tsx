@@ -16,7 +16,7 @@ export const SettingRow: FC<{ label: string; description?: ReactNode; children: 
 
 /** Grouped settings card (DESIGN.MD: single 720px column of grouped setting cards). */
 export const SettingsCard: FC<{ title: string; description?: string; children: ReactNode; className?: string; actions?: ReactNode }> = ({ title, description, children, className, actions }) => (
-  <section className={cn("rounded-[20px] border border-hairline bg-surface px-5 py-4 shadow-sticker sm:px-6", className)}>
+  <section className={cn("rounded-lg border border-hairline bg-surface px-5 py-4 shadow-sticker sm:px-6", className)}>
     <div className="flex items-start justify-between gap-3 pb-1 pt-1">
       <div>
         <h2 className="text-[17px] font-bold text-ink" style={{ fontFamily: "var(--font-sans)", letterSpacing: 0 }}>

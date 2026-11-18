@@ -16,7 +16,7 @@ export const RunsTab: FC<{ automationId: string }> = ({ automationId }) => {
   const [page, setPage] = useState(1);
   const { data, isPending } = useAutomationRuns(automationId, page);
 
-  if (isPending) return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[72px] rounded-[20px]" />)}</div>;
+  if (isPending) return <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[72px] rounded-lg" />)}</div>;
   if (!data?.data.length)
     return <EmptyState title="No runs yet" description="Runs appear here as they happen. Use Run now to try it." stickers={[{ icon: Hourglass, color: "#6B4EFF" }, { icon: Repeat, color: "#1FC98E" }, { icon: ClipboardList, color: "#FF7A3D" }]} />;
 
@@ -24,7 +24,7 @@ export const RunsTab: FC<{ automationId: string }> = ({ automationId }) => {
     <div>
       <ul className="space-y-2">
         {data.data.map((r) => (
-          <li key={r.id} className="rounded-[20px] border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
+          <li key={r.id} className="rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
             <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5">
               <AutomationRunStatusPill status={r.status} />
               {r.is_retry && (

@@ -126,7 +126,7 @@ const useSettings = () => {
 export const SettingsSkeleton: FC = () => (
   <div className="space-y-4">
     {Array.from({ length: 2 }).map((_, i) => (
-      <Skeleton key={i} className="h-64 rounded-[20px]" />
+      <Skeleton key={i} className="h-64 rounded-lg" />
     ))}
   </div>
 );

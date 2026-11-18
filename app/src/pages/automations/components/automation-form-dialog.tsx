@@ -108,9 +108,9 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
                 <FormItem>
                   <FormLabel>Accounts it uses</FormLabel>
                   {active.length ? (
-                    <div className="max-h-44 space-y-0.5 overflow-y-auto rounded-[14px] border border-hairline p-1">
+                    <div className="max-h-44 space-y-0.5 overflow-y-auto rounded-md border border-hairline p-1">
                       {active.map((c) => (
-                        <label key={c.id} className="flex min-h-[40px] cursor-pointer items-center gap-3 rounded-[10px] px-2 hover:bg-surface-sunken">
+                        <label key={c.id} className="flex min-h-[40px] cursor-pointer items-center gap-3 rounded-sm px-2 hover:bg-surface-sunken">
                           <Checkbox checked={field.value.includes(c.id)} onCheckedChange={(v) => field.onChange(v ? [...field.value, c.id] : field.value.filter((x) => x !== c.id))} />
                           <span className="min-w-0 truncate text-sm"><strong className="text-ink">{c.label}</strong> <span className="text-muted-foreground">· {c.service_name}</span></span>
                         </label>
@@ -128,7 +128,7 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
                 </FormItem>
               )} />
               <FormField control={form.control} name="email_results" render={({ field }) => (
-                <FormItem className="flex items-center justify-between gap-3 rounded-[14px] border border-hairline px-3 py-2.5">
+                <FormItem className="flex items-center justify-between gap-3 rounded-md border border-hairline px-3 py-2.5">
                   <div>
                     <FormLabel>Also email me the results</FormLabel>
                     <FormDescription>Results always appear in a chat with the bot.</FormDescription>

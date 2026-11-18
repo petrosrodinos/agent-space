@@ -26,7 +26,7 @@ const ForgotPasswordPage: FC = () => {
       }
     >
       {forgot.isSuccess ? (
-        <div className="flex items-start gap-3 rounded-[20px] border border-hairline bg-surface p-5 shadow-sticker">
+        <div className="flex items-start gap-3 rounded-lg border border-hairline bg-surface p-5 shadow-sticker">
           <MailCheck className="mt-0.5 h-6 w-6 text-success" />
           <div>
             <p className="font-bold text-ink">Check your inbox</p>

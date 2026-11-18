@@ -12,7 +12,7 @@ interface SegmentedControlProps<T extends string> {
 /** Pills inside a sunken pill track (DESIGN.MD inputs). Keyboard accessible via radiogroup semantics. */
 export function SegmentedControl<T extends string>({ value, options, onChange, ariaLabel, className, disabled }: SegmentedControlProps<T>) {
   return (
-    <div role="radiogroup" aria-label={ariaLabel} className={cn("inline-flex max-w-full flex-wrap gap-1 rounded-[18px] bg-surface-sunken p-1", className)}>
+    <div role="radiogroup" aria-label={ariaLabel} className={cn("inline-flex max-w-full flex-wrap gap-1 rounded-lg bg-surface-sunken p-1", className)}>
       {options.map((o) => (
         <button
           key={o.id}

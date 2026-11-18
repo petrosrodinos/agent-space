@@ -83,7 +83,7 @@ export const OrganizationSection: FC = () => {
                     <FormLabel>Brand colour</FormLabel>
                     <div className="flex flex-wrap gap-2">
                       {BotColorOptions.map((c) => (
-                        <button key={c.id} type="button" aria-label={c.label} aria-pressed={field.value === c.id} onClick={() => field.onChange(c.id)} className={cn("h-9 w-9 rounded-[12px]", field.value === c.id && "ring-2 ring-ink ring-offset-2 ring-offset-surface")} style={{ backgroundColor: c.id }} />
+                        <button key={c.id} type="button" aria-label={c.label} aria-pressed={field.value === c.id} onClick={() => field.onChange(c.id)} className={cn("h-9 w-9 rounded-md", field.value === c.id && "ring-2 ring-ink ring-offset-2 ring-offset-surface")} style={{ backgroundColor: c.id }} />
                       ))}
                     </div>
                   </FormItem>
@@ -289,7 +289,7 @@ export const AiModelsSection: FC = () => {
           <p className="mb-2 text-sm text-muted-foreground">Bots on a model removed from the list switch to the default and their owners are notified.</p>
           <div className="grid gap-1 sm:grid-cols-2">
             {models?.map((m) => (
-              <label key={m.id} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-[10px] px-2 hover:bg-surface-sunken">
+              <label key={m.id} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-sm px-2 hover:bg-surface-sunken">
                 <Checkbox checked={allowed.has(m.id)} onCheckedChange={(v) => setAllowed((cur) => { const n = new Set(cur); if (v) n.add(m.id); else n.delete(m.id); return n; })} />
                 <span className="text-sm font-semibold text-ink">{m.name}</span>
                 <span className="text-xs text-muted-foreground">{m.provider} · {getDropdownOptionLabel(ModelCostTierOptions, m.cost_tier)}</span>
@@ -355,11 +355,11 @@ export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
         </Select>
       }>
         <div className="grid grid-cols-2 gap-3 py-3 sm:grid-cols-4">
-          <div className="rounded-[14px] bg-primary-soft p-3"><p className="text-xs font-semibold text-accent-foreground">Total</p><p className="text-2xl font-extrabold text-ink">{formatMoney(data.total_cost)}</p></div>
+          <div className="rounded-md bg-primary-soft p-3"><p className="text-xs font-semibold text-accent-foreground">Total</p><p className="text-2xl font-extrabold text-ink">{formatMoney(data.total_cost)}</p></div>
           {data.by_kind.map((k) => (
-            <div key={k.kind} className="rounded-[14px] bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">{getDropdownOptionLabel(UsageKindOptions, k.kind, k.kind)}</p><p className="text-lg font-bold text-ink">{formatMoney(k.cost)}</p></div>
+            <div key={k.kind} className="rounded-md bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">{getDropdownOptionLabel(UsageKindOptions, k.kind, k.kind)}</p><p className="text-lg font-bold text-ink">{formatMoney(k.cost)}</p></div>
           ))}
-          {orgLimit && <div className="rounded-[14px] bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">Monthly limit</p><p className="text-lg font-bold text-ink">{formatMoney(orgLimit.monthly_limit)}</p></div>}
+          {orgLimit && <div className="rounded-md bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">Monthly limit</p><p className="text-lg font-bold text-ink">{formatMoney(orgLimit.monthly_limit)}</p></div>}
         </div>
         {data.by_day.length > 0 && (
           <div className="h-56 w-full py-2">
@@ -368,7 +368,7 @@ export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
                 <CartesianGrid vertical={false} stroke="var(--hairline)" />
                 <XAxis dataKey="day" tick={{ fontSize: 12, fill: "var(--muted-text)" }} axisLine={false} tickLine={false} />
                 <YAxis tick={{ fontSize: 12, fill: "var(--muted-text)" }} axisLine={false} tickLine={false} width={44} tickFormatter={(v) => `$${v}`} />
-                <Tooltip formatter={(v) => formatMoney(Number(v))} contentStyle={{ borderRadius: 14, border: "1px solid var(--hairline)", background: "var(--surface)", color: "var(--ink)" }} />
+                <Tooltip formatter={(v) => formatMoney(Number(v))} contentStyle={{ borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--surface)", color: "var(--ink)" }} />
                 <Bar dataKey="cost" fill="var(--primary)" radius={[6, 6, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
@@ -463,7 +463,7 @@ export const ActivitySection: FC = () => {
                   <TableRow key={a.id}>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDateTime(a.created_at)}</TableCell>
                     <TableCell className="text-sm">{a.actor_bot ? `${a.actor_bot.emoji} ${a.actor_bot.name}` : a.actor_user?.name ?? a.actor_user?.email ?? "System"}</TableCell>
-                    <TableCell><code className="rounded-[6px] bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code></TableCell>
+                    <TableCell><code className="rounded-xs bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code></TableCell>
                     <TableCell className="max-w-[260px] truncate text-xs text-muted-foreground">{a.connection?.label ?? ""} {a.metadata ? JSON.stringify(a.metadata).slice(0, 80) : ""}</TableCell>
                   </TableRow>
                 ))}
@@ -473,7 +473,7 @@ export const ActivitySection: FC = () => {
           <ul className="divide-y divide-hairline md:hidden">
             {data?.data.map((a) => (
               <li key={a.id} className="py-2.5">
-                <code className="rounded-[6px] bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code>
+                <code className="rounded-xs bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code>
                 <p className="mt-1 text-sm">{a.actor_bot ? `${a.actor_bot.emoji} ${a.actor_bot.name}` : a.actor_user?.name ?? "System"}</p>
                 <p className="text-xs text-muted-foreground">{timeAgo(a.created_at)}</p>
               </li>

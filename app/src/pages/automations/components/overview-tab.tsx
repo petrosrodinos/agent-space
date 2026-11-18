@@ -47,7 +47,7 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
     <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_340px]">
       <div className="min-w-0 space-y-5">
         {a.status === AutomationStatuses.NEEDS_ATTENTION && a.status_reason && (
-          <div className="flex gap-3 rounded-[20px] border border-warning/40 bg-warning-soft p-4 text-sm">
+          <div className="flex gap-3 rounded-lg border border-warning/40 bg-warning-soft p-4 text-sm">
             <AlertTriangle className="mt-0.5 h-5 w-5 shrink-0 text-warning" />
             <div>
               <p className="font-bold text-ink">This automation needs attention</p>
@@ -94,7 +94,7 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
           actions={<Button variant="outline" size="sm" onClick={() => setAdding(true)}><Plus /> Add</Button>}
         >
           {needsConfirm && (
-            <div className="mb-3 flex flex-col gap-3 rounded-[16px] bg-warning-soft p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+            <div className="mb-3 flex flex-col gap-3 rounded-lg bg-warning-soft p-3 text-sm sm:flex-row sm:items-center sm:justify-between">
               <p className="text-body"><strong className="text-ink">Confirm these again.</strong> The automation changed, so runs ask before these actions until you confirm.</p>
               <Button size="sm" loading={confirm.isPending} onClick={() => confirm.mutate(a.id)}><ShieldCheck /> Confirm</Button>
             </div>

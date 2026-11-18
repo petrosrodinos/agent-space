@@ -78,7 +78,7 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="artifact-slug">Link</Label>
-          <div className="flex items-center overflow-hidden rounded-[14px] border-[1.5px] border-hairline-strong bg-surface focus-within:border-primary">
+          <div className="flex items-center overflow-hidden rounded-md border-[1.5px] border-hairline-strong bg-surface focus-within:border-primary">
             <span className="hidden max-w-[45%] truncate pl-3 text-xs text-muted-foreground sm:block">{base}</span>
             <input
               id="artifact-slug"
@@ -99,7 +99,7 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
       </form>
 
       {isOwner && (
-        <div className="flex items-center justify-between gap-3 rounded-[16px] border border-hairline p-3">
+        <div className="flex items-center justify-between gap-3 rounded-lg border border-hairline p-3">
           <div>
             <p className="text-sm font-bold text-ink">Review before publishing</p>
             <p className="text-xs text-muted-foreground">Edits are saved as a draft and go live when an editor clicks Publish.</p>

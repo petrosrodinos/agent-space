@@ -111,7 +111,7 @@ export const ComputerViewer: FC<Props> = ({ botId, initialMode = ComputerViewMod
   const st = { label: getDropdownOptionLabel(ComputerStatusOptions, shownStatus), tone: COMPUTER_STATUS_TONE[shownStatus] };
 
   return (
-    <div ref={wrapRef} className={cn("flex flex-col overflow-hidden rounded-[20px] border border-hairline bg-surface shadow-sticker", fullscreen && "fixed inset-0 z-50 rounded-none border-0", className)}>
+    <div ref={wrapRef} className={cn("flex flex-col overflow-hidden rounded-lg border border-hairline bg-surface shadow-sticker", fullscreen && "fixed inset-0 z-50 rounded-none border-0", className)}>
       <div className="flex flex-wrap items-center gap-2 border-b border-hairline px-3 py-2">
         <MonitorPlay className="h-4 w-4 text-muted-foreground" aria-hidden />
         <StatusPill tone={st.tone}>{st.label}</StatusPill>
@@ -144,7 +144,7 @@ export const ComputerViewer: FC<Props> = ({ botId, initialMode = ComputerViewMod
           </div>
         ) : (
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-3 p-6">
-            <Skeleton className="h-2/3 w-3/4 rounded-[12px] bg-white/10" />
+            <Skeleton className="h-2/3 w-3/4 rounded-md bg-white/10" />
             <p className="text-sm font-semibold text-white/85">Starting the computer… this can take a few seconds.</p>
           </div>
         )}

@@ -39,7 +39,7 @@ const ArtifactCard: FC<{ a: ArtifactSummary; tab: ArtifactTab }> = ({ a, tab }) 
   };
   const body = (
     <>
-        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-[14px] bg-primary-soft text-2xl" aria-hidden>
+        <span className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-md bg-primary-soft text-2xl" aria-hidden>
           <ArtifactTypeIcon type={a.type} className="h-6 w-6" />
         </span>
         <span className="min-w-0 flex-1 pr-16">
@@ -51,7 +51,7 @@ const ArtifactCard: FC<{ a: ArtifactSummary; tab: ArtifactTab }> = ({ a, tab }) 
     </>
   );
   return (
-    <div className="card-lift group relative flex flex-col rounded-[20px] border border-hairline bg-surface p-4 shadow-sticker">
+    <div className="card-lift group relative flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
       {deleted ? (
         <div className="flex items-start gap-3 text-left">{body}</div>
       ) : (
@@ -132,7 +132,7 @@ const ArtifactsPage: FC = () => {
       {isPending ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
           {Array.from({ length: 6 }).map((_, i) => (
-            <Skeleton key={i} className="h-44 rounded-[20px]" />
+            <Skeleton key={i} className="h-44 rounded-lg" />
           ))}
         </div>
       ) : !data?.length ? (

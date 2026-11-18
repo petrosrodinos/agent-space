@@ -62,7 +62,7 @@ const AutomationsPage: FC = () => {
       <PageHeader title="Automations" description="Jobs your bots do by themselves, on a schedule." actions={<Button onClick={() => setOpen(true)}><Plus /> New automation</Button>} />
       <SegmentedControl ariaLabel="Filter automations" value={filter} options={AutomationStatusFilterOptions} onChange={setFilter} className="mb-5" />
       {isPending ? (
-        <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[84px] rounded-[20px]" />)}</div>
+        <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[84px] rounded-lg" />)}</div>
       ) : !data?.length ? (
         <EmptyState
           title={filter === ALL_FILTER ? "No automations yet" : "Nothing here"}
@@ -73,7 +73,7 @@ const AutomationsPage: FC = () => {
       ) : (
         <ul className="space-y-2">
           {data.map((a) => (
-            <li key={a.id} className="card-lift flex items-center gap-2 rounded-[20px] border border-hairline bg-surface p-3 shadow-sticker sm:gap-3 sm:p-4">
+            <li key={a.id} className="card-lift flex items-center gap-2 rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:gap-3 sm:p-4">
               <Link to={Routes.automations.detail(a.id)} className="flex min-w-0 flex-1 items-center gap-3">
                 <BotAvatar emoji={a.bot.emoji} color={a.bot.color} name={a.bot.name} working={a.last_run?.status === AutomationRunStatuses.RUNNING} />
                 <div className="min-w-0 flex-1">

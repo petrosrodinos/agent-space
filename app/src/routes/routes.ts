@@ -34,6 +34,7 @@ export const Routes = {
     legacy_callback: "/integrations/callback",
   },
   secrets: "/secrets",
+  tools: "/tools",
   tasks: { root: "/tasks", detail: (id: string) => `/tasks/${id}`, pattern: "/tasks/:taskId" },
   artifacts: { root: "/artifacts", detail: (id: string) => `/artifacts/${id}`, pattern: "/artifacts/:artifactId" },
   automations: { root: "/automations", detail: (id: string) => `/automations/${id}`, pattern: "/automations/:automationId" },

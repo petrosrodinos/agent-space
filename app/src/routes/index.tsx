@@ -1,9 +1,11 @@
 import { lazy, Suspense, type ReactNode } from "react";
 import { Navigate, Route, Routes as RouterRoutes } from "react-router-dom";
 import { Routes } from "@/routes/routes";
-import { RedirectIfAuthed, RequireAuth, SplashSkeleton } from "@/components/layout/session-gate";
+import { HomeGate, WebOnly, RedirectIfAuthed, RequireAuth, SplashSkeleton } from "@/components/layout/session-gate";
 import { Skeleton } from "@/components/ui/skeleton";
 import AppShell from "@/components/layout/app-shell";
+// Loaded up front (not lazy): it is the first thing web visitors see, so it must not flash the app's skeleton.
+import LandingPage from "@/pages/landing";
 
 const SignInPage = lazy(() => import("@/pages/auth/pages/sign-in"));
 const SignUpPage = lazy(() => import("@/pages/auth/pages/sign-up"));
@@ -54,6 +56,9 @@ const authPage = (el: ReactNode) => (
 export default function AppRoutes() {
   return (
     <RouterRoutes>
+      {/* Apps skip the landing page (straight to chats or sign-in); signed-out web visitors see it at `/`. */}
+      <Route path={Routes.home} element={<HomeGate landing={<LandingPage />} />} />
+      <Route path={Routes.welcome} element={<WebOnly><LandingPage /></WebOnly>} />
       <Route path={Routes.auth.sign_in} element={authPage(<SignInPage />)} />
       <Route path={Routes.auth.sign_up} element={authPage(<SignUpPage />)} />
       <Route path={Routes.auth.forgot_password} element={authPage(<ForgotPasswordPage />)} />
@@ -67,7 +72,6 @@ export default function AppRoutes() {
           </RequireAuth>
         }
       >
-        <Route index element={<Navigate to={Routes.chat.root} replace />} />
         <Route path={Routes.chat.root} element={page(<ChatHomePage />)} />
         <Route path={Routes.chat.pattern} element={page(<ConversationPage />)} />
         <Route path={Routes.bots.root} element={page(<BotsPage />)} />

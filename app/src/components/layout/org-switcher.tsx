@@ -55,7 +55,7 @@ export const OrgSubmenu: FC<{ onCreate: () => void }> = ({ onCreate }) => {
       <DropdownMenuSubContent className="w-72 rounded-md p-1.5 shadow-pop">
         <DropdownMenuLabel className="eyebrow px-2">Organisations</DropdownMenuLabel>
         {orgs.map((o) => (
-          <DropdownMenuItem key={o.id} onSelect={() => o.id !== currentId && (switchOrg(o.id), navigate(Routes.home))} className="gap-2.5 rounded-sm py-2">
+          <DropdownMenuItem key={o.id} onSelect={() => o.id !== currentId && (switchOrg(o.id), navigate(Routes.chat.root))} className="gap-2.5 rounded-sm py-2">
             <OrgMark name={o.name} color={o.brand_color} size={OrgMarkSizes.SM} />
             <span className="min-w-0 flex-1">
               <span className="block truncate font-semibold">{o.name}</span>

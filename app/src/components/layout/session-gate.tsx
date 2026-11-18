@@ -4,6 +4,7 @@ import { refreshSession } from "@/config/api/axios";
 import { Routes } from "@/routes/routes";
 import { useAuthStore, AuthStatuses } from "@/stores/auth";
 import { Skeleton } from "@/components/ui/skeleton";
+import { isAppShell } from "@/platform";
 
 let bootstrapped = false;
 
@@ -49,13 +50,28 @@ export const RequireAuth: FC<{ children: ReactNode }> = ({ children }) => {
   return <>{children}</>;
 };
 
+/**
+ * `/`: on the web it is always the landing page (signed in or not — the page offers "Open app").
+ * The desktop and mobile apps never show it: signed in goes to chats, signed out to sign-in.
+ */
+export const HomeGate: FC<{ landing?: ReactNode }> = ({ landing }) => {
+  const status = useSessionBootstrap();
+  if (!isAppShell && landing) return <>{landing}</>;
+  if (status === AuthStatuses.UNKNOWN) return <SplashSkeleton />;
+  if (status === AuthStatuses.SIGNED_IN) return <Navigate to={Routes.chat.root} replace />;
+  return <Navigate to={Routes.auth.sign_in} replace />;
+};
+
+/** Wrap the landing page's own route with this: inside the apps it goes to `/` (chats or sign-in) instead. */
+export const WebOnly: FC<{ children: ReactNode }> = ({ children }) => (isAppShell ? <Navigate to={Routes.home} replace /> : <>{children}</>);
+
 export const RedirectIfAuthed: FC<{ children: ReactNode }> = ({ children }) => {
   const status = useSessionBootstrap();
   const location = useLocation();
   if (status === AuthStatuses.UNKNOWN) return <SplashSkeleton />;
   if (status === AuthStatuses.SIGNED_IN) {
     const next = new URLSearchParams(location.search).get("next");
-    return <Navigate to={next && next.startsWith("/") ? next : Routes.home} replace />;
+    return <Navigate to={next && next.startsWith("/") ? next : Routes.chat.root} replace />;
   }
   return <>{children}</>;
 };

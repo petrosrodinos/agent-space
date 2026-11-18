@@ -1,15 +1,15 @@
 ---
-version: 1.0
+version: 1.1
 name: agent-space-design-system
-description: A playful, friendly and confident interface for Agent Space — a messaging-style home for AI co-workers. Warm cream canvas, a vivid "Grape" primary, a candy-bright bot palette, chunky rounded shapes, soft "sticker" shadows and bouncy-but-quick motion. Characterful grotesque display type paired with a clean, rounded humanist sans for everyday reading. Playful in personality, serious about clarity, safety and accessibility.
+description: A calm, friendly and confident interface for Agent Space — a messaging-style home for AI co-workers. Neutral monochrome by default (white and near-black, Grok-style), with an optional colour theme each person picks per organisation. A candy-bright bot palette, chunky rounded shapes, soft shadows and quick motion. Characterful grotesque display type paired with a clean, rounded humanist sans for everyday reading. The bots bring the colour; the chrome stays out of the way.
 
 colors:
-  # Brand
-  primary: "#6B4EFF"            # Grape — main actions, links, focus
-  primary-hover: "#5A3DF0"
-  primary-active: "#4A2FD6"
-  primary-soft: "#EEEAFF"       # Grape tint — selected states, highlights
-  primary-disabled: "#D9D3FF"
+  # Brand (Neutral colour theme — the default; see "Colour themes" for the other presets)
+  primary: "#0D0D0F"            # Near-black — main actions, user bubbles, links, focus
+  primary-hover: "#27272A"
+  primary-active: "#3F3F46"
+  primary-soft: "#EFEFF1"       # Light grey — selected states, highlights
+  primary-disabled: "#D4D4D8"
   on-primary: "#FFFFFF"
   accent-tangerine: "#FF7A3D"   # Energy — badges, "new", celebration
   accent-sunshine: "#FFC83D"    # Attention — approvals, highlights
@@ -18,18 +18,18 @@ colors:
   accent-sky: "#38B6FF"         # Info, links in dark bubbles
 
   # Light surfaces
-  canvas: "#FFFBF5"             # Warm cream page floor
+  canvas: "#FFFFFF"             # Clean white page floor
   surface: "#FFFFFF"            # Cards, chat panel, inputs
-  surface-soft: "#FBF5EC"       # Sidebar, secondary panels
-  surface-sunken: "#F4ECE0"     # Composer well, code blocks, wells
-  hairline: "#EDE3D6"
-  hairline-strong: "#DCCFBF"
+  surface-soft: "#F7F7F8"       # Sidebar, secondary panels
+  surface-sunken: "#EFEFF1"     # Composer well, code blocks, wells
+  hairline: "#E7E7EA"
+  hairline-strong: "#D4D4D8"
 
   # Light text
-  ink: "#1C1633"                # Deep plum — headlines, primary text
-  body: "#3A3352"
-  muted: "#6E6787"
-  muted-soft: "#9A93AE"
+  ink: "#0D0D0F"                # Near-black — headlines, primary text
+  body: "#3F3F46"
+  muted: "#71717A"
+  muted-soft: "#A1A1AA"
 
   # Semantic
   success: "#12A574"
@@ -42,19 +42,35 @@ colors:
   info-soft: "#DFF1FF"
 
   # Dark mode
-  dark-canvas: "#13101F"
-  dark-surface: "#1C1830"
-  dark-surface-soft: "#17142A"
-  dark-surface-elevated: "#262040"
-  dark-surface-sunken: "#0F0C1A"
-  dark-hairline: "#2E2848"
-  dark-hairline-strong: "#3D3560"
-  dark-ink: "#F6F3FF"
-  dark-body: "#D6D0EA"
-  dark-muted: "#A49CC2"
-  dark-muted-soft: "#7A7298"
-  dark-primary: "#8E78FF"
-  dark-primary-soft: "#2C2457"
+  dark-canvas: "#0A0A0A"
+  dark-surface: "#141414"
+  dark-surface-soft: "#111111"
+  dark-surface-elevated: "#1C1C1C"
+  dark-surface-sunken: "#050505"
+  dark-hairline: "#262626"
+  dark-hairline-strong: "#363636"
+  dark-ink: "#FAFAFA"
+  dark-body: "#D4D4D8"
+  dark-muted: "#A1A1AA"
+  dark-muted-soft: "#71717A"
+  dark-primary: "#FAFAFA"       # White — main actions in dark mode
+  dark-on-primary: "#0A0A0A"
+  dark-primary-soft: "#262626"
+
+color-themes:                   # Per user, per organisation (Settings > Appearance). Overrides brand + surface tint only.
+  neutral:  { light-primary: "#0D0D0F", dark-primary: "#FAFAFA", light-canvas: "#FFFFFF", dark-canvas: "#0A0A0A" }   # default
+  grape:    { light-primary: "#6B4EFF", dark-primary: "#8E78FF", light-canvas: "#FFFBF5", dark-canvas: "#13101F" }
+  ocean:    { light-primary: "#2F5FE8", dark-primary: "#6F93FF", light-canvas: "#F7F9FF", dark-canvas: "#0E1220" }
+  sky:      { light-primary: "#0B8FD8", dark-primary: "#4CBCFF", light-canvas: "#F5FBFF", dark-canvas: "#0B141C" }
+  teal:     { light-primary: "#0F9A94", dark-primary: "#3FD0C8", light-canvas: "#F4FBFA", dark-canvas: "#0A1716" }
+  forest:   { light-primary: "#1E8A4C", dark-primary: "#4FC97F", light-canvas: "#F6FAF5", dark-canvas: "#0C150F" }
+  lime:     { light-primary: "#4F8A0B", dark-primary: "#A3DC3C", light-canvas: "#FAFCF3", dark-canvas: "#11140B" }
+  sunset:   { light-primary: "#E8612A", dark-primary: "#FF8A57", light-canvas: "#FFF8F3", dark-canvas: "#1A100C" }
+  amber:    { light-primary: "#B06F00", dark-primary: "#FFC23D", light-canvas: "#FFFAF0", dark-canvas: "#17130A" }
+  rose:     { light-primary: "#E0458F", dark-primary: "#FF74B4", light-canvas: "#FFF7FA", dark-canvas: "#1A0D13" }
+  crimson:  { light-primary: "#D42A3C", dark-primary: "#FF5C6C", light-canvas: "#FFF8F8", dark-canvas: "#1A0C0E" }
+  lavender: { light-primary: "#8456E8", dark-primary: "#B79BFF", light-canvas: "#FCFAFF", dark-canvas: "#120F1C" }
+  slate:    { light-primary: "#3F4A5C", dark-primary: "#A9B4C6", light-canvas: "#F8F9FB", dark-canvas: "#0F1115" }
 
 bot-colors:                     # Avatar fills; each has a soft tint for bubbles/backgrounds
   grape:      { fill: "#6B4EFF", soft: "#EEEAFF", dark-soft: "#2C2457" }
@@ -170,10 +186,10 @@ spacing:
 
 shadows:
   none: "none"
-  sticker: "0 2px 0 rgba(28,22,51,0.08)"                                      # resting cards, chips
-  sticker-strong: "0 3px 0 rgba(28,22,51,0.12)"                               # buttons, raised cards
-  pop: "0 2px 0 rgba(28,22,51,0.08), 0 12px 32px -8px rgba(28,22,51,0.18)"    # menus, popovers, dialogs
-  glow-primary: "0 0 0 4px rgba(107,78,255,0.22)"                             # focus ring
+  sticker: "0 1px 2px rgba(0,0,0,0.05)"                                       # resting cards, chips
+  sticker-strong: "0 2px 4px rgba(0,0,0,0.08)"                                # buttons, raised cards
+  pop: "0 1px 2px rgba(0,0,0,0.06), 0 12px 32px -8px rgba(0,0,0,0.16)"        # menus, popovers, dialogs
+  glow-primary: "0 0 0 4px color-mix(in srgb, var(--primary) 22%, transparent)"  # focus ring, follows the colour theme
   dark-sticker: "0 2px 0 rgba(0,0,0,0.35)"
   dark-pop: "0 2px 0 rgba(0,0,0,0.35), 0 16px 40px -8px rgba(0,0,0,0.6)"
 
@@ -328,48 +344,49 @@ components:
 
 Agent Space should feel like **opening a group chat with your favourite colleagues — who happen to be very capable bots.** It's a messaging app first: friendly, bright and easy, with real work happening underneath.
 
-The personality is **playful, warm and confident**. Playful does not mean childish: the interface is clean and calm by default, and the fun lives in specific places — the bots' candy-coloured avatars, chunky rounded shapes, little "sticker" shadows, bouncy micro-moments and cheerful microcopy. When a bot is doing something serious (sending an email, spending money, touching sensitive data), the playfulness steps back and clarity takes over.
+The personality is **calm, friendly and confident**. The chrome is neutral and quiet — like Grok or a well-made chat app — and the fun lives in specific places: the bots' candy-coloured avatars, chunky rounded shapes, small micro-moments and cheerful microcopy. When a bot is doing something serious (sending an email, spending money, touching sensitive data), clarity takes over.
 
 **Key characteristics**
-- **Warm cream canvas** (`{colors.canvas}` #FFFBF5) instead of cold white — the app feels like paper, not a dashboard.
-- **Grape** (`{colors.primary}` #6B4EFF) is the single brand action colour: primary buttons, the user's own chat bubbles, links, focus rings and selected states.
-- **Bots bring the colour.** Each bot picks one of 12 bright bot colours plus an emoji. Bot colours carry the most saturation on screen, so users recognise bots instantly.
+- **Neutral monochrome by default.** A clean white canvas with near-black text in light mode; a near-black canvas (`#0A0A0A`) with white text in dark mode. No tinted surfaces, no brand hue in the chrome.
+- **Primary is black (light) / white (dark)** — `{colors.primary}` is the single action colour: primary buttons, the user's own chat bubbles, links, focus rings and selected states.
+- **Colour is opt-in.** Each person can pick a **colour theme** per organisation (Settings > Appearance) — 13 presets from Neutral to Ocean, Forest, Sunset or Grape. A theme swaps the primary colour and lightly tints the surfaces; everything else stays the same.
+- **Bots bring the colour.** Each bot picks one of 12 bright bot colours plus an emoji. Bot colours are the most saturated thing on screen, so users recognise bots instantly.
 - **Chunky and round.** Pill buttons, 20px cards, squircle bot avatars, bubbly chat messages.
-- **Sticker shadows** — a short, solid, offset shadow under cards and buttons gives a tactile, slightly "cut-out" look. Real blurred shadows only appear on floating things (menus, dialogs, composer).
+- **Soft shadows** — a faint 1–2px shadow under cards and buttons; larger blurred shadows only on floating things (menus, dialogs, composer).
 - **Characterful headlines** in Bricolage Grotesque, bold and tightly tracked; everything else in Plus Jakarta Sans, a rounded, friendly sans that stays very readable at small sizes.
 - **Motion with a little bounce** — quick, purposeful, with a small overshoot on "pop" moments (a new message, an approval, a published artifact).
 
 ## Colors
 
 ### Brand
-- **Grape** (`{colors.primary}` #6B4EFF) — primary buttons, user bubbles, links, focus, selection. Hover `{colors.primary-hover}`, pressed `{colors.primary-active}`.
-- **Grape Soft** (`{colors.primary-soft}` #EEEAFF) — selected conversation, active tab, skill chips, highlighted rows.
+- **Primary** (`{colors.primary}` #0D0D0F light / #FAFAFA dark in the default Neutral theme) — primary buttons, user bubbles, links, focus, selection. Hover `{colors.primary-hover}`, pressed `{colors.primary-active}`. The value changes with the person's colour theme, so **always use the token, never a hex**.
+- **Primary Soft** (`{colors.primary-soft}` #EFEFF1 light / #262626 dark) — selected conversation, active tab, skill chips, highlighted rows.
 - **Tangerine** (`{colors.accent-tangerine}` #FF7A3D) — "New" badges, celebratory moments, streaks. Never for errors.
 - **Sunshine** (`{colors.accent-sunshine}` #FFC83D) — approvals and "needs your attention".
 - **Mint** (`{colors.accent-mint}` #1FC98E) — "live", "connected", "done".
 - **Bubblegum** (`{colors.accent-bubblegum}` #FF5FAE) and **Sky** (`{colors.accent-sky}` #38B6FF) — reactions, illustrations, onboarding confetti.
 
-Accent colours are **decoration and signals, not actions**. The only colour that means "click me" is Grape.
+Accent colours are **decoration and signals, not actions**. The only colour that means "click me" is primary.
 
-### Surfaces (light)
+### Surfaces (light, Neutral theme)
 | Token | Hex | Use |
 |---|---|---|
-| `{colors.canvas}` | #FFFBF5 | App background, chat area background |
+| `{colors.canvas}` | #FFFFFF | App background, chat area background |
 | `{colors.surface}` | #FFFFFF | Cards, bot bubbles, inputs, side panel, dialogs |
-| `{colors.surface-soft}` | #FBF5EC | Left sidebar, settings navigation |
-| `{colors.surface-sunken}` | #F4ECE0 | Activity steps, code blocks, empty wells |
-| `{colors.hairline}` | #EDE3D6 | Default borders and dividers |
-| `{colors.hairline-strong}` | #DCCFBF | Input and secondary-button borders |
+| `{colors.surface-soft}` | #F7F7F8 | Left sidebar, settings navigation |
+| `{colors.surface-sunken}` | #EFEFF1 | Activity steps, code blocks, empty wells |
+| `{colors.hairline}` | #E7E7EA | Default borders and dividers |
+| `{colors.hairline-strong}` | #D4D4D8 | Input and secondary-button borders |
 
 ### Text (light)
 | Token | Hex | Use |
 |---|---|---|
-| `{colors.ink}` | #1C1633 | Headlines, message text, primary labels |
-| `{colors.body}` | #3A3352 | Long-form text, descriptions |
-| `{colors.muted}` | #6E6787 | Secondary text, timestamps, helper text |
-| `{colors.muted-soft}` | #9A93AE | Placeholders, disabled text |
+| `{colors.ink}` | #0D0D0F | Headlines, message text, primary labels |
+| `{colors.body}` | #3F3F46 | Long-form text, descriptions |
+| `{colors.muted}` | #71717A | Secondary text, timestamps, helper text |
+| `{colors.muted-soft}` | #A1A1AA | Placeholders, disabled text |
 
-Text is a **deep plum**, never pure black — it keeps the palette warm and friendly.
+Text greys are **pure neutral** (zinc scale) with no hue, so they sit well under every colour theme. Ink is near-black, not `#000`.
 
 ### Semantic
 | Meaning | Strong | Soft background | Use |
@@ -382,20 +399,49 @@ Text is a **deep plum**, never pure black — it keeps the palette warm and frie
 Status is **never shown by colour alone** — always pair it with an icon and a word.
 
 ### Dark mode
-Dark mode is a deep, slightly purple night — cosy, not pitch black.
+Dark mode is a neutral near-black — no colour cast. In the Neutral theme, primary flips to white with near-black text on it.
 
 | Light token | Dark equivalent |
 |---|---|
-| canvas | `{colors.dark-canvas}` #13101F |
-| surface | `{colors.dark-surface}` #1C1830 |
-| surface-soft | `{colors.dark-surface-soft}` #17142A |
-| surface-sunken | `{colors.dark-surface-sunken}` #0F0C1A |
-| (menus, dialogs) | `{colors.dark-surface-elevated}` #262040 |
-| hairline / hairline-strong | #2E2848 / #3D3560 |
-| ink / body / muted / muted-soft | #F6F3FF / #D6D0EA / #A49CC2 / #7A7298 |
-| primary / primary-soft | #8E78FF / #2C2457 |
+| canvas | `{colors.dark-canvas}` #0A0A0A |
+| surface | `{colors.dark-surface}` #141414 |
+| surface-soft | `{colors.dark-surface-soft}` #111111 |
+| surface-sunken | `{colors.dark-surface-sunken}` #050505 |
+| (menus, dialogs) | `{colors.dark-surface-elevated}` #1C1C1C |
+| hairline / hairline-strong | #262626 / #363636 |
+| ink / body / muted / muted-soft | #FAFAFA / #D4D4D8 / #A1A1AA / #71717A |
+| primary / on-primary / primary-soft | #FAFAFA / #0A0A0A / #262626 |
 
 Bot colour fills stay the same in dark mode; their soft tints switch to the `dark-soft` values.
+
+## Colour themes
+
+People can personalise the app with a **colour theme**, stored **per user per organisation** (on the organisation membership), so the same person can have Ocean in one organisation and Neutral in another. Switching organisation switches the theme. Light / Dark / System **mode** is a separate, personal setting that applies everywhere.
+
+| Preset | Light primary | Dark primary | Feel |
+|---|---|---|---|
+| **Neutral** (default) | #0D0D0F | #FAFAFA | Clean monochrome |
+| Grape | #6B4EFF | #8E78FF | Playful purple (the original look) |
+| Ocean | #2F5FE8 | #6F93FF | Deep, calm blue |
+| Sky | #0B8FD8 | #4CBCFF | Bright and airy |
+| Teal | #0F9A94 | #3FD0C8 | Cool and focused |
+| Forest | #1E8A4C | #4FC97F | Grounded green |
+| Lime | #4F8A0B | #A3DC3C | Fresh and energetic |
+| Sunset | #E8612A | #FF8A57 | Warm tangerine |
+| Amber | #B06F00 | #FFC23D | Golden and cosy |
+| Rose | #E0458F | #FF74B4 | Soft and playful |
+| Crimson | #D42A3C | #FF5C6C | Bold and confident |
+| Lavender | #8456E8 | #B79BFF | Gentle violet |
+| Slate | #3F4A5C | #A9B4C6 | Neutral and minimal |
+
+**What a theme changes:** `primary`, `primary-hover`, `primary-foreground`, `primary-soft` / `accent`, `accent-foreground`, `ring`, and a light tint on `canvas`, `surface-soft`, `surface-sunken`, `hairline` and `hairline-strong` (plus `surface` and `surface-elevated` in dark mode).
+**What it never changes:** text greys, semantic colours (success / warning / error / info), bot colours, typography, radii, spacing.
+
+**Rules**
+- Never hard-code a brand hex in components. Use `bg-primary`, `text-primary`, `bg-primary-soft`, `ring`, `bg-canvas`, etc., so every theme works.
+- A theme is applied as `data-color-theme="<PRESET>"` on `<html>`. The same attribute on any element re-themes just that subtree, which is how the theme picker shows real previews.
+- Every preset is designed for both light and dark mode, and white text on its light-mode primary must stay readable (dark presets use near-black text on primary).
+- Adding a preset means adding it to the `ColorTheme` enum (database), the `ColorThemes` const and `ColorThemeFormOptions`, plus a light and dark block in `index.css`.
 
 ## Bot colours
 
@@ -425,7 +471,7 @@ Bots are the stars of the interface. Every bot has **one emoji + one bot colour*
 **Rules**
 - Bot colours are **identity, not meaning** — never use them for status, actions or errors.
 - Text on a bot fill is the emoji only. Bot names are always written in `{colors.ink}` next to the avatar, never on the fill.
-- Sunshine and Lime are light fills: their avatars get a 1px `rgba(28,22,51,0.12)` inner border to stay crisp on cream.
+- Sunshine and Lime are light fills: their avatars get a 1px `rgba(0,0,0,0.12)` inner border to stay crisp on light surfaces.
 
 ## Typography
 
@@ -480,7 +526,7 @@ All three are free Google Fonts. Fallbacks: `system-ui, -apple-system, "Segoe UI
 │ Me / Settings│                                 │                    │
 └──────────────┴─────────────────────────────────┴────────────────────┘
 ```
-- **Sidebar** on `{colors.surface-soft}`; conversations grouped under overline labels; each row shows avatar(s), name, last message, unread dot (Grape) and attention dot (Sunshine for approvals).
+- **Sidebar** on `{colors.surface-soft}`; conversations grouped under overline labels; each row shows avatar(s), name, last message, unread dot (primary) and attention dot (Sunshine for approvals).
 - **Conversation** on `{colors.canvas}`; messages in a centred column, max 760px wide.
 - **Composer** floats 16px above the bottom with `{shadows.pop}`, so the chat scrolls underneath it.
 - **Side panel** slides in from the right on `{colors.surface}`; resizable between 360px and 60% of the window; can expand to full screen.
@@ -490,6 +536,9 @@ All three are free Google Fonts. Fallbacks: `system-ui, -apple-system, "Segoe UI
 - Between messages from the same sender: 4px. Between different senders: 16px.
 - Card padding: 16px (tiles), 20px (cards in chat), 24–28px (dialogs, settings cards).
 - Page padding: 32px desktop, 16px mobile.
+
+### Layout density
+A personal setting (Settings > Appearance): **Comfortable** (default) or **Compact**. Compact sets `data-density="COMPACT"` on `<html>`, which lowers Tailwind's base `--spacing` unit from 0.25rem to 0.2125rem, so every padding, margin, gap and spacing-based size shrinks by about 15%. Text size, fixed pixel sizes (touch targets, sidebar width) and radii don't change. To make density work, **use Tailwind spacing utilities (`p-4`, `gap-3`) for spacing**, not arbitrary pixel values (`p-[16px]`).
 
 ### Pages
 - Bots, Skills, Artifacts and Connections pages use a **card grid**: 4-up wide desktop, 3-up desktop, 2-up tablet, 1-up mobile, 16px gaps.
@@ -504,7 +553,7 @@ All three are free Google Fonts. Fallbacks: `system-ui, -apple-system, "Segoe UI
 | Sticker strong | `{shadows.sticker-strong}` | Primary buttons, approval cards, raised/selected cards |
 | Pop | `{shadows.pop}` | Composer, menus, popovers, dialogs, toasts |
 
-**The sticker shadow is the signature detail**: a short, solid, un-blurred drop of 2–3px that makes elements feel like friendly cut-outs. On press, buttons move down 2px and lose their sticker shadow — they feel physically pushed.
+**Shadows stay subtle**: a faint 1–2px shadow (`sticker`) lifts cards and buttons just enough to read as layers; depth comes mostly from hairline borders and surface contrast. On press, buttons move down 1px.
 
 ## Shapes
 
@@ -550,14 +599,14 @@ Squircle (`{rounded.md}`) filled with the bot's colour, emoji centred at 60% of 
 Circle with photo, or initials on a soft bot-colour tint chosen from the person's name. Same sizes as bot avatars. Online status: 10px Mint dot.
 
 ### Messages
-- **User messages:** right-aligned, Grape bubble, white text, bottom-right corner 6px.
+- **User messages:** right-aligned, primary bubble, `on-primary` text, bottom-right corner 6px.
 - **Bot messages:** left-aligned, avatar + bold name + time above, white bubble with hairline border, bottom-left corner 6px. Long answers drop the bubble and render as clean page-like text so tables, code and lists have room.
 - **Other people in groups:** left-aligned, `{colors.surface-sunken}` bubble, circle avatar.
 - **Message actions** (copy, retry, retry with another model, branch, react, pin) appear on hover as a small pill toolbar with `{shadows.pop}`; on mobile, on long-press.
 - **Reactions:** emoji chips (pill, `{colors.surface}`, hairline) below the bubble; tapping adds yours with a tiny bounce.
 
 ### Composer
-Large rounded (`{rounded.xl}`) floating box with `{shadows.pop}`. Contains: attach button, the text area (grows to 8 lines), an `@` bot picker, a `/` skill picker, voice button and a Grape circular send button. When focused, the border turns Grape with `{shadows.glow-primary}`. When a bot is working, the send button becomes a "Stop" button (square icon).
+Large rounded (`{rounded.xl}`) floating box with `{shadows.pop}`. Contains: attach button, the text area (grows to 8 lines), an `@` bot picker, a `/` skill picker, voice button and a primary circular send button. When focused, the border turns primary with `{shadows.glow-primary}`. When a bot is working, the send button becomes a "Stop" button (square icon).
 
 The `/` and `@` pickers open as a popover above the composer: skills show their emoji + name + one-line description; bots show avatar + name.
 
@@ -580,12 +629,12 @@ Pill with emoji + skill name on `{colors.primary-soft}`, `caption` text in `{col
 White card with the service logo (40px), the friendly label ("Gmail – Sales"), account email in muted text, and a status badge: Mint "Active", Sunshine "Reconnect", Coral-red "Error". Shared connections show a small "Shared" badge with a people icon.
 
 ### Cloud computer panel
-Side-panel view with a dark frame (`{colors.dark-surface}`) around the live screen, `{rounded.lg}`. Top bar: Mint "LIVE" pill, bot avatar, the website or file being used, and buttons **Take control** (primary) / **Hand back** and **Full screen**. While the user has control, the frame border turns Grape and shows "You're in control".
+Side-panel view with a dark frame (`{colors.dark-surface}`) around the live screen, `{rounded.lg}`. Top bar: Mint "LIVE" pill, bot avatar, the website or file being used, and buttons **Take control** (primary) / **Hand back** and **Full screen**. While the user has control, the frame border turns primary and shows "You're in control".
 
 ### Buttons
 | Variant | Look | Use |
 |---|---|---|
-| Primary | Grape pill, white text, sticker-strong shadow | One main action per view |
+| Primary | Primary pill, `on-primary` text, sticker-strong shadow | One main action per view |
 | Secondary | White pill, 1.5px hairline-strong border, sticker shadow | Other actions |
 | Ghost | No background; soft tint on hover | Toolbars, low-priority actions |
 | Danger | Error-red pill | Delete, disconnect, remove — always confirmed |
@@ -594,12 +643,12 @@ Side-panel view with a dark frame (`{colors.dark-surface}`) around the live scre
 Heights: 32px (small), 40px (default), 48px (large / mobile primary).
 
 ### Inputs and forms
-42px tall, `{rounded.md}`, 1.5px hairline-strong border, white background. Focus: Grape border + glow ring. Error: error border + message below with an icon. Toggles are chunky pills (44×26) that turn Grape when on with a little knob bounce. Segmented controls (e.g. "Short / Balanced / Detailed") are pills inside a sunken pill track.
+42px tall, `{rounded.md}`, 1.5px hairline-strong border, white background. Focus: primary border + glow ring. Error: error border + message below with an icon. Toggles are chunky pills (44×26) that turn primary when on with a little knob bounce. Segmented controls (e.g. "Short / Balanced / Detailed") are pills inside a sunken pill track.
 
 ### Badges, toasts and dialogs
 - **Badges:** pill, caption type. "New" badges are Tangerine with overline type.
-- **Toasts:** dark plum (`{colors.ink}`) pill-ish cards bottom-centre, with an icon and an optional action ("Undo", "View"), auto-hide after 5s.
-- **Dialogs:** `{rounded.xl}`, 28px padding, `{shadows.pop}`, Bricolage `display-sm` title. Backdrop: `rgba(28,22,51,0.4)` with a slight blur.
+- **Toasts:** near-black (`{colors.ink}`) pill-ish cards bottom-centre, with an icon and an optional action ("Undo", "View"), auto-hide after 5s.
+- **Dialogs:** `{rounded.xl}`, 28px padding, `{shadows.pop}`, Bricolage `display-sm` title. Backdrop: `rgba(0,0,0,0.4)` with a slight blur.
 
 ### Empty states
 Every empty page gets a friendly illustration-style composition of bot avatars (big emoji squircles in bot colours, slightly rotated like stickers), a Bricolage headline and one clear primary button:
@@ -611,7 +660,7 @@ Every empty page gets a friendly illustration-style composition of bot avatars (
 ## Icons and illustration
 - **Icons:** Lucide, 1.75px stroke, rounded caps and joins, 18px default (16px in dense UI, 20px in navigation).
 - **Emoji** are a first-class visual element (bot avatars, skills, empty states, activity steps). Use the system emoji font; never replace emoji with icons where a bot or skill is being identified.
-- **Illustrations** are built from the product's own pieces — squircle bot avatars, chat bubbles, chips — arranged playfully, tilted ±6°, with sticker shadows. No stock photography, no 3D robots, no glowing brains.
+- **Illustrations** are built from the product's own pieces — squircle bot avatars, chat bubbles, chips — arranged playfully, tilted ±6°, with soft shadows. No stock photography, no 3D robots, no glowing brains.
 
 ## Writing in the interface
 Friendly and short, with personality in the small places:
@@ -623,10 +672,10 @@ Friendly and short, with personality in the small places:
 ## Do's and Don'ts
 
 ### Do
-- Keep Grape as the **only** action colour.
+- Keep primary as the **only** action colour, and reference it by token so colour themes work.
 - Let bots be the most colourful thing on screen.
 - Use squircles for bots and circles for people — everywhere.
-- Use the sticker shadow on resting cards and buttons; save blurred shadows for floating layers.
+- Keep shadows subtle on resting cards and buttons; save larger blurred shadows for floating layers.
 - Keep long reading areas calm: no bubbles, no decoration, generous line height.
 - Celebrate real achievements (first bot, first task, published artifact) — briefly.
 - Design every screen in light **and** dark mode.
@@ -634,7 +683,7 @@ Friendly and short, with personality in the small places:
 ### Don't
 - Don't use bot colours or accents for buttons, links or status.
 - Don't use Bricolage Grotesque for body text, buttons or form labels.
-- Don't use pure white backgrounds for the page or pure black for text.
+- Don't use pure `#000` for text or tint the neutral greys — keep text on the zinc scale so it works under every colour theme.
 - Don't add playful motion or copy to approvals, errors, security or money.
 - Don't stack more than one celebration at a time, and never block the user with one.
 - Don't show status by colour alone.
@@ -654,31 +703,31 @@ Friendly and short, with personality in the small places:
 - On mobile, the cloud computer view supports pinch-to-zoom and a simplified control bar.
 
 ## Accessibility
-- All text meets **WCAG AA contrast** (4.5:1 body, 3:1 large text and UI). Grape on white is 5:1; white on Grape passes for button text.
+- All text meets **WCAG AA contrast** (4.5:1 body, 3:1 large text and UI). Neutral primary (near-black on white, white on near-black) is above 15:1; every colour theme keeps `on-primary` text readable on its primary.
 - Light bot colours (Sunshine, Lime) are never used behind text.
-- Visible focus on everything: Grape 2px outline + glow ring, in both themes.
+- Visible focus on everything: 2px primary outline + glow ring, in both modes and every colour theme.
 - Full keyboard navigation: `Ctrl/Cmd+K` search, `Ctrl/Cmd+N` new chat, `↑` to edit last message, `Esc` to stop a bot or close a panel.
 - Screen readers: bots announced as "[name], bot"; activity steps and streaming replies use polite live regions; interactive replies always offer a text version.
 - Respect reduced motion and the user's text-size setting.
 
 ## Implementation mapping (shadcn/ui)
-The app uses shadcn/ui; its theme variables map to these tokens:
+The app uses shadcn/ui; its theme variables map to these tokens (values shown for the default Neutral colour theme; other presets override them via `[data-color-theme]` in `app/src/index.css`):
 
 | shadcn variable | Light | Dark |
 |---|---|---|
-| `--background` | canvas #FFFBF5 | #13101F |
-| `--foreground` | ink #1C1633 | #F6F3FF |
-| `--card` / `--popover` | surface #FFFFFF | #1C1830 / #262040 |
-| `--primary` / `--primary-foreground` | #6B4EFF / #FFFFFF | #8E78FF / #13101F |
-| `--secondary` | surface-sunken #F4ECE0 | #0F0C1A |
-| `--muted` / `--muted-foreground` | #FBF5EC / #6E6787 | #17142A / #A49CC2 |
-| `--accent` / `--accent-foreground` | primary-soft #EEEAFF / #4A2FD6 | #2C2457 / #F6F3FF |
+| `--background` | canvas #FFFFFF | #0A0A0A |
+| `--foreground` | ink #0D0D0F | #FAFAFA |
+| `--card` / `--popover` | surface #FFFFFF | #141414 / #1C1C1C |
+| `--primary` / `--primary-foreground` | #0D0D0F / #FFFFFF | #FAFAFA / #0A0A0A |
+| `--secondary` | surface-sunken #EFEFF1 | #050505 |
+| `--muted` / `--muted-foreground` | surface-soft #F7F7F8 / #71717A | #111111 / #A1A1AA |
+| `--accent` / `--accent-foreground` | primary-soft #EFEFF1 / ink | #262626 / ink |
 | `--destructive` | #E5484D | #FF6B6F |
-| `--border` / `--input` | #EDE3D6 / #DCCFBF | #2E2848 / #3D3560 |
-| `--ring` | #6B4EFF | #8E78FF |
+| `--border` / `--input` | #E7E7EA / #D4D4D8 | #262626 / #363636 |
+| `--ring` | = primary | = primary |
 | `--radius` | 14px | 14px |
 
-Bot colours are exposed as `--bot-<name>` and `--bot-<name>-soft` variables. Artifacts and interactive replies load the same theme so everything bots build looks native, unless the organisation chooses its own brand colour, which then replaces Grape inside artifacts only.
+Bot colours are exposed as `--bot-<name>` and `--bot-<name>-soft` variables. Artifacts and interactive replies load the same theme so everything bots build looks native, unless the organisation chooses its own brand colour, which then replaces the primary colour inside artifacts only.
 
 ## Iteration guide
 1. Work on one component at a time and reference its token key (e.g. `{components.approval-card}`).

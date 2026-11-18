@@ -3,6 +3,8 @@ import { ConversationViews } from "@/features/conversations/interfaces/conversat
 /** Every screen has a stable path (§14.1) — notifications, emails and deep links open these. */
 export const Routes = {
   home: "/",
+  /** Public landing page; `/` also shows it to signed-out web visitors. */
+  welcome: "/welcome",
   auth: {
     sign_in: "/auth/sign-in",
     sign_up: "/auth/sign-up",

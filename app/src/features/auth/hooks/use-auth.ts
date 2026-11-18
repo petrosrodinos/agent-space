@@ -28,7 +28,7 @@ export function useSignIn(redirectTo?: string) {
     onSuccess: async (data) => {
       await after(data);
       toast({ title: `Welcome back${data.user.name ? `, ${data.user.name.split(" ")[0]}` : ""}`, duration: 2000 });
-      navigate(redirectTo || Routes.home, { replace: true });
+      navigate(redirectTo || Routes.chat.root, { replace: true });
     },
     onError: (error) => toast({ title: "Could not sign in", description: error.message, variant: "error" }),
   });

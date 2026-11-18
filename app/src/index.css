@@ -343,6 +343,11 @@
   --canvas: #0f1115; --surface: #171a20; --surface-soft: #13161b; --surface-sunken: #0a0c0f; --surface-elevated: #1f232b; --hairline: #272b34; --hairline-strong: #353a45;
 }
 
+/* Layout density setting (§13.2 Appearance). Every Tailwind spacing utility (padding, margin, gap, space-*, size)
+   is calc(var(--spacing) * n), so tightening the base unit makes the whole app ~15% denser. Fixed pixel sizes
+   (touch targets, sidebar width, text) are unaffected. COMFORTABLE keeps Tailwind's default 0.25rem. */
+html[data-density="COMPACT"] { --spacing: 0.2125rem; }
+
 /* Text size setting (§13.2 Appearance). */
 html[data-text-size="SMALL"] { font-size: 14px; }
 html[data-text-size="MEDIUM"] { font-size: 16px; }
@@ -451,6 +456,23 @@ html[data-text-size="LARGE"] { font-size: 18px; }
   0% { box-shadow: 0 0 0 0 var(--ring-color, color-mix(in srgb, var(--primary) 50%, transparent)); }
   100% { box-shadow: 0 0 0 8px transparent; }
 }
+
+/* Landing page motion. */
+@theme {
+  --animate-marquee: marquee 48s linear infinite;
+  --animate-float: float 7s ease-in-out infinite;
+  --animate-float-slow: float 9s ease-in-out infinite;
+}
+@keyframes marquee {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(var(--float-rotate, 0deg)); }
+  50% { transform: translateY(-10px) rotate(var(--float-rotate, 0deg)); }
+}
+.reveal { opacity: 0; transform: translateY(16px); transition: opacity 600ms var(--ease-standard), transform 600ms var(--ease-standard); }
+.reveal.is-visible { opacity: 1; transform: none; }
 
 /* Respect "reduce motion" (DESIGN.MD Motion). */
 @media (prefers-reduced-motion: reduce) {

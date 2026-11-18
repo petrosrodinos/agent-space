@@ -36,7 +36,7 @@ const InvitePage: FC = () => {
     return (
       <AuthLayout title="This invitation can't be used" subtitle={(error as Error)?.message ?? "It may have expired or been cancelled. Ask for a new one."}>
         <Button asChild size="lg" className="w-full">
-          <Link to={Routes.home}>Go to Agent Space</Link>
+          <Link to={Routes.chat.root}>Go to Agent Space</Link>
         </Button>
       </AuthLayout>
     );

@@ -150,7 +150,7 @@ const SettingsPage: FC = () => {
         body = <ActivitySection />;
         break;
       case SettingsSections.DANGER:
-        body = <DangerSection org={org} onLeft={() => navigate(Routes.home, { replace: true })} />;
+        body = <DangerSection org={org} onLeft={() => navigate(Routes.chat.root, { replace: true })} />;
         break;
       default:
         body = null;

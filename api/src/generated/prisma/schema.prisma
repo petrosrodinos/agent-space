@@ -90,6 +90,7 @@ enum Theme {
 
 /// Colour preset a member picks per organisation (§13.2 Appearance). Light/dark mode is chosen separately.
 enum ColorTheme {
+  NEUTRAL
   GRAPE
   OCEAN
   SKY
@@ -1400,7 +1401,7 @@ model OrganizationMember {
   user_id         String
   role            OrganizationRole @default(MEMBER)
   /// This member's colour theme inside this organisation (each org can look different per user).
-  color_theme     ColorTheme       @default(GRAPE)
+  color_theme     ColorTheme       @default(NEUTRAL)
   joined_at       DateTime         @default(now())
   updated_at      DateTime         @updatedAt
 

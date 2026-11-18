@@ -18,5 +18,11 @@ function selectPlatform(): Platform {
 
 export const platform: Platform = selectPlatform();
 
+/**
+ * True inside the desktop (Electron) or mobile (Capacitor) app. Decided by the runtime (preload bridge /
+ * `Capacitor.isNativePlatform()`), never by screen width — a narrow browser window is still the web.
+ */
+export const isAppShell = !platform.is("web");
+
 export type { Platform, PlatformKind, CapabilityName, PushRegistration, DesktopCapability, DesktopUpdateState } from "./types";
 export { DesktopUpdateStatus } from "./types";

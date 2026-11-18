@@ -10,9 +10,28 @@ export const MESSAGE_INCLUDE = {
     files: { include: { file: { select: { id: true, filename: true, mimetype: true, size: true, status: true } } } },
     run: { select: { id: true, status: true, user_id: true, model_id: true, fallback_used: true, started_at: true, finished_at: true, skill_id: true } },
     _count: { select: { replies: true } },
+    reply_to: { select: { id: true, author_type: true, content: true, deleted_at: true, author_user: { select: { id: true, name: true, email: true } }, author_bot: { select: { id: true, name: true } }, _count: { select: { files: true } } } },
 } satisfies Prisma.MessageInclude;
 
 export type MessageRow = Prisma.MessageGetPayload<{ include: typeof MESSAGE_INCLUDE }>;
+
+export const REPLY_PREVIEW_MAX = 280;
+
+type ReplyTarget = NonNullable<MessageRow['reply_to']>;
+
+/** Compact quote of the replied-to message shown above a reply. Deleted messages keep their slot but lose their text. */
+export function serializeReplyPreview(r: ReplyTarget) {
+    const deleted = !!r.deleted_at;
+    return {
+        id: r.id,
+        author_type: r.author_type,
+        author_name: r.author_bot?.name ?? r.author_user?.name ?? r.author_user?.email ?? null,
+        author_user_id: r.author_user?.id ?? null,
+        content: deleted ? null : (r.content ?? '').slice(0, REPLY_PREVIEW_MAX),
+        has_files: !deleted && r._count.files > 0,
+        deleted,
+    };
+}
 
 /** Client shape: reactions grouped, files flattened, BigInt-safe. Secret values never appear here (§8.8). */
 export function serializeMessage(m: MessageRow, viewerId?: string) {
@@ -40,6 +59,8 @@ export function serializeMessage(m: MessageRow, viewerId?: string) {
         run: m.run,
         run_id: m.run_id,
         parent_message_id: m.parent_message_id,
+        reply_to_message_id: m.reply_to_message_id,
+        reply_to: m.reply_to ? serializeReplyPreview(m.reply_to) : null,
         branch_from_message_id: m.branch_from_message_id,
         branch_index: m.branch_index,
         model_id: m.model_id,

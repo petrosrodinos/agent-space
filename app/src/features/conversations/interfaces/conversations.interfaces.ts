@@ -160,6 +160,17 @@ export interface MessageFileRef {
   status: string;
 }
 
+/** Quote of the message a reply points at. `content` is trimmed server-side; null when the original was deleted. */
+export interface ReplyPreview {
+  id: string;
+  author_type: MessageAuthorType;
+  author_name: string | null;
+  author_user_id: string | null;
+  content: string | null;
+  has_files: boolean;
+  deleted: boolean;
+}
+
 export interface Message {
   id: string;
   conversation_id: string;
@@ -173,6 +184,8 @@ export interface Message {
   run: { id: string; status: string; fallback_used: boolean; user_id?: string | null } | null;
   run_id: string | null;
   parent_message_id: string | null;
+  reply_to_message_id: string | null;
+  reply_to: ReplyPreview | null;
   branch_from_message_id: string | null;
   branch_index: number;
   model_id: string | null;
@@ -192,6 +205,7 @@ export interface SendMessageDto {
   content: string;
   file_ids?: string[];
   parent_message_id?: string;
+  reply_to_message_id?: string;
   send_anyway?: boolean;
   client_id?: string;
 }

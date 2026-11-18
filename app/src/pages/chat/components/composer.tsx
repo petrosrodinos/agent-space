@@ -5,13 +5,15 @@ import { Button } from "@/components/ui/button";
 import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import { uploadFile, type StoredFile } from "@/features/files/services/files.services";
 import { useSkills } from "@/features/skills/hooks/use-skills";
-import type { Conversation } from "@/features/conversations/interfaces/conversations.interfaces";
+import type { Conversation, Message } from "@/features/conversations/interfaces/conversations.interfaces";
+import { replyPreviewOf } from "@/features/conversations/utils/messages-cache";
 import { findSecrets, guessService, stripSecrets } from "@/lib/secret-detection";
 import { formatBytes } from "@/lib/date";
 import { platform } from "@/platform";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { StoreSecretDialog } from "./store-secret-dialog";
+import { ReplyQuote, ReplyQuoteVariants } from "./reply-quote";
 import { ConversationTypes, ATTACHMENT_ONLY_CONTENT } from "@/features/conversations/interfaces/conversations.interfaces";
 import { Keys } from "@/config/constants/browser.constants";
 import { SendWithKeys, type SendWithKey } from "@/features/users/interfaces/users.interfaces";
@@ -30,7 +32,11 @@ interface Props {
   sendWith: SendWithKey;
   working: boolean;
   disabled?: boolean;
-  onSend: (dto: { content: string; file_ids?: string[]; send_anyway?: boolean }) => void;
+  onSend: (dto: { content: string; file_ids?: string[]; send_anyway?: boolean; reply_to_message_id?: string }) => void;
+  /** Message the user is replying to (swipe or menu); shown above the input and sent with the next message. */
+  replyingTo?: Message | null;
+  onCancelReply?: () => void;
+  meId: string;
   onStop: () => void;
   prefill?: string | null;
   onPrefillUsed?: () => void;
@@ -43,7 +49,7 @@ const MENTION_TRIGGER = "@";
 type Picker = { kind: (typeof PickerKinds)[keyof typeof PickerKinds]; query: string; start: number } | null;
 
 /** Floating composer (DESIGN.MD): attach, text (grows to 8 lines), @ bot picker, / skill picker, send ↔ stop. */
-export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled, onSend, onStop, prefill, onPrefillUsed, onVoice }) => {
+export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled, onSend, onStop, prefill, onPrefillUsed, onVoice, replyingTo, onCancelReply, meId }) => {
   const [text, setText] = useState("");
   const [files, setFiles] = useState<Attachment[]>([]);
   const [picker, setPicker] = useState<Picker>(null);
@@ -60,6 +66,10 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
       requestAnimationFrame(() => ref.current?.focus());
     }
   }, [prefill, onPrefillUsed]);
+
+  useEffect(() => {
+    if (replyingTo) requestAnimationFrame(() => ref.current?.focus());
+  }, [replyingTo]);
 
   useEffect(() => {
     const el = ref.current;
@@ -125,7 +135,8 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
 
   const doSend = (content: string, sendAnyway = false) => {
     if (!content.trim() && !ready.length) return;
-    onSend({ content: content.trim() || ATTACHMENT_ONLY_CONTENT, file_ids: ready.length ? ready : undefined, send_anyway: sendAnyway || undefined });
+    onSend({ content: content.trim() || ATTACHMENT_ONLY_CONTENT, file_ids: ready.length ? ready : undefined, send_anyway: sendAnyway || undefined, reply_to_message_id: replyingTo?.id });
+    onCancelReply?.();
     setText("");
     setFiles([]);
     setPicker(null);
@@ -162,6 +173,10 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
         setPicker(null);
         return;
       }
+    }
+    if (e.key === Keys.ESCAPE && replyingTo) {
+      onCancelReply?.();
+      return;
     }
     if (e.key === Keys.ESCAPE && working) onStop();
     const mod = e.ctrlKey || e.metaKey;
@@ -211,6 +226,11 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
       )}
 
       <div className={cn("rounded-[28px] border-[1.5px] border-hairline-strong bg-surface p-2 pl-3 shadow-pop transition-[border-color,box-shadow] focus-within:border-primary focus-within:shadow-[var(--sh-pop),0_0_0_4px_rgba(107,78,255,0.22)]", dragOver && "border-primary")}>
+        {replyingTo && (
+          <div className="mb-2 pr-1 pt-0.5">
+            <ReplyQuote reply={replyPreviewOf(replyingTo)!} meId={meId} variant={ReplyQuoteVariants.COMPOSER} onCancel={onCancelReply} />
+          </div>
+        )}
         {files.length > 0 && (
           <div className="mb-2 flex flex-wrap gap-1.5 px-1 pt-1">
             {files.map((a) => (
@@ -246,7 +266,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
                 void addFiles(pasted);
               }
             }}
-            placeholder={conversation.type === ConversationTypes.GROUP ? `Message ${conversation.name} — @mention a bot, / for skills` : `Message ${conversation.bots[0]?.name ?? ""}… (/ for skills)`}
+            placeholder={replyingTo ? "Write your reply…" : conversation.type === ConversationTypes.GROUP ? `Message ${conversation.name} — @mention a bot, / for skills` : `Message ${conversation.bots[0]?.name ?? ""}… (/ for skills)`}
             aria-label="Message"
             className="scrollbar-thin max-h-[208px] min-h-[40px] flex-1 resize-none bg-transparent py-2 text-base leading-6 text-ink outline-none placeholder:text-muted-soft md:text-[15px]"
           />

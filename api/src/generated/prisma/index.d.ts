@@ -11145,6 +11145,7 @@ export namespace Prisma {
 
   export type MessageCountOutputType = {
     replies: number
+    quoted_by: number
     branches: number
     files: number
     reactions: number
@@ -11158,6 +11159,7 @@ export namespace Prisma {
 
   export type MessageCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     replies?: boolean | MessageCountOutputTypeCountRepliesArgs
+    quoted_by?: boolean | MessageCountOutputTypeCountQuoted_byArgs
     branches?: boolean | MessageCountOutputTypeCountBranchesArgs
     files?: boolean | MessageCountOutputTypeCountFilesArgs
     reactions?: boolean | MessageCountOutputTypeCountReactionsArgs
@@ -11184,6 +11186,13 @@ export namespace Prisma {
    * MessageCountOutputType without action
    */
   export type MessageCountOutputTypeCountRepliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: MessageWhereInput
+  }
+
+  /**
+   * MessageCountOutputType without action
+   */
+  export type MessageCountOutputTypeCountQuoted_byArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: MessageWhereInput
   }
 
@@ -55385,6 +55394,7 @@ export namespace Prisma {
     content: string | null
     run_id: string | null
     parent_message_id: string | null
+    reply_to_message_id: string | null
     branch_from_message_id: string | null
     branch_index: number | null
     model_id: string | null
@@ -55410,6 +55420,7 @@ export namespace Prisma {
     content: string | null
     run_id: string | null
     parent_message_id: string | null
+    reply_to_message_id: string | null
     branch_from_message_id: string | null
     branch_index: number | null
     model_id: string | null
@@ -55436,6 +55447,7 @@ export namespace Prisma {
     parts: number
     run_id: number
     parent_message_id: number
+    reply_to_message_id: number
     branch_from_message_id: number
     branch_index: number
     model_id: number
@@ -55471,6 +55483,7 @@ export namespace Prisma {
     content?: true
     run_id?: true
     parent_message_id?: true
+    reply_to_message_id?: true
     branch_from_message_id?: true
     branch_index?: true
     model_id?: true
@@ -55496,6 +55509,7 @@ export namespace Prisma {
     content?: true
     run_id?: true
     parent_message_id?: true
+    reply_to_message_id?: true
     branch_from_message_id?: true
     branch_index?: true
     model_id?: true
@@ -55522,6 +55536,7 @@ export namespace Prisma {
     parts?: true
     run_id?: true
     parent_message_id?: true
+    reply_to_message_id?: true
     branch_from_message_id?: true
     branch_index?: true
     model_id?: true
@@ -55635,6 +55650,7 @@ export namespace Prisma {
     parts: JsonValue | null
     run_id: string | null
     parent_message_id: string | null
+    reply_to_message_id: string | null
     branch_from_message_id: string | null
     branch_index: number
     model_id: string | null
@@ -55680,6 +55696,7 @@ export namespace Prisma {
     parts?: boolean
     run_id?: boolean
     parent_message_id?: boolean
+    reply_to_message_id?: boolean
     branch_from_message_id?: boolean
     branch_index?: boolean
     model_id?: boolean
@@ -55698,6 +55715,8 @@ export namespace Prisma {
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
     replies?: boolean | Message$repliesArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
+    quoted_by?: boolean | Message$quoted_byArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     branches?: boolean | Message$branchesArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
@@ -55725,6 +55744,7 @@ export namespace Prisma {
     parts?: boolean
     run_id?: boolean
     parent_message_id?: boolean
+    reply_to_message_id?: boolean
     branch_from_message_id?: boolean
     branch_index?: boolean
     model_id?: boolean
@@ -55742,6 +55762,7 @@ export namespace Prisma {
     author_bot?: boolean | Message$author_botArgs<ExtArgs>
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -55759,6 +55780,7 @@ export namespace Prisma {
     parts?: boolean
     run_id?: boolean
     parent_message_id?: boolean
+    reply_to_message_id?: boolean
     branch_from_message_id?: boolean
     branch_index?: boolean
     model_id?: boolean
@@ -55776,6 +55798,7 @@ export namespace Prisma {
     author_bot?: boolean | Message$author_botArgs<ExtArgs>
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
   }, ExtArgs["result"]["message"]>
@@ -55793,6 +55816,7 @@ export namespace Prisma {
     parts?: boolean
     run_id?: boolean
     parent_message_id?: boolean
+    reply_to_message_id?: boolean
     branch_from_message_id?: boolean
     branch_index?: boolean
     model_id?: boolean
@@ -55806,7 +55830,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "conversation_id" | "author_type" | "author_user_id" | "author_bot_id" | "source" | "status" | "content" | "parts" | "run_id" | "parent_message_id" | "branch_from_message_id" | "branch_index" | "model_id" | "is_pinned" | "pinned_by_id" | "pinned_at" | "edited_at" | "secret_masked" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "conversation_id" | "author_type" | "author_user_id" | "author_bot_id" | "source" | "status" | "content" | "parts" | "run_id" | "parent_message_id" | "reply_to_message_id" | "branch_from_message_id" | "branch_index" | "model_id" | "is_pinned" | "pinned_by_id" | "pinned_at" | "edited_at" | "secret_masked" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -55815,6 +55839,8 @@ export namespace Prisma {
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
     replies?: boolean | Message$repliesArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
+    quoted_by?: boolean | Message$quoted_byArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     branches?: boolean | Message$branchesArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
@@ -55835,6 +55861,7 @@ export namespace Prisma {
     author_bot?: boolean | Message$author_botArgs<ExtArgs>
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
   }
@@ -55845,6 +55872,7 @@ export namespace Prisma {
     author_bot?: boolean | Message$author_botArgs<ExtArgs>
     run?: boolean | Message$runArgs<ExtArgs>
     parent?: boolean | Message$parentArgs<ExtArgs>
+    reply_to?: boolean | Message$reply_toArgs<ExtArgs>
     branch_from?: boolean | Message$branch_fromArgs<ExtArgs>
     pinned_by?: boolean | Message$pinned_byArgs<ExtArgs>
   }
@@ -55859,6 +55887,8 @@ export namespace Prisma {
       run: Prisma.$RunPayload<ExtArgs> | null
       parent: Prisma.$MessagePayload<ExtArgs> | null
       replies: Prisma.$MessagePayload<ExtArgs>[]
+      reply_to: Prisma.$MessagePayload<ExtArgs> | null
+      quoted_by: Prisma.$MessagePayload<ExtArgs>[]
       branch_from: Prisma.$MessagePayload<ExtArgs> | null
       branches: Prisma.$MessagePayload<ExtArgs>[]
       pinned_by: Prisma.$UserPayload<ExtArgs> | null
@@ -55890,6 +55920,7 @@ export namespace Prisma {
       parts: Prisma.JsonValue | null
       run_id: string | null
       parent_message_id: string | null
+      reply_to_message_id: string | null
       branch_from_message_id: string | null
       branch_index: number
       model_id: string | null
@@ -56302,6 +56333,8 @@ export namespace Prisma {
     run<T extends Message$runArgs<ExtArgs> = {}>(args?: Subset<T, Message$runArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     parent<T extends Message$parentArgs<ExtArgs> = {}>(args?: Subset<T, Message$parentArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     replies<T extends Message$repliesArgs<ExtArgs> = {}>(args?: Subset<T, Message$repliesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    reply_to<T extends Message$reply_toArgs<ExtArgs> = {}>(args?: Subset<T, Message$reply_toArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    quoted_by<T extends Message$quoted_byArgs<ExtArgs> = {}>(args?: Subset<T, Message$quoted_byArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     branch_from<T extends Message$branch_fromArgs<ExtArgs> = {}>(args?: Subset<T, Message$branch_fromArgs<ExtArgs>>): Prisma__MessageClient<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     branches<T extends Message$branchesArgs<ExtArgs> = {}>(args?: Subset<T, Message$branchesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     pinned_by<T extends Message$pinned_byArgs<ExtArgs> = {}>(args?: Subset<T, Message$pinned_byArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -56354,6 +56387,7 @@ export namespace Prisma {
     readonly parts: FieldRef<"Message", 'Json'>
     readonly run_id: FieldRef<"Message", 'String'>
     readonly parent_message_id: FieldRef<"Message", 'String'>
+    readonly reply_to_message_id: FieldRef<"Message", 'String'>
     readonly branch_from_message_id: FieldRef<"Message", 'String'>
     readonly branch_index: FieldRef<"Message", 'Int'>
     readonly model_id: FieldRef<"Message", 'String'>
@@ -56845,6 +56879,49 @@ export namespace Prisma {
    * Message.replies
    */
   export type Message$repliesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+    orderBy?: MessageOrderByWithRelationInput | MessageOrderByWithRelationInput[]
+    cursor?: MessageWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: MessageScalarFieldEnum | MessageScalarFieldEnum[]
+  }
+
+  /**
+   * Message.reply_to
+   */
+  export type Message$reply_toArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Message
+     */
+    select?: MessageSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Message
+     */
+    omit?: MessageOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: MessageInclude<ExtArgs> | null
+    where?: MessageWhereInput
+  }
+
+  /**
+   * Message.quoted_by
+   */
+  export type Message$quoted_byArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Message
      */
@@ -116562,6 +116639,7 @@ export namespace Prisma {
     parts: 'parts',
     run_id: 'run_id',
     parent_message_id: 'parent_message_id',
+    reply_to_message_id: 'reply_to_message_id',
     branch_from_message_id: 'branch_from_message_id',
     branch_index: 'branch_index',
     model_id: 'model_id',
@@ -122900,6 +122978,7 @@ export namespace Prisma {
     parts?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
+    reply_to_message_id?: StringNullableFilter<"Message"> | string | null
     branch_from_message_id?: StringNullableFilter<"Message"> | string | null
     branch_index?: IntFilter<"Message"> | number
     model_id?: StringNullableFilter<"Message"> | string | null
@@ -122918,6 +122997,8 @@ export namespace Prisma {
     run?: XOR<RunNullableScalarRelationFilter, RunWhereInput> | null
     parent?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
     replies?: MessageListRelationFilter
+    reply_to?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
+    quoted_by?: MessageListRelationFilter
     branch_from?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
     branches?: MessageListRelationFilter
     pinned_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -122944,6 +123025,7 @@ export namespace Prisma {
     parts?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     parent_message_id?: SortOrderInput | SortOrder
+    reply_to_message_id?: SortOrderInput | SortOrder
     branch_from_message_id?: SortOrderInput | SortOrder
     branch_index?: SortOrder
     model_id?: SortOrderInput | SortOrder
@@ -122962,6 +123044,8 @@ export namespace Prisma {
     run?: RunOrderByWithRelationInput
     parent?: MessageOrderByWithRelationInput
     replies?: MessageOrderByRelationAggregateInput
+    reply_to?: MessageOrderByWithRelationInput
+    quoted_by?: MessageOrderByRelationAggregateInput
     branch_from?: MessageOrderByWithRelationInput
     branches?: MessageOrderByRelationAggregateInput
     pinned_by?: UserOrderByWithRelationInput
@@ -122991,6 +123075,7 @@ export namespace Prisma {
     parts?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
+    reply_to_message_id?: StringNullableFilter<"Message"> | string | null
     branch_from_message_id?: StringNullableFilter<"Message"> | string | null
     branch_index?: IntFilter<"Message"> | number
     model_id?: StringNullableFilter<"Message"> | string | null
@@ -123009,6 +123094,8 @@ export namespace Prisma {
     run?: XOR<RunNullableScalarRelationFilter, RunWhereInput> | null
     parent?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
     replies?: MessageListRelationFilter
+    reply_to?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
+    quoted_by?: MessageListRelationFilter
     branch_from?: XOR<MessageNullableScalarRelationFilter, MessageWhereInput> | null
     branches?: MessageListRelationFilter
     pinned_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
@@ -123035,6 +123122,7 @@ export namespace Prisma {
     parts?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     parent_message_id?: SortOrderInput | SortOrder
+    reply_to_message_id?: SortOrderInput | SortOrder
     branch_from_message_id?: SortOrderInput | SortOrder
     branch_index?: SortOrder
     model_id?: SortOrderInput | SortOrder
@@ -123069,6 +123157,7 @@ export namespace Prisma {
     parts?: JsonNullableWithAggregatesFilter<"Message">
     run_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     parent_message_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
+    reply_to_message_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     branch_from_message_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     branch_index?: IntWithAggregatesFilter<"Message"> | number
     model_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
@@ -132019,6 +132108,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -132045,6 +132136,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -132057,6 +132149,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -132091,6 +132184,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -132117,6 +132212,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -132129,6 +132225,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -132153,6 +132250,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -132197,6 +132295,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -141372,6 +141471,7 @@ export namespace Prisma {
     parts?: SortOrder
     run_id?: SortOrder
     parent_message_id?: SortOrder
+    reply_to_message_id?: SortOrder
     branch_from_message_id?: SortOrder
     branch_index?: SortOrder
     model_id?: SortOrder
@@ -141401,6 +141501,7 @@ export namespace Prisma {
     content?: SortOrder
     run_id?: SortOrder
     parent_message_id?: SortOrder
+    reply_to_message_id?: SortOrder
     branch_from_message_id?: SortOrder
     branch_index?: SortOrder
     model_id?: SortOrder
@@ -141426,6 +141527,7 @@ export namespace Prisma {
     content?: SortOrder
     run_id?: SortOrder
     parent_message_id?: SortOrder
+    reply_to_message_id?: SortOrder
     branch_from_message_id?: SortOrder
     branch_index?: SortOrder
     model_id?: SortOrder
@@ -151870,6 +151972,19 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
+  export type MessageCreateNestedOneWithoutQuoted_byInput = {
+    create?: XOR<MessageCreateWithoutQuoted_byInput, MessageUncheckedCreateWithoutQuoted_byInput>
+    connectOrCreate?: MessageCreateOrConnectWithoutQuoted_byInput
+    connect?: MessageWhereUniqueInput
+  }
+
+  export type MessageCreateNestedManyWithoutReply_toInput = {
+    create?: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput> | MessageCreateWithoutReply_toInput[] | MessageUncheckedCreateWithoutReply_toInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutReply_toInput | MessageCreateOrConnectWithoutReply_toInput[]
+    createMany?: MessageCreateManyReply_toInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
   export type MessageCreateNestedOneWithoutBranchesInput = {
     create?: XOR<MessageCreateWithoutBranchesInput, MessageUncheckedCreateWithoutBranchesInput>
     connectOrCreate?: MessageCreateOrConnectWithoutBranchesInput
@@ -151949,6 +152064,13 @@ export namespace Prisma {
     create?: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput> | MessageCreateWithoutParentInput[] | MessageUncheckedCreateWithoutParentInput[]
     connectOrCreate?: MessageCreateOrConnectWithoutParentInput | MessageCreateOrConnectWithoutParentInput[]
     createMany?: MessageCreateManyParentInputEnvelope
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+  }
+
+  export type MessageUncheckedCreateNestedManyWithoutReply_toInput = {
+    create?: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput> | MessageCreateWithoutReply_toInput[] | MessageUncheckedCreateWithoutReply_toInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutReply_toInput | MessageCreateOrConnectWithoutReply_toInput[]
+    createMany?: MessageCreateManyReply_toInputEnvelope
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
   }
 
@@ -152094,6 +152216,30 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
     update?: MessageUpdateWithWhereUniqueWithoutParentInput | MessageUpdateWithWhereUniqueWithoutParentInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutParentInput | MessageUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type MessageUpdateOneWithoutQuoted_byNestedInput = {
+    create?: XOR<MessageCreateWithoutQuoted_byInput, MessageUncheckedCreateWithoutQuoted_byInput>
+    connectOrCreate?: MessageCreateOrConnectWithoutQuoted_byInput
+    upsert?: MessageUpsertWithoutQuoted_byInput
+    disconnect?: MessageWhereInput | boolean
+    delete?: MessageWhereInput | boolean
+    connect?: MessageWhereUniqueInput
+    update?: XOR<XOR<MessageUpdateToOneWithWhereWithoutQuoted_byInput, MessageUpdateWithoutQuoted_byInput>, MessageUncheckedUpdateWithoutQuoted_byInput>
+  }
+
+  export type MessageUpdateManyWithoutReply_toNestedInput = {
+    create?: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput> | MessageCreateWithoutReply_toInput[] | MessageUncheckedCreateWithoutReply_toInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutReply_toInput | MessageCreateOrConnectWithoutReply_toInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutReply_toInput | MessageUpsertWithWhereUniqueWithoutReply_toInput[]
+    createMany?: MessageCreateManyReply_toInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutReply_toInput | MessageUpdateWithWhereUniqueWithoutReply_toInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutReply_toInput | MessageUpdateManyWithWhereWithoutReply_toInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
@@ -152254,6 +152400,20 @@ export namespace Prisma {
     connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
     update?: MessageUpdateWithWhereUniqueWithoutParentInput | MessageUpdateWithWhereUniqueWithoutParentInput[]
     updateMany?: MessageUpdateManyWithWhereWithoutParentInput | MessageUpdateManyWithWhereWithoutParentInput[]
+    deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
+  }
+
+  export type MessageUncheckedUpdateManyWithoutReply_toNestedInput = {
+    create?: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput> | MessageCreateWithoutReply_toInput[] | MessageUncheckedCreateWithoutReply_toInput[]
+    connectOrCreate?: MessageCreateOrConnectWithoutReply_toInput | MessageCreateOrConnectWithoutReply_toInput[]
+    upsert?: MessageUpsertWithWhereUniqueWithoutReply_toInput | MessageUpsertWithWhereUniqueWithoutReply_toInput[]
+    createMany?: MessageCreateManyReply_toInputEnvelope
+    set?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    disconnect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    delete?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    connect?: MessageWhereUniqueInput | MessageWhereUniqueInput[]
+    update?: MessageUpdateWithWhereUniqueWithoutReply_toInput | MessageUpdateWithWhereUniqueWithoutReply_toInput[]
+    updateMany?: MessageUpdateManyWithWhereWithoutReply_toInput | MessageUpdateManyWithWhereWithoutReply_toInput[]
     deleteMany?: MessageScalarWhereInput | MessageScalarWhereInput[]
   }
 
@@ -160767,6 +160927,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -160792,6 +160954,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -160804,6 +160967,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -160848,6 +161012,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileCreateNestedManyWithoutMessageInput
@@ -160873,6 +161039,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -160884,6 +161051,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -162955,6 +163123,7 @@ export namespace Prisma {
     parts?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
+    reply_to_message_id?: StringNullableFilter<"Message"> | string | null
     branch_from_message_id?: StringNullableFilter<"Message"> | string | null
     branch_index?: IntFilter<"Message"> | number
     model_id?: StringNullableFilter<"Message"> | string | null
@@ -168437,6 +168606,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -168462,6 +168633,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -168474,6 +168646,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -175556,6 +175729,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -175581,6 +175756,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -175593,6 +175769,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -182847,6 +183024,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -182872,6 +183051,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -182884,6 +183064,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -185417,6 +185598,8 @@ export namespace Prisma {
     author_bot?: BotCreateNestedOneWithoutMessagesInput
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -185443,6 +185626,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -185454,6 +185638,7 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -185492,6 +185677,8 @@ export namespace Prisma {
     author_bot?: BotCreateNestedOneWithoutMessagesInput
     run?: RunCreateNestedOneWithoutMessagesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -185517,6 +185704,92 @@ export namespace Prisma {
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
+    reply_to_message_id?: string | null
+    branch_from_message_id?: string | null
+    branch_index?: number
+    model_id?: string | null
+    is_pinned?: boolean
+    pinned_by_id?: string | null
+    pinned_at?: Date | string | null
+    edited_at?: Date | string | null
+    secret_masked?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
+    branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
+    files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
+    mentions?: MessageMentionUncheckedCreateNestedManyWithoutMessageInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutMessageInput
+    interactive_responses?: InteractiveResponseUncheckedCreateNestedManyWithoutMessageInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutSource_messageInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutMessageInput
+    triggered_runs?: RunUncheckedCreateNestedManyWithoutTrigger_messageInput
+  }
+
+  export type MessageCreateOrConnectWithoutParentInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput>
+  }
+
+  export type MessageCreateManyParentInputEnvelope = {
+    data: MessageCreateManyParentInput | MessageCreateManyParentInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type MessageCreateWithoutQuoted_byInput = {
+    id?: string
+    author_type: $Enums.MessageAuthorType
+    source?: $Enums.MessageSource
+    status?: $Enums.MessageStatus
+    content?: string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    branch_index?: number
+    model_id?: string | null
+    is_pinned?: boolean
+    pinned_at?: Date | string | null
+    edited_at?: Date | string | null
+    secret_masked?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutMessagesInput
+    conversation: ConversationCreateNestedOneWithoutMessagesInput
+    author_user?: UserCreateNestedOneWithoutMessagesInput
+    author_bot?: BotCreateNestedOneWithoutMessagesInput
+    run?: RunCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutRepliesInput
+    replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    branch_from?: MessageCreateNestedOneWithoutBranchesInput
+    branches?: MessageCreateNestedManyWithoutBranch_fromInput
+    pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
+    files?: MessageFileCreateNestedManyWithoutMessageInput
+    reactions?: MessageReactionCreateNestedManyWithoutMessageInput
+    mentions?: MessageMentionCreateNestedManyWithoutMessageInput
+    approvals?: ApprovalCreateNestedManyWithoutMessageInput
+    interactive_responses?: InteractiveResponseCreateNestedManyWithoutMessageInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutSource_messageInput
+    artifacts?: ArtifactCreateNestedManyWithoutMessageInput
+    triggered_runs?: RunCreateNestedManyWithoutTrigger_messageInput
+  }
+
+  export type MessageUncheckedCreateWithoutQuoted_byInput = {
+    id?: string
+    organization_id: string
+    conversation_id: string
+    author_type: $Enums.MessageAuthorType
+    author_user_id?: string | null
+    author_bot_id?: string | null
+    source?: $Enums.MessageSource
+    status?: $Enums.MessageStatus
+    content?: string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: string | null
+    parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -185540,13 +185813,92 @@ export namespace Prisma {
     triggered_runs?: RunUncheckedCreateNestedManyWithoutTrigger_messageInput
   }
 
-  export type MessageCreateOrConnectWithoutParentInput = {
+  export type MessageCreateOrConnectWithoutQuoted_byInput = {
     where: MessageWhereUniqueInput
-    create: XOR<MessageCreateWithoutParentInput, MessageUncheckedCreateWithoutParentInput>
+    create: XOR<MessageCreateWithoutQuoted_byInput, MessageUncheckedCreateWithoutQuoted_byInput>
   }
 
-  export type MessageCreateManyParentInputEnvelope = {
-    data: MessageCreateManyParentInput | MessageCreateManyParentInput[]
+  export type MessageCreateWithoutReply_toInput = {
+    id?: string
+    author_type: $Enums.MessageAuthorType
+    source?: $Enums.MessageSource
+    status?: $Enums.MessageStatus
+    content?: string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    branch_index?: number
+    model_id?: string | null
+    is_pinned?: boolean
+    pinned_at?: Date | string | null
+    edited_at?: Date | string | null
+    secret_masked?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutMessagesInput
+    conversation: ConversationCreateNestedOneWithoutMessagesInput
+    author_user?: UserCreateNestedOneWithoutMessagesInput
+    author_bot?: BotCreateNestedOneWithoutMessagesInput
+    run?: RunCreateNestedOneWithoutMessagesInput
+    parent?: MessageCreateNestedOneWithoutRepliesInput
+    replies?: MessageCreateNestedManyWithoutParentInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
+    branch_from?: MessageCreateNestedOneWithoutBranchesInput
+    branches?: MessageCreateNestedManyWithoutBranch_fromInput
+    pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
+    files?: MessageFileCreateNestedManyWithoutMessageInput
+    reactions?: MessageReactionCreateNestedManyWithoutMessageInput
+    mentions?: MessageMentionCreateNestedManyWithoutMessageInput
+    approvals?: ApprovalCreateNestedManyWithoutMessageInput
+    interactive_responses?: InteractiveResponseCreateNestedManyWithoutMessageInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutSource_messageInput
+    artifacts?: ArtifactCreateNestedManyWithoutMessageInput
+    triggered_runs?: RunCreateNestedManyWithoutTrigger_messageInput
+  }
+
+  export type MessageUncheckedCreateWithoutReply_toInput = {
+    id?: string
+    organization_id: string
+    conversation_id: string
+    author_type: $Enums.MessageAuthorType
+    author_user_id?: string | null
+    author_bot_id?: string | null
+    source?: $Enums.MessageSource
+    status?: $Enums.MessageStatus
+    content?: string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: string | null
+    parent_message_id?: string | null
+    branch_from_message_id?: string | null
+    branch_index?: number
+    model_id?: string | null
+    is_pinned?: boolean
+    pinned_by_id?: string | null
+    pinned_at?: Date | string | null
+    edited_at?: Date | string | null
+    secret_masked?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
+    branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
+    files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
+    mentions?: MessageMentionUncheckedCreateNestedManyWithoutMessageInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutMessageInput
+    interactive_responses?: InteractiveResponseUncheckedCreateNestedManyWithoutMessageInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutSource_messageInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutMessageInput
+    triggered_runs?: RunUncheckedCreateNestedManyWithoutTrigger_messageInput
+  }
+
+  export type MessageCreateOrConnectWithoutReply_toInput = {
+    where: MessageWhereUniqueInput
+    create: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput>
+  }
+
+  export type MessageCreateManyReply_toInputEnvelope = {
+    data: MessageCreateManyReply_toInput | MessageCreateManyReply_toInput[]
     skipDuplicates?: boolean
   }
 
@@ -185573,6 +185925,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
     files?: MessageFileCreateNestedManyWithoutMessageInput
@@ -185598,6 +185952,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -185610,6 +185965,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
     mentions?: MessageMentionUncheckedCreateNestedManyWithoutMessageInput
@@ -185648,6 +186004,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
     files?: MessageFileCreateNestedManyWithoutMessageInput
@@ -185673,6 +186031,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -185684,6 +186043,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -186806,6 +187166,8 @@ export namespace Prisma {
     author_bot?: BotUpdateOneWithoutMessagesNestedInput
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -186832,6 +187194,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -186843,6 +187206,7 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -186868,6 +187232,107 @@ export namespace Prisma {
   export type MessageUpdateManyWithWhereWithoutParentInput = {
     where: MessageScalarWhereInput
     data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutParentInput>
+  }
+
+  export type MessageUpsertWithoutQuoted_byInput = {
+    update: XOR<MessageUpdateWithoutQuoted_byInput, MessageUncheckedUpdateWithoutQuoted_byInput>
+    create: XOR<MessageCreateWithoutQuoted_byInput, MessageUncheckedCreateWithoutQuoted_byInput>
+    where?: MessageWhereInput
+  }
+
+  export type MessageUpdateToOneWithWhereWithoutQuoted_byInput = {
+    where?: MessageWhereInput
+    data: XOR<MessageUpdateWithoutQuoted_byInput, MessageUncheckedUpdateWithoutQuoted_byInput>
+  }
+
+  export type MessageUpdateWithoutQuoted_byInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    author_type?: EnumMessageAuthorTypeFieldUpdateOperationsInput | $Enums.MessageAuthorType
+    source?: EnumMessageSourceFieldUpdateOperationsInput | $Enums.MessageSource
+    status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    branch_index?: IntFieldUpdateOperationsInput | number
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pinned?: BoolFieldUpdateOperationsInput | boolean
+    pinned_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    edited_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    secret_masked?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutMessagesNestedInput
+    conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
+    author_user?: UserUpdateOneWithoutMessagesNestedInput
+    author_bot?: BotUpdateOneWithoutMessagesNestedInput
+    run?: RunUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutRepliesNestedInput
+    replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    branch_from?: MessageUpdateOneWithoutBranchesNestedInput
+    branches?: MessageUpdateManyWithoutBranch_fromNestedInput
+    pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
+    files?: MessageFileUpdateManyWithoutMessageNestedInput
+    reactions?: MessageReactionUpdateManyWithoutMessageNestedInput
+    mentions?: MessageMentionUpdateManyWithoutMessageNestedInput
+    approvals?: ApprovalUpdateManyWithoutMessageNestedInput
+    interactive_responses?: InteractiveResponseUpdateManyWithoutMessageNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutSource_messageNestedInput
+    artifacts?: ArtifactUpdateManyWithoutMessageNestedInput
+    triggered_runs?: RunUpdateManyWithoutTrigger_messageNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutQuoted_byInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    author_type?: EnumMessageAuthorTypeFieldUpdateOperationsInput | $Enums.MessageAuthorType
+    author_user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    author_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumMessageSourceFieldUpdateOperationsInput | $Enums.MessageSource
+    status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_index?: IntFieldUpdateOperationsInput | number
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pinned?: BoolFieldUpdateOperationsInput | boolean
+    pinned_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    pinned_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    edited_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    secret_masked?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
+    files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
+    mentions?: MessageMentionUncheckedUpdateManyWithoutMessageNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutMessageNestedInput
+    interactive_responses?: InteractiveResponseUncheckedUpdateManyWithoutMessageNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutSource_messageNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutMessageNestedInput
+    triggered_runs?: RunUncheckedUpdateManyWithoutTrigger_messageNestedInput
+  }
+
+  export type MessageUpsertWithWhereUniqueWithoutReply_toInput = {
+    where: MessageWhereUniqueInput
+    update: XOR<MessageUpdateWithoutReply_toInput, MessageUncheckedUpdateWithoutReply_toInput>
+    create: XOR<MessageCreateWithoutReply_toInput, MessageUncheckedCreateWithoutReply_toInput>
+  }
+
+  export type MessageUpdateWithWhereUniqueWithoutReply_toInput = {
+    where: MessageWhereUniqueInput
+    data: XOR<MessageUpdateWithoutReply_toInput, MessageUncheckedUpdateWithoutReply_toInput>
+  }
+
+  export type MessageUpdateManyWithWhereWithoutReply_toInput = {
+    where: MessageScalarWhereInput
+    data: XOR<MessageUpdateManyMutationInput, MessageUncheckedUpdateManyWithoutReply_toInput>
   }
 
   export type MessageUpsertWithoutBranchesInput = {
@@ -186904,6 +187369,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
     files?: MessageFileUpdateManyWithoutMessageNestedInput
@@ -186929,6 +187396,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -186941,6 +187409,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
     mentions?: MessageMentionUncheckedUpdateManyWithoutMessageNestedInput
@@ -187291,6 +187760,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -187316,6 +187787,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -187328,6 +187800,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
     mentions?: MessageMentionUncheckedCreateNestedManyWithoutMessageInput
@@ -187454,6 +187927,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -187479,6 +187954,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -187491,6 +187967,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
     mentions?: MessageMentionUncheckedUpdateManyWithoutMessageNestedInput
@@ -187607,6 +188084,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -187632,6 +188111,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -187644,6 +188124,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     mentions?: MessageMentionUncheckedCreateNestedManyWithoutMessageInput
@@ -187828,6 +188309,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -187853,6 +188336,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -187865,6 +188349,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     mentions?: MessageMentionUncheckedUpdateManyWithoutMessageNestedInput
@@ -188039,6 +188524,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -188064,6 +188551,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -188076,6 +188564,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -188192,6 +188681,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -188217,6 +188708,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -188229,6 +188721,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -188335,6 +188828,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -188360,6 +188855,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -188372,6 +188868,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -188421,6 +188918,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -188446,6 +188945,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -188458,6 +188958,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -188784,6 +189285,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -188809,6 +189312,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -188821,6 +189325,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -189181,6 +189686,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -189206,6 +189713,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189218,6 +189726,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -189699,6 +190208,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -189724,6 +190235,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -189736,6 +190248,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -190313,6 +190826,8 @@ export namespace Prisma {
     author_bot?: BotCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -190338,6 +190853,7 @@ export namespace Prisma {
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -190350,6 +190866,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -191277,6 +191794,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -191302,6 +191821,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191314,6 +191834,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -192839,6 +193360,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -192864,6 +193387,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -192876,6 +193400,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -193480,6 +194005,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -193505,6 +194032,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -193517,6 +194045,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -197692,6 +198221,8 @@ export namespace Prisma {
     run?: RunCreateNestedOneWithoutMessagesInput
     parent?: MessageCreateNestedOneWithoutRepliesInput
     replies?: MessageCreateNestedManyWithoutParentInput
+    reply_to?: MessageCreateNestedOneWithoutQuoted_byInput
+    quoted_by?: MessageCreateNestedManyWithoutReply_toInput
     branch_from?: MessageCreateNestedOneWithoutBranchesInput
     branches?: MessageCreateNestedManyWithoutBranch_fromInput
     pinned_by?: UserCreateNestedOneWithoutPinned_messagesInput
@@ -197717,6 +198248,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -197729,6 +198261,7 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     replies?: MessageUncheckedCreateNestedManyWithoutParentInput
+    quoted_by?: MessageUncheckedCreateNestedManyWithoutReply_toInput
     branches?: MessageUncheckedCreateNestedManyWithoutBranch_fromInput
     files?: MessageFileUncheckedCreateNestedManyWithoutMessageInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutMessageInput
@@ -198626,6 +199159,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -198651,6 +199186,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -198663,6 +199199,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -218746,6 +219283,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -218772,6 +219310,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -220057,6 +220596,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -220082,6 +220623,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -220094,6 +220636,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -220117,6 +220660,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -220153,6 +220697,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUpdateManyWithoutMessageNestedInput
@@ -220178,6 +220724,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -220189,6 +220736,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -220213,6 +220761,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -222289,6 +222838,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -223145,6 +223695,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -223170,6 +223722,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -223182,6 +223735,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -223205,6 +223759,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225968,6 +226523,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -226770,6 +227326,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -226795,6 +227353,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -226807,6 +227366,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -226830,6 +227390,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -227859,6 +228420,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -228150,6 +228712,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -228175,6 +228739,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228187,6 +228752,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -228210,6 +228776,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228957,6 +229524,33 @@ export namespace Prisma {
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
+    reply_to_message_id?: string | null
+    branch_from_message_id?: string | null
+    branch_index?: number
+    model_id?: string | null
+    is_pinned?: boolean
+    pinned_by_id?: string | null
+    pinned_at?: Date | string | null
+    edited_at?: Date | string | null
+    secret_masked?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type MessageCreateManyReply_toInput = {
+    id?: string
+    organization_id: string
+    conversation_id: string
+    author_type: $Enums.MessageAuthorType
+    author_user_id?: string | null
+    author_bot_id?: string | null
+    source?: $Enums.MessageSource
+    status?: $Enums.MessageStatus
+    content?: string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: string | null
+    parent_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -228983,6 +229577,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -229142,6 +229737,8 @@ export namespace Prisma {
     author_bot?: BotUpdateOneWithoutMessagesNestedInput
     run?: RunUpdateOneWithoutMessagesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -229167,6 +229764,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229179,6 +229777,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -229202,6 +229801,107 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_index?: IntFieldUpdateOperationsInput | number
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pinned?: BoolFieldUpdateOperationsInput | boolean
+    pinned_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    pinned_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    edited_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    secret_masked?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type MessageUpdateWithoutReply_toInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    author_type?: EnumMessageAuthorTypeFieldUpdateOperationsInput | $Enums.MessageAuthorType
+    source?: EnumMessageSourceFieldUpdateOperationsInput | $Enums.MessageSource
+    status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    branch_index?: IntFieldUpdateOperationsInput | number
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pinned?: BoolFieldUpdateOperationsInput | boolean
+    pinned_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    edited_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    secret_masked?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutMessagesNestedInput
+    conversation?: ConversationUpdateOneRequiredWithoutMessagesNestedInput
+    author_user?: UserUpdateOneWithoutMessagesNestedInput
+    author_bot?: BotUpdateOneWithoutMessagesNestedInput
+    run?: RunUpdateOneWithoutMessagesNestedInput
+    parent?: MessageUpdateOneWithoutRepliesNestedInput
+    replies?: MessageUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
+    branch_from?: MessageUpdateOneWithoutBranchesNestedInput
+    branches?: MessageUpdateManyWithoutBranch_fromNestedInput
+    pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
+    files?: MessageFileUpdateManyWithoutMessageNestedInput
+    reactions?: MessageReactionUpdateManyWithoutMessageNestedInput
+    mentions?: MessageMentionUpdateManyWithoutMessageNestedInput
+    approvals?: ApprovalUpdateManyWithoutMessageNestedInput
+    interactive_responses?: InteractiveResponseUpdateManyWithoutMessageNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutSource_messageNestedInput
+    artifacts?: ArtifactUpdateManyWithoutMessageNestedInput
+    triggered_runs?: RunUpdateManyWithoutTrigger_messageNestedInput
+  }
+
+  export type MessageUncheckedUpdateWithoutReply_toInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    author_type?: EnumMessageAuthorTypeFieldUpdateOperationsInput | $Enums.MessageAuthorType
+    author_user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    author_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumMessageSourceFieldUpdateOperationsInput | $Enums.MessageSource
+    status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    branch_index?: IntFieldUpdateOperationsInput | number
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_pinned?: BoolFieldUpdateOperationsInput | boolean
+    pinned_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    pinned_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    edited_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    secret_masked?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
+    branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
+    files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
+    mentions?: MessageMentionUncheckedUpdateManyWithoutMessageNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutMessageNestedInput
+    interactive_responses?: InteractiveResponseUncheckedUpdateManyWithoutMessageNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutSource_messageNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutMessageNestedInput
+    triggered_runs?: RunUncheckedUpdateManyWithoutTrigger_messageNestedInput
+  }
+
+  export type MessageUncheckedUpdateManyWithoutReply_toInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    author_type?: EnumMessageAuthorTypeFieldUpdateOperationsInput | $Enums.MessageAuthorType
+    author_user_id?: NullableStringFieldUpdateOperationsInput | string | null
+    author_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    source?: EnumMessageSourceFieldUpdateOperationsInput | $Enums.MessageSource
+    status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    parts?: NullableJsonNullValueInput | InputJsonValue
+    run_id?: NullableStringFieldUpdateOperationsInput | string | null
+    parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229238,6 +229938,8 @@ export namespace Prisma {
     run?: RunUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
     files?: MessageFileUpdateManyWithoutMessageNestedInput
@@ -229263,6 +229965,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -229274,6 +229977,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -229298,6 +230002,7 @@ export namespace Prisma {
     parts?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -229765,6 +230470,7 @@ export namespace Prisma {
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: string | null
+    reply_to_message_id?: string | null
     branch_from_message_id?: string | null
     branch_index?: number
     model_id?: string | null
@@ -230064,6 +230770,8 @@ export namespace Prisma {
     author_bot?: BotUpdateOneWithoutMessagesNestedInput
     parent?: MessageUpdateOneWithoutRepliesNestedInput
     replies?: MessageUpdateManyWithoutParentNestedInput
+    reply_to?: MessageUpdateOneWithoutQuoted_byNestedInput
+    quoted_by?: MessageUpdateManyWithoutReply_toNestedInput
     branch_from?: MessageUpdateOneWithoutBranchesNestedInput
     branches?: MessageUpdateManyWithoutBranch_fromNestedInput
     pinned_by?: UserUpdateOneWithoutPinned_messagesNestedInput
@@ -230089,6 +230797,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -230101,6 +230810,7 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     replies?: MessageUncheckedUpdateManyWithoutParentNestedInput
+    quoted_by?: MessageUncheckedUpdateManyWithoutReply_toNestedInput
     branches?: MessageUncheckedUpdateManyWithoutBranch_fromNestedInput
     files?: MessageFileUncheckedUpdateManyWithoutMessageNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutMessageNestedInput
@@ -230124,6 +230834,7 @@ export namespace Prisma {
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null

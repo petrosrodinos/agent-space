@@ -1,5 +1,5 @@
 import type { InfiniteData, QueryClient } from "@tanstack/react-query";
-import type { Message } from "../interfaces/conversations.interfaces";
+import type { Message, ReplyPreview } from "../interfaces/conversations.interfaces";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { MessagePartTypes, MessageStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
 
@@ -57,6 +57,20 @@ export function applyDelta(qc: QueryClient, conversationId: string, messageId: s
       }),
     };
   });
+}
+
+/** Builds the quote shown above an optimistic reply from the cached original. */
+export function replyPreviewOf(m: Message | undefined): ReplyPreview | null {
+  if (!m) return null;
+  return {
+    id: m.id,
+    author_type: m.author_type,
+    author_name: m.author_bot?.name ?? m.author_user?.name ?? m.author_user?.email ?? null,
+    author_user_id: m.author_user?.id ?? null,
+    content: (m.content ?? "").slice(0, 280),
+    has_files: m.files.length > 0,
+    deleted: false,
+  };
 }
 
 export function allMessages(data: MessagesCache | undefined): Message[] {

@@ -110,6 +110,11 @@ export class MessagesService {
             if (!parent) throw new BadRequestException('Unknown thread');
         }
 
+        if (dto.reply_to_message_id) {
+            const target = await this.prisma.message.count({ where: { id: dto.reply_to_message_id, conversation_id: conversationId, deleted_at: null } });
+            if (!target) throw new BadRequestException('The message you are replying to no longer exists');
+        }
+
         const bots = await this.botsOf(conversationId);
         const users = await this.prisma.conversationParticipant.findMany({ where: { conversation_id: conversationId, user_id: { not: null }, left_at: null }, include: { user: { select: { id: true, name: true, email: true } } } });
         const mentionedUsers = this.findMentions(text, users.map((u) => ({ id: u.user!.id, name: u.user!.name || u.user!.email })));
@@ -127,6 +132,7 @@ export class MessagesService {
                     content: text,
                     parts: [{ type: 'text', text }, ...(dto.client_id ? [{ type: 'client-ref', client_id: dto.client_id }] : [])] as Prisma.InputJsonValue,
                     parent_message_id: dto.parent_message_id,
+                    reply_to_message_id: dto.reply_to_message_id,
                     secret_masked: masked,
                     files: dto.file_ids?.length ? { create: dto.file_ids.map((file_id, i) => ({ file_id, sort_order: i })) } : undefined,
                     mentions: {

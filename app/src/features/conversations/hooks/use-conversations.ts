@@ -3,7 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import { useAuthStore } from "@/stores/auth";
 import type { Message, SendMessageDto } from "../interfaces/conversations.interfaces";
-import { messagesKey, removeMessage, upsertMessage, type MessagesCache } from "../utils/messages-cache";
+import { allMessages, messagesKey, removeMessage, replyPreviewOf, upsertMessage, type MessagesCache } from "../utils/messages-cache";
 import {
   addParticipants, createConversation, deleteConversation, deleteMessage, editMessage, getConversation, getConversations, getMessages, getPinned, interact, markRead,
   openDirect, reactToMessage, removeParticipant, retryMessage, searchInConversation, searchMessages, sendMessage, stopRun, togglePin, updateConversation, updateMyConversation,
@@ -103,6 +103,8 @@ export const useSendMessage = (conversationId: string) => {
         run: null,
         run_id: null,
         parent_message_id: dto.parent_message_id ?? null,
+        reply_to_message_id: dto.reply_to_message_id ?? null,
+        reply_to: dto.reply_to_message_id ? replyPreviewOf(allMessages(qc.getQueryData<MessagesCache>(messagesKey(conversationId))).find((x) => x.id === dto.reply_to_message_id)) : null,
         branch_from_message_id: null,
         branch_index: 0,
         model_id: null,

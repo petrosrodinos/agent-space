@@ -122,6 +122,7 @@ export class PromptBuilder {
         }
         s.push(
             `## Rules\n` +
+            `- When a user message starts with "[Replying to …]" followed by a quoted block, the user is answering that specific earlier message. Treat the quote as what "this", "that" or "it" refers to, answer the new text in that context, and do not repeat the quote back.\n` +
             `- Take action with your tools instead of only describing what to do. Sensitive actions (sending, posting, deleting, paying, sharing, changing settings) will show the user an approval card automatically — just call the tool; never claim you did something before the tool succeeded.\n` +
             `- NEVER ask the user to type passwords, API keys or tokens in chat. If you need a key, call request_secret. You never see secret values.\n` +
             `- Use show_ui for dashboards, comparisons, charts, checklists or forms when a visual or interactive answer is clearly better; keep text minimal when you do.\n` +
@@ -130,6 +131,23 @@ export class PromptBuilder {
             `- Be honest about uncertainty and errors.`,
         );
         return s.join('\n\n');
+    }
+
+    /**
+     * When a user replies to a specific message, the model gets that message's text up front. The quoted message may be far
+     * outside the history window, and "this", "that one", "the second point" only make sense next to it.
+     */
+    private replyQuote(
+        r: { content: string | null; deleted_at: Date | null; author_user: { name: string | null; email: string } | null; author_bot: { id: string; name: string } | null; _count: { files: number } } | null,
+        botId: string,
+    ): string {
+        if (!r) return '';
+        const who = r.author_bot ? (r.author_bot.id === botId ? 'your earlier message' : `${r.author_bot.name}'s message (bot)`) : `${r.author_user?.name || r.author_user?.email || 'a user'}'s message`;
+        if (r.deleted_at) return `[Replying to ${who}, which has since been deleted]\n`;
+        const body = (r.content ?? '').trim().slice(0, 1500);
+        const files = r._count.files ? ` (with ${r._count.files} attachment${r._count.files > 1 ? 's' : ''})` : '';
+        const quoted = body ? body.split('\n').map((l) => `> ${l}`).join('\n') : '> (no text)';
+        return `[Replying to ${who}${files}:\n${quoted}\n]\n`;
     }
 
     /** Conversation history as chat messages; group messages are prefixed with the speaker's name. */
@@ -149,6 +167,7 @@ export class PromptBuilder {
                 author_user: { select: { name: true, email: true } },
                 author_bot: { select: { id: true, name: true } },
                 files: { include: { file: true } },
+                reply_to: { select: { content: true, deleted_at: true, author_user: { select: { name: true, email: true } }, author_bot: { select: { id: true, name: true } }, _count: { select: { files: true } } } },
             },
             orderBy: { created_at: 'desc' },
             take: opts.limit ?? 40,
@@ -170,7 +189,8 @@ export class PromptBuilder {
             }
             const speaker = m.author_type === 'BOT' ? `${m.author_bot?.name} (bot)` : m.author_user?.name || m.author_user?.email || 'User';
             const prefix = isGroup || m.author_type === 'BOT' ? `[${speaker}]: ` : '';
-            const parts: ChatContentPart[] = [{ type: 'text', text: `${prefix}${text}` }];
+            const quote = this.replyQuote(m.reply_to, ctx.bot.id);
+            const parts: ChatContentPart[] = [{ type: 'text', text: `${prefix}${quote}${text}` }];
             for (const mf of m.files) {
                 const f = mf.file;
                 if (f.status !== 'READY' || f.deleted_at) continue;

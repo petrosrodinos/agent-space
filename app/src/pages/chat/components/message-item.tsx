@@ -1,6 +1,6 @@
-import { memo, useRef, useState, type FC, type ReactNode } from "react";
+import { memo, useRef, useState, type FC, type ReactNode, type TouchEvent } from "react";
 import { Link } from "react-router-dom";
-import { AlarmClock, AlertCircle, BookOpen, ClipboardCheck, Copy, GitBranch, Mic, MoreHorizontal, Pencil, Pin, RefreshCw, SmilePlus, Trash2, Users } from "lucide-react";
+import { AlarmClock, AlertCircle, BookOpen, ClipboardCheck, Copy, GitBranch, Mic, MoreHorizontal, Pencil, Pin, RefreshCw, Reply, SmilePlus, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import { Markdown } from "@/components/ui/markdown";
@@ -21,6 +21,8 @@ import { InteractiveReply } from "./interactive-reply";
 import { SecretInputCard } from "./secret-input-card";
 import { FileChip, FileChipTones } from "./file-chip";
 import { ArtifactCard } from "./artifact-card";
+import { ReplyQuote, ReplyQuoteVariants } from "./reply-quote";
+import { useSwipeToReply } from "../hooks/use-swipe-to-reply";
 import { ComputerHandoffCard } from "./computer-handoff-card";
 import { QUICK_REACTIONS } from "@/config/constants/reactions";
 
@@ -32,6 +34,8 @@ export interface MessageActions {
   onEdit: (m: Message, content: string) => void;
   onDelete: (m: Message) => void;
   onFollowUp: (text: string) => void;
+  onReply: (m: Message) => void;
+  onJumpToMessage: (id: string) => void;
 }
 
 interface Props {
@@ -72,7 +76,10 @@ function segment(parts: MessagePart[]) {
 }
 
 const ActionsMenu: FC<{ m: Message; mine: boolean; models: AiModel[]; actions: MessageActions; onStartEdit: () => void }> = ({ m, mine, models, actions, onStartEdit }) => (
-  <div className="absolute -top-4 right-2 z-10 hidden items-center gap-0.5 rounded-full border border-hairline bg-surface p-0.5 shadow-pop group-hover:flex group-focus-within:flex">
+  <div className="absolute -top-4 right-2 z-10 hidden items-center gap-0.5 rounded-full border border-hairline bg-surface p-0.5 shadow-pop group-hover:flex group-focus-within:flex has-data-[state=open]:flex">
+    <Button variant="ghost" size="icon" className="h-8 w-8" aria-label="Reply" onClick={() => actions.onReply(m)}>
+      <Reply />
+    </Button>
     {QUICK_REACTIONS.slice(0, 3).map((e) => (
       <button key={e} type="button" className="inline-flex h-8 w-8 items-center justify-center rounded-full text-base hover:bg-surface-sunken" onClick={() => actions.onReact(m, e)} aria-label={`React ${e}`}>
         {e}
@@ -91,6 +98,9 @@ const ActionsMenu: FC<{ m: Message; mine: boolean; models: AiModel[]; actions: M
 
 const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; actions: MessageActions; onStartEdit: () => void }> = ({ m, mine, models, actions, onStartEdit }) => (
   <DropdownMenuContent align={ReactionAligns.END} className="w-60 rounded-[14px] p-1.5 shadow-pop">
+    <DropdownMenuItem className="gap-2 rounded-[10px]" onSelect={() => actions.onReply(m)}>
+      <Reply className="h-4 w-4" /> Reply
+    </DropdownMenuItem>
     <DropdownMenuItem
       className="gap-2 rounded-[10px]"
       onSelect={() => {
@@ -178,11 +188,38 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
   const pressTimer = useRef<number | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const mine = m.author_type === MessageAuthorTypes.USER && m.author_user?.id === meId;
+  const swipe = useSwipeToReply({ enabled: !m.pending && !editing, onReply: () => actions.onReply(m) });
+  const clearPress = () => pressTimer.current && window.clearTimeout(pressTimer.current);
+  // Long-press opens the menu, a horizontal swipe replies; any movement cancels the long-press.
   const longPress = {
-    onTouchStart: () => (pressTimer.current = window.setTimeout(() => setMenuOpen(true), 450)),
-    onTouchEnd: () => pressTimer.current && window.clearTimeout(pressTimer.current),
-    onTouchMove: () => pressTimer.current && window.clearTimeout(pressTimer.current),
+    ref: swipe.rowRef,
+    onTouchStart: (e: TouchEvent) => {
+      pressTimer.current = window.setTimeout(() => setMenuOpen(true), 450);
+      swipe.handlers.onTouchStart(e);
+    },
+    onTouchMove: (e: TouchEvent) => {
+      clearPress();
+      swipe.handlers.onTouchMove(e);
+    },
+    onTouchEnd: () => {
+      clearPress();
+      swipe.handlers.onTouchEnd();
+    },
+    onTouchCancel: () => {
+      clearPress();
+      swipe.handlers.onTouchCancel();
+    },
   };
+  const swipeHint = (
+    <span ref={swipe.hintRef} aria-hidden className="pointer-events-none absolute -left-10 top-1/2 inline-flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-surface-sunken text-muted-foreground opacity-0">
+      <Reply className="h-4 w-4" />
+    </span>
+  );
+  const quote = m.reply_to && (
+    <div className="mb-1.5 w-full min-w-[160px]">
+      <ReplyQuote reply={m.reply_to} meId={meId} variant={mine ? ReplyQuoteVariants.ON_PRIMARY : ReplyQuoteVariants.ON_SURFACE} onJump={actions.onJumpToMessage} />
+    </div>
+  );
   const mobileMenu = (
     <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
       <DropdownMenuTrigger className="sr-only">Message actions</DropdownMenuTrigger>
@@ -220,7 +257,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
     const interaction = m.parts.find((p) => p.type === MessagePartTypes.INTERACTION) as Extract<MessagePart, { type: typeof MessagePartTypes.INTERACTION }> | undefined;
     if (mine) {
       return (
-        <div className={cn("group relative flex animate-slide-up flex-col items-end", isFirstOfGroup ? "mt-4" : "mt-1")} {...longPress}>
+        <div className={cn("group relative flex animate-slide-up touch-pan-y flex-col items-end", isFirstOfGroup ? "mt-4" : "mt-1")} {...longPress}>
+          {swipeHint}
           {mobileMenu}
           {editing ? (
             <div className="w-full max-w-[min(560px,90%)] space-y-2">
@@ -244,6 +282,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
           ) : (
             <div className={cn("relative max-w-[min(560px,88%)] rounded-[20px] rounded-br-[6px] bg-primary px-4 py-2.5 text-[15px] text-primary-foreground shadow-sticker", m.pending && "opacity-70")}>
               <ActionsMenu m={m} mine models={models} actions={actions} onStartEdit={() => setEditing(true)} />
+              {quote}
               {m.source === MessageSources.VOICE && <Mic className="mr-1 inline h-3.5 w-3.5 opacity-80" aria-label="Spoken" />}
               {interaction ? (
                 <span className="text-[14px]">
@@ -273,7 +312,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
       );
     }
     return (
-      <div className={cn("group relative flex animate-slide-up gap-2.5", isFirstOfGroup ? "mt-4" : "mt-1")} {...longPress}>
+      <div className={cn("group relative flex animate-slide-up touch-pan-y gap-2.5", isFirstOfGroup ? "mt-4" : "mt-1")} {...longPress}>
+        {swipeHint}
         {mobileMenu}
         <div className="w-8 shrink-0">{isFirstOfGroup && <PersonAvatar name={m.author_user?.name} email={m.author_user?.email} size={32} />}</div>
         <div className="min-w-0 max-w-[min(560px,85%)]">
@@ -285,6 +325,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
           )}
           <div className="relative rounded-[20px] rounded-bl-[6px] bg-surface-sunken px-4 py-2.5 text-[15px] text-ink">
             <ActionsMenu m={m} mine={false} models={models} actions={actions} onStartEdit={() => undefined} />
+            {quote}
             <span className="whitespace-pre-wrap break-words">{text}</span>
             {m.files.length > 0 && (
               <div className="mt-2 flex flex-col gap-1.5">
@@ -392,7 +433,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
 
   const followUps = m.parts.find((p) => p.type === MessagePartTypes.FOLLOW_UPS) as Extract<MessagePart, { type: typeof MessagePartTypes.FOLLOW_UPS }> | undefined;
   return (
-    <div className={cn("group relative flex animate-slide-up gap-2.5", isFirstOfGroup ? "mt-5" : "mt-1")} {...longPress}>
+    <div className={cn("group relative flex animate-slide-up touch-pan-y gap-2.5", isFirstOfGroup ? "mt-5" : "mt-1")} {...longPress}>
+      {swipeHint}
       {mobileMenu}
       <div className="w-10 shrink-0">{isFirstOfGroup && <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} working={working && streaming} />}</div>
       <div className="relative min-w-0 flex-1">

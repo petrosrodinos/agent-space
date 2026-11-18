@@ -21,6 +21,7 @@ import type { Message } from "@/features/conversations/interfaces/conversations.
 import { useMe } from "@/features/users/hooks/use-users";
 import { useModels, useBot } from "@/features/bots/hooks/use-bots";
 import { useMediaQuery } from "@/hooks/use-media-query";
+import { toast } from "@/hooks/use-toast";
 import { dayLabel, formatDateTime } from "@/lib/date";
 import { Routes } from "@/routes/routes";
 import { Composer } from "../../components/composer";
@@ -35,6 +36,8 @@ import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfac
 import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
 
 const ACTIVE: string[] = ACTIVE_RUN_STATUSES;
+const FLASH_CLASSES = ["bg-primary-soft", "rounded-[20px]", "transition-colors", "duration-500"];
+const FLASH_MS = 1400;
 
 /** A bot message counts as "working" while streaming — but not while it waits on the user (approval or secret box). */
 function isWorking(m: Message, runStatus: RunStatusMap | undefined) {
@@ -87,10 +90,12 @@ const ConversationPage: FC = () => {
   const [deletingMsg, setDeletingMsg] = useState<Message | null>(null);
   const [query, setQuery] = useState("");
   const [prefill, setPrefill] = useState<string | null>(null);
+  const [replyingToId, setReplyingToId] = useState<string | null>(null);
   const searchResults = useConversationSearch(conversationId, searchOpen ? query : "");
   const pinned = usePinned(conversationId, pinnedOpen);
 
   const messages = useMemo(() => allMessages(messagesQuery.data), [messagesQuery.data]);
+  const replyingTo = useMemo(() => (replyingToId ? (messages.find((m) => m.id === replyingToId) ?? null) : null), [replyingToId, messages]);
   const leadBotId = conversation?.bots[0]?.id ?? "";
   const { data: leadBot } = useBot(conversation?.type === ConversationTypes.DIRECT ? leadBotId : "");
 
@@ -133,8 +138,37 @@ const ConversationPage: FC = () => {
 
   useEffect(() => {
     atBottom.current = true;
+    setReplyingToId(null);
     requestAnimationFrame(() => scrollToBottom());
   }, [conversationId, scrollToBottom]);
+
+  /** Scrolls to a quoted message and flashes it; pages in older history first when it isn't loaded yet. */
+  const messagesQueryRef = useRef(messagesQuery);
+  messagesQueryRef.current = messagesQuery;
+  const jumpToMessage = useCallback(
+    async (id: string) => {
+      const find = () => document.getElementById(`msg-${id}`);
+      let el = find();
+      let hasMore = messagesQueryRef.current.hasNextPage;
+      while (!el && hasMore && scroller.current) {
+        loadingOlder.current = true;
+        prevHeight.current = scroller.current.scrollHeight;
+        const res = await messagesQueryRef.current.fetchNextPage();
+        hasMore = res.hasNextPage;
+        await new Promise((r) => requestAnimationFrame(() => requestAnimationFrame(r)));
+        el = find();
+      }
+      if (!el) {
+        toast({ title: "Original message not found", description: "It may have been deleted." });
+        return;
+      }
+      const target = el;
+      target.scrollIntoView({ behavior: "smooth", block: "center" });
+      target.classList.add(...FLASH_CLASSES);
+      window.setTimeout(() => target.classList.remove(...FLASH_CLASSES), FLASH_MS);
+    },
+    [],
+  );
 
   useEffect(() => {
     if (conversationId && conversation && (conversation.me?.unread_count ?? 0) >= 0) markRead.mutate(conversationId);
@@ -166,8 +200,10 @@ const ConversationPage: FC = () => {
         atBottom.current = true;
         send.mutate({ content: text });
       },
+      onReply: (m) => setReplyingToId(m.id),
+      onJumpToMessage: (id) => void jumpToMessage(id),
     }),
-    [retry, react, pin, edit, send],
+    [retry, react, pin, edit, send, jumpToMessage],
   );
 
   if (convError) {
@@ -208,7 +244,7 @@ const ConversationPage: FC = () => {
           </div>
         )}
 
-        <div ref={scroller} onScroll={onScroll} className="scrollbar-thin relative min-h-0 flex-1 overflow-y-auto" role="log" aria-live="polite" aria-label="Messages">
+        <div ref={scroller} onScroll={onScroll} className="scrollbar-thin relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden" role="log" aria-live="polite" aria-label="Messages">
           {messagesQuery.isPending || convPending ? (
             <MessagesSkeleton />
           ) : (
@@ -279,6 +315,9 @@ const ConversationPage: FC = () => {
                 conversation={conversation}
                 sendWith={me?.settings.send_with ?? SendWithKeys.ENTER}
                 working={working.length > 0}
+                meId={me?.user.id ?? ""}
+                replyingTo={replyingTo}
+                onCancelReply={() => setReplyingToId(null)}
                 prefill={prefill}
                 onPrefillUsed={() => setPrefill(null)}
                 onSend={(dto) => {

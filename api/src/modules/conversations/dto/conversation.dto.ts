@@ -40,6 +40,7 @@ export class SendMessageDto {
     @ApiProperty() @IsString() @MinLength(1) @MaxLength(32000) content: string;
     @ApiPropertyOptional({ isArray: true }) @IsOptional() @IsArray() @ArrayMaxSize(10) @IsUUID('all', { each: true }) file_ids?: string[];
     @ApiPropertyOptional() @IsOptional() @IsUUID() parent_message_id?: string;
+    @ApiPropertyOptional({ description: 'Message being replied to (quoted); the bot sees it as context' }) @IsOptional() @IsUUID() reply_to_message_id?: string;
     @ApiPropertyOptional({ description: 'User chose "Send anyway" on the secret warning (§8.8)' }) @IsOptional() @IsBoolean() send_anyway?: boolean;
     @ApiPropertyOptional({ description: 'Client-generated id for optimistic UI' }) @IsOptional() @IsString() @MaxLength(64) client_id?: string;
     @ApiPropertyOptional({ enum: ['TEXT', 'VOICE'] }) @IsOptional() @IsIn(['TEXT', 'VOICE']) source?: 'TEXT' | 'VOICE';

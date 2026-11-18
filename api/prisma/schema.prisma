@@ -1881,6 +1881,7 @@ model Message {
   parts                  Json?
   run_id                 String?
   parent_message_id      String? // thread reply
+  reply_to_message_id    String? // quoted message ("reply to" a specific message)
   branch_from_message_id String? // "try a different approach"
   branch_index           Int               @default(0)
   model_id               String? // which model produced it (for compare / retry)
@@ -1900,6 +1901,8 @@ model Message {
   run                   Run?                  @relation("RunMessages", fields: [run_id], references: [id], onDelete: SetNull)
   parent                Message?              @relation("MessageThread", fields: [parent_message_id], references: [id], onDelete: SetNull)
   replies               Message[]             @relation("MessageThread")
+  reply_to              Message?              @relation("MessageReplyTo", fields: [reply_to_message_id], references: [id], onDelete: SetNull)
+  quoted_by             Message[]             @relation("MessageReplyTo")
   branch_from           Message?              @relation("MessageBranch", fields: [branch_from_message_id], references: [id], onDelete: SetNull)
   branches              Message[]             @relation("MessageBranch")
   pinned_by             User?                 @relation("MessagePinnedBy", fields: [pinned_by_id], references: [id], onDelete: SetNull)
@@ -1918,6 +1921,7 @@ model Message {
   @@index([author_bot_id])
   @@index([run_id])
   @@index([parent_message_id])
+  @@index([reply_to_message_id])
   @@index([branch_from_message_id])
   @@index([pinned_by_id])
   @@index([conversation_id, is_pinned])

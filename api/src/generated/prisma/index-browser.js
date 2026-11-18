@@ -669,6 +669,7 @@ exports.Prisma.MessageScalarFieldEnum = {
   parts: 'parts',
   run_id: 'run_id',
   parent_message_id: 'parent_message_id',
+  reply_to_message_id: 'reply_to_message_id',
   branch_from_message_id: 'branch_from_message_id',
   branch_index: 'branch_index',
   model_id: 'model_id',

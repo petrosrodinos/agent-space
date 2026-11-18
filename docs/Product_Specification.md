@@ -1,8 +1,8 @@
 # Agent Space — Product Specification
 
-**Version:** 1.2
-**Date:** 17 November 2026
-**Status:** Ready for implementation
+**Version:** 1.3
+**Date:** 18 November 2026
+**Status:** Mostly implemented. See §19 for what is built, what is left and what was skipped on purpose.
 
 ---
 
@@ -1627,3 +1627,83 @@ These go beyond the original idea and are recommended for the roadmap:
 - Team expansion (members per organisation)
 - Customer satisfaction score on completed tasks
 - Voice mode sessions per active user per week, and share of sessions in which the bot completed at least one action
+
+---
+
+## 19. Implementation Status (18 November 2026)
+
+This section records what the code does today against this specification. Setup, environment variables and run commands are in `docs/RUNNING.md`. "Tested" means it was tried end to end against the staging services (staging database, OpenRouter, Composio, Daytona, OpenAI, Google Cloud) in Chrome. "Built" means the code is in place but was not tried end to end.
+
+### 19.1 Built and tested
+
+| Area | Spec | What works |
+|---|---|---|
+| Accounts and organisations | §5 | Email sign-up and sign-in, organisations, invitations, the three roles (Owner, Admin, Member) |
+| Bots | §6.1–6.6 | Create from the 6 templates or from scratch, emoji/colour/instructions, AI model choice, memory (`remember` / `forget`), bots consulting other bots (`ask_bot`), changing bots and personal settings by chat |
+| Skills | §6.7 | Create, edit, delete and assign in the app or by chat, `/` mentions, starter library. Files can be attached to a skill and the bot reads them when it follows the skill |
+| Knowledge | §6.2, §16 | Files (PDF, Word, text, Markdown, CSV, JSON), web pages and notes per bot, plus an organisation knowledge library (Settings → Knowledge library). Text is extracted when an item is added. Bots use `search_knowledge`, `read_knowledge` and `read_file` and name the source they used |
+| Conversations | §7.1–7.4 | Direct and group conversations, live activity steps with icons, approvals for sensitive actions, interactive replies (`show_ui`), reactions, pinned messages, file attachments |
+| Artifacts | §7.5 | Bots create and update pages and apps. They run on an isolated host, with sharing levels, public links (optional password and expiry), version history, comments, a saved-data runtime (`window.agentspace.save/list/ai`) with a Data tab, and a report link on public pages |
+| Voice mode | §7.6 | OpenAI Realtime over WebRTC. The API holds the key and runs every tool server-side. Includes the voice picker with samples, push-to-talk, mute, interrupt, reconnecting within 15 s, silence and length limits, approvals by voice, and transcripts saved to the chat as voice messages. Tested with a synthetic audio stream, because the browser's microphone prompt can't be clicked by automation |
+| Files and storage | §7.7 | Google Cloud Storage with signed upload and download links. Data from the earlier dev stand-in was moved with `api/scripts/migrate-dev-stores.cjs` |
+| Connections | §8.1–8.3, §8.5 | Composio accounts, several accounts per service, private and shared connections, services added by access key, `call_api` |
+| Custom tool servers | §8.4 | MCP over Streamable HTTP with SSE fallback, sign-in through OAuth (dynamic client registration and PKCE). Tested with DeepWiki |
+| Built-in tools | §8.6 | Web search, read web page, create document, memory, app management by chat |
+| Secrets | §8.7–8.9 | Google Cloud Secret Manager, secret box in chat, warning when a secret is typed into a message, Secrets page, and managing secrets by chat |
+| Cloud computer | §9.1–9.3 | One Daytona sandbox per bot with turn on, pause and reset, and auto-stop when idle. The live view goes through an API proxy, which hides Daytona's warning page and blocks input for people who are only watching. Includes take control and hand back, commands, file read/write, the files panel, screenshots the bot can see, browser clicking, typing and scrolling, a session replay, and minute-based usage |
+| Automations | §10.2–10.5 | Scheduled automations created in the app or by chat, with Run now, run history, pre-approved actions, automation memory, retries and automatic pausing after repeated failures. Pre-approved actions are built but were not tried end to end |
+| Usage limits | §13.4 | Limits for the organisation, each member and each bot, with spending bars and alerts at 80% and 100%. Checked through the API; the alerts were not triggered in a real session |
+| Notifications | §12 | In-app notifications and web push (VAPID, service worker, a per-device switch in Settings → Notifications) |
+| Settings | §13 | Personal, bot and organisation settings, including voice and cloud computer settings |
+| Background work | §14.4 | BullMQ queues, bot runs outside the request, Redis Streams events across API instances, locks, rate limits, usage counters, Bull Board |
+| Responsive web app | §14.1 | Checked at phone width (390 px): no sideways scrolling on the pages added this round |
+
+### 19.2 Built, not yet tested end to end
+
+| Area | Spec | Status and what is missing |
+|---|---|---|
+| Cloud computer: browsing websites | §9.1 | Chromium starts and opens pages, but the current Daytona account tier only lets sandboxes reach a few essential hosts (PyPI, npm, GitHub). Other sites are reset. Needs a Daytona tier with full internet access; no code change |
+| Cloud computer: website sign-ins | §9.4 | The signed-in websites list and signing out are built. It reads the browser's cookies. Not tested, because of the network limit above |
+| Cloud computer: files from connected services | §9.5 | `copy_to_computer` (from a chat file, a link or a connected account through the Composio proxy, with optional unpacking) and `copy_from_computer` are built. Only copying chat files was tested |
+| Web push in the browser | §12 | The server side and the push config were tested. Turning it on needs the browser's permission prompt, which automation can't click |
+| Desktop app (Electron) | §14.2 | `desktop/` builds, and the unpacked Windows app loads the app. Includes the secure bridge, `agentspace://` deep links, native notifications, open at start-up, a quick-ask shortcut and file pick/download. Code signing, notarisation and the auto-update feed are not configured |
+| Mobile apps (Capacitor) | §14.2 | Android and iOS projects are generated, with plugins, deep links, a share-target declaration and secure token storage. Neither has been built in Android Studio or Xcode. Android push works through FCM once `FCM_PROJECT_ID` and `FCM_CREDENTIALS_JSON_BASE64` are set |
+| Direct browser uploads to GCS | §7.7 | Need a CORS rule on the bucket for the app's origin. The staging service account can't read bucket settings, so this wasn't checked |
+
+### 19.3 Not built yet
+
+- **Automations (§10.2):** triggers from events in connected services, and place-based triggers. Only scheduled automations work.
+- **Device tools (§14.3):**
+  - Desktop: local files, look at my screen, local tool servers, clipboard and open.
+  - Mobile: contacts, sending through phone apps, the device calendar and reminders, location.
+- **Mobile extras (§14.2):**
+  - iPhone push delivery: iOS tokens are stored, but there is no APNs sender.
+  - Native voice plugin, so voice mode keeps working with the screen locked.
+  - Siri / Google Assistant shortcuts, widgets and Live Activities.
+  - Face ID / fingerprint for sensitive approvals, and Approve/Reject from the lock screen.
+  - Document scanner, the iOS Share Extension, and handling shared content in the app.
+  - Universal links / App Links, app icons and splash screens, and store listings.
+- **Artifacts (§7.5):**
+  - Live data from connected accounts.
+  - Visitor file uploads.
+  - Editing text directly in the preview, and seeing who else is editing.
+  - PDF, PPTX and DOCX export (HTML download only).
+  - The 30-day purge of deleted artifacts.
+- **Saved widgets (§7.4):** the database table exists, but there is no screen for it.
+- **Billing (§17 Phase 3):** no plans, checkout or invoices. The Stripe integration from the starter is not wired to anything.
+- **Camera and screen sharing in voice mode (§16).**
+- **Suggested enhancements (§16):** none are built except the knowledge library. Not built: templates gallery, meeting assistant, scheduled reports outside the app, built-in slash commands, control my own computer, developer terminal, messaging from email/Slack/WhatsApp, undo, password manager connection, more templates and languages.
+
+### 19.4 Skipped on purpose (product owner decision, 18 November 2026)
+
+- Google, Microsoft and Apple sign-in, and two-factor authentication (§5, §13.2).
+- Data export (§13.2, §13.4).
+- Applying the app-language setting to the interface. The setting is stored, but the interface stays in English (§13.2).
+
+### 19.5 What needs action outside the code
+
+- **Daytona:** move to a tier with full internet access so the cloud computer can browse any site.
+- **Google Cloud Storage:** add a CORS rule on the bucket for the app's origin(s): `PUT` and `POST`, headers `Content-Type` and `x-goog-resumable`.
+- **Firebase:** set `FCM_PROJECT_ID`, `FCM_CREDENTIALS_JSON_BASE64` and `android/app/google-services.json` for Android push. iPhone push also needs an APNs key and a sender.
+- **Signing:** Windows and Mac code-signing certificates and Apple notarisation for the desktop app. Apple and Google developer accounts for the mobile apps.
+- **Production keys:** VAPID keys for web push (generated for staging), and `OPENAI_API_KEY` and `DAYTONA_API_KEY` for production.

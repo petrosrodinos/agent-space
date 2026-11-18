@@ -3186,6 +3186,18 @@ model DataExport {
 // PLATFORM
 // =====================================================================
 
+/// DEV/STAGING ONLY fallback for §8.7 when Google Cloud Secret Manager is not available (SECRET_STORE=local-encrypted).
+/// Holds AES-256-GCM ciphertext keyed by the Secret Manager-style resource name. Never used when SECRET_STORE=gcp.
+model DevSecretBlob {
+  resource_name String   @id
+  version       Int      @default(1)
+  ciphertext    String
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  @@map("dev_secret_blobs")
+}
+
 /// §14.1 — minimum supported app version per platform.
 model AppVersionPolicy {
   platform        Platform @id

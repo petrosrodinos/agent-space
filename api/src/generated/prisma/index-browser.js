@@ -1357,6 +1357,14 @@ exports.Prisma.DataExportScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.DevSecretBlobScalarFieldEnum = {
+  resource_name: 'resource_name',
+  version: 'version',
+  ciphertext: 'ciphertext',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.AppVersionPolicyScalarFieldEnum = {
   platform: 'platform',
   minimum_version: 'minimum_version',
@@ -2261,6 +2269,7 @@ exports.Prisma.ModelName = {
   Invoice: 'Invoice',
   ActivityLog: 'ActivityLog',
   DataExport: 'DataExport',
+  DevSecretBlob: 'DevSecretBlob',
   AppVersionPolicy: 'AppVersionPolicy'
 };
 

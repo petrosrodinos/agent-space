@@ -1,0 +1,467 @@
+import { Injectable, Logger } from '@nestjs/common';
+import { ActionType } from 'generated/prisma';
+import { PrismaService } from '@/core/databases/prisma/prisma.service';
+import { ComposioService } from '@/integrations/composio/composio.service';
+import { StorageService } from '@/integrations/storage/storage.service';
+import { randomToken, newId } from '@/shared/utils/security/crypto.utils';
+import { AccessService } from '../../access/access.service';
+import { ActivityService } from '../../activity/activity.service';
+import { FilesService } from '../../files/files.service';
+import { ComputersService, HOME, OPEN_BROWSER, OPEN_BROWSER_PATH, WORKSPACE } from '../../computers/computers.service';
+import { assertPublicUrl } from './web.utils';
+import { obj, ToolContext, ToolDef, ToolResult } from './tool.types';
+
+const TRANSFER_LIMIT = 1024 ** 3;
+const MAX_FRAMES = 200;
+
+/** What a click or key press does on the website — the bot must say, so the approval engine can ask first (§9.3, §11). */
+const EFFECTS = ['none', 'submit_form', 'send_message', 'post_publicly', 'purchase', 'delete'] as const;
+const EFFECT_ACTION: Record<string, ActionType | null> = {
+    none: null,
+    submit_form: 'EDIT_RECORDS',
+    send_message: 'SEND_MESSAGE',
+    post_publicly: 'POST_PUBLICLY',
+    purchase: 'PURCHASE_PAYMENT',
+    delete: 'DELETE_DATA',
+};
+const effectParam = {
+    type: 'string',
+    enum: EFFECTS,
+    description:
+        'What this action does on the website. Use "submit_form" for submitting anything important (orders, applications, settings), "send_message" for sending emails/messages, "post_publicly" for publishing, "purchase" for payments, "delete" for deleting. Otherwise "none". Be honest — sensitive actions are shown to the user for approval first.',
+};
+
+/**
+ * Tools for the bot's cloud computer (§9): shell, files, a real browser on a desktop (screenshots + mouse/keyboard),
+ * copying files in from storage, URLs and connected services, and sharing results into the chat.
+ */
+@Injectable()
+export class ComputerToolsService {
+    private readonly logger = new Logger(ComputerToolsService.name);
+
+    constructor(
+        private readonly prisma: PrismaService,
+        private readonly computers: ComputersService,
+        private readonly files: FilesService,
+        private readonly storage: StorageService,
+        private readonly composio: ComposioService,
+        private readonly access: AccessService,
+        private readonly activity: ActivityService,
+    ) { }
+
+    async tools(ctx: ToolContext): Promise<ToolDef[]> {
+        if (!ctx.bot.cloud_computer_enabled || !ctx.actor) return [];
+        const s = ctx.org_settings;
+        if (s && !s.cloud_computers_enabled) return [];
+        if (s?.cloud_computers_who === 'OWNERS_ADMINS' && ctx.actor.role === 'MEMBER') return [];
+        const t = [this.runCommand(), this.writeFile(), this.readFile(), this.listFiles(), this.copyTo(), this.copyFrom(), this.openUrl(), this.screenshot(), this.click(), this.type(), this.key(), this.scroll(), this.askUser()];
+        return t;
+    }
+
+    /** Ends the run's computer session (minutes for usage) and refreshes the signed-in websites list. Never throws. */
+    async finishRun(runId: string) {
+        try {
+            const sessions = await this.prisma.computerSession.findMany({ where: { run_id: runId, ended_at: null }, select: { cloud_computer_id: true } });
+            for (const computerId of new Set(sessions.map((s) => s.cloud_computer_id))) {
+                await this.computers.closeSessions(computerId, { run_id: runId });
+                await this.computers.refreshSignedInSites(computerId).catch(() => undefined);
+            }
+        } catch (e) {
+            this.logger.warn(`Closing computer session failed: ${(e as Error).message}`);
+        }
+    }
+
+    // ---------------- Helpers ----------------
+
+    /** Starts/resumes the computer, opens the run's session, and refuses while a person has control. */
+    private async sandbox(ctx: ToolContext) {
+        const { computer, sandbox } = await this.computers.ensureRunning(ctx.organization_id, ctx.bot.id, ctx.actor?.role ?? null);
+        const controller = await this.computers.controllerOf(computer.id);
+        if (controller) throw new Error(`${controller.name ?? 'A person'} is using the computer right now. Wait for them to hand control back, then try again.`);
+        const session = await this.computers.openSession(computer.id, 'BOT_RUN', { run_id: ctx.run.id });
+        if (!ctx.run.uses_computer) await this.prisma.run.update({ where: { id: ctx.run.id }, data: { uses_computer: true } });
+        return { computer, sandbox, session };
+    }
+
+    /** Screenshot for the model, also saved as a replay frame (timeline, §9.2). */
+    private async capture(ctx: ToolContext, sessionId: string, sandbox: Awaited<ReturnType<ComputersService['ensureRunning']>>['sandbox'], label: string): Promise<string | null> {
+        try {
+            await new Promise((r) => setTimeout(r, 700));
+            const shot = await sandbox.computerUse.screenshot.takeCompressed({ format: 'jpeg', quality: 60, scale: 1, showCursor: true });
+            const b64 = (shot as { screenshot?: string }).screenshot;
+            if (!b64) return null;
+            const frames = await this.prisma.file.count({ where: { computer_session_id: sessionId, area: 'REPLAYS' } });
+            if (frames < MAX_FRAMES && ctx.user_settings?.keep_replays !== false) {
+                const id = newId();
+                const objectPath = `orgs/${ctx.organization_id}/replays/${id}`;
+                const data = Buffer.from(b64, 'base64');
+                await this.storage.write('REPLAYS', objectPath, data, 'image/jpeg');
+                await this.prisma.file.create({
+                    data: { id, organization_id: ctx.organization_id, uploaded_by_id: ctx.run.user_id, bucket: 'REPLAYS', area: 'REPLAYS', object_path: objectPath, filename: `${String(frames + 1).padStart(3, '0')} ${label.slice(0, 80)}.jpg`, mimetype: 'image/jpeg', size: BigInt(data.length), status: 'READY', computer_session_id: sessionId, run_id: ctx.run.id },
+                });
+            }
+            return `data:image/jpeg;base64,${b64}`;
+        } catch (e) {
+            this.logger.warn(`Screenshot failed: ${(e as Error).message}`);
+            return null;
+        }
+    }
+
+    private withScreen(ctx: ToolContext, output: Record<string, unknown>, image: string | null): ToolResult {
+        if (!image) return { output: { ...output, screen: 'Screenshot unavailable' } };
+        if (!ctx.supports_vision) return { output: { ...output, screen: 'This model cannot see screenshots; prefer shell commands (e.g. curl) and ask the user to take control for visual steps.' } };
+        return { output: { ...output, screen: 'Screenshot attached (1024×768; coordinates are in pixels from the top-left).' }, images: [image] };
+    }
+
+    private path(p: string | undefined) {
+        const raw = (p || WORKSPACE).trim();
+        const abs = raw.startsWith('/') ? raw : `${WORKSPACE}/${raw}`;
+        const norm = abs.split('/').reduce<string[]>((acc, part) => (part === '..' ? acc.slice(0, -1) : part && part !== '.' ? [...acc, part] : acc), []);
+        const out = `/${norm.join('/')}`;
+        if (!out.startsWith(HOME) || out.startsWith(`${HOME}/.agentspace`) || out.startsWith(`${HOME}/.agentspace-browser`)) throw new Error(`Use paths inside ${WORKSPACE}`);
+        return out;
+    }
+
+    // ---------------- Shell and files ----------------
+
+    private runCommand(): ToolDef {
+        return {
+            name: 'computer_run',
+            description: `Run a shell command on your private cloud computer (Ubuntu, Python 3, Node.js, Chromium; you can pip/npm install). Working folder: ${WORKSPACE}. Files persist between tasks. Use for data processing, scripts, conversions and downloads. Long-running servers should be started in the background (&).`,
+            parameters: obj({ command: { type: 'string' }, cwd: { type: 'string', description: `Folder, default ${WORKSPACE}` }, timeout_seconds: { type: 'number', description: 'Default 120, max 600' } }, ['command']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Running \`${String(a.command).slice(0, 70)}\``,
+            execute: async (a, ctx) => {
+                const { sandbox } = await this.sandbox(ctx);
+                const timeout = Math.min(Math.max(Number(a.timeout_seconds) || 120, 5), 600);
+                const r = await sandbox.process.executeCommand(String(a.command), this.path(a.cwd), undefined, timeout);
+                const out = r.result ?? '';
+                return { output: { exit_code: r.exitCode, output: out.length > 12_000 ? `${out.slice(0, 4000)}\n…[${out.length - 10_000} characters cut]…\n${out.slice(-6000)}` : out } };
+            },
+        };
+    }
+
+    private writeFile(): ToolDef {
+        return {
+            name: 'computer_write_file',
+            description: 'Create or overwrite a text file on your cloud computer (scripts, data, notes).',
+            parameters: obj({ path: { type: 'string', description: `Relative to ${WORKSPACE} or absolute` }, content: { type: 'string' } }, ['path', 'content']),
+            step_type: 'FILE_WRITE',
+            runs_on: 'server',
+            title: (a) => `Writing ${String(a.path).split('/').pop()}`,
+            execute: async (a, ctx) => {
+                const { sandbox } = await this.sandbox(ctx);
+                const p = this.path(a.path);
+                const dir = p.slice(0, p.lastIndexOf('/'));
+                await sandbox.process.executeCommand(`mkdir -p '${dir.replace(/'/g, "'\\''")}'`);
+                await sandbox.fs.uploadFile(Buffer.from(String(a.content), 'utf8'), p);
+                return { output: { path: p, bytes: Buffer.byteLength(String(a.content)) } };
+            },
+        };
+    }
+
+    private readFile(): ToolDef {
+        return {
+            name: 'computer_read_file',
+            description: 'Read a text file from your cloud computer (first 15,000 characters from the offset).',
+            parameters: obj({ path: { type: 'string' }, offset: { type: 'number' } }, ['path']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Reading ${String(a.path).split('/').pop()}`,
+            execute: async (a, ctx) => {
+                const { sandbox } = await this.sandbox(ctx);
+                const p = this.path(a.path);
+                const data = await sandbox.fs.downloadFile(p);
+                if (data.subarray(0, 4000).includes(0)) return { output: { path: p, error: 'Binary file — use computer_run to inspect it, or copy_from_computer to share it.' } };
+                const text = data.toString('utf8');
+                const off = Number(a.offset) || 0;
+                return { output: { path: p, total_characters: text.length, text: text.slice(off, off + 15_000), more: off + 15_000 < text.length ? { next_offset: off + 15_000 } : null } };
+            },
+        };
+    }
+
+    private listFiles(): ToolDef {
+        return {
+            name: 'computer_list_files',
+            description: 'List a folder on your cloud computer.',
+            parameters: obj({ path: { type: 'string', description: `Default ${WORKSPACE}` } }),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: () => 'Looking at files',
+            execute: async (a, ctx) => {
+                const { sandbox } = await this.sandbox(ctx);
+                const p = this.path(a.path);
+                const entries = await sandbox.fs.listFiles(p);
+                return { output: { path: p, entries: entries.slice(0, 300).map((e) => ({ name: e.name, dir: e.isDir, size: e.size })) } };
+            },
+        };
+    }
+
+    // ---------------- Transfers (§9.5) ----------------
+
+    private copyTo(): ToolDef {
+        return {
+            name: 'copy_to_computer',
+            description:
+                'Bring a file onto your cloud computer without exposing any sign-in: a stored file (file_id from the chat, knowledge or a skill), a public URL, or a raw API request made through one of your connected accounts (e.g. GitHub "GET /repos/{owner}/{repo}/tarball/{ref}"). Archives (.zip, .tar.gz) can be unpacked.',
+            parameters: obj(
+                {
+                    source: {
+                        type: 'object',
+                        properties: {
+                            file_id: { type: 'string' },
+                            url: { type: 'string' },
+                            connection_id: { type: 'string', description: 'Connected account to request through' },
+                            endpoint: { type: 'string', description: 'API path or full URL for the connected service' },
+                        },
+                    },
+                    destination_path: { type: 'string', description: `File path, relative to ${WORKSPACE}` },
+                    unpack: { type: 'boolean', description: 'Unpack an archive into a folder next to it' },
+                },
+                ['source', 'destination_path'],
+            ),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Copying ${a.source?.url ? new URL(String(a.source.url)).hostname : a.source?.endpoint ? 'from a connected service' : 'a file'} to the computer`,
+            execute: async (a, ctx) => {
+                const { sandbox } = await this.sandbox(ctx);
+                const dest = this.path(a.destination_path);
+                let data: Buffer;
+                let sourceKind: 'STORED_FILE' | 'PUBLIC_URL' | 'COMPOSIO';
+                let sourceLabel: string;
+                let connectionId: string | undefined;
+                let fileId: string | undefined;
+                const src = a.source ?? {};
+                if (src.file_id) {
+                    const f = await this.prisma.file.findFirst({ where: { id: String(src.file_id), organization_id: ctx.organization_id, deleted_at: null, status: 'READY' } });
+                    if (!f) throw new Error('File not found');
+                    const readable = (f.conversation_id && f.conversation_id === ctx.conversation_id) || (await this.prisma.knowledgeItem.count({ where: { file_id: f.id, deleted_at: null, OR: [{ bot_id: ctx.bot.id }, { scope: 'ORGANIZATION' }] } })) || (await this.prisma.skillFile.count({ where: { file_id: f.id } }));
+                    if (!readable) throw new Error('You do not have access to this file');
+                    if (Number(f.size) > TRANSFER_LIMIT) throw new Error('Transfers are limited to 1 GB');
+                    data = (await this.files.readForTool(ctx.organization_id, f.id)).data;
+                    sourceKind = 'STORED_FILE';
+                    sourceLabel = f.filename;
+                    fileId = f.id;
+                } else if (src.url) {
+                    const url = await assertPublicUrl(String(src.url));
+                    data = await this.fetchLimited(url.toString());
+                    sourceKind = 'PUBLIC_URL';
+                    sourceLabel = `${url.origin}${url.pathname}`;
+                } else if (src.connection_id && src.endpoint) {
+                    const c = await this.prisma.connection.findFirst({ where: { id: String(src.connection_id), ...this.access.usableConnectionsWhere(ctx.organization_id, ctx.actor!.user_id, ctx.bot.id), kind: 'COMPOSIO', status: 'ACTIVE' } });
+                    if (!c?.composio_connected_account_id) throw new Error('That connected account is not available to you');
+                    const res = await this.composio.proxy(c.composio_connected_account_id, { endpoint: String(src.endpoint), method: 'GET' });
+                    if (res.status >= 400) throw new Error(`The service answered ${res.status}`);
+                    const link = typeof res.data === 'object' && res.data ? (res.data.download_url ?? res.data.downloadUrl ?? res.data.url) : null;
+                    if (typeof link === 'string' && /^https:\/\//.test(link)) data = await this.fetchLimited(link);
+                    else if (typeof res.data === 'string' && /^[A-Za-z0-9+/=\s]+$/.test(res.data) && res.data.length > 200) data = Buffer.from(res.data, 'base64');
+                    else data = Buffer.from(typeof res.data === 'string' ? res.data : JSON.stringify(res.data, null, 2), 'utf8');
+                    sourceKind = 'COMPOSIO';
+                    sourceLabel = `${c.label} ${String(src.endpoint).slice(0, 200)}`;
+                    connectionId = c.id;
+                } else throw new Error('Give a file_id, a url, or a connection_id with an endpoint');
+
+                const dir = dest.slice(0, dest.lastIndexOf('/'));
+                await sandbox.process.executeCommand(`mkdir -p '${dir.replace(/'/g, "'\\''")}'`);
+                await sandbox.fs.uploadFile(data, dest);
+                let unpacked: string | null = null;
+                if (a.unpack) {
+                    const q = `'${dest.replace(/'/g, "'\\''")}'`;
+                    const target = dest.replace(/(\.tar\.gz|\.tgz|\.zip|\.tar)$/i, '') || `${dest}-files`;
+                    const cmd = /\.zip$/i.test(dest) ? `mkdir -p '${target}' && unzip -o -q ${q} -d '${target}'` : `mkdir -p '${target}' && tar -xf ${q} -C '${target}'`;
+                    const r = await sandbox.process.executeCommand(cmd, undefined, undefined, 300);
+                    unpacked = r.exitCode === 0 ? target : null;
+                }
+                await this.computers.recordTransfer(ctx.bot.id, { run_id: ctx.run.id, direction: 'TO_COMPUTER', source_kind: sourceKind, connection_id: connectionId, file_id: fileId, source: sourceLabel, destination: dest, size_bytes: data.length });
+                await this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'computer.copy_in', target_type: 'bot', target_id: ctx.bot.id, connection_id: connectionId, run_id: ctx.run.id, metadata: { source: sourceLabel, destination: dest, bytes: data.length } });
+                return { output: { path: dest, bytes: data.length, unpacked_to: unpacked }, connection_id: connectionId };
+            },
+        };
+    }
+
+    private async fetchLimited(url: string): Promise<Buffer> {
+        const res = await fetch(url, { redirect: 'follow', signal: AbortSignal.timeout(300_000) });
+        if (!res.ok || !res.body) throw new Error(`Download failed (${res.status})`);
+        const len = Number(res.headers.get('content-length') ?? 0);
+        if (len > TRANSFER_LIMIT) throw new Error('Transfers are limited to 1 GB');
+        const chunks: Buffer[] = [];
+        let total = 0;
+        for await (const chunk of res.body as unknown as AsyncIterable<Uint8Array>) {
+            total += chunk.length;
+            if (total > TRANSFER_LIMIT) throw new Error('Transfers are limited to 1 GB');
+            chunks.push(Buffer.from(chunk));
+        }
+        return Buffer.concat(chunks);
+    }
+
+    private copyFrom(): ToolDef {
+        return {
+            name: 'copy_from_computer',
+            description: 'Share a file from your cloud computer into this chat (it is saved to Agent Space file storage and appears as a download).',
+            parameters: obj({ path: { type: 'string' } }, ['path']),
+            step_type: 'FILE_WRITE',
+            runs_on: 'server',
+            title: (a) => `Sharing ${String(a.path).split('/').pop()} from the computer`,
+            execute: async (a, ctx) => {
+                if (!ctx.conversation_id) throw new Error('There is no chat to share into');
+                const { sandbox } = await this.sandbox(ctx);
+                const p = this.path(a.path);
+                const info = await sandbox.fs.getFileDetails(p);
+                if (info.isDir) throw new Error('That is a folder — zip it first with computer_run (zip -r out.zip folder)');
+                if (info.size > TRANSFER_LIMIT) throw new Error('Transfers are limited to 1 GB');
+                const data = await sandbox.fs.downloadFile(p);
+                const f = await this.computers.saveFromComputer(ctx.organization_id, ctx.run.user_id, ctx.conversation_id, ctx.run.id, p.split('/').pop()!, data);
+                await ctx.addPart({ type: 'file', file_id: f.id, filename: f.filename, mimetype: f.mimetype, size: Number(f.size) });
+                await this.computers.recordTransfer(ctx.bot.id, { run_id: ctx.run.id, direction: 'FROM_COMPUTER', source_kind: 'CHAT', file_id: f.id, source: p, destination: `conversation:${ctx.conversation_id}`, size_bytes: data.length });
+                return { output: { file_id: f.id, filename: f.filename, size: data.length } };
+            },
+        };
+    }
+
+    // ---------------- Browser / desktop ----------------
+
+    private openUrl(): ToolDef {
+        return {
+            name: 'computer_open_url',
+            description: 'Open a web page in the browser on your cloud computer (it keeps sign-ins between tasks). Returns a screenshot.',
+            parameters: obj({ url: { type: 'string' } }, ['url']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Opening ${(() => { try { return new URL(String(a.url)).hostname; } catch { return 'a page'; } })()}`,
+            execute: async (a, ctx) => {
+                const url = new URL(String(a.url));
+                if (!/^https?:$/.test(url.protocol)) throw new Error('Only http(s) pages can be opened');
+                const { sandbox, session } = await this.sandbox(ctx);
+                // Refresh the launcher each time so computers created by older versions get the current flags.
+                await sandbox.fs.uploadFile(Buffer.from(OPEN_BROWSER), OPEN_BROWSER_PATH);
+                await sandbox.process.executeCommand(`chmod +x ${OPEN_BROWSER_PATH} && ${OPEN_BROWSER_PATH} '${url.toString().replace(/'/g, '%27')}'`, undefined, undefined, 30);
+                await new Promise((r) => setTimeout(r, 2500));
+                return this.withScreen(ctx, { opened: url.toString() }, await this.capture(ctx, session.id, sandbox, `Open ${url.hostname}`));
+            },
+        };
+    }
+
+    private screenshot(): ToolDef {
+        return {
+            name: 'computer_screenshot',
+            description: 'See the current screen of your cloud computer.',
+            parameters: obj({}),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: () => 'Looking at the screen',
+            execute: async (_a, ctx) => {
+                const { sandbox, session } = await this.sandbox(ctx);
+                return this.withScreen(ctx, {}, await this.capture(ctx, session.id, sandbox, 'Screen'));
+            },
+        };
+    }
+
+    private click(): ToolDef {
+        return {
+            name: 'computer_click',
+            description: 'Click at a screen position (pixels, from the latest screenshot). Returns a new screenshot.',
+            parameters: obj({ x: { type: 'number' }, y: { type: 'number' }, button: { type: 'string', enum: ['left', 'right', 'middle'] }, double: { type: 'boolean' }, effect: effectParam, describe: { type: 'string', description: 'What you are clicking, e.g. "the Place order button"' } }, ['x', 'y', 'effect', 'describe']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Clicking ${String(a.describe ?? '').slice(0, 60)}`,
+            classify: (a) => EFFECT_ACTION[String(a.effect)] ?? null,
+            preview: async (a, ctx) => this.preview(a, ctx, `Click "${a.describe}" on the cloud computer`),
+            execute: async (a, ctx) => {
+                const { sandbox, session } = await this.sandbox(ctx);
+                await sandbox.computerUse.mouse.click(Math.round(Number(a.x)), Math.round(Number(a.y)), String(a.button ?? 'left'), !!a.double);
+                return this.withScreen(ctx, { clicked: { x: a.x, y: a.y } }, await this.capture(ctx, session.id, sandbox, `Click ${a.describe ?? ''}`));
+            },
+        };
+    }
+
+    private type(): ToolDef {
+        return {
+            name: 'computer_type',
+            description: 'Type text into the focused field on your cloud computer. Never use this for passwords, payment card numbers or two-step codes — call computer_ask_user so the person signs in themselves.',
+            parameters: obj({ text: { type: 'string' }, press_enter: { type: 'boolean' }, effect: effectParam }, ['text', 'effect']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `⌨️ Typing "${String(a.text).slice(0, 40)}${String(a.text).length > 40 ? '…' : ''}"`,
+            classify: (a) => (a.press_enter ? (EFFECT_ACTION[String(a.effect)] ?? null) : null),
+            preview: async (a, ctx) => this.preview(a, ctx, `Type "${String(a.text).slice(0, 200)}" and press Enter on the cloud computer`),
+            execute: async (a, ctx) => {
+                const { sandbox, session } = await this.sandbox(ctx);
+                await sandbox.computerUse.keyboard.type(String(a.text), 15);
+                if (a.press_enter) await sandbox.computerUse.keyboard.press('Return');
+                return this.withScreen(ctx, { typed: String(a.text).length }, await this.capture(ctx, session.id, sandbox, 'Type'));
+            },
+        };
+    }
+
+    private key(): ToolDef {
+        return {
+            name: 'computer_key',
+            description: 'Press a key or shortcut on your cloud computer, e.g. "Return", "Tab", "Escape", "ctrl+l", "ctrl+a", "alt+Left", "Page_Down".',
+            parameters: obj({ keys: { type: 'string' }, effect: effectParam }, ['keys', 'effect']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `⌨️ Pressing ${String(a.keys).slice(0, 30)}`,
+            classify: (a) => EFFECT_ACTION[String(a.effect)] ?? null,
+            preview: async (a, ctx) => this.preview(a, ctx, `Press ${a.keys} on the cloud computer`),
+            execute: async (a, ctx) => {
+                const { sandbox, session } = await this.sandbox(ctx);
+                const keys = String(a.keys);
+                if (keys.includes('+')) await sandbox.computerUse.keyboard.hotkey(keys);
+                else await sandbox.computerUse.keyboard.press(keys);
+                return this.withScreen(ctx, { pressed: keys }, await this.capture(ctx, session.id, sandbox, `Press ${keys}`));
+            },
+        };
+    }
+
+    private scroll(): ToolDef {
+        return {
+            name: 'computer_scroll',
+            description: 'Scroll at a screen position on your cloud computer.',
+            parameters: obj({ x: { type: 'number' }, y: { type: 'number' }, direction: { type: 'string', enum: ['up', 'down', 'left', 'right'] }, amount: { type: 'number', description: 'Wheel steps, default 5' } }, ['direction']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Scrolling ${a.direction}`,
+            execute: async (a, ctx) => {
+                const { sandbox, session } = await this.sandbox(ctx);
+                await sandbox.computerUse.mouse.scroll(Number(a.x ?? 512), Number(a.y ?? 400), a.direction, Number(a.amount) || 5);
+                return this.withScreen(ctx, {}, await this.capture(ctx, session.id, sandbox, `Scroll ${a.direction}`));
+            },
+        };
+    }
+
+    private async preview(a: Record<string, unknown>, ctx: ToolContext, title: string) {
+        const action = EFFECT_ACTION[String(a.effect)] ?? 'OTHER';
+        let image: string | null = null;
+        try {
+            const { sandbox } = await this.sandbox(ctx);
+            const shot = await sandbox.computerUse.screenshot.takeCompressed({ format: 'jpeg', quality: 50, scale: 0.6 });
+            image = (shot as { screenshot?: string }).screenshot ? `data:image/jpeg;base64,${(shot as { screenshot: string }).screenshot}` : null;
+        } catch {
+            image = null;
+        }
+        return { title, action_type: action, preview: { kind: 'computer', description: title, effect: a.effect, screenshot: image }, requires_tap: action === 'PURCHASE_PAYMENT' };
+    }
+
+    /**
+     * Hands the computer to the user (sign-in, two-step code, "prove you're human", or showing how) and waits
+     * until they hand it back (§9.2, §9.4). Passwords never pass through the bot.
+     */
+    private askUser(): ToolDef {
+        return {
+            name: 'computer_ask_user',
+            description:
+                'Ask the user to take control of your cloud computer — to sign in to a website, enter a two-step code or password, solve a "prove you are human" check, or show you something. The run pauses until they hand control back. Explain what they need to do in one sentence.',
+            parameters: obj({ reason: { type: 'string', description: 'e.g. "Please sign in to the supplier portal (portal.acme.com), then hand control back."' }, kind: { type: 'string', enum: ['sign_in', 'two_step_code', 'captcha', 'other'] } }, ['reason', 'kind']),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: () => 'Asking you to take control',
+            execute: async (a, ctx) => {
+                await this.sandbox(ctx);
+                const request_id = randomToken(12);
+                if (ctx.run.user_id) await this.computers.notifyTakeControl(ctx.run.user_id, ctx.organization_id, ctx.bot.name, String(a.reason), ctx.conversation_id ? `/c/${ctx.conversation_id}` : `/bots/${ctx.bot.id}`);
+                return { wait: 'input', request_id, part: { type: 'computer_handoff', request_id, bot_id: ctx.bot.id, reason: String(a.reason).slice(0, 400), kind: a.kind, status: 'waiting' } };
+            },
+        };
+    }
+}

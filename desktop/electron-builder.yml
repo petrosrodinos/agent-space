@@ -1,0 +1,47 @@
+# Agent Space desktop packaging (§14.2). Signing / notarisation come from environment variables in CI:
+#   Windows: CSC_LINK (path or base64 of the .pfx) + CSC_KEY_PASSWORD
+#   Mac:     CSC_LINK + CSC_KEY_PASSWORD (Developer ID Application), APPLE_ID, APPLE_APP_SPECIFIC_PASSWORD, APPLE_TEAM_ID
+# Without them, builds are unsigned (fine for local testing only).
+appId: com.agentspace.desktop
+productName: Agent Space
+copyright: Copyright © Agent Space
+directories:
+  output: release
+  buildResources: build
+files:
+  - dist/**
+  - package.json
+extraResources:
+  - from: ../app/dist
+    to: web
+    filter: ["**/*"]
+protocols:
+  - name: Agent Space
+    schemes: [agentspace]
+asar: true
+win:
+  target: [nsis]
+  artifactName: AgentSpace-Setup-${version}.${ext}
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+mac:
+  target: [dmg, zip]
+  category: public.app-category.productivity
+  hardenedRuntime: true
+  gatekeeperAssess: false
+  entitlements: build/entitlements.mac.plist
+  entitlementsInherit: build/entitlements.mac.plist
+  extendInfo:
+    NSMicrophoneUsageDescription: Agent Space uses the microphone for voice mode and voice notes.
+    NSCameraUsageDescription: Agent Space uses the camera so you can send photos to your bots.
+  notarize: false # set to true in CI with APPLE_ID / APPLE_APP_SPECIFIC_PASSWORD / APPLE_TEAM_ID
+dmg:
+  artifactName: AgentSpace-${version}.${ext}
+# Automatic updates (electron-updater): configure a feed to enable, e.g.
+# publish:
+#   provider: generic
+#   url: https://downloads.agentspace.example/desktop
+publish: null

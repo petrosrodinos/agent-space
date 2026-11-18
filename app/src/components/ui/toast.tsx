@@ -9,21 +9,21 @@ const ToastProvider = ToastPrimitives.Provider;
 const ToastViewport = React.forwardRef<React.ElementRef<typeof ToastPrimitives.Viewport>, React.ComponentPropsWithoutRef<typeof ToastPrimitives.Viewport>>(({ className, ...props }, ref) => (
   <ToastPrimitives.Viewport
     ref={ref}
-    className={cn("fixed top-0 left-0 right-0 z-[100] flex max-h-screen w-full flex-col gap-2 p-4 sm:left-auto sm:right-4 sm:top-4 sm:max-w-[380px] sm:gap-3 sm:p-0", className)}
+    className={cn("fixed bottom-0 left-0 right-0 z-[100] flex max-h-screen w-full flex-col-reverse gap-2 p-4 pb-[calc(84px+env(safe-area-inset-bottom))] sm:bottom-6 sm:left-1/2 sm:right-auto sm:max-w-[420px] sm:-translate-x-1/2 sm:p-0", className)}
     {...props}
   />
 ));
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-xl border p-4 pr-9 shadow-lg transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-right-full data-[state=open]:sm:slide-in-from-top-0",
+  "group pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden rounded-[20px] border p-4 pr-9 shadow-pop transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-bottom-full",
   {
     variants: {
       variant: {
-        default: "border-border bg-card text-card-foreground",
-        success: "border-emerald-500/20 bg-emerald-50 text-emerald-700 dark:border-emerald-500/25 dark:bg-emerald-950 dark:text-emerald-400",
+        default: "border-transparent bg-[#1C1633] text-[#F6F3FF] dark:bg-[#F6F3FF] dark:text-[#1C1633]",
+        success: "border-transparent bg-[#1C1633] text-[#F6F3FF] dark:bg-[#F6F3FF] dark:text-[#1C1633]",
         destructive: "border-red-500/20 bg-red-50 text-red-700 dark:border-red-500/25 dark:bg-red-950 dark:text-red-400",
-        error: "border-red-500/20 bg-red-50 text-red-700 dark:border-red-500/25 dark:bg-red-950 dark:text-red-400",
+        error: "border-error/30 bg-error-soft text-ink",
         warning: "border-amber-500/20 bg-amber-50 text-amber-700 dark:border-amber-500/25 dark:bg-amber-950 dark:text-amber-400",
         info: "border-blue-500/20 bg-blue-50 text-blue-700 dark:border-blue-500/25 dark:bg-blue-950 dark:text-blue-400",
         light: "border-border bg-secondary text-foreground",

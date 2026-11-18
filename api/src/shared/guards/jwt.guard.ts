@@ -1,37 +1,24 @@
-import { UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext, Injectable, UnauthorizedException } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { JsonWebTokenError } from 'jsonwebtoken';
-import { GqlExecutionContext } from '@nestjs/graphql';
+import { JsonWebTokenError, TokenExpiredError } from 'jsonwebtoken';
 
+/** Validates the Bearer access token (HTTP). Attaches `{ id, role, session_id }` to request.user. */
+@Injectable()
 export class JwtGuard extends AuthGuard('jwt') {
-    constructor() {
-        super();
+    getRequest(context: ExecutionContext) {
+        return context.switchToHttp().getRequest();
     }
 
-    getRequest(context: any) {
-        const ctx = GqlExecutionContext.create(context);
-        return ctx.getContext().req;
-    }
-
-    handleRequest(err: any, user: any, info: any, context: any, status: any) {
+    handleRequest(err: any, user: any, info: any) {
+        if (info instanceof TokenExpiredError) {
+            throw new UnauthorizedException({ message: 'Access token expired', code: 'token_expired' });
+        }
         if (info instanceof JsonWebTokenError) {
-            throw new UnauthorizedException({
-                message: 'Invalid token',
-                code: 'invalid_token',
-            });
+            throw new UnauthorizedException({ message: 'Invalid token', code: 'invalid_token' });
         }
-
         if (err || !user) {
-            throw new UnauthorizedException({
-                message: 'Authentication required',
-                code: 'authentication_required',
-            });
+            throw new UnauthorizedException({ message: 'Authentication required', code: 'authentication_required' });
         }
-
-        const ctx = GqlExecutionContext.create(context);
-        const gqlContext = ctx.getContext();
-        gqlContext.user = user;
-
-        return super.handleRequest(err, user, info, context, status);
+        return user;
     }
 }

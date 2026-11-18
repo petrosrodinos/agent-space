@@ -409,6 +409,12 @@ export type ActivityLog = $Result.DefaultSelection<Prisma.$ActivityLogPayload>
  */
 export type DataExport = $Result.DefaultSelection<Prisma.$DataExportPayload>
 /**
+ * Model DevSecretBlob
+ * DEV/STAGING ONLY fallback for §8.7 when Google Cloud Secret Manager is not available (SECRET_STORE=local-encrypted).
+ * Holds AES-256-GCM ciphertext keyed by the Secret Manager-style resource name. Never used when SECRET_STORE=gcp.
+ */
+export type DevSecretBlob = $Result.DefaultSelection<Prisma.$DevSecretBlobPayload>
+/**
  * Model AppVersionPolicy
  * §14.1 — minimum supported app version per platform.
  */
@@ -2923,6 +2929,16 @@ export class PrismaClient<
   get dataExport(): Prisma.DataExportDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.devSecretBlob`: Exposes CRUD operations for the **DevSecretBlob** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more DevSecretBlobs
+    * const devSecretBlobs = await prisma.devSecretBlob.findMany()
+    * ```
+    */
+  get devSecretBlob(): Prisma.DevSecretBlobDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.appVersionPolicy`: Exposes CRUD operations for the **AppVersionPolicy** model.
     * Example usage:
     * ```ts
@@ -3457,6 +3473,7 @@ export namespace Prisma {
     Invoice: 'Invoice',
     ActivityLog: 'ActivityLog',
     DataExport: 'DataExport',
+    DevSecretBlob: 'DevSecretBlob',
     AppVersionPolicy: 'AppVersionPolicy'
   };
 
@@ -3473,7 +3490,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "appVersionPolicy"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9323,6 +9340,80 @@ export namespace Prisma {
           }
         }
       }
+      DevSecretBlob: {
+        payload: Prisma.$DevSecretBlobPayload<ExtArgs>
+        fields: Prisma.DevSecretBlobFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.DevSecretBlobFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.DevSecretBlobFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          findFirst: {
+            args: Prisma.DevSecretBlobFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.DevSecretBlobFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          findMany: {
+            args: Prisma.DevSecretBlobFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>[]
+          }
+          create: {
+            args: Prisma.DevSecretBlobCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          createMany: {
+            args: Prisma.DevSecretBlobCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.DevSecretBlobCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>[]
+          }
+          delete: {
+            args: Prisma.DevSecretBlobDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          update: {
+            args: Prisma.DevSecretBlobUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          deleteMany: {
+            args: Prisma.DevSecretBlobDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.DevSecretBlobUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.DevSecretBlobUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>[]
+          }
+          upsert: {
+            args: Prisma.DevSecretBlobUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$DevSecretBlobPayload>
+          }
+          aggregate: {
+            args: Prisma.DevSecretBlobAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateDevSecretBlob>
+          }
+          groupBy: {
+            args: Prisma.DevSecretBlobGroupByArgs<ExtArgs>
+            result: $Utils.Optional<DevSecretBlobGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.DevSecretBlobCountArgs<ExtArgs>
+            result: $Utils.Optional<DevSecretBlobCountAggregateOutputType> | number
+          }
+        }
+      }
       AppVersionPolicy: {
         payload: Prisma.$AppVersionPolicyPayload<ExtArgs>
         fields: Prisma.AppVersionPolicyFieldRefs
@@ -9599,6 +9690,7 @@ export namespace Prisma {
     invoice?: InvoiceOmit
     activityLog?: ActivityLogOmit
     dataExport?: DataExportOmit
+    devSecretBlob?: DevSecretBlobOmit
     appVersionPolicy?: AppVersionPolicyOmit
   }
 
@@ -113775,6 +113867,1040 @@ export namespace Prisma {
 
 
   /**
+   * Model DevSecretBlob
+   */
+
+  export type AggregateDevSecretBlob = {
+    _count: DevSecretBlobCountAggregateOutputType | null
+    _avg: DevSecretBlobAvgAggregateOutputType | null
+    _sum: DevSecretBlobSumAggregateOutputType | null
+    _min: DevSecretBlobMinAggregateOutputType | null
+    _max: DevSecretBlobMaxAggregateOutputType | null
+  }
+
+  export type DevSecretBlobAvgAggregateOutputType = {
+    version: number | null
+  }
+
+  export type DevSecretBlobSumAggregateOutputType = {
+    version: number | null
+  }
+
+  export type DevSecretBlobMinAggregateOutputType = {
+    resource_name: string | null
+    version: number | null
+    ciphertext: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type DevSecretBlobMaxAggregateOutputType = {
+    resource_name: string | null
+    version: number | null
+    ciphertext: string | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type DevSecretBlobCountAggregateOutputType = {
+    resource_name: number
+    version: number
+    ciphertext: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type DevSecretBlobAvgAggregateInputType = {
+    version?: true
+  }
+
+  export type DevSecretBlobSumAggregateInputType = {
+    version?: true
+  }
+
+  export type DevSecretBlobMinAggregateInputType = {
+    resource_name?: true
+    version?: true
+    ciphertext?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type DevSecretBlobMaxAggregateInputType = {
+    resource_name?: true
+    version?: true
+    ciphertext?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type DevSecretBlobCountAggregateInputType = {
+    resource_name?: true
+    version?: true
+    ciphertext?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type DevSecretBlobAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DevSecretBlob to aggregate.
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevSecretBlobs to fetch.
+     */
+    orderBy?: DevSecretBlobOrderByWithRelationInput | DevSecretBlobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: DevSecretBlobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevSecretBlobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevSecretBlobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned DevSecretBlobs
+    **/
+    _count?: true | DevSecretBlobCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: DevSecretBlobAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: DevSecretBlobSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: DevSecretBlobMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: DevSecretBlobMaxAggregateInputType
+  }
+
+  export type GetDevSecretBlobAggregateType<T extends DevSecretBlobAggregateArgs> = {
+        [P in keyof T & keyof AggregateDevSecretBlob]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateDevSecretBlob[P]>
+      : GetScalarType<T[P], AggregateDevSecretBlob[P]>
+  }
+
+
+
+
+  export type DevSecretBlobGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: DevSecretBlobWhereInput
+    orderBy?: DevSecretBlobOrderByWithAggregationInput | DevSecretBlobOrderByWithAggregationInput[]
+    by: DevSecretBlobScalarFieldEnum[] | DevSecretBlobScalarFieldEnum
+    having?: DevSecretBlobScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: DevSecretBlobCountAggregateInputType | true
+    _avg?: DevSecretBlobAvgAggregateInputType
+    _sum?: DevSecretBlobSumAggregateInputType
+    _min?: DevSecretBlobMinAggregateInputType
+    _max?: DevSecretBlobMaxAggregateInputType
+  }
+
+  export type DevSecretBlobGroupByOutputType = {
+    resource_name: string
+    version: number
+    ciphertext: string
+    created_at: Date
+    updated_at: Date
+    _count: DevSecretBlobCountAggregateOutputType | null
+    _avg: DevSecretBlobAvgAggregateOutputType | null
+    _sum: DevSecretBlobSumAggregateOutputType | null
+    _min: DevSecretBlobMinAggregateOutputType | null
+    _max: DevSecretBlobMaxAggregateOutputType | null
+  }
+
+  type GetDevSecretBlobGroupByPayload<T extends DevSecretBlobGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<DevSecretBlobGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof DevSecretBlobGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], DevSecretBlobGroupByOutputType[P]>
+            : GetScalarType<T[P], DevSecretBlobGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type DevSecretBlobSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    resource_name?: boolean
+    version?: boolean
+    ciphertext?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["devSecretBlob"]>
+
+  export type DevSecretBlobSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    resource_name?: boolean
+    version?: boolean
+    ciphertext?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["devSecretBlob"]>
+
+  export type DevSecretBlobSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    resource_name?: boolean
+    version?: boolean
+    ciphertext?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }, ExtArgs["result"]["devSecretBlob"]>
+
+  export type DevSecretBlobSelectScalar = {
+    resource_name?: boolean
+    version?: boolean
+    ciphertext?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type DevSecretBlobOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"resource_name" | "version" | "ciphertext" | "created_at" | "updated_at", ExtArgs["result"]["devSecretBlob"]>
+
+  export type $DevSecretBlobPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "DevSecretBlob"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      resource_name: string
+      version: number
+      ciphertext: string
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["devSecretBlob"]>
+    composites: {}
+  }
+
+  type DevSecretBlobGetPayload<S extends boolean | null | undefined | DevSecretBlobDefaultArgs> = $Result.GetResult<Prisma.$DevSecretBlobPayload, S>
+
+  type DevSecretBlobCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<DevSecretBlobFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: DevSecretBlobCountAggregateInputType | true
+    }
+
+  export interface DevSecretBlobDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['DevSecretBlob'], meta: { name: 'DevSecretBlob' } }
+    /**
+     * Find zero or one DevSecretBlob that matches the filter.
+     * @param {DevSecretBlobFindUniqueArgs} args - Arguments to find a DevSecretBlob
+     * @example
+     * // Get one DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends DevSecretBlobFindUniqueArgs>(args: SelectSubset<T, DevSecretBlobFindUniqueArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one DevSecretBlob that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {DevSecretBlobFindUniqueOrThrowArgs} args - Arguments to find a DevSecretBlob
+     * @example
+     * // Get one DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends DevSecretBlobFindUniqueOrThrowArgs>(args: SelectSubset<T, DevSecretBlobFindUniqueOrThrowArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DevSecretBlob that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobFindFirstArgs} args - Arguments to find a DevSecretBlob
+     * @example
+     * // Get one DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends DevSecretBlobFindFirstArgs>(args?: SelectSubset<T, DevSecretBlobFindFirstArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first DevSecretBlob that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobFindFirstOrThrowArgs} args - Arguments to find a DevSecretBlob
+     * @example
+     * // Get one DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends DevSecretBlobFindFirstOrThrowArgs>(args?: SelectSubset<T, DevSecretBlobFindFirstOrThrowArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more DevSecretBlobs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all DevSecretBlobs
+     * const devSecretBlobs = await prisma.devSecretBlob.findMany()
+     * 
+     * // Get first 10 DevSecretBlobs
+     * const devSecretBlobs = await prisma.devSecretBlob.findMany({ take: 10 })
+     * 
+     * // Only select the `resource_name`
+     * const devSecretBlobWithResource_nameOnly = await prisma.devSecretBlob.findMany({ select: { resource_name: true } })
+     * 
+     */
+    findMany<T extends DevSecretBlobFindManyArgs>(args?: SelectSubset<T, DevSecretBlobFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a DevSecretBlob.
+     * @param {DevSecretBlobCreateArgs} args - Arguments to create a DevSecretBlob.
+     * @example
+     * // Create one DevSecretBlob
+     * const DevSecretBlob = await prisma.devSecretBlob.create({
+     *   data: {
+     *     // ... data to create a DevSecretBlob
+     *   }
+     * })
+     * 
+     */
+    create<T extends DevSecretBlobCreateArgs>(args: SelectSubset<T, DevSecretBlobCreateArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many DevSecretBlobs.
+     * @param {DevSecretBlobCreateManyArgs} args - Arguments to create many DevSecretBlobs.
+     * @example
+     * // Create many DevSecretBlobs
+     * const devSecretBlob = await prisma.devSecretBlob.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends DevSecretBlobCreateManyArgs>(args?: SelectSubset<T, DevSecretBlobCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many DevSecretBlobs and returns the data saved in the database.
+     * @param {DevSecretBlobCreateManyAndReturnArgs} args - Arguments to create many DevSecretBlobs.
+     * @example
+     * // Create many DevSecretBlobs
+     * const devSecretBlob = await prisma.devSecretBlob.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many DevSecretBlobs and only return the `resource_name`
+     * const devSecretBlobWithResource_nameOnly = await prisma.devSecretBlob.createManyAndReturn({
+     *   select: { resource_name: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends DevSecretBlobCreateManyAndReturnArgs>(args?: SelectSubset<T, DevSecretBlobCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a DevSecretBlob.
+     * @param {DevSecretBlobDeleteArgs} args - Arguments to delete one DevSecretBlob.
+     * @example
+     * // Delete one DevSecretBlob
+     * const DevSecretBlob = await prisma.devSecretBlob.delete({
+     *   where: {
+     *     // ... filter to delete one DevSecretBlob
+     *   }
+     * })
+     * 
+     */
+    delete<T extends DevSecretBlobDeleteArgs>(args: SelectSubset<T, DevSecretBlobDeleteArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one DevSecretBlob.
+     * @param {DevSecretBlobUpdateArgs} args - Arguments to update one DevSecretBlob.
+     * @example
+     * // Update one DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends DevSecretBlobUpdateArgs>(args: SelectSubset<T, DevSecretBlobUpdateArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more DevSecretBlobs.
+     * @param {DevSecretBlobDeleteManyArgs} args - Arguments to filter DevSecretBlobs to delete.
+     * @example
+     * // Delete a few DevSecretBlobs
+     * const { count } = await prisma.devSecretBlob.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends DevSecretBlobDeleteManyArgs>(args?: SelectSubset<T, DevSecretBlobDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DevSecretBlobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many DevSecretBlobs
+     * const devSecretBlob = await prisma.devSecretBlob.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends DevSecretBlobUpdateManyArgs>(args: SelectSubset<T, DevSecretBlobUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more DevSecretBlobs and returns the data updated in the database.
+     * @param {DevSecretBlobUpdateManyAndReturnArgs} args - Arguments to update many DevSecretBlobs.
+     * @example
+     * // Update many DevSecretBlobs
+     * const devSecretBlob = await prisma.devSecretBlob.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more DevSecretBlobs and only return the `resource_name`
+     * const devSecretBlobWithResource_nameOnly = await prisma.devSecretBlob.updateManyAndReturn({
+     *   select: { resource_name: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends DevSecretBlobUpdateManyAndReturnArgs>(args: SelectSubset<T, DevSecretBlobUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one DevSecretBlob.
+     * @param {DevSecretBlobUpsertArgs} args - Arguments to update or create a DevSecretBlob.
+     * @example
+     * // Update or create a DevSecretBlob
+     * const devSecretBlob = await prisma.devSecretBlob.upsert({
+     *   create: {
+     *     // ... data to create a DevSecretBlob
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the DevSecretBlob we want to update
+     *   }
+     * })
+     */
+    upsert<T extends DevSecretBlobUpsertArgs>(args: SelectSubset<T, DevSecretBlobUpsertArgs<ExtArgs>>): Prisma__DevSecretBlobClient<$Result.GetResult<Prisma.$DevSecretBlobPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of DevSecretBlobs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobCountArgs} args - Arguments to filter DevSecretBlobs to count.
+     * @example
+     * // Count the number of DevSecretBlobs
+     * const count = await prisma.devSecretBlob.count({
+     *   where: {
+     *     // ... the filter for the DevSecretBlobs we want to count
+     *   }
+     * })
+    **/
+    count<T extends DevSecretBlobCountArgs>(
+      args?: Subset<T, DevSecretBlobCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], DevSecretBlobCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a DevSecretBlob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends DevSecretBlobAggregateArgs>(args: Subset<T, DevSecretBlobAggregateArgs>): Prisma.PrismaPromise<GetDevSecretBlobAggregateType<T>>
+
+    /**
+     * Group by DevSecretBlob.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {DevSecretBlobGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends DevSecretBlobGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: DevSecretBlobGroupByArgs['orderBy'] }
+        : { orderBy?: DevSecretBlobGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, DevSecretBlobGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetDevSecretBlobGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the DevSecretBlob model
+   */
+  readonly fields: DevSecretBlobFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for DevSecretBlob.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__DevSecretBlobClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the DevSecretBlob model
+   */
+  interface DevSecretBlobFieldRefs {
+    readonly resource_name: FieldRef<"DevSecretBlob", 'String'>
+    readonly version: FieldRef<"DevSecretBlob", 'Int'>
+    readonly ciphertext: FieldRef<"DevSecretBlob", 'String'>
+    readonly created_at: FieldRef<"DevSecretBlob", 'DateTime'>
+    readonly updated_at: FieldRef<"DevSecretBlob", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * DevSecretBlob findUnique
+   */
+  export type DevSecretBlobFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter, which DevSecretBlob to fetch.
+     */
+    where: DevSecretBlobWhereUniqueInput
+  }
+
+  /**
+   * DevSecretBlob findUniqueOrThrow
+   */
+  export type DevSecretBlobFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter, which DevSecretBlob to fetch.
+     */
+    where: DevSecretBlobWhereUniqueInput
+  }
+
+  /**
+   * DevSecretBlob findFirst
+   */
+  export type DevSecretBlobFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter, which DevSecretBlob to fetch.
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevSecretBlobs to fetch.
+     */
+    orderBy?: DevSecretBlobOrderByWithRelationInput | DevSecretBlobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DevSecretBlobs.
+     */
+    cursor?: DevSecretBlobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevSecretBlobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevSecretBlobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevSecretBlobs.
+     */
+    distinct?: DevSecretBlobScalarFieldEnum | DevSecretBlobScalarFieldEnum[]
+  }
+
+  /**
+   * DevSecretBlob findFirstOrThrow
+   */
+  export type DevSecretBlobFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter, which DevSecretBlob to fetch.
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevSecretBlobs to fetch.
+     */
+    orderBy?: DevSecretBlobOrderByWithRelationInput | DevSecretBlobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for DevSecretBlobs.
+     */
+    cursor?: DevSecretBlobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevSecretBlobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevSecretBlobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevSecretBlobs.
+     */
+    distinct?: DevSecretBlobScalarFieldEnum | DevSecretBlobScalarFieldEnum[]
+  }
+
+  /**
+   * DevSecretBlob findMany
+   */
+  export type DevSecretBlobFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter, which DevSecretBlobs to fetch.
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of DevSecretBlobs to fetch.
+     */
+    orderBy?: DevSecretBlobOrderByWithRelationInput | DevSecretBlobOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing DevSecretBlobs.
+     */
+    cursor?: DevSecretBlobWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` DevSecretBlobs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` DevSecretBlobs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of DevSecretBlobs.
+     */
+    distinct?: DevSecretBlobScalarFieldEnum | DevSecretBlobScalarFieldEnum[]
+  }
+
+  /**
+   * DevSecretBlob create
+   */
+  export type DevSecretBlobCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * The data needed to create a DevSecretBlob.
+     */
+    data: XOR<DevSecretBlobCreateInput, DevSecretBlobUncheckedCreateInput>
+  }
+
+  /**
+   * DevSecretBlob createMany
+   */
+  export type DevSecretBlobCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many DevSecretBlobs.
+     */
+    data: DevSecretBlobCreateManyInput | DevSecretBlobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DevSecretBlob createManyAndReturn
+   */
+  export type DevSecretBlobCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * The data used to create many DevSecretBlobs.
+     */
+    data: DevSecretBlobCreateManyInput | DevSecretBlobCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * DevSecretBlob update
+   */
+  export type DevSecretBlobUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * The data needed to update a DevSecretBlob.
+     */
+    data: XOR<DevSecretBlobUpdateInput, DevSecretBlobUncheckedUpdateInput>
+    /**
+     * Choose, which DevSecretBlob to update.
+     */
+    where: DevSecretBlobWhereUniqueInput
+  }
+
+  /**
+   * DevSecretBlob updateMany
+   */
+  export type DevSecretBlobUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update DevSecretBlobs.
+     */
+    data: XOR<DevSecretBlobUpdateManyMutationInput, DevSecretBlobUncheckedUpdateManyInput>
+    /**
+     * Filter which DevSecretBlobs to update
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * Limit how many DevSecretBlobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DevSecretBlob updateManyAndReturn
+   */
+  export type DevSecretBlobUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * The data used to update DevSecretBlobs.
+     */
+    data: XOR<DevSecretBlobUpdateManyMutationInput, DevSecretBlobUncheckedUpdateManyInput>
+    /**
+     * Filter which DevSecretBlobs to update
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * Limit how many DevSecretBlobs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * DevSecretBlob upsert
+   */
+  export type DevSecretBlobUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * The filter to search for the DevSecretBlob to update in case it exists.
+     */
+    where: DevSecretBlobWhereUniqueInput
+    /**
+     * In case the DevSecretBlob found by the `where` argument doesn't exist, create a new DevSecretBlob with this data.
+     */
+    create: XOR<DevSecretBlobCreateInput, DevSecretBlobUncheckedCreateInput>
+    /**
+     * In case the DevSecretBlob was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<DevSecretBlobUpdateInput, DevSecretBlobUncheckedUpdateInput>
+  }
+
+  /**
+   * DevSecretBlob delete
+   */
+  export type DevSecretBlobDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+    /**
+     * Filter which DevSecretBlob to delete.
+     */
+    where: DevSecretBlobWhereUniqueInput
+  }
+
+  /**
+   * DevSecretBlob deleteMany
+   */
+  export type DevSecretBlobDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which DevSecretBlobs to delete
+     */
+    where?: DevSecretBlobWhereInput
+    /**
+     * Limit how many DevSecretBlobs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * DevSecretBlob without action
+   */
+  export type DevSecretBlobDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the DevSecretBlob
+     */
+    select?: DevSecretBlobSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the DevSecretBlob
+     */
+    omit?: DevSecretBlobOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Model AppVersionPolicy
    */
 
@@ -116260,6 +117386,17 @@ export namespace Prisma {
   };
 
   export type DataExportScalarFieldEnum = (typeof DataExportScalarFieldEnum)[keyof typeof DataExportScalarFieldEnum]
+
+
+  export const DevSecretBlobScalarFieldEnum: {
+    resource_name: 'resource_name',
+    version: 'version',
+    ciphertext: 'ciphertext',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type DevSecretBlobScalarFieldEnum = (typeof DevSecretBlobScalarFieldEnum)[keyof typeof DevSecretBlobScalarFieldEnum]
 
 
   export const AppVersionPolicyScalarFieldEnum: {
@@ -126538,6 +127675,60 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"DataExport"> | Date | string
   }
 
+  export type DevSecretBlobWhereInput = {
+    AND?: DevSecretBlobWhereInput | DevSecretBlobWhereInput[]
+    OR?: DevSecretBlobWhereInput[]
+    NOT?: DevSecretBlobWhereInput | DevSecretBlobWhereInput[]
+    resource_name?: StringFilter<"DevSecretBlob"> | string
+    version?: IntFilter<"DevSecretBlob"> | number
+    ciphertext?: StringFilter<"DevSecretBlob"> | string
+    created_at?: DateTimeFilter<"DevSecretBlob"> | Date | string
+    updated_at?: DateTimeFilter<"DevSecretBlob"> | Date | string
+  }
+
+  export type DevSecretBlobOrderByWithRelationInput = {
+    resource_name?: SortOrder
+    version?: SortOrder
+    ciphertext?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type DevSecretBlobWhereUniqueInput = Prisma.AtLeast<{
+    resource_name?: string
+    AND?: DevSecretBlobWhereInput | DevSecretBlobWhereInput[]
+    OR?: DevSecretBlobWhereInput[]
+    NOT?: DevSecretBlobWhereInput | DevSecretBlobWhereInput[]
+    version?: IntFilter<"DevSecretBlob"> | number
+    ciphertext?: StringFilter<"DevSecretBlob"> | string
+    created_at?: DateTimeFilter<"DevSecretBlob"> | Date | string
+    updated_at?: DateTimeFilter<"DevSecretBlob"> | Date | string
+  }, "resource_name">
+
+  export type DevSecretBlobOrderByWithAggregationInput = {
+    resource_name?: SortOrder
+    version?: SortOrder
+    ciphertext?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: DevSecretBlobCountOrderByAggregateInput
+    _avg?: DevSecretBlobAvgOrderByAggregateInput
+    _max?: DevSecretBlobMaxOrderByAggregateInput
+    _min?: DevSecretBlobMinOrderByAggregateInput
+    _sum?: DevSecretBlobSumOrderByAggregateInput
+  }
+
+  export type DevSecretBlobScalarWhereWithAggregatesInput = {
+    AND?: DevSecretBlobScalarWhereWithAggregatesInput | DevSecretBlobScalarWhereWithAggregatesInput[]
+    OR?: DevSecretBlobScalarWhereWithAggregatesInput[]
+    NOT?: DevSecretBlobScalarWhereWithAggregatesInput | DevSecretBlobScalarWhereWithAggregatesInput[]
+    resource_name?: StringWithAggregatesFilter<"DevSecretBlob"> | string
+    version?: IntWithAggregatesFilter<"DevSecretBlob"> | number
+    ciphertext?: StringWithAggregatesFilter<"DevSecretBlob"> | string
+    created_at?: DateTimeWithAggregatesFilter<"DevSecretBlob"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"DevSecretBlob"> | Date | string
+  }
+
   export type AppVersionPolicyWhereInput = {
     AND?: AppVersionPolicyWhereInput | AppVersionPolicyWhereInput[]
     OR?: AppVersionPolicyWhereInput[]
@@ -135884,6 +137075,62 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type DevSecretBlobCreateInput = {
+    resource_name: string
+    version?: number
+    ciphertext: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type DevSecretBlobUncheckedCreateInput = {
+    resource_name: string
+    version?: number
+    ciphertext: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type DevSecretBlobUpdateInput = {
+    resource_name?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    ciphertext?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevSecretBlobUncheckedUpdateInput = {
+    resource_name?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    ciphertext?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevSecretBlobCreateManyInput = {
+    resource_name: string
+    version?: number
+    ciphertext: string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type DevSecretBlobUpdateManyMutationInput = {
+    resource_name?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    ciphertext?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type DevSecretBlobUncheckedUpdateManyInput = {
+    resource_name?: StringFieldUpdateOperationsInput | string
+    version?: IntFieldUpdateOperationsInput | number
+    ciphertext?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AppVersionPolicyCreateInput = {
     platform: $Enums.Platform
     minimum_version: string
@@ -143544,6 +144791,38 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumExportStatusFilter<$PrismaModel>
     _max?: NestedEnumExportStatusFilter<$PrismaModel>
+  }
+
+  export type DevSecretBlobCountOrderByAggregateInput = {
+    resource_name?: SortOrder
+    version?: SortOrder
+    ciphertext?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type DevSecretBlobAvgOrderByAggregateInput = {
+    version?: SortOrder
+  }
+
+  export type DevSecretBlobMaxOrderByAggregateInput = {
+    resource_name?: SortOrder
+    version?: SortOrder
+    ciphertext?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type DevSecretBlobMinOrderByAggregateInput = {
+    resource_name?: SortOrder
+    version?: SortOrder
+    ciphertext?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type DevSecretBlobSumOrderByAggregateInput = {
+    version?: SortOrder
   }
 
   export type AppVersionPolicyCountOrderByAggregateInput = {

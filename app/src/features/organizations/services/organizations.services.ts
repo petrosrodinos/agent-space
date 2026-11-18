@@ -1,0 +1,24 @@
+import axiosInstance from "@/config/api/axios";
+import { ApiRoutes } from "@/config/api/routes";
+import { request } from "@/lib/request";
+import type { OrgRole, OrganizationSummary } from "@/features/users/interfaces/users.interfaces";
+import type { Invitation, InvitationPreview, Member, Organization, OrganizationSettings } from "../interfaces/organizations.interfaces";
+
+export const listOrganizations = () => request<OrganizationSummary[]>(() => axiosInstance.get(ApiRoutes.organizations.root));
+export const createOrganization = (dto: { name: string; brand_color?: string }) => request<{ id: string; name: string }>(() => axiosInstance.post(ApiRoutes.organizations.root, dto));
+export const getCurrentOrganization = () => request<Organization>(() => axiosInstance.get(ApiRoutes.organizations.current));
+export const updateOrganization = (dto: { name?: string; brand_color?: string; logo_file_id?: string | null }) => request<Organization>(() => axiosInstance.patch(ApiRoutes.organizations.current, dto));
+export const updateOrganizationSettings = (dto: Partial<OrganizationSettings> & { allowed_model_ids?: string[] }) => request<Organization>(() => axiosInstance.patch(ApiRoutes.organizations.settings, dto));
+export const deleteOrganization = () => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.organizations.current));
+export const leaveOrganization = () => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.organizations.leave));
+export const transferOwnership = (user_id: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.organizations.transfer, { user_id }));
+export const listMembers = () => request<Member[]>(() => axiosInstance.get(ApiRoutes.organizations.members));
+export const updateMemberRole = (userId: string, role: OrgRole) => request<Member>(() => axiosInstance.patch(ApiRoutes.organizations.member(userId), { role }));
+export const removeMember = (userId: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.organizations.member(userId)));
+export const listInvitations = () => request<Invitation[]>(() => axiosInstance.get(ApiRoutes.organizations.invitations));
+export const inviteMembers = (dto: { emails: string[]; role: OrgRole }) => request<{ results: { email: string; status: string }[] }>(() => axiosInstance.post(ApiRoutes.organizations.invitations, dto));
+export const createInviteLink = (role: OrgRole) => request<{ id: string; url: string; role: OrgRole; expires_at: string }>(() => axiosInstance.post(ApiRoutes.organizations.invitation_link, { role }));
+export const cancelInvitation = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.organizations.invitation(id)));
+export const resendInvitation = (id: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.organizations.invitation_resend(id)));
+export const previewInvitation = (token: string) => request<InvitationPreview>(() => axiosInstance.get(ApiRoutes.invitations.preview(token)));
+export const acceptInvitation = (token: string) => request<{ organization_id: string; already_member: boolean }>(() => axiosInstance.post(ApiRoutes.invitations.accept(token)));

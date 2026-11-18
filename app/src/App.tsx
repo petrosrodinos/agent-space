@@ -1,16 +1,21 @@
-import AppRoutes from "./routes";
 import { BrowserRouter } from "react-router-dom";
-import QueryProvider from "./components/providers/query-provider.tsx";
-import { Toaster } from "./components/ui/toaster.tsx";
-import { RadixPointerEventsGuard } from "./components/providers/radix-pointer-events-guard.tsx";
+import AppRoutes from "@/routes";
+import { DeepLinkListener } from "@/hooks/use-deep-links";
+import QueryProvider from "@/components/providers/query-provider";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import { RadixPointerEventsGuard } from "@/components/providers/radix-pointer-events-guard";
 
 function App() {
   return (
     <BrowserRouter>
       <QueryProvider>
-        <AppRoutes />
-        <Toaster />
-        <RadixPointerEventsGuard />
+        <TooltipProvider delayDuration={300}>
+          <DeepLinkListener />
+          <AppRoutes />
+          <Toaster />
+          <RadixPointerEventsGuard />
+        </TooltipProvider>
       </QueryProvider>
     </BrowserRouter>
   );

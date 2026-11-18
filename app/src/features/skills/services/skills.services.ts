@@ -1,0 +1,21 @@
+import axiosInstance from "@/config/api/axios";
+import { ApiRoutes } from "@/config/api/routes";
+import { request } from "@/lib/request";
+import type { Skill, SkillFormDto, SkillSharing, SkillSummary, SkillTab } from "../interfaces/skills.interfaces";
+import { SkillTabs, type SkillShareRole } from "../interfaces/skills.interfaces";
+
+export const getSkills = (tab: SkillTab = SkillTabs.ALL, search?: string) => request<SkillSummary[]>(() => axiosInstance.get(ApiRoutes.skills.root, { params: { tab, search } }));
+export const getSkill = (id: string) => request<Skill>(() => axiosInstance.get(ApiRoutes.skills.one(id)));
+export const createSkill = (dto: SkillFormDto) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.root, dto));
+export const updateSkill = (id: string, dto: Partial<SkillFormDto>) => request<Skill>(() => axiosInstance.patch(ApiRoutes.skills.one(id), dto));
+export const deleteSkill = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.skills.one(id)));
+export const restoreSkill = (id: string) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.restore(id)));
+export const restoreSkillVersion = (id: string, version: number) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.restore_version(id, version)));
+export const shareSkill = (id: string, dto: { sharing_level: SkillSharing; shares?: { user_id: string; role: SkillShareRole }[] }) => request<Skill>(() => axiosInstance.put(ApiRoutes.skills.sharing(id), dto));
+export const setSkillBots = (id: string, bot_ids: string[]) => request<Skill>(() => axiosInstance.put(ApiRoutes.skills.bots(id), { bot_ids }));
+export const setBotSkills = (botId: string, skill_ids: string[]) => request<{ ok: boolean }>(() => axiosInstance.put(ApiRoutes.skills.bot(botId), { skill_ids }));
+export const addStarterSkill = (id: string) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.add_starter(id)));
+export const exportSkill = (id: string) => request<Record<string, unknown>>(() => axiosInstance.get(ApiRoutes.skills.export(id)));
+export const importSkill = (skill: Record<string, unknown>) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.import, { skill }));
+export const addSkillFile = (id: string, file_id: string) => request<Skill>(() => axiosInstance.post(ApiRoutes.skills.files(id), { file_id }), "Could not attach the file.");
+export const removeSkillFile = (id: string, fileId: string) => request<Skill>(() => axiosInstance.delete(ApiRoutes.skills.file(id, fileId)));

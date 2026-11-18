@@ -1,0 +1,27 @@
+{
+  "name": "agentspace-desktop",
+  "productName": "Agent Space",
+  "version": "1.0.0",
+  "description": "Agent Space desktop app (Windows, Mac) \u2014 the app/ build inside Electron (\u00a714.2)",
+  "private": true,
+  "main": "dist/main.js",
+  "author": "Agent Space",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "npm run build && electron . --dev",
+    "start": "npm run build && electron .",
+    "web": "npm --prefix ../app run build",
+    "package:win": "npm run web && npm run build && electron-builder --win",
+    "package:mac": "npm run web && npm run build && electron-builder --mac",
+    "package:dir": "npm run build && electron-builder --dir --config.electronDist=node_modules/electron/dist"
+  },
+  "dependencies": {
+    "electron-updater": "6.8.11"
+  },
+  "devDependencies": {
+    "@types/node": "22.19.1",
+    "electron": "45.3.4",
+    "electron-builder": "26.18.0",
+    "typescript": "5.9.3"
+  }
+}

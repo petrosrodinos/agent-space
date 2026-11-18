@@ -1,0 +1,397 @@
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from "react";
+import { useNavigate, useParams } from "react-router-dom";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { ArrowDown, Pin, Search } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
+import { BotAvatar } from "@/components/ui/bot-avatar";
+import { EmptyState } from "@/components/ui/empty-state";
+import { Input } from "@/components/ui/input";
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import { Markdown } from "@/components/ui/markdown";
+import {
+  useConversation, useConversationSearch, useDeleteConversation, useDeleteMessage, useEditMessage, useMarkRead, useMessages, usePinned, useReact, useRetryMessage, useSendMessage,
+  useStopRun, useTogglePin, useUpdateMyConversation,
+} from "@/features/conversations/hooks/use-conversations";
+import { useConversationStream, type RunStatusMap } from "@/features/realtime/hooks/use-realtime";
+import { allMessages, runStatusKey } from "@/features/conversations/utils/messages-cache";
+import type { Message } from "@/features/conversations/interfaces/conversations.interfaces";
+import { useMe } from "@/features/users/hooks/use-users";
+import { useModels, useBot } from "@/features/bots/hooks/use-bots";
+import { useMediaQuery } from "@/hooks/use-media-query";
+import { dayLabel, formatDateTime } from "@/lib/date";
+import { Routes } from "@/routes/routes";
+import { Composer } from "../../components/composer";
+import { VoiceBar } from "../../components/voice-bar";
+import { useVoiceSession } from "@/features/voice/hooks/use-voice-session";
+import { MessageItem, type MessageActions } from "../../components/message-item";
+import { ConversationHeader } from "../../components/conversation-header";
+import { ConversationInfoPanel } from "../../components/conversation-info-panel";
+import { QueryKeys } from "@/config/constants/query-keys";
+import { ConversationTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
+import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfaces/tasks.interfaces";
+import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
+
+const ACTIVE: string[] = ACTIVE_RUN_STATUSES;
+
+/** A bot message counts as "working" while streaming — but not while it waits on the user (approval or secret box). */
+function isWorking(m: Message, runStatus: RunStatusMap | undefined) {
+  if (!m.author_bot || (m.status !== MessageStatuses.STREAMING && m.status !== MessageStatuses.PENDING)) return false;
+  const live = runStatus?.[m.author_bot.id];
+  if (live && live.run_id === m.run_id && !ACTIVE.includes(live.status)) return false;
+  if (m.run && !ACTIVE.includes(m.run.status)) return false;
+  return !m.parts.some((p) => (p.type === MessagePartTypes.APPROVAL && p.status === ApprovalStatuses.PENDING) || (p.type === MessagePartTypes.SECRET_INPUT && p.status === SecretInputStatuses.PENDING) || (p.type === MessagePartTypes.COMPUTER_HANDOFF && p.status === ComputerHandoffStatuses.WAITING));
+}
+
+const MessagesSkeleton: FC = () => (
+  <div className="mx-auto w-full max-w-[760px] space-y-6 px-4 py-6">
+    {Array.from({ length: 4 }).map((_, i) => (
+      <div key={i} className={i % 2 ? "flex justify-end" : "flex gap-3"}>
+        {i % 2 === 0 && <Skeleton className="h-10 w-10 rounded-[14px]" />}
+        <Skeleton className={i % 2 ? "h-12 w-2/5 rounded-[20px]" : "h-20 w-3/5 rounded-[20px]"} />
+      </div>
+    ))}
+  </div>
+);
+
+const ConversationPage: FC = () => {
+  const { conversationId = "" } = useParams();
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { data: me } = useMe();
+  const { data: conversation, isPending: convPending, error: convError } = useConversation(conversationId);
+  const messagesQuery = useMessages(conversationId);
+  const { data: models } = useModels();
+  useConversationStream(conversationId);
+  const { data: runStatus } = useQuery<RunStatusMap>({ queryKey: runStatusKey(conversationId), queryFn: () => ({}), staleTime: Infinity, enabled: !!conversationId });
+
+  const send = useSendMessage(conversationId);
+  const voice = useVoiceSession(conversationId);
+  const stop = useStopRun();
+  const retry = useRetryMessage();
+  const react = useReact();
+  const pin = useTogglePin();
+  const edit = useEditMessage();
+  const del = useDeleteMessage(conversationId);
+  const markRead = useMarkRead();
+  const updateMine = useUpdateMyConversation();
+  const deleteConv = useDeleteConversation();
+
+  const isDesktop = useMediaQuery("(min-width: 1200px)");
+  const [panel, setPanel] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [pinnedOpen, setPinnedOpen] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
+  const [deletingMsg, setDeletingMsg] = useState<Message | null>(null);
+  const [query, setQuery] = useState("");
+  const [prefill, setPrefill] = useState<string | null>(null);
+  const searchResults = useConversationSearch(conversationId, searchOpen ? query : "");
+  const pinned = usePinned(conversationId, pinnedOpen);
+
+  const messages = useMemo(() => allMessages(messagesQuery.data), [messagesQuery.data]);
+  const leadBotId = conversation?.bots[0]?.id ?? "";
+  const { data: leadBot } = useBot(conversation?.type === ConversationTypes.DIRECT ? leadBotId : "");
+
+  // Who is working: live run status, plus any bot message still streaming.
+  const working = useMemo(() => {
+    const ids = new Set<string>();
+    Object.entries(runStatus ?? {}).forEach(([bot, s]) => ACTIVE.includes(s.status) && ids.add(bot));
+    messages.forEach((m) => isWorking(m, runStatus) && ids.add(m.author_bot!.id));
+    return [...ids];
+  }, [runStatus, messages]);
+  const activeRunIds = useMemo(() => {
+    const ids = new Set<string>();
+    Object.values(runStatus ?? {}).forEach((s) => ACTIVE.includes(s.status) && ids.add(s.run_id));
+    messages.forEach((m) => isWorking(m, runStatus) && m.run_id && ids.add(m.run_id));
+    return [...ids];
+  }, [runStatus, messages]);
+
+  // ---- Scrolling: stick to the bottom while the user is there; keep position when older messages load ----
+  const scroller = useRef<HTMLDivElement>(null);
+  const atBottom = useRef(true);
+  const [showJump, setShowJump] = useState(false);
+  const prevHeight = useRef(0);
+  const loadingOlder = useRef(false);
+
+  const scrollToBottom = useCallback((smooth = false) => {
+    const el = scroller.current;
+    if (el) el.scrollTo({ top: el.scrollHeight, behavior: smooth ? "smooth" : "auto" });
+  }, []);
+
+  useLayoutEffect(() => {
+    const el = scroller.current;
+    if (!el) return;
+    if (loadingOlder.current) {
+      el.scrollTop = el.scrollHeight - prevHeight.current + el.scrollTop;
+      loadingOlder.current = false;
+    } else if (atBottom.current) {
+      el.scrollTop = el.scrollHeight;
+    }
+  }, [messages]);
+
+  useEffect(() => {
+    atBottom.current = true;
+    requestAnimationFrame(() => scrollToBottom());
+  }, [conversationId, scrollToBottom]);
+
+  useEffect(() => {
+    if (conversationId && conversation && (conversation.me?.unread_count ?? 0) >= 0) markRead.mutate(conversationId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, messages.length]);
+
+  const onScroll = () => {
+    const el = scroller.current;
+    if (!el) return;
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight;
+    atBottom.current = dist < 80;
+    setShowJump(dist > 400);
+    if (el.scrollTop < 200 && messagesQuery.hasNextPage && !messagesQuery.isFetchingNextPage) {
+      loadingOlder.current = true;
+      prevHeight.current = el.scrollHeight;
+      void messagesQuery.fetchNextPage();
+    }
+  };
+
+  const actions: MessageActions = useMemo(
+    () => ({
+      onRetry: (m, modelId) => retry.mutate({ id: m.id, model_id: modelId }),
+      onBranch: (m) => retry.mutate({ id: m.id, branch: true }),
+      onReact: (m, emoji) => react.mutate({ id: m.id, emoji }),
+      onPin: (m) => pin.mutate(m.id),
+      onEdit: (m, content) => edit.mutate({ id: m.id, content, rerun: true }),
+      onDelete: (m) => setDeletingMsg(m),
+      onFollowUp: (text) => {
+        atBottom.current = true;
+        send.mutate({ content: text });
+      },
+    }),
+    [retry, react, pin, edit, send],
+  );
+
+  if (convError) {
+    return (
+      <EmptyState
+        title="Conversation not found"
+        description="It may have been deleted, or you're no longer in it."
+        action={<Button onClick={() => navigate(Routes.chat.root)}>Back to chats</Button>}
+        stickers={[{ icon: Search, color: "#38B6FF" }]}
+      />
+    );
+  }
+
+  const welcome = leadBot?.welcome_message;
+  const starters = conversation?.type === ConversationTypes.DIRECT ? (leadBot?.conversation_starters ?? []) : [];
+  const activityMode = me?.settings.activity_steps_display ?? ActivityStepsDisplays.COLLAPSED;
+
+  const panelContent = conversation && <ConversationInfoPanel conversation={conversation} meId={me?.user.id ?? ""} onClose={() => setPanel(false)} />;
+
+  return (
+    <div className="flex h-full min-h-0">
+      <div className="flex min-w-0 flex-1 flex-col">
+        {conversation ? (
+          <ConversationHeader
+            conversation={conversation}
+            working={working}
+            onInfo={() => setPanel((p) => !p)}
+            onSearch={() => setSearchOpen(true)}
+            onPinned={() => setPinnedOpen(true)}
+            onFavourite={() => updateMine.mutate({ id: conversation.id, is_favourite: !conversation.me?.is_favourite })}
+            onArchive={() => updateMine.mutate({ id: conversation.id, is_archived: !conversation.me?.is_archived }, { onSuccess: () => navigate(Routes.chat.root) })}
+            onDelete={() => setConfirmDelete(true)}
+          />
+        ) : (
+          <div className="flex h-16 items-center gap-3 border-b border-hairline px-4">
+            <Skeleton className="h-10 w-10 rounded-[14px]" />
+            <Skeleton className="h-5 w-40" />
+          </div>
+        )}
+
+        <div ref={scroller} onScroll={onScroll} className="scrollbar-thin relative min-h-0 flex-1 overflow-y-auto" role="log" aria-live="polite" aria-label="Messages">
+          {messagesQuery.isPending || convPending ? (
+            <MessagesSkeleton />
+          ) : (
+            <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-4 sm:px-4">
+              {messagesQuery.isFetchingNextPage && <Skeleton className="mx-auto mb-4 h-6 w-32 rounded-full" />}
+              {!messagesQuery.hasNextPage && conversation && (
+                <div className="mb-6 flex flex-col items-center pt-6 text-center">
+                  {conversation.type === ConversationTypes.DIRECT && conversation.bots[0] ? (
+                    <BotAvatar emoji={conversation.bots[0].emoji} color={conversation.bots[0].color} size={88} />
+                  ) : (
+                    <span className="inline-flex h-[88px] w-[88px] items-center justify-center rounded-[28px] text-5xl" style={{ backgroundColor: conversation.color }}>
+                      {conversation.emoji}
+                    </span>
+                  )}
+                  <h2 className="mt-3 font-display text-2xl font-bold text-ink">{conversation.name}</h2>
+                  {welcome ? <Markdown className="mt-2 max-w-md text-muted-foreground">{welcome}</Markdown> : <p className="mt-1 max-w-md text-sm text-muted-foreground">{conversation.type === ConversationTypes.DIRECT ? conversation.bots[0]?.description : "Talk to a specific bot with @name, or just ask — the lead bot coordinates."}</p>}
+                  {messages.length === 0 && starters.length > 0 && (
+                    <div className="mt-5 grid w-full max-w-lg gap-2 sm:grid-cols-2">
+                      {starters.map((s) => (
+                        <button key={s} type="button" onClick={() => send.mutate({ content: s })} className="card-lift min-h-[48px] rounded-[16px] border border-hairline bg-surface px-4 py-3 text-left text-sm font-semibold text-body shadow-sticker">
+                          {s}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+              {messages.map((m, i) => {
+                const prev = messages[i - 1];
+                const newDay = !prev || new Date(prev.created_at).toDateString() !== new Date(m.created_at).toDateString();
+                const sameAuthor = prev && !newDay && prev.author_type === m.author_type && (prev.author_bot?.id ?? prev.author_user?.id) === (m.author_bot?.id ?? m.author_user?.id) && new Date(m.created_at).getTime() - new Date(prev.created_at).getTime() < 5 * 60_000;
+                return (
+                  <div key={m.id} id={`msg-${m.id}`} style={{ contentVisibility: i < messages.length - 15 ? "auto" : undefined, containIntrinsicSize: "auto 120px" }}>
+                    {newDay && (
+                      <div className="my-5 flex items-center gap-3" role="separator">
+                        <span className="h-px flex-1 bg-hairline" />
+                        <span className="text-xs font-bold text-muted-foreground">{dayLabel(m.created_at)}</span>
+                        <span className="h-px flex-1 bg-hairline" />
+                      </div>
+                    )}
+                    <MessageItem
+                      message={m}
+                      meId={me?.user.id ?? ""}
+                      isFirstOfGroup={!sameAuthor}
+                      working={!!m.author_bot && working.includes(m.author_bot.id)}
+                      activityMode={activityMode}
+                      models={models ?? []}
+                      actions={actions}
+                      canAnswerApprovals
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        <div className="relative px-3 pb-[calc(12px+env(safe-area-inset-bottom))] pt-1 sm:px-4 sm:pb-4">
+          {showJump && (
+            <Button variant="outline" size="icon" className="absolute -top-12 left-1/2 h-10 w-10 -translate-x-1/2 shadow-pop" onClick={() => scrollToBottom(true)} aria-label="Jump to latest">
+              <ArrowDown />
+            </Button>
+          )}
+          <div className="mx-auto w-full max-w-[760px]">
+            {conversation && voice.active && <VoiceBar voice={voice} bot={conversation.bots.find((b) => b.id === voice.botId) ?? conversation.lead_bot ?? conversation.bots[0] ?? null} />}
+            {conversation && !voice.active && (
+              <Composer
+                conversation={conversation}
+                sendWith={me?.settings.send_with ?? SendWithKeys.ENTER}
+                working={working.length > 0}
+                prefill={prefill}
+                onPrefillUsed={() => setPrefill(null)}
+                onSend={(dto) => {
+                  atBottom.current = true;
+                  send.mutate(dto);
+                }}
+                onStop={() => activeRunIds.forEach((id) => stop.mutate(id))}
+                onVoice={(botId) => void voice.start({ botId, inputMode: me?.settings.voice_input_mode })}
+              />
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Side panel: pushes the chat on desktop, overlays as a sheet below 1200px (DESIGN.MD). */}
+      {conversation && isDesktop && panel && <aside className="w-[380px] shrink-0 animate-slide-up border-l border-hairline bg-surface xl:w-[420px]">{panelContent}</aside>}
+      {conversation && !isDesktop && (
+        <Sheet open={panel} onOpenChange={setPanel}>
+          <SheetContent side="right" className="w-full p-0 sm:max-w-[420px]">
+            <SheetTitle className="sr-only">Conversation details</SheetTitle>
+            <SheetDescription className="sr-only">People, bots and settings for this conversation</SheetDescription>
+            {panelContent}
+          </SheetContent>
+        </Sheet>
+      )}
+
+      <Dialog open={searchOpen} onOpenChange={setSearchOpen} closeOnOutsideClick>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle>Search this conversation</DialogTitle>
+            <DialogDescription className="sr-only">Find messages</DialogDescription>
+          </DialogHeader>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input autoFocus value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search messages" className="pl-9" />
+          </div>
+          <div className="max-h-[50vh] space-y-1 overflow-y-auto">
+            {(searchResults.data?.data ?? []).map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                className="w-full rounded-[12px] p-2 text-left hover:bg-surface-sunken"
+                onClick={() => {
+                  setSearchOpen(false);
+                  document.getElementById(`msg-${m.id}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+                }}
+              >
+                <span className="block text-xs font-semibold text-muted-foreground">
+                  {m.author_bot?.name ?? m.author_user?.name} · {formatDateTime(m.created_at)}
+                </span>
+                <span className="line-clamp-2 text-sm text-ink">{m.content}</span>
+              </button>
+            ))}
+            {query.length > 1 && searchResults.data?.data.length === 0 && <p className="p-2 text-sm text-muted-foreground">No messages match.</p>}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <Dialog open={pinnedOpen} onOpenChange={setPinnedOpen} closeOnOutsideClick>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2"><Pin className="h-5 w-5" /> Pinned</DialogTitle>
+            <DialogDescription className="sr-only">Pinned messages</DialogDescription>
+          </DialogHeader>
+          <div className="max-h-[60vh] space-y-2 overflow-y-auto">
+            {pinned.isPending ? (
+              <Skeleton className="h-16 w-full rounded-[14px]" />
+            ) : pinned.data?.length ? (
+              pinned.data.map((m) => (
+                <div key={m.id} className="rounded-[14px] border border-hairline bg-surface p-3">
+                  <p className="text-xs font-semibold text-muted-foreground">
+                    {m.author_bot?.name ?? m.author_user?.name} · {formatDateTime(m.created_at)}
+                  </p>
+                  <p className="line-clamp-4 text-sm text-ink">{m.content}</p>
+                </div>
+              ))
+            ) : (
+              <p className="text-sm text-muted-foreground">Nothing pinned yet. Use a message's menu to pin it.</p>
+            )}
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      <ConfirmationDialog
+        isOpen={confirmDelete}
+        onClose={() => setConfirmDelete(false)}
+        title="Delete this conversation?"
+        description="Its messages and files are removed (restorable for 30 days). In shared conversations you'll leave instead."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={deleteConv.isPending}
+        onConfirm={() =>
+          deleteConv.mutate(conversationId, {
+            onSuccess: () => {
+              setConfirmDelete(false);
+              qc.removeQueries({ queryKey: [QueryKeys.MESSAGES, conversationId] });
+              navigate(Routes.chat.root);
+            },
+          })
+        }
+      />
+      <ConfirmationDialog
+        isOpen={!!deletingMsg}
+        onClose={() => setDeletingMsg(null)}
+        title="Delete this message?"
+        description="It will be removed for everyone in the conversation."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={del.isPending}
+        onConfirm={() => deletingMsg && del.mutate(deletingMsg.id, { onSuccess: () => setDeletingMsg(null) })}
+      />
+    </div>
+  );
+};
+
+export default ConversationPage;

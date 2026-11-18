@@ -1,0 +1,25 @@
+import axiosInstance from "@/config/api/axios";
+import { ApiRoutes } from "@/config/api/routes";
+import { request } from "@/lib/request";
+import type { ActionType, AiModel, Bot, BotDraft, BotTemplate, CreateBotDto, Memory, UpdateBotDto } from "../interfaces/bots.interfaces";
+import { type ApprovalOverrideChoice } from "@/features/bots/interfaces/bots.interfaces";
+
+export const getModels = () => request<AiModel[]>(() => axiosInstance.get(ApiRoutes.catalog.models));
+export const getVoices = () => request<string[]>(() => axiosInstance.get(ApiRoutes.catalog.voices));
+export const getTemplates = () => request<BotTemplate[]>(() => axiosInstance.get(ApiRoutes.catalog.templates));
+export const getBots = (search?: string) => request<Bot[]>(() => axiosInstance.get(ApiRoutes.bots.root, { params: { search } }));
+export const getBot = (id: string) => request<Bot>(() => axiosInstance.get(ApiRoutes.bots.one(id)));
+export const createBot = (dto: CreateBotDto) => request<Bot>(() => axiosInstance.post(ApiRoutes.bots.root, dto));
+export const draftBot = (description: string) => request<BotDraft>(() => axiosInstance.post(ApiRoutes.bots.draft, { description }));
+export const updateBot = (id: string, dto: UpdateBotDto) => request<Bot>(() => axiosInstance.patch(ApiRoutes.bots.one(id), dto));
+export const deleteBot = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.one(id)));
+export const duplicateBot = (id: string) => request<Bot>(() => axiosInstance.post(ApiRoutes.bots.duplicate(id)));
+export const setApprovalRules = (id: string, rules: { action_type: ActionType; override: ApprovalOverrideChoice }[]) => request<Bot>(() => axiosInstance.put(ApiRoutes.bots.approval_rules(id), { rules }));
+export const setBotConnections = (id: string, connections: { connection_id: string; is_default_for_service?: boolean }[]) => request<Bot>(() => axiosInstance.put(ApiRoutes.bots.connections(id), { connections }));
+export const getBotMemories = (id: string) => request<Memory[]>(() => axiosInstance.get(ApiRoutes.bots.memories(id)));
+export const updateMemory = (id: string, content: string) => request<Memory>(() => axiosInstance.patch(ApiRoutes.bots.memory(id), { content }));
+export const deleteMemory = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.memory(id)));
+export const clearBotMemories = (botId: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.memories(botId)));
+export const clearAllMemories = () => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.all_memories));
+export const getOrgMemories = () => request<Memory[]>(() => axiosInstance.get(ApiRoutes.bots.org_memory));
+export const addOrgMemory = (content: string) => request<Memory>(() => axiosInstance.post(ApiRoutes.bots.org_memory, { content }));

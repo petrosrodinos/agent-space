@@ -1,20 +1,25 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import path from "path"
-import tailwindcss from "@tailwindcss/vite"
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import path from "path";
+import tailwindcss from "@tailwindcss/vite";
 
-// https://vite.dev/config/
+// Builds to static files that work without a server — the same bundle is packaged for desktop and mobile (§14.1).
 export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
-    outDir: 'dist'
+    outDir: "dist",
+    chunkSizeWarningLimit: 1200,
   },
   server: {
-    open: true,
+    port: 5180,
+    strictPort: true,
+    // Native projects (Capacitor) and build output are not part of the web app — don't watch them.
+    watch: { ignored: ["**/android/**", "**/ios/**", "**/dist/**"] },
   },
+  preview: { port: 5180, strictPort: true },
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
     },
   },
-})
+});

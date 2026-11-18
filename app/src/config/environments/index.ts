@@ -1,13 +1,10 @@
-const APP_NAME = "Appointmy";
-const LANDING_URL = import.meta.env.VITE_LANDING_URL;
-const APP_URL = import.meta.env.VITE_APP_URL;
-const API_URL = `${import.meta.env.VITE_API_URL}/`;
-const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
+const API_URL = String(import.meta.env.VITE_API_URL ?? "").replace(/\/$/, "");
 
+/** Every API call uses an absolute address from configuration — never a shared origin (§14.1). */
 export const environments = {
-    APP_NAME,
-    LANDING_URL,
-    APP_URL,
-    API_URL,
-    GOOGLE_MAPS_API_KEY,
-}
+  APP_NAME: "Agent Space",
+  API_URL,
+  /** Socket.IO origin (API_URL without the /api prefix). */
+  REALTIME_URL: API_URL.replace(/\/api$/, ""),
+  APP_URL: String(import.meta.env.VITE_APP_URL ?? ""),
+};

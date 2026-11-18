@@ -38,6 +38,7 @@ export const CredentialKindOptions = [
   { id: "API_KEY", label: "Access key" },
   { id: "MCP_TOKEN", label: "Tool server token" },
   { id: "MCP_OAUTH", label: "Tool server sign-in" },
+  { id: "WEBSITE_LOGIN", label: "Website login" },
 ] as const;
 
 export const VisibilityOptions = [

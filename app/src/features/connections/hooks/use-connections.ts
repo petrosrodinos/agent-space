@@ -1,7 +1,7 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
-import type { CreateCredentialDto } from "../interfaces/connections.interfaces";
+import type { CreateCredentialDto, ReplaceCredentialDto } from "../interfaces/connections.interfaces";
 import {
   addApiKeyConnection, cancelSecretRequest, completeConnection, connectService, createCredential, deleteConnection, deleteCredential, getCatalog, getCategories, getConnections,
   getCredentialHistory, getCredentialUsage, getCredentials, reconnectConnection, replaceCredential, setServiceDefault, updateConnection, updateCredential,
@@ -55,7 +55,7 @@ export const useCredentials = (params: { search?: string; service?: string; stat
 export const useCreateCredential = () => useConnMutation((dto: CreateCredentialDto) => createCredential(dto), "Saved securely", "Could not save the secret");
 export const useCancelSecretRequest = () => useMutation({ mutationFn: cancelSecretRequest, onError: (e) => toast({ title: "Could not cancel", description: e.message, variant: "error" }) });
 export const useUpdateCredential = () => useConnMutation(({ id, ...dto }: { id: string; label?: string; service_name?: string; bot_ids?: string[]; visibility?: Visibility }) => updateCredential(id, dto), "Secret updated", "Could not update");
-export const useReplaceCredential = () => useConnMutation(({ id, ...dto }: { id: string; value: string; request?: { run_id: string; request_id: string } }) => replaceCredential(id, dto), "Secret replaced", "Could not replace");
+export const useReplaceCredential = () => useConnMutation(({ id, ...dto }: ReplaceCredentialDto & { id: string }) => replaceCredential(id, dto), "Secret replaced", "Could not replace");
 export const useDeleteCredential = () => useConnMutation(deleteCredential, "Secret deleted", "Could not delete");
 export const useCredentialUsage = (id: string | null) => useQuery({ queryKey: [QueryKeys.CREDENTIAL_USAGE, id], queryFn: () => getCredentialUsage(id!), enabled: !!id });
 export const useCredentialHistory = (id: string | null) => useQuery({ queryKey: [QueryKeys.CREDENTIAL_HISTORY, id], queryFn: () => getCredentialHistory(id!), enabled: !!id });

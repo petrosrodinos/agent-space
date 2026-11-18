@@ -7,10 +7,27 @@ import { AccessService, isAdminRole } from '../access/access.service';
 import { ActivityService } from '../activity/activity.service';
 import { ModelsService } from '../catalog/models.service';
 import { UTILITY_MODEL, VOICES } from '../catalog/catalog.data';
+import { DEFAULT_CONVERSATION_STARTERS, defaultWelcomeMessage, welcomeMessageData } from './bot-welcome.utils';
 import { CreateBotDto, SetApprovalRulesDto, SetBotConnectionsDto, UpdateBotDto } from './dto/bot.dto';
 
 const BOT_COLORS = ['#6B4EFF', '#FF7A3D', '#FFC83D', '#1FC98E', '#FF5FAE', '#38B6FF', '#9BD62F', '#FF5A5F', '#B18CFF', '#17B5B0', '#3A6BFF', '#4A4560'];
 const DEFAULT_INSTRUCTIONS = 'You are a helpful, capable AI co-worker. Be clear and concise, take action with the tools you have, and ask before doing anything hard to undo.';
+
+/** The bot every new account starts with. It greets the user and configures itself through chat (update_bot tool). */
+const STARTER_BOT = {
+    name: 'Assistant',
+    emoji: '🤖',
+    color: '#4A4560',
+    description: 'Your first bot. Tell it what you need and it will set itself up.',
+    instructions:
+        DEFAULT_INSTRUCTIONS +
+        '\n\nSetup: you were just created as the user\'s first bot and have not been configured yet. Help the user set you up through this chat. ' +
+        'Ask, one or two at a time, what they want you to help with, a name they would like to call you, and how you should reply (tone, length). ' +
+        'Then use the update_bot tool on "this bot" to apply it: name, emoji, colour, a one-line description, and FULL new instructions describing your role, goals and tone (leave out this setup paragraph). ' +
+        'If the user just wants to get on with a task, help them with it and offer setup later.',
+    welcome_message: 'Hi! I\'m your new assistant, and I\'m not set up yet. Tell me what you\'d like help with (your inbox, research, writing, sales, anything) and what you\'d like to call me, and I\'ll configure myself right here in the chat.',
+    conversation_starters: ['Help me set you up', 'Be my personal assistant for email and calendar', 'Help me with research and writing', 'What can you do?'],
+} as const;
 
 export interface Actor {
     user_id: string;
@@ -105,8 +122,8 @@ export class BotsService {
                     color: dto.color || template?.color || BOT_COLORS[Math.floor(Math.random() * BOT_COLORS.length)],
                     description: dto.description ?? template?.description,
                     instructions: dto.instructions?.trim() || template?.instructions || DEFAULT_INSTRUCTIONS,
-                    welcome_message: dto.welcome_message ?? template?.welcome_message,
-                    conversation_starters: dto.conversation_starters ?? template?.conversation_starters ?? [],
+                    welcome_message: dto.welcome_message?.trim() || template?.welcome_message || defaultWelcomeMessage({ name: dto.name.trim(), description: dto.description ?? template?.description }),
+                    conversation_starters: dto.conversation_starters?.length ? dto.conversation_starters : template?.conversation_starters?.length ? template.conversation_starters : DEFAULT_CONVERSATION_STARTERS,
                     model_id: dto.model_id ?? template?.model_id ?? null,
                     voice: dto.voice ?? template?.voice ?? null,
                     approval_level: dto.approval_level ?? template?.approval_level ?? userSettings?.default_approval_level ?? 'IMPORTANT_ACTIONS',
@@ -121,6 +138,42 @@ export class BotsService {
         });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'bot.created', target_type: 'bot', target_id: bot.id, metadata: { name: bot.name, template: template?.key } });
         return this.get(actor, bot.id);
+    }
+
+    /**
+     * Sign-up: creates the user's first bot, makes it their default, opens a direct chat with it and
+     * posts its welcome message asking the user to set it up in the chat. Runs inside the sign-up transaction.
+     */
+    async createStarterBot(userId: string, organizationId: string, tx: Prisma.TransactionClient) {
+        const bot = await tx.bot.create({
+            data: {
+                organization_id: organizationId,
+                created_by_id: userId,
+                is_starter: true,
+                name: STARTER_BOT.name,
+                emoji: STARTER_BOT.emoji,
+                color: STARTER_BOT.color,
+                description: STARTER_BOT.description,
+                instructions: STARTER_BOT.instructions,
+                welcome_message: STARTER_BOT.welcome_message,
+                conversation_starters: [...STARTER_BOT.conversation_starters],
+            },
+        });
+        await tx.userSettings.update({ where: { user_id: userId }, data: { default_bot_id: bot.id } });
+        const now = new Date();
+        const conversation = await tx.conversation.create({
+            data: {
+                organization_id: organizationId,
+                type: 'DIRECT',
+                created_by_id: userId,
+                lead_bot_id: bot.id,
+                last_message_at: now,
+                message_count: 1,
+                participants: { create: [{ user_id: userId, unread_count: 1 }, { bot_id: bot.id }] },
+            },
+        });
+        await tx.message.create({ data: welcomeMessageData(organizationId, conversation.id, bot, now) });
+        return { bot, conversation };
     }
 
     private pickSettings(dto: Partial<CreateBotDto>) {
@@ -151,7 +204,8 @@ export class BotsService {
     }
 
     async remove(actor: Actor, id: string) {
-        await this.access.requireEditableBot(actor.organization_id, actor.user_id, id);
+        const bot = await this.access.requireEditableBot(actor.organization_id, actor.user_id, id);
+        if (bot.is_starter) throw new ForbiddenException('Your starter bot can\'t be deleted. You can rename and reconfigure it instead.');
         await this.prisma.bot.update({ where: { id }, data: { deleted_at: new Date(), is_archived: true } });
         await this.prisma.userSettings.updateMany({ where: { default_bot_id: id }, data: { default_bot_id: null } });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'bot.deleted', target_type: 'bot', target_id: id });
@@ -173,6 +227,7 @@ export class BotsService {
                 organization_id: actor.organization_id,
                 created_by_id: actor.user_id,
                 duplicated_from_id: src.id,
+                is_starter: false,
                 name: `${src.name} (copy)`.slice(0, 60),
                 visibility: 'PRIVATE',
                 is_sensitive: false,

@@ -27,7 +27,7 @@ const ACTIVE_AUTOMATION_RUN: AutomationRunStatus[] = ['QUEUED', 'RUNNING', 'WAIT
 const schedulerId = (id: string) => `automation:${id}`;
 
 /** Keys whose values name the destination of an action (channel, recipient, repository…), used to match pre-approvals. */
-const TARGET_KEYS = ['channel', 'channel_id', 'channel_name', 'to', 'recipient', 'recipient_email', 'recipients', 'email', 'repo', 'repository', 'repo_name', 'owner', 'chat_id', 'conversation_id', 'list_id', 'board_id', 'project', 'project_key', 'page_id', 'database_id', 'folder_id', 'calendar_id', 'url'];
+const TARGET_KEYS = ['channel', 'channel_id', 'channel_name', 'to', 'recipient', 'recipient_email', 'recipients', 'email', 'repo', 'repository', 'repo_name', 'owner', 'chat_id', 'conversation_id', 'list_id', 'board_id', 'project', 'project_key', 'page_id', 'database_id', 'folder_id', 'calendar_id', 'url', 'website'];
 
 const AUTOMATION_INCLUDE = {
     bot: { select: { id: true, name: true, emoji: true, color: true, deleted_at: true } },

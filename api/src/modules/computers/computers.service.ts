@@ -31,6 +31,9 @@ const BROWSER_PREFS = JSON.stringify({
     browser: { has_seen_welcome_page: true, check_default_browser: false },
 });
 
+/** Chrome DevTools port, bound to 127.0.0.1 inside the sandbox only. Used by the sign-in helper to check the page before typing. */
+export const BROWSER_DEBUG_PORT = 9222;
+
 /**
  * Opens a URL in the bot's browser on the desktop, reusing the persistent profile. Chromium's own sandbox needs user
  * namespaces the container doesn't have; the Daytona sandbox is the isolation boundary, so --no-sandbox is used.
@@ -38,9 +41,9 @@ const BROWSER_PREFS = JSON.stringify({
 export const OPEN_BROWSER = `#!/bin/bash
 URL="\${1:-about:blank}"
 export DISPLAY=:0
-FLAGS="--user-data-dir=${BROWSER_PROFILE} --no-sandbox --disable-dev-shm-usage --no-first-run --no-default-browser-check --password-store=basic --disable-quic --disable-features=PasswordManagerOnboarding,AutofillServerCommunication --start-maximized"
-# Restart a browser started with older flags (the sandbox network has no UDP, so QUIC must stay off).
-if pgrep -f "user-data-dir=${BROWSER_PROFILE}" > /dev/null && ! pgrep -f "user-data-dir=${BROWSER_PROFILE}.*--disable-quic" > /dev/null; then pkill -f "user-data-dir=${BROWSER_PROFILE}"; sleep 1; fi
+FLAGS="--user-data-dir=${BROWSER_PROFILE} --no-sandbox --disable-dev-shm-usage --no-first-run --no-default-browser-check --password-store=basic --disable-quic --disable-features=PasswordManagerOnboarding,AutofillServerCommunication --start-maximized --remote-debugging-address=127.0.0.1 --remote-debugging-port=${BROWSER_DEBUG_PORT}"
+# Restart a browser started with older flags (the sandbox network has no UDP, so QUIC must stay off; sign-in needs the DevTools port).
+if pgrep -f "user-data-dir=${BROWSER_PROFILE}" > /dev/null && ! pgrep -f "user-data-dir=${BROWSER_PROFILE}.*--remote-debugging-port=${BROWSER_DEBUG_PORT}" > /dev/null; then pkill -f "user-data-dir=${BROWSER_PROFILE}"; sleep 1; fi
 setsid nohup chromium $FLAGS "$URL" > /tmp/agentspace-browser.log 2>&1 < /dev/null &
 sleep 3
 `;

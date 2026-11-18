@@ -63,6 +63,9 @@ const pub = (name) => fileURLToPath(new URL(`../public/${name}`, import.meta.url
 const tile = Buffer.from(files["icon-only.png"]);
 await sharp(tile).resize(180).png().toFile(pub("apple-touch-icon.png"));
 await sharp(tile).resize(512).png().toFile(pub("icon-512.png"));
+await sharp(tile).resize(192).png().toFile(pub("icon-192.png"));
+// Full-bleed tile; the mark sits well inside the 80% safe circle Android masks to.
+await sharp(tile).resize(512).png().toFile(pub("icon-maskable-512.png"));
 const rounded = Buffer.from(svg(`<rect width="${SIZE}" height="${SIZE}" rx="230" fill="${INK.DARK}"/>` + placed("#FFFFFF", INK.DARK, 1.15)));
 await sharp(rounded).resize(32).png().toFile(pub("favicon-32.png"));
-console.log("Rendered public/apple-touch-icon.png, icon-512.png, favicon-32.png");
+console.log("Rendered public/apple-touch-icon.png, icon-192/512.png, icon-maskable-512.png, favicon-32.png");

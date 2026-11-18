@@ -11,6 +11,7 @@ import { UpdateBotDto } from '../../bots/dto/bot.dto';
 import { UsersService } from '../../users/users.service';
 import { UpdateUserSettingsDto } from '../../users/dto/user.dto';
 import { CredentialsService } from '../../connections/credentials.service';
+import { SecretInputKinds } from '../../connections/dto/connection.dto';
 import { SkillsService } from '../../skills/skills.service';
 import { FilesService } from '../../files/files.service';
 import { UsageService } from '../../usage/usage.service';
@@ -216,13 +217,14 @@ export class BuiltinToolsService {
         return {
             name: 'request_secret',
             description:
-                'Show the secure secret box so the user can paste an API key or token safely. NEVER ask for keys in a normal message and never accept one typed in chat. You will only get back the saved secret\'s name and last 4 characters, and can then use it via call_api.',
+                'Show the secure secret box so the user can paste an API key or token, or save a website login (username, password, optional authenticator secret) for your cloud computer, safely. NEVER ask for keys or passwords in a normal message and never accept one typed in chat. You only get back the saved secret\'s name and a masked hint; use keys via call_api and website logins via computer_sign_in.',
             parameters: obj(
                 {
                     purpose: { type: 'string', description: 'Why you need it, in one sentence' },
                     suggested_label: { type: 'string', description: 'e.g. "Mailchimp – Marketing"' },
                     service: { type: 'string', description: 'Service name, e.g. Mailchimp' },
-                    kind: { type: 'string', enum: ['api_key', 'mcp_token', 'other'] },
+                    kind: { type: 'string', enum: ['api_key', 'mcp_token', 'website_login', 'other'] },
+                    website: { type: 'string', description: 'website_login only: the site, e.g. "portal.acme.com"' },
                     replace_credential_id: { type: 'string', description: 'Set to replace an existing secret' },
                 },
                 ['purpose', 'suggested_label', 'kind'],
@@ -244,7 +246,8 @@ export class BuiltinToolsService {
                         purpose: String(a.purpose).slice(0, 300),
                         suggested_label: String(a.suggested_label).slice(0, 80),
                         service: a.service ? String(a.service).slice(0, 60) : null,
-                        kind: a.kind === 'mcp_token' ? 'mcp_token' : 'api_key',
+                        kind: a.kind === SecretInputKinds.MCP_TOKEN ? SecretInputKinds.MCP_TOKEN : a.kind === SecretInputKinds.WEBSITE_LOGIN ? SecretInputKinds.WEBSITE_LOGIN : SecretInputKinds.API_KEY,
+                        website: a.kind === SecretInputKinds.WEBSITE_LOGIN && a.website ? String(a.website).slice(0, 253) : null,
                         replace_credential_id: a.replace_credential_id ?? null,
                         bot_id: ctx.bot.id,
                         status: 'pending',
@@ -257,12 +260,12 @@ export class BuiltinToolsService {
     private listSecrets(): ToolDef {
         return {
             name: 'list_secrets',
-            description: 'List the secrets (API keys, tokens) the user can use: names, services, masked hints and which bots may use them. Never returns values.',
+            description: 'List the secrets (API keys, tokens, website logins) the user can use: names, services, websites, masked hints and which bots may use them. Never returns values.',
             parameters: obj({}),
             step_type: 'TOOL_CALL',
             runs_on: 'server',
             title: () => 'Checking your saved secrets',
-            execute: async (_a, ctx) => ({ output: (await this.credentials.list(ctx.actor!, {})).map((c: any) => ({ id: c.id, label: c.label, service: c.service_name, kind: c.kind, hint: c.masked_hint, visibility: c.visibility, status: c.status, bots: c.bots?.map((b: any) => b.name) })) }),
+            execute: async (_a, ctx) => ({ output: (await this.credentials.list(ctx.actor!, {})).map((c: any) => ({ id: c.id, label: c.label, service: c.service_name, kind: c.kind, website: c.website_domain ?? undefined, hint: c.masked_hint, visibility: c.visibility, status: c.status, bots: c.bots?.map((b: any) => b.name) })) }),
         };
     }
 

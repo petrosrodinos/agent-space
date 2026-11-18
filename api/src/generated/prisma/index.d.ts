@@ -1289,7 +1289,8 @@ export type CredentialOwnerType = (typeof CredentialOwnerType)[keyof typeof Cred
 export const CredentialKind: {
   MCP_OAUTH: 'MCP_OAUTH',
   MCP_TOKEN: 'MCP_TOKEN',
-  API_KEY: 'API_KEY'
+  API_KEY: 'API_KEY',
+  WEBSITE_LOGIN: 'WEBSITE_LOGIN'
 };
 
 export type CredentialKind = (typeof CredentialKind)[keyof typeof CredentialKind]
@@ -40165,6 +40166,7 @@ export namespace Prisma {
     created_by_id: string | null
     template_id: string | null
     duplicated_from_id: string | null
+    is_starter: boolean | null
     name: string | null
     emoji: string | null
     color: string | null
@@ -40216,6 +40218,7 @@ export namespace Prisma {
     created_by_id: string | null
     template_id: string | null
     duplicated_from_id: string | null
+    is_starter: boolean | null
     name: string | null
     emoji: string | null
     color: string | null
@@ -40267,6 +40270,7 @@ export namespace Prisma {
     created_by_id: number
     template_id: number
     duplicated_from_id: number
+    is_starter: number
     name: number
     emoji: number
     color: number
@@ -40329,6 +40333,7 @@ export namespace Prisma {
     created_by_id?: true
     template_id?: true
     duplicated_from_id?: true
+    is_starter?: true
     name?: true
     emoji?: true
     color?: true
@@ -40380,6 +40385,7 @@ export namespace Prisma {
     created_by_id?: true
     template_id?: true
     duplicated_from_id?: true
+    is_starter?: true
     name?: true
     emoji?: true
     color?: true
@@ -40431,6 +40437,7 @@ export namespace Prisma {
     created_by_id?: true
     template_id?: true
     duplicated_from_id?: true
+    is_starter?: true
     name?: true
     emoji?: true
     color?: true
@@ -40570,6 +40577,7 @@ export namespace Prisma {
     created_by_id: string | null
     template_id: string | null
     duplicated_from_id: string | null
+    is_starter: boolean
     name: string
     emoji: string
     color: string
@@ -40641,6 +40649,7 @@ export namespace Prisma {
     created_by_id?: boolean
     template_id?: boolean
     duplicated_from_id?: boolean
+    is_starter?: boolean
     name?: boolean
     emoji?: boolean
     color?: boolean
@@ -40724,6 +40733,7 @@ export namespace Prisma {
     created_by_id?: boolean
     template_id?: boolean
     duplicated_from_id?: boolean
+    is_starter?: boolean
     name?: boolean
     emoji?: boolean
     color?: boolean
@@ -40782,6 +40792,7 @@ export namespace Prisma {
     created_by_id?: boolean
     template_id?: boolean
     duplicated_from_id?: boolean
+    is_starter?: boolean
     name?: boolean
     emoji?: boolean
     color?: boolean
@@ -40840,6 +40851,7 @@ export namespace Prisma {
     created_by_id?: boolean
     template_id?: boolean
     duplicated_from_id?: boolean
+    is_starter?: boolean
     name?: boolean
     emoji?: boolean
     color?: boolean
@@ -40886,7 +40898,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type BotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "created_by_id" | "template_id" | "duplicated_from_id" | "name" | "emoji" | "color" | "description" | "image_file_id" | "welcome_message" | "conversation_starters" | "instructions" | "model_id" | "creativity" | "style_override" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "lock_style" | "reply_language" | "clarifying_questions" | "group_response" | "web_search_enabled" | "image_generation_enabled" | "document_creation_enabled" | "interactive_replies_mode" | "artifacts_enabled" | "cloud_computer_enabled" | "use_skills_automatically" | "org_knowledge_enabled" | "voice_mode_enabled" | "voice" | "spoken_reply_style" | "memory_enabled" | "memory_scope" | "can_ask_other_bots" | "can_be_asked" | "is_sensitive" | "approval_level" | "max_task_duration" | "monthly_usage_limit" | "visibility" | "edit_policy" | "is_archived" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["bot"]>
+  export type BotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "created_by_id" | "template_id" | "duplicated_from_id" | "is_starter" | "name" | "emoji" | "color" | "description" | "image_file_id" | "welcome_message" | "conversation_starters" | "instructions" | "model_id" | "creativity" | "style_override" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "lock_style" | "reply_language" | "clarifying_questions" | "group_response" | "web_search_enabled" | "image_generation_enabled" | "document_creation_enabled" | "interactive_replies_mode" | "artifacts_enabled" | "cloud_computer_enabled" | "use_skills_automatically" | "org_knowledge_enabled" | "voice_mode_enabled" | "voice" | "spoken_reply_style" | "memory_enabled" | "memory_scope" | "can_ask_other_bots" | "can_be_asked" | "is_sensitive" | "approval_level" | "max_task_duration" | "monthly_usage_limit" | "visibility" | "edit_policy" | "is_archived" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["bot"]>
   export type BotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     created_by?: boolean | Bot$created_byArgs<ExtArgs>
@@ -40977,6 +40989,10 @@ export namespace Prisma {
       created_by_id: string | null
       template_id: string | null
       duplicated_from_id: string | null
+      /**
+       * The bot created at sign-up. It configures itself through chat and cannot be deleted.
+       */
+      is_starter: boolean
       name: string
       emoji: string
       color: string
@@ -41479,6 +41495,7 @@ export namespace Prisma {
     readonly created_by_id: FieldRef<"Bot", 'String'>
     readonly template_id: FieldRef<"Bot", 'String'>
     readonly duplicated_from_id: FieldRef<"Bot", 'String'>
+    readonly is_starter: FieldRef<"Bot", 'Boolean'>
     readonly name: FieldRef<"Bot", 'String'>
     readonly emoji: FieldRef<"Bot", 'String'>
     readonly color: FieldRef<"Bot", 'String'>
@@ -86405,6 +86422,7 @@ export namespace Prisma {
     visibility: $Enums.Visibility | null
     status: $Enums.CredentialStatus | null
     masked_hint: string | null
+    website_domain: string | null
     expires_at: Date | null
     scope: string | null
     secret_resource_name: string | null
@@ -86429,6 +86447,7 @@ export namespace Prisma {
     visibility: $Enums.Visibility | null
     status: $Enums.CredentialStatus | null
     masked_hint: string | null
+    website_domain: string | null
     expires_at: Date | null
     scope: string | null
     secret_resource_name: string | null
@@ -86453,6 +86472,7 @@ export namespace Prisma {
     visibility: number
     status: number
     masked_hint: number
+    website_domain: number
     expires_at: number
     scope: number
     secret_resource_name: number
@@ -86479,6 +86499,7 @@ export namespace Prisma {
     visibility?: true
     status?: true
     masked_hint?: true
+    website_domain?: true
     expires_at?: true
     scope?: true
     secret_resource_name?: true
@@ -86503,6 +86524,7 @@ export namespace Prisma {
     visibility?: true
     status?: true
     masked_hint?: true
+    website_domain?: true
     expires_at?: true
     scope?: true
     secret_resource_name?: true
@@ -86527,6 +86549,7 @@ export namespace Prisma {
     visibility?: true
     status?: true
     masked_hint?: true
+    website_domain?: true
     expires_at?: true
     scope?: true
     secret_resource_name?: true
@@ -86624,6 +86647,7 @@ export namespace Prisma {
     visibility: $Enums.Visibility
     status: $Enums.CredentialStatus
     masked_hint: string | null
+    website_domain: string | null
     expires_at: Date | null
     scope: string | null
     secret_resource_name: string
@@ -86665,6 +86689,7 @@ export namespace Prisma {
     visibility?: boolean
     status?: boolean
     masked_hint?: boolean
+    website_domain?: boolean
     expires_at?: boolean
     scope?: boolean
     secret_resource_name?: boolean
@@ -86697,6 +86722,7 @@ export namespace Prisma {
     visibility?: boolean
     status?: boolean
     masked_hint?: boolean
+    website_domain?: boolean
     expires_at?: boolean
     scope?: boolean
     secret_resource_name?: boolean
@@ -86724,6 +86750,7 @@ export namespace Prisma {
     visibility?: boolean
     status?: boolean
     masked_hint?: boolean
+    website_domain?: boolean
     expires_at?: boolean
     scope?: boolean
     secret_resource_name?: boolean
@@ -86751,6 +86778,7 @@ export namespace Prisma {
     visibility?: boolean
     status?: boolean
     masked_hint?: boolean
+    website_domain?: boolean
     expires_at?: boolean
     scope?: boolean
     secret_resource_name?: boolean
@@ -86763,7 +86791,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type CredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_type" | "owner_id" | "kind" | "label" | "service_key" | "service_name" | "visibility" | "status" | "masked_hint" | "expires_at" | "scope" | "secret_resource_name" | "secret_version" | "last_tested_at" | "last_used_at" | "last_used_bot_id" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["credential"]>
+  export type CredentialOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_type" | "owner_id" | "kind" | "label" | "service_key" | "service_name" | "visibility" | "status" | "masked_hint" | "website_domain" | "expires_at" | "scope" | "secret_resource_name" | "secret_version" | "last_tested_at" | "last_used_at" | "last_used_bot_id" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["credential"]>
   export type CredentialInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | Credential$ownerArgs<ExtArgs>
@@ -86808,6 +86836,10 @@ export namespace Prisma {
       visibility: $Enums.Visibility
       status: $Enums.CredentialStatus
       masked_hint: string | null
+      /**
+       * WEBSITE_LOGIN only: the site (and its subdomains) the login may be typed into, e.g. "portal.acme.com".
+       */
+      website_domain: string | null
       expires_at: Date | null
       scope: string | null
       secret_resource_name: string
@@ -87259,6 +87291,7 @@ export namespace Prisma {
     readonly visibility: FieldRef<"Credential", 'Visibility'>
     readonly status: FieldRef<"Credential", 'CredentialStatus'>
     readonly masked_hint: FieldRef<"Credential", 'String'>
+    readonly website_domain: FieldRef<"Credential", 'String'>
     readonly expires_at: FieldRef<"Credential", 'DateTime'>
     readonly scope: FieldRef<"Credential", 'String'>
     readonly secret_resource_name: FieldRef<"Credential", 'String'>
@@ -117750,6 +117783,7 @@ export namespace Prisma {
     created_by_id: 'created_by_id',
     template_id: 'template_id',
     duplicated_from_id: 'duplicated_from_id',
+    is_starter: 'is_starter',
     name: 'name',
     emoji: 'emoji',
     color: 'color',
@@ -118394,6 +118428,7 @@ export namespace Prisma {
     visibility: 'visibility',
     status: 'status',
     masked_hint: 'masked_hint',
+    website_domain: 'website_domain',
     expires_at: 'expires_at',
     scope: 'scope',
     secret_resource_name: 'secret_resource_name',
@@ -123138,6 +123173,7 @@ export namespace Prisma {
     created_by_id?: StringNullableFilter<"Bot"> | string | null
     template_id?: StringNullableFilter<"Bot"> | string | null
     duplicated_from_id?: StringNullableFilter<"Bot"> | string | null
+    is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
@@ -123220,6 +123256,7 @@ export namespace Prisma {
     created_by_id?: SortOrderInput | SortOrder
     template_id?: SortOrderInput | SortOrder
     duplicated_from_id?: SortOrderInput | SortOrder
+    is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
@@ -123306,6 +123343,7 @@ export namespace Prisma {
     created_by_id?: StringNullableFilter<"Bot"> | string | null
     template_id?: StringNullableFilter<"Bot"> | string | null
     duplicated_from_id?: StringNullableFilter<"Bot"> | string | null
+    is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
@@ -123387,6 +123425,7 @@ export namespace Prisma {
     created_by_id?: SortOrderInput | SortOrder
     template_id?: SortOrderInput | SortOrder
     duplicated_from_id?: SortOrderInput | SortOrder
+    is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
@@ -123447,6 +123486,7 @@ export namespace Prisma {
     created_by_id?: StringNullableWithAggregatesFilter<"Bot"> | string | null
     template_id?: StringNullableWithAggregatesFilter<"Bot"> | string | null
     duplicated_from_id?: StringNullableWithAggregatesFilter<"Bot"> | string | null
+    is_starter?: BoolWithAggregatesFilter<"Bot"> | boolean
     name?: StringWithAggregatesFilter<"Bot"> | string
     emoji?: StringWithAggregatesFilter<"Bot"> | string
     color?: StringWithAggregatesFilter<"Bot"> | string
@@ -126892,6 +126932,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFilter<"Credential"> | $Enums.Visibility
     status?: EnumCredentialStatusFilter<"Credential"> | $Enums.CredentialStatus
     masked_hint?: StringNullableFilter<"Credential"> | string | null
+    website_domain?: StringNullableFilter<"Credential"> | string | null
     expires_at?: DateTimeNullableFilter<"Credential"> | Date | string | null
     scope?: StringNullableFilter<"Credential"> | string | null
     secret_resource_name?: StringFilter<"Credential"> | string
@@ -126923,6 +126964,7 @@ export namespace Prisma {
     visibility?: SortOrder
     status?: SortOrder
     masked_hint?: SortOrderInput | SortOrder
+    website_domain?: SortOrderInput | SortOrder
     expires_at?: SortOrderInput | SortOrder
     scope?: SortOrderInput | SortOrder
     secret_resource_name?: SortOrder
@@ -126958,6 +127000,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFilter<"Credential"> | $Enums.Visibility
     status?: EnumCredentialStatusFilter<"Credential"> | $Enums.CredentialStatus
     masked_hint?: StringNullableFilter<"Credential"> | string | null
+    website_domain?: StringNullableFilter<"Credential"> | string | null
     expires_at?: DateTimeNullableFilter<"Credential"> | Date | string | null
     scope?: StringNullableFilter<"Credential"> | string | null
     secret_version?: StringNullableFilter<"Credential"> | string | null
@@ -126988,6 +127031,7 @@ export namespace Prisma {
     visibility?: SortOrder
     status?: SortOrder
     masked_hint?: SortOrderInput | SortOrder
+    website_domain?: SortOrderInput | SortOrder
     expires_at?: SortOrderInput | SortOrder
     scope?: SortOrderInput | SortOrder
     secret_resource_name?: SortOrder
@@ -127018,6 +127062,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityWithAggregatesFilter<"Credential"> | $Enums.Visibility
     status?: EnumCredentialStatusWithAggregatesFilter<"Credential"> | $Enums.CredentialStatus
     masked_hint?: StringNullableWithAggregatesFilter<"Credential"> | string | null
+    website_domain?: StringNullableWithAggregatesFilter<"Credential"> | string | null
     expires_at?: DateTimeNullableWithAggregatesFilter<"Credential"> | Date | string | null
     scope?: StringNullableWithAggregatesFilter<"Credential"> | string | null
     secret_resource_name?: StringWithAggregatesFilter<"Credential"> | string
@@ -132257,6 +132302,7 @@ export namespace Prisma {
 
   export type BotCreateInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -132337,6 +132383,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -132409,6 +132456,7 @@ export namespace Prisma {
 
   export type BotUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -132489,6 +132537,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -132565,6 +132614,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -132613,6 +132663,7 @@ export namespace Prisma {
 
   export type BotUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -132663,6 +132714,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -136224,6 +136276,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -136254,6 +136307,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -136280,6 +136334,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -136310,6 +136365,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -136338,6 +136394,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -136360,6 +136417,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -136383,6 +136441,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -142131,6 +142190,7 @@ export namespace Prisma {
     created_by_id?: SortOrder
     template_id?: SortOrder
     duplicated_from_id?: SortOrder
+    is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
@@ -142187,6 +142247,7 @@ export namespace Prisma {
     created_by_id?: SortOrder
     template_id?: SortOrder
     duplicated_from_id?: SortOrder
+    is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
@@ -142238,6 +142299,7 @@ export namespace Prisma {
     created_by_id?: SortOrder
     template_id?: SortOrder
     duplicated_from_id?: SortOrder
+    is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
@@ -144837,6 +144899,7 @@ export namespace Prisma {
     visibility?: SortOrder
     status?: SortOrder
     masked_hint?: SortOrder
+    website_domain?: SortOrder
     expires_at?: SortOrder
     scope?: SortOrder
     secret_resource_name?: SortOrder
@@ -144861,6 +144924,7 @@ export namespace Prisma {
     visibility?: SortOrder
     status?: SortOrder
     masked_hint?: SortOrder
+    website_domain?: SortOrder
     expires_at?: SortOrder
     scope?: SortOrder
     secret_resource_name?: SortOrder
@@ -144885,6 +144949,7 @@ export namespace Prisma {
     visibility?: SortOrder
     status?: SortOrder
     masked_hint?: SortOrder
+    website_domain?: SortOrder
     expires_at?: SortOrder
     scope?: SortOrder
     secret_resource_name?: SortOrder
@@ -162367,6 +162432,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutCreated_byInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -162445,6 +162511,7 @@ export namespace Prisma {
     organization_id: string
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -163591,6 +163658,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -163619,6 +163687,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -164703,6 +164772,7 @@ export namespace Prisma {
     created_by_id?: StringNullableFilter<"Bot"> | string | null
     template_id?: StringNullableFilter<"Bot"> | string | null
     duplicated_from_id?: StringNullableFilter<"Bot"> | string | null
+    is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
@@ -165517,6 +165587,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFilter<"Credential"> | $Enums.Visibility
     status?: EnumCredentialStatusFilter<"Credential"> | $Enums.CredentialStatus
     masked_hint?: StringNullableFilter<"Credential"> | string | null
+    website_domain?: StringNullableFilter<"Credential"> | string | null
     expires_at?: DateTimeNullableFilter<"Credential"> | Date | string | null
     scope?: StringNullableFilter<"Credential"> | string | null
     secret_resource_name?: StringFilter<"Credential"> | string
@@ -168263,6 +168334,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutDefault_for_usersInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -168342,6 +168414,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -168570,6 +168643,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutDefault_for_usersInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -168649,6 +168723,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -170121,6 +170196,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutOrganizationInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -170199,6 +170275,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -170987,6 +171064,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -171015,6 +171093,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -174356,6 +174435,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutModelInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -174435,6 +174515,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -175582,6 +175663,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutTemplateInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -175660,6 +175742,7 @@ export namespace Prisma {
     organization_id: string
     created_by_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -176724,6 +176807,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutDuplicatesInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -176803,6 +176887,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -176879,6 +176964,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutDuplicated_fromInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -176957,6 +177043,7 @@ export namespace Prisma {
     organization_id: string
     created_by_id?: string | null
     template_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -178240,6 +178327,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -178269,6 +178357,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -178648,6 +178737,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutDuplicatesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -178727,6 +178817,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -179480,6 +179571,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutApproval_rulesInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -179559,6 +179651,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -179646,6 +179739,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutApproval_rulesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -179725,6 +179819,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -179796,6 +179891,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutBot_connectionsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -179875,6 +179971,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -180033,6 +180130,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutBot_connectionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -180112,6 +180210,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -180260,6 +180359,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutBot_tool_serversInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -180339,6 +180439,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -180469,6 +180570,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutBot_tool_serversInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -180548,6 +180650,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -180668,6 +180771,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutBot_credentialsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -180747,6 +180851,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -180831,6 +180936,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -180860,6 +180966,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -180893,6 +181000,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutBot_credentialsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -180972,6 +181080,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -181062,6 +181171,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -181091,6 +181201,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -181108,6 +181219,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutBot_skillsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -181187,6 +181299,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -181341,6 +181454,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutBot_skillsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -181420,6 +181534,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -181663,6 +181778,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutKnowledge_itemsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -181742,6 +181858,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -182200,6 +182317,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutKnowledge_itemsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -182279,6 +182397,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -183185,6 +183304,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutMemoriesInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -183264,6 +183384,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -183650,6 +183771,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutMemoriesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -183729,6 +183851,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -184639,6 +184762,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutLead_conversationsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -184718,6 +184842,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -185765,6 +185890,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutLead_conversationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -185844,6 +185970,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -186426,6 +186553,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutParticipationsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -186505,6 +186633,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -186823,6 +186952,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutParticipationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -186902,6 +187032,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -187297,6 +187428,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutMessagesInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -187376,6 +187508,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -188853,6 +188986,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutMessagesInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -188932,6 +189066,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -191860,6 +191995,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutRunsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -191939,6 +192075,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -192412,6 +192549,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutConsultationsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -192491,6 +192629,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -193434,6 +193573,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutRunsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -193513,6 +193653,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -193932,6 +194073,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutConsultationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -194011,6 +194153,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -195381,6 +195524,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutApprovalsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -195460,6 +195604,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -196032,6 +196177,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutApprovalsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -196111,6 +196257,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -196616,6 +196763,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutVoice_sessionsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -196695,6 +196843,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -197187,6 +197336,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutVoice_sessionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -197266,6 +197416,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -203190,6 +203341,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutArtifact_comment_mentionsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -203269,6 +203421,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -203639,6 +203792,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutArtifact_comment_mentionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -203718,6 +203872,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -204643,6 +204798,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -204672,6 +204828,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -205306,6 +205463,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -205335,6 +205493,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -205678,6 +205837,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutConnection_restrictionsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -205757,6 +205917,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -205921,6 +206082,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutConnection_restrictionsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -206000,6 +206162,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -206305,6 +206468,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutCredential_last_usedInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -206384,6 +206548,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -206883,6 +207048,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutCredential_last_usedInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -206962,6 +207128,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -207199,6 +207366,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -207228,6 +207396,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -207404,6 +207573,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -207433,6 +207603,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -207833,6 +208004,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -207862,6 +208034,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -208240,6 +208413,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -208269,6 +208443,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -209271,6 +209446,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutImageInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -209350,6 +209526,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -210489,6 +210666,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutImageInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -210568,6 +210746,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -210834,6 +211013,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutCloud_computerInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -210913,6 +211093,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -211209,6 +211390,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutCloud_computerInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -211288,6 +211470,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -213138,6 +213321,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutAutomationsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -213217,6 +213401,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -213986,6 +214171,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutAutomationsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -214065,6 +214251,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -216991,6 +217178,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutUsage_recordsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -217070,6 +217258,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -217628,6 +217817,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutUsage_recordsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -217707,6 +217897,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -218120,6 +218311,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutUsage_limitsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -218199,6 +218391,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -218391,6 +218584,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutUsage_limitsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -218470,6 +218664,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -219387,6 +219582,7 @@ export namespace Prisma {
 
   export type BotCreateWithoutActivity_logsInput = {
     id?: string
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -219466,6 +219662,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -220012,6 +220209,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutActivity_logsInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -220091,6 +220289,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -221154,6 +221353,7 @@ export namespace Prisma {
     organization_id: string
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -221558,6 +221758,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -222191,6 +222392,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutCreated_byInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -222269,6 +222471,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -222344,6 +222547,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -223593,6 +223797,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -223621,6 +223826,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -223648,6 +223854,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -224745,6 +224952,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -225032,6 +225240,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -225370,6 +225579,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -225448,6 +225658,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -225523,6 +225734,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -226397,6 +226609,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -226425,6 +226638,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -226452,6 +226666,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -227151,6 +227366,7 @@ export namespace Prisma {
     created_by_id?: string | null
     template_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -227415,6 +227631,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutModelInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -227494,6 +227711,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -227569,6 +227787,7 @@ export namespace Prisma {
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228096,6 +228315,7 @@ export namespace Prisma {
     organization_id: string
     created_by_id?: string | null
     duplicated_from_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -228161,6 +228381,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutTemplateInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228239,6 +228460,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228314,6 +228536,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228380,6 +228603,7 @@ export namespace Prisma {
     organization_id: string
     created_by_id?: string | null
     template_id?: string | null
+    is_starter?: boolean
     name: string
     emoji?: string
     color?: string
@@ -228796,6 +229020,7 @@ export namespace Prisma {
     visibility?: $Enums.Visibility
     status?: $Enums.CredentialStatus
     masked_hint?: string | null
+    website_domain?: string | null
     expires_at?: Date | string | null
     scope?: string | null
     secret_resource_name: string
@@ -228822,6 +229047,7 @@ export namespace Prisma {
 
   export type BotUpdateWithoutDuplicated_fromInput = {
     id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228900,6 +229126,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -228975,6 +229202,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     template_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
@@ -230207,6 +230435,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -230236,6 +230465,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string
@@ -230263,6 +230493,7 @@ export namespace Prisma {
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
     status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
     masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
+    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     scope?: NullableStringFieldUpdateOperationsInput | string | null
     secret_resource_name?: StringFieldUpdateOperationsInput | string

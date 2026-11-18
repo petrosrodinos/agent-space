@@ -1,12 +1,13 @@
 import { useEffect, type FC, type ReactNode } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { Activity, BarChart3, Bell, BookOpen, Brain, Building2, Cpu, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Bell, BookOpen, Brain, Building2, Cpu, Download, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { ListGroup, ListRow, ListRowTones } from "@/components/ui/list-group";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useCurrentOrganization } from "@/features/organizations/hooks/use-organizations";
 import { useSignOut } from "@/features/auth/hooks/use-auth";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { useInstallApp } from "@/hooks/use-install-app";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
 import { KnowledgePanel } from "@/components/layout/knowledge-panel";
@@ -91,6 +92,7 @@ const SettingsPage: FC = () => {
   const navigate = useNavigate();
   const { data: org, isPending } = useCurrentOrganization();
   const signOut = useSignOut();
+  const installApp = useInstallApp();
   const isAdmin = org?.my_role === OrgRoles.OWNER || org?.my_role === OrgRoles.ADMIN;
   const orgSections = ORGANISATION.filter((s) => !s.admin || isAdmin);
 
@@ -164,6 +166,16 @@ const SettingsPage: FC = () => {
         <div className="space-y-5">
           <SectionGroup sections={PERSONAL} title="You" />
           <SectionGroup sections={orgSections} title={org?.name ?? "Organisation"} />
+          {installApp.available && (
+            <ListGroup>
+              <ListRow
+                icon={Download}
+                label="Install the app"
+                description="Add Agent Space to your home screen"
+                onClick={() => void installApp.install()}
+              />
+            </ListGroup>
+          )}
           <ListGroup>
             <ListRow icon={LogOut} label="Sign out" onClick={() => signOut.mutate()} tone={ListRowTones.DESTRUCTIVE} />
           </ListGroup>

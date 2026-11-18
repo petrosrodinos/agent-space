@@ -5,7 +5,7 @@ export const ConnectionKinds = { COMPOSIO: "COMPOSIO", API_KEY: "API_KEY", MCP: 
 export type ConnectionKind = (typeof ConnectionKinds)[keyof typeof ConnectionKinds];
 export const Visibilities = { PRIVATE: "PRIVATE", SHARED: "SHARED" } as const;
 export type Visibility = (typeof Visibilities)[keyof typeof Visibilities];
-export const CredentialKinds = { API_KEY: "API_KEY", MCP_TOKEN: "MCP_TOKEN", MCP_OAUTH: "MCP_OAUTH" } as const;
+export const CredentialKinds = { API_KEY: "API_KEY", MCP_TOKEN: "MCP_TOKEN", MCP_OAUTH: "MCP_OAUTH", WEBSITE_LOGIN: "WEBSITE_LOGIN" } as const;
 export type CredentialKind = (typeof CredentialKinds)[keyof typeof CredentialKinds];
 export const ConnectionStatuses = { ACTIVE: "ACTIVE", NEEDS_RECONNECTING: "NEEDS_RECONNECTING", ERROR: "ERROR" } as const;
 export type ConnectionStatus = (typeof ConnectionStatuses)[keyof typeof ConnectionStatuses];
@@ -53,6 +53,8 @@ export interface Credential {
   service_name: string | null;
   kind: CredentialKind;
   masked_hint: string | null;
+  /** Website logins only: the site (and subdomains) the bot may type it into. */
+  website_domain: string | null;
   visibility: Visibility;
   status: CredentialStatus;
   expires_at: string | null;
@@ -78,9 +80,21 @@ export interface CreateCredentialDto {
   label: string;
   service_name?: string;
   kind: SecretKind;
+  /** Key or token; for a website login, the password. */
   value: string;
+  website?: string;
+  username?: string;
+  totp_secret?: string;
   visibility?: Visibility;
   bot_ids?: string[];
+  request?: { run_id: string; request_id: string };
+}
+
+export interface ReplaceCredentialDto {
+  value: string;
+  /** Website logins: a new username (kept when omitted) and authenticator key ("" removes it). */
+  username?: string;
+  totp_secret?: string;
   request?: { run_id: string; request_id: string };
 }
 

@@ -13,12 +13,17 @@ export interface SecretPayload {
     scope?: string;
     /** MCP sign-in (§8.4): JSON of the registered OAuth client and the token set. */
     oauth?: string;
+    /** Website logins (§9.4): typed into the matching site on the bot's cloud computer, never shown to the model. */
+    username?: string;
+    password?: string;
+    /** Base32 authenticator secret; codes are computed on the server, so the secret never reaches the computer. */
+    totp_secret?: string;
 }
 
 export interface SecretLabels {
     org_id: string;
     owner_type: 'user' | 'org';
-    kind: 'mcp_oauth' | 'mcp_token' | 'api_key';
+    kind: 'mcp_oauth' | 'mcp_token' | 'api_key' | 'website_login';
 }
 
 export interface StoredSecretRef {

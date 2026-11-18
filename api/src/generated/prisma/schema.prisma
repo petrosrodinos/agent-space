@@ -641,6 +641,8 @@ enum CredentialKind {
   MCP_OAUTH
   MCP_TOKEN
   API_KEY
+  /// Username + password (+ optional two-step secret) the bot types into one website on its cloud computer (§9.4).
+  WEBSITE_LOGIN
 }
 
 enum CredentialStatus {
@@ -1555,6 +1557,8 @@ model Bot {
   created_by_id      String?
   template_id        String?
   duplicated_from_id String?
+  /// The bot created at sign-up. It configures itself through chat and cannot be deleted.
+  is_starter         Boolean @default(false)
 
   // Identity
   name                  String
@@ -2612,6 +2616,8 @@ model Credential {
   visibility           Visibility          @default(PRIVATE)
   status               CredentialStatus    @default(ACTIVE)
   masked_hint          String? // "…a9f2"
+  /// WEBSITE_LOGIN only: the site (and its subdomains) the login may be typed into, e.g. "portal.acme.com".
+  website_domain       String?
   expires_at           DateTime?
   scope                String?
   secret_resource_name String              @unique // projects/<p>/secrets/cred-<id>

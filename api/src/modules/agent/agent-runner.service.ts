@@ -170,7 +170,7 @@ export class AgentRunnerService {
         const toolSchemas: ChatToolDef[] = toolDefs.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } }));
 
         if (!state.messages) {
-            const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: resolved.model.supports_vision };
+            const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: resolved.model.supports_vision, ...(await this.computerPrompt(ctx, tools)) };
             const system = await this.prompt.system(pctx);
             const history = await this.prompt.history(pctx, { excludeMessageIds: [state.message_id!, ...(state.branch_from_message_id ? [state.branch_from_message_id] : [])], vision: resolved.model.supports_vision });
             // Automation runs (§10.2): extra rules in the system prompt, and the run's instructions as the final turn.
@@ -236,6 +236,12 @@ export class AgentRunnerService {
     }
 
     /** The bot's full tool set for this context — the same for text chat, tasks, automations and voice (§7.6). */
+    /** The cloud-computer part of the prompt context: only described when the run actually got the computer tools. */
+    async computerPrompt(ctx: ToolContext, tools: Map<string, ToolDef>) {
+        const computer_available = tools.has('computer_run');
+        return { computer_available, website_logins: computer_available ? await this.computerTools.websiteLogins(ctx) : [] };
+    }
+
     async buildTools(ctx: ToolContext): Promise<{ tools: ToolDef[]; summary: string[] }> {
         let toolDefs: ToolDef[] = [...this.builtins.tools(ctx), ...this.automationTools.tools(ctx)];
         let summary: string[] = [];

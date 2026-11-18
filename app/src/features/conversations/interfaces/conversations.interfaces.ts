@@ -43,7 +43,7 @@ export type ToolPartStatus = (typeof ToolPartStatuses)[keyof typeof ToolPartStat
 export const SecretInputStatuses = { PENDING: "pending", SAVED: "saved", CANCELLED: "cancelled" } as const;
 export type SecretInputStatus = (typeof SecretInputStatuses)[keyof typeof SecretInputStatuses];
 
-export const SecretKinds = { API_KEY: "api_key", MCP_TOKEN: "mcp_token" } as const;
+export const SecretKinds = { API_KEY: "api_key", MCP_TOKEN: "mcp_token", WEBSITE_LOGIN: "website_login" } as const;
 export type SecretKind = (typeof SecretKinds)[keyof typeof SecretKinds];
 
 export const ComputerHandoffKinds = { SIGN_IN: "sign_in", TWO_STEP_CODE: "two_step_code", CAPTCHA: "captcha", OTHER: "other" } as const;
@@ -92,7 +92,7 @@ export type MessagePart =
   | { type: T["TOOL"]; call_id: string; step_id: string; name: string; title: string; status: ToolPartStatus; error?: string; duration_ms?: number }
   | { type: T["UI"]; id: string; title: string; blocks: UiBlock[]; fallback_text: string }
   | { type: T["APPROVAL"]; approval_id: string; title: string; action_type: string; preview: ApprovalPreview; status: string; requires_tap?: boolean; tool?: string }
-  | { type: T["SECRET_INPUT"]; request_id: string; run_id: string; for_user_id: string; for_user_name: string; purpose: string; suggested_label: string; service: string | null; kind: SecretKind; replace_credential_id: string | null; bot_id: string; status: SecretInputStatus; saved?: { label: string; masked_hint: string; credential_id: string } | null; redacted?: boolean }
+  | { type: T["SECRET_INPUT"]; request_id: string; run_id: string; for_user_id: string; for_user_name: string; purpose: string; suggested_label: string; service: string | null; kind: SecretKind; website?: string | null; replace_credential_id: string | null; bot_id: string; status: SecretInputStatus; saved?: { label: string; masked_hint: string; credential_id: string } | null; redacted?: boolean }
   | { type: T["SKILL"]; skill_id: string; name: string; emoji: string | null; slug: string }
   | { type: T["CONSULTED"]; bot: BotBrief; question: string }
   | { type: T["FILE"]; file_id: string; filename: string; mimetype: string; size: number }

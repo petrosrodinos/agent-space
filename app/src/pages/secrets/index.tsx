@@ -1,6 +1,6 @@
 import { useMemo, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { Bot as BotIcon, History, KeyRound, Lock, MoreHorizontal, Pencil, Plug, Plus, RefreshCw, Search, ShieldCheck, Trash2, Users } from "lucide-react";
+import { Bot as BotIcon, Globe, History, KeyRound, Lock, MoreHorizontal, Pencil, Plug, Plus, RefreshCw, Search, ShieldCheck, Trash2, Users } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -20,7 +20,7 @@ import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { formatDate, timeAgo } from "@/lib/date";
 import { Routes } from "@/routes/routes";
 import { AddSecretDialog, ChooseBotsDialog, DeleteSecretDialog, HistorySheet, RenameSecretDialog, ReplaceSecretDialog } from "./components/secret-dialogs";
-import { CredentialStatuses, Visibilities } from "@/features/connections/interfaces/connections.interfaces";
+import { CredentialKinds, CredentialStatuses, Visibilities } from "@/features/connections/interfaces/connections.interfaces";
 import { OrgRoles } from "@/features/users/interfaces/users.interfaces";
 import { ALL_FILTER } from "@/config/constants/filters";
 
@@ -32,7 +32,7 @@ const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: 
   <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker sm:flex-row sm:items-center">
     <div className="flex min-w-0 flex-1 items-start gap-3">
       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-sunken">
-        <Lock className="h-5 w-5 text-muted-foreground" />
+        {s.kind === CredentialKinds.WEBSITE_LOGIN ? <Globe className="h-5 w-5 text-muted-foreground" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
       </span>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">
@@ -41,7 +41,7 @@ const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: 
           <Badge variant="secondary">{s.visibility === Visibilities.SHARED ? <><Users className="h-3 w-3" /> Shared</> : "Private"}</Badge>
         </div>
         <p className="text-sm text-muted-foreground">
-          {s.service_name ?? "Service"} · {getDropdownOptionLabel(CredentialKindOptions, s.kind)} · added by {s.owner?.name ?? s.owner?.email ?? "someone"} {formatDate(s.created_at)}
+          {s.website_domain ?? s.service_name ?? "Service"} · {getDropdownOptionLabel(CredentialKindOptions, s.kind)} · added by {s.owner?.name ?? s.owner?.email ?? "someone"} {formatDate(s.created_at)}
         </p>
         <p className="text-xs text-muted-foreground">
           {s.bots.length ? `Bots: ${s.bots.map((b) => b.name).join(", ")}` : "All your bots"} · {s.last_used_at ? `last used ${timeAgo(s.last_used_at)}${s.last_used_bot ? ` by ${s.last_used_bot.name}` : ""}` : "never used"}
@@ -61,7 +61,7 @@ const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: 
           {s.can_manage && (
             <>
               <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.RENAME, s)}><Pencil className="h-4 w-4" /> Rename</DropdownMenuItem>
-              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.REPLACE, s)}><RefreshCw className="h-4 w-4" /> Replace value</DropdownMenuItem>
+              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.REPLACE, s)}><RefreshCw className="h-4 w-4" /> {s.kind === CredentialKinds.WEBSITE_LOGIN ? "Update login" : "Replace value"}</DropdownMenuItem>
               <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.BOTS, s)}><BotIcon className="h-4 w-4" /> Choose bots</DropdownMenuItem>
               {isAdmin && <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => onAction(SecretActions.SHARE, s)}><Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}</DropdownMenuItem>}
               <DropdownMenuSeparator />
@@ -108,7 +108,7 @@ const SecretsPage: FC = () => {
     <PageContainer>
       <PageHeader
         title="Secrets"
-        description="Keys and tokens you've given Agent Space. Stored encrypted, never shown again, never seen by bots."
+        description="Keys, tokens and website logins you've given Agent Space. Stored encrypted, never shown again, never seen by bots."
         actions={
           <>
             <Button variant="outline" asChild><Link to={Routes.connections.root}><Plug /> Connections</Link></Button>

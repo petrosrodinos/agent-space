@@ -1,7 +1,7 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request } from "@/lib/request";
-import type { Connection, CreateCredentialDto, Credential, CredentialEvent, Toolkit } from "../interfaces/connections.interfaces";
+import type { Connection, CreateCredentialDto, Credential, CredentialEvent, ReplaceCredentialDto, Toolkit } from "../interfaces/connections.interfaces";
 import { type Visibility } from "../interfaces/connections.interfaces";
 
 export const getConnections = () => request<Connection[]>(() => axiosInstance.get(ApiRoutes.connections.root));
@@ -20,7 +20,7 @@ export const getCredentials = (params: { search?: string; service?: string; stat
 export const createCredential = (dto: CreateCredentialDto) => request<Credential>(() => axiosInstance.post(ApiRoutes.credentials.root, dto));
 export const cancelSecretRequest = (dto: { run_id: string; request_id: string }) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.credentials.cancel_request, { request: dto }));
 export const updateCredential = (id: string, dto: { label?: string; service_name?: string; bot_ids?: string[]; visibility?: Visibility }) => request<Credential>(() => axiosInstance.patch(ApiRoutes.credentials.one(id), dto));
-export const replaceCredential = (id: string, dto: { value: string; request?: { run_id: string; request_id: string } }) => request<Credential>(() => axiosInstance.post(ApiRoutes.credentials.replace(id), dto));
+export const replaceCredential = (id: string, dto: ReplaceCredentialDto) => request<Credential>(() => axiosInstance.post(ApiRoutes.credentials.replace(id), dto));
 export const deleteCredential = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.credentials.one(id)));
 export const getCredentialUsage = (id: string) => request<{ bots: { id: string; name: string; emoji: string }[]; tool_servers: { id: string; name: string }[] }>(() => axiosInstance.get(ApiRoutes.credentials.usage(id)));
 export const getCredentialHistory = (id: string) => request<CredentialEvent[]>(() => axiosInstance.get(ApiRoutes.credentials.history(id)));

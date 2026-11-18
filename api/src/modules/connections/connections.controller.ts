@@ -128,7 +128,7 @@ export class CredentialsController {
     @Post(':id/replace')
     @Throttle({ default: { limit: 20, ttl: 60_000 } })
     async replace(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: ReplaceCredentialDto) {
-        const cred = await this.credentials.replace(actor(m), id, dto.value);
+        const cred = await this.credentials.replace(actor(m), id, dto.value, { username: dto.username, totp_secret: dto.totp_secret });
         if (dto.request) {
             await this.runs.provideInput(actor(m), dto.request.run_id, dto.request.request_id, { status: 'saved', credential_id: cred.id, label: cred.label, service: cred.service_name, masked_hint: cred.masked_hint });
         }

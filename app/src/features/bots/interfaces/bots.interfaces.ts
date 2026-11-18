@@ -86,6 +86,8 @@ export interface BotBrief {
 
 export interface Bot extends BotBrief {
   organization_id: string;
+  /** Created at sign-up; can't be deleted. */
+  is_starter: boolean;
   created_by_id: string | null;
   template_id: string | null;
   instructions: string;

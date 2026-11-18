@@ -11,6 +11,7 @@ import { ConversationInbox, ConversationListSkeleton } from "@/components/layout
 import { ChatActions } from "@/components/layout/new-chat/chat-actions";
 import { NEW_CHAT_OPTIONS } from "@/components/layout/new-chat/new-chat-options";
 import { useWorkspaceLinks } from "@/components/layout/workspace-links";
+import { InstallAppBanner } from "@/components/layout/install-app";
 import { NewChatSteps, useUiStore } from "@/stores/ui";
 import { Routes } from "@/routes/routes";
 
@@ -38,6 +39,7 @@ const ChatHomePage: FC = () => {
               <Plus />
             </CircleButton>
           </div>
+          <InstallAppBanner className="md:hidden" />
           {/* Desktop / tablet header */}
           <div className="sticky top-0 z-10 hidden items-center gap-2 bg-canvas/95 px-4 pb-2 pt-8 backdrop-blur md:flex">
             <h1 className="flex-1 font-display text-[28px] font-bold text-ink">Chats</h1>

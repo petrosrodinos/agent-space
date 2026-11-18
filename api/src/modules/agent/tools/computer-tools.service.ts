@@ -1,18 +1,23 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { ActionType } from 'generated/prisma';
+import { ActionType, CredentialKind, CredentialStatus, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { ComposioService } from '@/integrations/composio/composio.service';
+import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { StorageService } from '@/integrations/storage/storage.service';
 import { randomToken, newId } from '@/shared/utils/security/crypto.utils';
+import { hostMatchesDomain, normalizeWebsiteDomain, totpCode } from '@/shared/utils/security/website-login.utils';
 import { AccessService } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
 import { FilesService } from '../../files/files.service';
-import { ComputersService, HOME, OPEN_BROWSER, OPEN_BROWSER_PATH, WORKSPACE } from '../../computers/computers.service';
+import { BROWSER_DEBUG_PORT, ComputersService, HOME, OPEN_BROWSER, OPEN_BROWSER_PATH, WORKSPACE } from '../../computers/computers.service';
+import { SIGN_IN_SCRIPT, SIGN_IN_STEPS, SignInErrors, SignInField, SignInFields, SignInScriptInput, SignInScriptResult } from '../../computers/sign-in.script';
 import { assertPublicUrl } from './web.utils';
 import { obj, ToolContext, ToolDef, ToolResult } from './tool.types';
 
 const TRANSFER_LIMIT = 1024 ** 3;
 const MAX_FRAMES = 200;
+const SIGN_IN_SCRIPT_PATH = `${HOME}/.agentspace/sign-in.cjs`;
+const SIGN_IN_FIELDS: string[] = Object.values(SignInFields);
 
 /** What a click or key press does on the website — the bot must say, so the approval engine can ask first (§9.3, §11). */
 const EFFECTS = ['none', 'submit_form', 'send_message', 'post_publicly', 'purchase', 'delete'] as const;
@@ -47,15 +52,47 @@ export class ComputerToolsService {
         private readonly composio: ComposioService,
         private readonly access: AccessService,
         private readonly activity: ActivityService,
+        private readonly secrets: SecretStoreService,
     ) { }
 
     async tools(ctx: ToolContext): Promise<ToolDef[]> {
-        if (!ctx.bot.cloud_computer_enabled || !ctx.actor) return [];
+        if (!(await this.allowedForRun(ctx))) return [];
+        return [this.runCommand(), this.writeFile(), this.readFile(), this.listFiles(), this.copyTo(), this.copyFrom(), this.openUrl(), this.screenshot(), this.click(), this.type(), this.key(), this.scroll(), this.signIn(), this.askUser()];
+    }
+
+    /**
+     * Whether this run may use the cloud computer: the bot has one, the organisation allows it for the acting user, and
+     * automation runs additionally need the automation's "uses cloud computer" switch and the organisation's
+     * "automations may use the cloud computer" setting — both checked at run time, so later changes apply (§9, §10).
+     */
+    private async allowedForRun(ctx: ToolContext): Promise<boolean> {
+        if (!ctx.bot.cloud_computer_enabled || !ctx.actor) return false;
         const s = ctx.org_settings;
-        if (s && !s.cloud_computers_enabled) return [];
-        if (s?.cloud_computers_who === 'OWNERS_ADMINS' && ctx.actor.role === 'MEMBER') return [];
-        const t = [this.runCommand(), this.writeFile(), this.readFile(), this.listFiles(), this.copyTo(), this.copyFrom(), this.openUrl(), this.screenshot(), this.click(), this.type(), this.key(), this.scroll(), this.askUser()];
-        return t;
+        if (s && !s.cloud_computers_enabled) return false;
+        if (s?.cloud_computers_who === 'OWNERS_ADMINS' && ctx.actor.role === 'MEMBER') return false;
+        if (ctx.run.automation_run_id) {
+            if (s && !s.automations_cloud_computer) return false;
+            const ar = await this.prisma.automationRun.findUnique({ where: { id: ctx.run.automation_run_id }, select: { automation: { select: { uses_cloud_computer: true } } } });
+            if (!ar?.automation.uses_cloud_computer) return false;
+        }
+        return true;
+    }
+
+    /** Credentials with no bot list may be used by every bot; otherwise only by the listed ones (same rule as access keys). */
+    private botMayUse(botId: string): Prisma.CredentialWhereInput {
+        return { OR: [{ bots: { none: {} } }, { bots: { some: { bot_id: botId } } }] };
+    }
+
+    /** Saved website logins this bot may type for the acting user (metadata only), for the system prompt. */
+    async websiteLogins(ctx: ToolContext): Promise<{ id: string; label: string; website: string }[]> {
+        if (!ctx.actor) return [];
+        const rows = await this.prisma.credential.findMany({
+            where: { AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor.user_id), this.botMayUse(ctx.bot.id)], kind: CredentialKind.WEBSITE_LOGIN, status: CredentialStatus.ACTIVE },
+            select: { id: true, label: true, website_domain: true },
+            orderBy: { created_at: 'asc' },
+            take: 50,
+        });
+        return rows.filter((r) => r.website_domain).map((r) => ({ id: r.id, label: r.label, website: r.website_domain! }));
     }
 
     /** Ends the run's computer session (minutes for usage) and refreshes the signed-in websites list. Never throws. */
@@ -441,6 +478,126 @@ export class ComputerToolsService {
             image = null;
         }
         return { title, action_type: action, preview: { kind: 'computer', description: title, effect: a.effect, screenshot: image }, requires_tap: action === 'PURCHASE_PAYMENT' };
+    }
+
+    // ---------------- Saved website logins (§9.4) ----------------
+
+    /** The saved login the call names, if the acting user and this bot may use it and it belongs to the website given. */
+    private async loginFor(ctx: ToolContext, a: Record<string, unknown>) {
+        const c = await this.prisma.credential.findFirst({
+            where: { id: String(a.credential_id ?? ''), kind: CredentialKind.WEBSITE_LOGIN, AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor!.user_id), this.botMayUse(ctx.bot.id)] },
+        });
+        if (!c?.website_domain) throw new Error('No saved login with that id is available to you. Use one from "Saved website logins", or ask the user to save one with request_secret (kind "website_login").');
+        if (c.status !== CredentialStatus.ACTIVE) throw new Error(`The saved login "${c.label}" is marked as not working. Ask the user to update it on the Secrets page, or to sign in themselves with computer_ask_user.`);
+        const site = normalizeWebsiteDomain(String(a.website ?? ''));
+        if (!site || !hostMatchesDomain(site, c.website_domain)) throw new Error(`The saved login "${c.label}" is only for ${c.website_domain}.`);
+        return c;
+    }
+
+    private signInMessage(r: SignInScriptResult, domain: string): string {
+        switch (r.error) {
+            case SignInErrors.WRONG_SITE:
+                return `Nothing was typed: the open page is on ${r.host ?? 'another site'}, but this login is only for ${domain}. Open the sign-in page of ${domain} with computer_open_url first.`;
+            case SignInErrors.NOT_HTTPS:
+                return 'Nothing was typed: the sign-in page is not secure (https). Logins are only typed into https pages.';
+            case SignInErrors.FIELD_NOT_FOUND:
+                return `Could not find the ${r.missing ?? 'sign-in'} field on the page. Make sure the sign-in form is showing (click "Sign in" / "Log in" if needed), click into the field, then try again.`;
+            case SignInErrors.IN_FRAME:
+                return 'The sign-in form is inside an embedded frame, where logins are never typed. Open the sign-in page directly, or use computer_ask_user.';
+            case SignInErrors.NOT_TYPED:
+                return 'The field did not accept the typing. Click into the field and try again, or use computer_ask_user.';
+            case SignInErrors.NO_BROWSER:
+            case SignInErrors.NO_PAGE:
+                return `The browser is not open. Open the sign-in page of ${domain} with computer_open_url first.`;
+            default:
+                return 'Signing in failed. Take a screenshot to see the page, or use computer_ask_user.';
+        }
+    }
+
+    private signIn(): ToolDef {
+        return {
+            name: 'computer_sign_in',
+            description:
+                'Sign in to a website in your cloud computer\'s browser with a login the user saved (listed under "Saved website logins"). Open the site\'s sign-in page first with computer_open_url. ' +
+                'The username, password or two-step code are typed straight into the page for you (you never see them), and only when the open page is https on the login\'s own website or its subdomains. ' +
+                'Use "username_and_password" for a normal form; for sign-ins split over two pages use "username", then "password" on the next page. Use "two_step_code" when the site asks for an authenticator-app code and the login has one. ' +
+                'For codes sent by text or email, "prove you are human" checks, or when there is no saved login, use computer_ask_user.',
+            parameters: obj(
+                {
+                    credential_id: { type: 'string', description: 'Id of the saved login' },
+                    website: { type: 'string', description: 'The saved login\'s website, e.g. "portal.acme.com"' },
+                    fields: { type: 'string', enum: SIGN_IN_FIELDS, description: 'What to type' },
+                    submit: { type: 'boolean', description: 'Press Enter afterwards to submit. Default true.' },
+                },
+                ['credential_id', 'website', 'fields'],
+            ),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: (a) => `Signing in to ${String(a.website ?? 'a website').slice(0, 60)}`,
+            // Typing only a username reveals nothing secret; passwords and codes need approval (tap only, or an automation pre-approval for "website:<site>").
+            classify: (a) => (a.fields === SignInFields.USERNAME ? null : ActionType.ENTER_PASSWORD),
+            preview: async (a, ctx) => {
+                const login = await this.loginFor(ctx, a);
+                const title = `Sign in to ${login.website_domain} as ${login.masked_hint ?? login.label}`;
+                let screenshot: string | null = null;
+                try {
+                    const { sandbox } = await this.sandbox(ctx);
+                    const shot = await sandbox.computerUse.screenshot.takeCompressed({ format: 'jpeg', quality: 50, scale: 0.6 });
+                    screenshot = (shot as { screenshot?: string }).screenshot ? `data:image/jpeg;base64,${(shot as { screenshot: string }).screenshot}` : null;
+                } catch {
+                    screenshot = null;
+                }
+                return { title, action_type: ActionType.ENTER_PASSWORD, preview: { kind: 'computer', description: `${title} using the saved login "${login.label}"`, effect: 'sign_in', screenshot }, requires_tap: true };
+            },
+            execute: async (a, ctx) => {
+                const fields = String(a.fields) as SignInField;
+                if (!SIGN_IN_FIELDS.includes(fields)) throw new Error(`fields must be one of: ${SIGN_IN_FIELDS.join(', ')}`);
+                const login = await this.loginFor(ctx, a);
+                const domain = login.website_domain!;
+                const value = await this.secrets.access(login.secret_resource_name);
+                const steps: SignInScriptInput['steps'] = SIGN_IN_STEPS[fields].map((kind) => ({
+                    kind,
+                    text: kind === 'username' ? (value.username ?? '') : kind === 'password' ? (value.password ?? '') : value.totp_secret ? totpCode(value.totp_secret) : '',
+                }));
+                const empty = steps.find((st) => !st.text);
+                if (empty) throw new Error(empty.kind === 'code' ? `The saved login "${login.label}" has no two-step secret. Ask the user to enter the code with computer_ask_user.` : `The saved login "${login.label}" has no ${empty.kind}. Ask the user to update it on the Secrets page.`);
+                for (const st of steps) if (st.kind !== 'username') ctx.secrets_used.push(st.text);
+
+                const { sandbox, session } = await this.sandbox(ctx);
+                const running = await sandbox.process.executeCommand(`pgrep -f "remote-debugging-port=${BROWSER_DEBUG_PORT}" > /dev/null && echo yes || echo no`, undefined, undefined, 15);
+                if (!running.result.includes('yes')) {
+                    // No browser, or one from before sign-in support: the launcher (re)starts it with the DevTools port; sign-ins are kept.
+                    await sandbox.fs.uploadFile(Buffer.from(OPEN_BROWSER), OPEN_BROWSER_PATH);
+                    throw new Error(`Open the sign-in page of ${domain} with computer_open_url first (the browser reopens ready for signing in), then call computer_sign_in again.`);
+                }
+
+                const input: SignInScriptInput = { domain, steps, submit: a.submit !== false };
+                const inputPath = `${HOME}/.agentspace/sign-in-${randomToken(12)}.json`;
+                await sandbox.fs.uploadFile(Buffer.from(SIGN_IN_SCRIPT), SIGN_IN_SCRIPT_PATH);
+                let result: SignInScriptResult;
+                try {
+                    await sandbox.fs.uploadFile(Buffer.from(JSON.stringify(input)), inputPath);
+                    const r = await sandbox.process.executeCommand(`node ${SIGN_IN_SCRIPT_PATH} '${inputPath}'`, undefined, undefined, 60);
+                    result = JSON.parse(r.result.trim().split('\n').pop() || '{}') as SignInScriptResult;
+                } catch {
+                    result = { ok: false, error: SignInErrors.FAILED };
+                } finally {
+                    // The helper deletes its input as soon as it reads it; this covers a helper that never started.
+                    await sandbox.process.executeCommand(`rm -f '${inputPath}'`, undefined, undefined, 15).catch(() => undefined);
+                }
+
+                if (result.filled?.length) {
+                    await this.prisma.credential.update({ where: { id: login.id }, data: { last_used_at: new Date(), last_used_bot_id: ctx.bot.id } });
+                    await this.prisma.credentialEvent.create({ data: { credential_id: login.id, type: 'USED', actor_bot_id: ctx.bot.id, actor_user_id: ctx.run.user_id, run_id: ctx.run.id, action: `Signed in on ${result.host ?? domain}`, metadata: { fields: result.filled, submitted: !!result.submitted } } });
+                    await this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'secret.used', target_type: 'credential', target_id: login.id, run_id: ctx.run.id, metadata: { website: result.host ?? domain, fields: result.filled } });
+                }
+                if (!result.ok) throw new Error(this.signInMessage(result, domain));
+                if (result.submitted) await new Promise((r) => setTimeout(r, 2500));
+                const output: Record<string, unknown> = { website: result.host ?? domain, typed: result.filled, submitted: !!result.submitted };
+                if (result.missing) output.next = `The ${result.missing} field is not on this page yet. Once it shows, call computer_sign_in again with fields "${result.missing === 'code' ? SignInFields.TWO_STEP_CODE : result.missing}".`;
+                return this.withScreen(ctx, output, await this.capture(ctx, session.id, sandbox, `Sign in to ${domain}`));
+            },
+        };
     }
 
     /**

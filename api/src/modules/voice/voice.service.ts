@@ -192,7 +192,7 @@ export class VoiceService implements OnModuleDestroy {
         const all = [...toolDefs, ...voiceTools];
         const tools = new Map(all.map((t) => [t.name, t]));
 
-        const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: true };
+        const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: true, ...(await this.runner.computerPrompt(ctx, tools)) };
         const system = await this.prompt.system(pctx);
         const history = await this.prompt.history(pctx, { excludeMessageIds: [], limit: 24, vision: false });
         const transcript = history

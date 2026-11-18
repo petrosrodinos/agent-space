@@ -5,6 +5,7 @@ import { ConversationEvents, EventsService, UserEvents } from '@/core/realtime/e
 import { AccessService } from '../access/access.service';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
+import { welcomeMessageData } from '../bots/bot-welcome.utils';
 import { BOT_BRIEF, USER_BRIEF } from './conversation.select';
 import { MessageEventsService } from './message-events.service';
 import { AddParticipantsDto, ConversationListQuery, CreateConversationDto, CreateDirectDto, UpdateConversationDto, UpdateMyConversationDto } from './dto/conversation.dto';
@@ -123,15 +124,23 @@ export class ConversationsService {
                 return this.get(actor, existing.id);
             }
         }
-        const c = await this.prisma.conversation.create({
-            data: {
-                organization_id: actor.organization_id,
-                type: 'DIRECT',
-                created_by_id: actor.user_id,
-                lead_bot_id: bot.id,
-                is_temporary: !!dto.is_temporary,
-                participants: { create: [{ user_id: actor.user_id }, { bot_id: bot.id }] },
-            },
+        // A new direct chat opens with the bot's greeting as its first message, never an empty screen.
+        const now = new Date();
+        const c = await this.prisma.$transaction(async (tx) => {
+            const created = await tx.conversation.create({
+                data: {
+                    organization_id: actor.organization_id,
+                    type: 'DIRECT',
+                    created_by_id: actor.user_id,
+                    lead_bot_id: bot.id,
+                    is_temporary: !!dto.is_temporary,
+                    last_message_at: now,
+                    message_count: 1,
+                    participants: { create: [{ user_id: actor.user_id, last_read_at: now }, { bot_id: bot.id }] },
+                },
+            });
+            await tx.message.create({ data: welcomeMessageData(actor.organization_id, created.id, bot, now) });
+            return created;
         });
         await this.events.toUser(actor.user_id, UserEvents.CONVERSATIONS_CHANGED, { conversation_id: c.id });
         return this.get(actor, c.id);

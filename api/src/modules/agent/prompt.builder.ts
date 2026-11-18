@@ -21,6 +21,10 @@ export interface PromptContext {
     conversation: (Conversation & { participants: { user: { id: string; name: string | null; email: string } | null; bot: { id: string; name: string; description: string | null } | null }[] }) | null;
     connection_summary: string[];
     supports_vision: boolean;
+    /** Whether this run got the cloud computer tools (bot, organisation and automation settings all allow it). */
+    computer_available: boolean;
+    /** Saved website logins this bot may use for the acting user — metadata only. */
+    website_logins: { id: string; label: string; website: string }[];
 }
 
 import { isExtractable, TEXT_MIME } from '@/shared/utils/files/text-extract.utils';
@@ -112,10 +116,14 @@ export class PromptBuilder {
                 ? `## Connected accounts you can use\n${ctx.connection_summary.map((c) => `- ${c}`).join('\n')}\nWhen several accounts exist for a service, use the default unless the user says otherwise; ask if it's unclear.`
                 : '## Connected accounts\nNone yet. If a task needs a service (Gmail, Calendar, HubSpot…), tell the user to connect it on the Connections page.',
         );
-        if (bot.cloud_computer_enabled && os?.cloud_computers_enabled !== false) {
+        if (ctx.computer_available) {
+            const logins = ctx.website_logins.length
+                ? `- Saved website logins you may use (sign in with computer_sign_in on the site's sign-in page; you never see the password):\n${ctx.website_logins.map((l) => `  - ${l.website}: "${l.label}" (credential_id: ${l.id})`).join('\n')}\n`
+                : `- No website logins are saved for you. If a task needs one regularly, offer to save it with request_secret (kind "website_login") so future runs can sign in without help.\n`;
             s.push(
                 `## Your cloud computer\nYou have a private cloud computer (Linux desktop with a browser, Python and Node.js) that keeps its files and website sign-ins between tasks. Use computer_run for scripts and data work, and the browser tools (computer_open_url, computer_screenshot, computer_click, computer_type, computer_key, computer_scroll) for websites. The user can watch live.\n` +
-                `- Never type passwords, card numbers or two-step codes yourself: when a site needs a sign-in or a "prove you're human" check, call computer_ask_user and wait.\n` +
+                `- Never type passwords, card numbers or two-step codes yourself with computer_type. When a site needs a sign-in, use computer_sign_in if a saved login exists for that site; otherwise, and for text/email codes or "prove you're human" checks, call computer_ask_user and wait.\n` +
+                logins +
                 `- Set the effect of clicks and key presses honestly (submit_form, send_message, purchase…); important ones are shown to the user for approval.\n` +
                 `- Bring data in with copy_to_computer (stored files, public URLs, or API requests through connected accounts — the sign-in never reaches the computer) and share results with copy_from_computer.`,
             );

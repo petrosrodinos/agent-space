@@ -1,13 +1,40 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { CredentialEventType, Prisma } from 'generated/prisma';
+import { CredentialEventType, CredentialKind, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
-import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
+import { SecretPayload, SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { maskSecret } from '@/shared/utils/security/secret-detection.utils';
 import { newId, slugify } from '@/shared/utils/security/crypto.utils';
+import { maskUsername, normalizeWebsiteDomain, parseTotpSecret } from '@/shared/utils/security/website-login.utils';
 import { AccessService, isAdminRole } from '../access/access.service';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
-import { CredentialQuery } from './dto/connection.dto';
+import { CredentialQuery, SecretInputKind, SecretInputKinds } from './dto/connection.dto';
+
+const MIN_KEY_LENGTH = 6;
+
+const KIND_OF_INPUT: Record<SecretInputKind, CredentialKind> = {
+    [SecretInputKinds.API_KEY]: CredentialKind.API_KEY,
+    [SecretInputKinds.MCP_TOKEN]: CredentialKind.MCP_TOKEN,
+    [SecretInputKinds.WEBSITE_LOGIN]: CredentialKind.WEBSITE_LOGIN,
+};
+
+export interface CreateCredentialInput {
+    label: string;
+    service_name?: string;
+    kind: SecretInputKind;
+    value: string;
+    website?: string;
+    username?: string;
+    totp_secret?: string;
+    visibility?: 'PRIVATE' | 'SHARED';
+    bot_ids?: string[];
+}
+
+function totpOrThrow(input: string): string {
+    const secret = parseTotpSecret(input);
+    if (!secret) throw new BadRequestException('The two-step secret should be the setup key (letters A to Z and 2 to 7) or an otpauth:// link');
+    return secret;
+}
 
 const CRED_INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
@@ -38,6 +65,7 @@ export class CredentialsService {
             service_name: c.service_name,
             kind: c.kind,
             masked_hint: c.masked_hint,
+            website_domain: c.website_domain,
             visibility: c.visibility,
             status: c.status,
             expires_at: c.expires_at,
@@ -91,20 +119,41 @@ export class CredentialsService {
         return this.prisma.credentialEvent.create({ data: { credential_id, type, actor_user_id: actor.user_id, actor_bot_id: actor.bot_id, metadata: metadata as Prisma.InputJsonValue } });
     }
 
+    /** Validates the input and builds what goes to the secret store and the DB for each kind. Values never leave this method except into the store. */
+    private prepare(input: CreateCredentialInput): { payload: SecretPayload; masked_hint: string; website_domain: string | null; service_name: string } {
+        if (input.kind === SecretInputKinds.WEBSITE_LOGIN) {
+            const website = normalizeWebsiteDomain(input.website ?? '');
+            if (!website) throw new BadRequestException('Enter the website this login is for, e.g. portal.acme.com');
+            const username = input.username?.trim();
+            if (!username) throw new BadRequestException('Enter the username or email for this login');
+            const totp = input.totp_secret?.trim() ? totpOrThrow(input.totp_secret) : undefined;
+            // Passwords are stored exactly as typed (leading/trailing spaces can be part of them).
+            return { payload: { username, password: input.value, ...(totp ? { totp_secret: totp } : {}) }, masked_hint: maskUsername(username), website_domain: website, service_name: input.service_name?.trim() || website };
+        }
+        const value = input.value.trim();
+        if (value.length < MIN_KEY_LENGTH) throw new BadRequestException('That key looks too short');
+        return {
+            payload: input.kind === SecretInputKinds.API_KEY ? { api_key: value } : { access_token: value, token_type: 'bearer' },
+            masked_hint: maskSecret(value),
+            website_domain: null,
+            service_name: input.service_name?.trim() || input.label.split(/[–-]/)[0].trim(),
+        };
+    }
+
     /** Creates a credential (value → secret store, metadata → DB). API keys also become an access-key connection (§8.5). */
-    async create(actor: Actor, input: { label: string; service_name?: string; kind: 'api_key' | 'mcp_token'; value: string; visibility?: 'PRIVATE' | 'SHARED'; bot_ids?: string[] }) {
+    async create(actor: Actor, input: CreateCredentialInput) {
         const shared = input.visibility === 'SHARED';
         if (shared && !isAdminRole(actor.role)) throw new ForbiddenException('Only Owners and Admins can share secrets with the organisation');
-        if (input.kind === 'api_key' && !isAdminRole(actor.role)) {
+        if (input.kind === SecretInputKinds.API_KEY && !isAdminRole(actor.role)) {
             const s = await this.prisma.organizationSettings.findUnique({ where: { organization_id: actor.organization_id } });
             if (s && !s.members_api_key_connections) throw new ForbiddenException('Members cannot add connections by access key in this organisation');
         }
         await this.checkBots(actor, input.bot_ids, shared);
 
         const id = newId();
-        const value = input.value.trim();
-        const ref = await this.store.create(id, { org_id: actor.organization_id, owner_type: shared ? 'org' : 'user', kind: input.kind === 'api_key' ? 'api_key' : 'mcp_token' }, input.kind === 'api_key' ? { api_key: value } : { access_token: value, token_type: 'bearer' });
-        const serviceName = input.service_name?.trim() || input.label.split(/[–-]/)[0].trim();
+        const prepared = this.prepare(input);
+        const ref = await this.store.create(id, { org_id: actor.organization_id, owner_type: shared ? 'org' : 'user', kind: input.kind }, prepared.payload);
+        const serviceName = prepared.service_name;
         const cred = await this.prisma.$transaction(async (tx) => {
             const c = await tx.credential.create({
                 data: {
@@ -112,18 +161,19 @@ export class CredentialsService {
                     organization_id: actor.organization_id,
                     owner_type: shared ? 'ORGANIZATION' : 'USER',
                     owner_id: actor.user_id,
-                    kind: input.kind === 'api_key' ? 'API_KEY' : 'MCP_TOKEN',
+                    kind: KIND_OF_INPUT[input.kind],
                     label: input.label.trim(),
                     service_key: slugify(serviceName, 40),
                     service_name: serviceName,
                     visibility: shared ? 'SHARED' : 'PRIVATE',
-                    masked_hint: maskSecret(value),
+                    masked_hint: prepared.masked_hint,
+                    website_domain: prepared.website_domain,
                     secret_resource_name: ref.resource_name,
                     secret_version: ref.version,
                     bots: input.bot_ids?.length ? { create: input.bot_ids.map((bot_id) => ({ bot_id })) } : undefined,
                 },
             });
-            if (input.kind === 'api_key') {
+            if (input.kind === SecretInputKinds.API_KEY) {
                 await tx.connection.create({
                     data: {
                         organization_id: actor.organization_id,
@@ -181,10 +231,24 @@ export class CredentialsService {
     }
 
     /** Replace: new version in the store, previous one destroyed; the old key keeps working until the new one is saved (§8.9). */
-    async replace(actor: Actor, id: string, value: string) {
+    async replace(actor: Actor, id: string, value: string, login?: { username?: string; totp_secret?: string }) {
         const c = await this.requireManageable(actor, id);
-        const version = await this.store.replace(c.secret_resource_name, c.secret_version, c.kind === 'API_KEY' ? { api_key: value.trim() } : { access_token: value.trim(), token_type: 'bearer' });
-        await this.prisma.credential.update({ where: { id }, data: { secret_version: version, masked_hint: maskSecret(value), status: 'ACTIVE' } });
+        let payload: SecretPayload;
+        let maskedHint: string;
+        if (c.kind === CredentialKind.WEBSITE_LOGIN) {
+            // A login keeps its username and two-step secret unless new ones are given ("" removes the two-step secret).
+            const current = await this.store.access(c.secret_resource_name);
+            const username = login?.username?.trim() || current.username || '';
+            const totp = login?.totp_secret === undefined ? current.totp_secret : login.totp_secret.trim() ? totpOrThrow(login.totp_secret) : undefined;
+            payload = { username, password: value, ...(totp ? { totp_secret: totp } : {}) };
+            maskedHint = maskUsername(username);
+        } else {
+            if (value.trim().length < MIN_KEY_LENGTH) throw new BadRequestException('That key looks too short');
+            payload = c.kind === CredentialKind.API_KEY ? { api_key: value.trim() } : { access_token: value.trim(), token_type: 'bearer' };
+            maskedHint = maskSecret(value);
+        }
+        const version = await this.store.replace(c.secret_resource_name, c.secret_version, payload);
+        await this.prisma.credential.update({ where: { id }, data: { secret_version: version, masked_hint: maskedHint, status: 'ACTIVE' } });
         await this.prisma.connection.updateMany({ where: { credential_id: id, deleted_at: null }, data: { status: 'ACTIVE', status_message: null } });
         await this.event(id, 'REPLACED', { user_id: actor.user_id });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'secret.replaced', target_type: 'credential', target_id: id });

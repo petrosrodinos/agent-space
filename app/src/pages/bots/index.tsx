@@ -55,7 +55,7 @@ const BotCard: FC<{ bot: Bot; onDelete: (b: Bot) => void }> = ({ bot, onDelete }
             <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => duplicate.mutate(bot.id)}>
               <Copy className="h-4 w-4" /> Duplicate
             </DropdownMenuItem>
-            {bot.can_edit && (
+            {bot.can_edit && !bot.is_starter && (
               <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={() => onDelete(bot)}>

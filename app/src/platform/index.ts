@@ -26,3 +26,4 @@ export const isAppShell = !platform.is("web");
 
 export type { Platform, PlatformKind, CapabilityName, PushRegistration, DesktopCapability, DesktopUpdateState } from "./types";
 export { DesktopUpdateStatus } from "./types";
+export { pwa, InstallTargets, IosBrowsers, InstallOutcomes, type InstallTarget, type IosBrowser, type InstallOutcome } from "./pwa";

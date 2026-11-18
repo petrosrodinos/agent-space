@@ -163,7 +163,7 @@ const BotDetailPage: FC = () => {
               <DropdownMenuItem className="gap-2 rounded-sm py-2" onSelect={() => duplicate.mutate(bot.id, { onSuccess: (b) => navigate(Routes.bots.detail(b.id)) })}>
                 <Copy className="h-4 w-4" /> Duplicate
               </DropdownMenuItem>
-              {bot.can_edit && (
+              {bot.can_edit && !bot.is_starter && (
                 <DropdownMenuItem className="gap-2 rounded-sm py-2 text-error focus:text-error" onSelect={() => setConfirmDelete(true)}>
                   <Trash2 className="h-4 w-4" /> Delete bot
                 </DropdownMenuItem>

@@ -7,6 +7,7 @@ import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { MailService } from '@/integrations/mail/mail.service';
 import { MailTemplates } from '@/integrations/mail/mail.templates';
 import { randomToken, sha256 } from '@/shared/utils/security/crypto.utils';
+import { BotsService } from '../bots/bots.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import type { AccessTokenPayload, AuthTokens } from './interfaces/auth.interface';
 import { ChangePasswordDto, DeviceInfoDto, LoginDto, RegisterDto, ResetPasswordDto } from './dto/auth.dto';
@@ -37,9 +38,10 @@ export class AuthService {
         private readonly config: ConfigService,
         private readonly mail: MailService,
         private readonly orgs: OrganizationsService,
+        private readonly bots: BotsService,
     ) { }
 
-    /** Sign up: creates the user, their settings and a personal organisation (§5.1, §15 journey 1). */
+    /** Sign up: creates the user, their settings, a personal organisation and a starter bot that asks to be set up in chat (§5.1, §15 journey 1). */
     async register(dto: RegisterDto, meta: RequestMeta) {
         const existing = await this.prisma.user.findUnique({ where: { email: dto.email } });
         if (existing && existing.password) throw new ConflictException('An account with this email already exists');
@@ -50,7 +52,8 @@ export class AuthService {
                 ? await tx.user.update({ where: { id: existing.id }, data: { password, name: dto.name.trim(), timezone: dto.timezone || 'UTC' } })
                 : await tx.user.create({ data: { email: dto.email, password, name: dto.name.trim(), timezone: dto.timezone || 'UTC' } });
             await tx.userSettings.upsert({ where: { user_id: u.id }, create: { user_id: u.id }, update: {} });
-            await this.orgs.create(u.id, { name: `${dto.name.trim().split(' ')[0]}'s space` }, true, tx);
+            const org = await this.orgs.create(u.id, { name: `${dto.name.trim().split(' ')[0]}'s space` }, true, tx);
+            await this.bots.createStarterBot(u.id, org.id, tx);
             return u;
         });
 

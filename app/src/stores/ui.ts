@@ -25,6 +25,8 @@ interface UiStore {
   new_chat_step: NewChatStep | null;
   /** Step the modal was opened at; Back is offered only when it was opened at the chooser. */
   new_chat_entry: NewChatStep | null;
+  /** "Install the app" instructions sheet (mobile web). */
+  install_sheet_open: boolean;
   setNavExpanded: (v: boolean) => void;
   setMobileNavOpen: (v: boolean) => void;
   openSidePanel: (p: SidePanel) => void;
@@ -34,6 +36,7 @@ interface UiStore {
   openNewChat: (step?: NewChatStep) => void;
   setNewChatStep: (step: NewChatStep) => void;
   closeNewChat: () => void;
+  setInstallSheetOpen: (v: boolean) => void;
 }
 
 export const useUiStore = create<UiStore>()(
@@ -48,6 +51,7 @@ export const useUiStore = create<UiStore>()(
         conversation_panel_width: CONVERSATION_PANEL_WIDTH.DEFAULT,
         new_chat_step: null,
         new_chat_entry: null,
+        install_sheet_open: false,
         setNavExpanded: (v) => set({ nav_expanded: v }),
         setMobileNavOpen: (v) => set({ mobile_nav_open: v }),
         openSidePanel: (p) => set({ side_panel: p }),
@@ -57,6 +61,7 @@ export const useUiStore = create<UiStore>()(
         openNewChat: (step = NewChatSteps.CHOOSE) => set({ new_chat_step: step, new_chat_entry: step }),
         setNewChatStep: (step) => set({ new_chat_step: step }),
         closeNewChat: () => set({ new_chat_step: null, new_chat_entry: null }),
+        setInstallSheetOpen: (v) => set({ install_sheet_open: v }),
       }),
       {
         name: STORE_KEY,

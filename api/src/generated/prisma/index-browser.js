@@ -494,6 +494,7 @@ exports.Prisma.BotScalarFieldEnum = {
   created_by_id: 'created_by_id',
   template_id: 'template_id',
   duplicated_from_id: 'duplicated_from_id',
+  is_starter: 'is_starter',
   name: 'name',
   emoji: 'emoji',
   color: 'color',
@@ -1030,6 +1031,7 @@ exports.Prisma.CredentialScalarFieldEnum = {
   visibility: 'visibility',
   status: 'status',
   masked_hint: 'masked_hint',
+  website_domain: 'website_domain',
   expires_at: 'expires_at',
   scope: 'scope',
   secret_resource_name: 'secret_resource_name',
@@ -2042,7 +2044,8 @@ exports.CredentialOwnerType = exports.$Enums.CredentialOwnerType = {
 exports.CredentialKind = exports.$Enums.CredentialKind = {
   MCP_OAUTH: 'MCP_OAUTH',
   MCP_TOKEN: 'MCP_TOKEN',
-  API_KEY: 'API_KEY'
+  API_KEY: 'API_KEY',
+  WEBSITE_LOGIN: 'WEBSITE_LOGIN'
 };
 
 exports.CredentialStatus = exports.$Enums.CredentialStatus = {

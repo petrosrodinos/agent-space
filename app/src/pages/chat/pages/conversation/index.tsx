@@ -36,7 +36,7 @@ import { MobileTopBar, useBack } from "@/components/layout/mobile-top-bar";
 import { ResizableAside } from "@/components/ui/resizable-aside";
 import { CONVERSATION_PANEL_WIDTH, useUiStore } from "@/stores/ui";
 import { QueryKeys } from "@/config/constants/query-keys";
-import { ConversationTypes, ConversationViews, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
+import { ConversationTypes, ConversationViews, MessageAuthorTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfaces/tasks.interfaces";
 import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
 
@@ -241,7 +241,9 @@ const ConversationPage: FC = () => {
     );
   }
 
-  const welcome = leadBot?.welcome_message;
+  // New chats carry the bot's welcome as a real first message; the header only repeats it for older, empty chats.
+  const welcome = messages.length === 0 ? leadBot?.welcome_message : null;
+  const userHasWritten = messages.some((m) => m.author_type === MessageAuthorTypes.USER);
   const starters = conversation?.type === ConversationTypes.DIRECT ? (leadBot?.conversation_starters ?? []) : [];
   const activityMode = me?.settings.activity_steps_display ?? ActivityStepsDisplays.COLLAPSED;
 
@@ -296,15 +298,6 @@ const ConversationPage: FC = () => {
                   )}
                   <h2 className="mt-3 font-display text-2xl font-bold text-ink">{conversation.name}</h2>
                   {welcome ? <Markdown className="mt-2 max-w-md text-muted-foreground">{welcome}</Markdown> : <p className="mt-1 max-w-md text-sm text-muted-foreground">{conversation.type === ConversationTypes.DIRECT ? conversation.bots[0]?.description : "Talk to a specific bot with @name, or just ask — the lead bot coordinates."}</p>}
-                  {messages.length === 0 && starters.length > 0 && (
-                    <div className="mt-5 grid w-full max-w-lg gap-2 sm:grid-cols-2">
-                      {starters.map((s) => (
-                        <button key={s} type="button" onClick={() => send.mutate({ content: s })} className="card-lift min-h-[48px] rounded-lg border border-hairline bg-surface px-4 py-3 text-left text-sm font-semibold text-body shadow-sticker">
-                          {s}
-                        </button>
-                      ))}
-                    </div>
-                  )}
                 </div>
               )}
               {messages.map((m, i) => {
@@ -333,6 +326,15 @@ const ConversationPage: FC = () => {
                   </div>
                 );
               })}
+              {!messagesQuery.hasNextPage && !userHasWritten && starters.length > 0 && (
+                <div className="mx-auto mt-4 grid w-full max-w-lg gap-2 sm:grid-cols-2">
+                  {starters.map((s) => (
+                    <button key={s} type="button" onClick={() => send.mutate({ content: s })} className="card-lift min-h-[48px] rounded-lg border border-hairline bg-surface px-4 py-3 text-left text-sm font-semibold text-body shadow-sticker">
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           )}
         </div>

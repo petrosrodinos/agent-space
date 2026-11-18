@@ -1,30 +1,39 @@
-import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
+import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
+import { InjectQueue } from '@nestjs/bullmq';
+import { Queue } from 'bullmq';
 import { KnowledgeItem, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
-import { StorageService } from '@/integrations/storage/storage.service';
-import { chunkText, extractText, scoreChunk } from '@/shared/utils/files/text-extract.utils';
-import { fetchReadable } from '../agent/tools/web.utils';
+import { Jobs, Queues } from '@/core/queues/queues.constants';
+import { AiService } from '@/integrations/ai/services/ai.service';
 import { AccessService, isAdminRole } from '../access/access.service';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
 import type { AddKnowledgeDto } from './dto/knowledge.dto';
+import { KnowledgeVectorStore } from './knowledge-vector.store';
+import { KNOWLEDGE_JOB_OPTIONS, KnowledgeErrors, KnowledgeIndexJob, MIN_SEARCH_SCORE, SEARCH_LIMIT } from './knowledge.constants';
 
 const RESTORE_WINDOW_MS = 30 * 86400_000;
 
 /**
  * Bot knowledge and the organisation knowledge library (§6.2, §7.7).
- * Files are stored once in Cloud Storage; their text is extracted into `content` so bots can search and read them.
+ * Files are stored once in Cloud Storage. Every item is indexed in the background (`knowledge` queue): its text is
+ * extracted into `content` (OCR for images and scanned PDFs) and split into embedded passages for vector search.
  */
 @Injectable()
 export class KnowledgeService {
-    private readonly logger = new Logger(KnowledgeService.name);
-
     constructor(
         private readonly prisma: PrismaService,
-        private readonly storage: StorageService,
         private readonly access: AccessService,
         private readonly activity: ActivityService,
+        private readonly ai: AiService,
+        private readonly vectors: KnowledgeVectorStore,
+        @InjectQueue(Queues.KNOWLEDGE) private readonly queue: Queue<KnowledgeIndexJob>,
     ) { }
+
+    /** Queues (re-)indexing; the item shows as PROCESSING until the worker is done. */
+    private enqueue(itemId: string, extract: boolean) {
+        return this.queue.add(Jobs.knowledge.INDEX, { item_id: itemId, extract }, KNOWLEDGE_JOB_OPTIONS);
+    }
 
     private shape(k: KnowledgeItem & { file?: { id: string; filename: string; mimetype: string; size: bigint } | null; added_by?: { id: string; name: string | null } | null }) {
         return {
@@ -38,7 +47,9 @@ export class KnowledgeService {
             preview: k.kind === 'TEXT' ? (k.content ?? '').slice(0, 400) : null,
             content: k.kind === 'TEXT' ? k.content : undefined,
             characters: k.content?.length ?? 0,
-            readable: k.kind !== 'FILE' || !!k.content,
+            status: k.status,
+            status_error: k.status_error,
+            readable: k.status === 'READY',
             indexed_at: k.indexed_at,
             added_by: k.added_by ?? null,
             created_at: k.created_at,
@@ -72,24 +83,15 @@ export class KnowledgeService {
             if (await this.prisma.knowledgeItem.count({ where: { file_id: file.id } })) throw new BadRequestException('This file is already in knowledge');
             if (file.area !== 'KNOWLEDGE') throw new BadRequestException('Upload the file as knowledge');
             await this.prisma.file.update({ where: { id: file.id }, data: { bot_id: botId } });
-            const text = await extractText(await this.storage.read(file.bucket, file.object_path), file.mimetype, file.filename);
-            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'FILE', title: dto.title?.trim() || file.filename, file_id: file.id, content: text, indexed_at: text ? new Date() : null } });
+            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'FILE', title: dto.title?.trim() || file.filename, file_id: file.id } });
         } else if (dto.kind === 'LINK') {
-            let title = dto.title?.trim() || dto.url!;
-            let content: string | null = null;
-            try {
-                const page = await fetchReadable(dto.url!, 200_000);
-                title = dto.title?.trim() || page.title || title;
-                content = page.text;
-            } catch (e) {
-                this.logger.warn(`Knowledge link fetch failed: ${(e as Error).message}`);
-            }
-            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'LINK', title: title.slice(0, 200), url: dto.url, content, indexed_at: content ? new Date() : null } });
-            if (content) await this.prisma.knowledgeLink.create({ data: { knowledge_item_id: item.id, url: dto.url!, title, fetched_at: new Date(), fetched_by_id: actor.user_id } });
+            // The title falls back to the address; indexing replaces it with the page title.
+            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'LINK', title: (dto.title?.trim() || dto.url!).slice(0, 200), url: dto.url } });
         } else {
             if (!dto.content?.trim()) throw new BadRequestException('Write some text');
-            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'TEXT', title: dto.title?.trim() || dto.content.trim().slice(0, 60), content: dto.content.trim(), indexed_at: new Date() } });
+            item = await this.prisma.knowledgeItem.create({ data: { ...base, kind: 'TEXT', title: dto.title?.trim() || dto.content.trim().slice(0, 60), content: dto.content.trim() } });
         }
+        await this.enqueue(item.id, item.kind !== 'TEXT');
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'knowledge.added', target_type: botId ? 'bot' : 'organization', target_id: botId ?? actor.organization_id, metadata: { title: item.title, kind: item.kind } });
         return this.shape(await this.prisma.knowledgeItem.findUniqueOrThrow({ where: { id: item.id }, include: this.include }));
     }
@@ -108,26 +110,34 @@ export class KnowledgeService {
         await this.requireCanEdit(actor, item.bot_id);
         const data: Prisma.KnowledgeItemUpdateInput = {};
         if (dto.title?.trim()) data.title = dto.title.trim().slice(0, 200);
+        const titleChanged = data.title !== undefined && data.title !== item.title;
+        const urlChanged = !!dto.url && item.kind === 'LINK' && dto.url !== item.url;
+        if (urlChanged) data.url = dto.url;
         if (dto.content !== undefined) {
             if (item.kind === 'TEXT' && !dto.content.trim()) throw new BadRequestException('Write some text');
             data.content = item.kind === 'TEXT' ? dto.content : dto.content.trim() || null;
-            data.indexed_at = data.content ? new Date() : null;
         }
-        if (dto.url && item.kind === 'LINK' && dto.url !== item.url) {
-            data.url = dto.url;
-            if (dto.content === undefined) {
-                try {
-                    const page = await fetchReadable(dto.url, 200_000);
-                    data.content = page.text;
-                    data.indexed_at = page.text ? new Date() : null;
-                } catch (e) {
-                    this.logger.warn(`Knowledge link fetch failed: ${(e as Error).message}`);
-                    data.content = null;
-                    data.indexed_at = null;
-                }
-            }
+        // A new address re-reads the page unless the text was edited by hand too; any text or title change re-embeds.
+        const extract = urlChanged && dto.content === undefined;
+        const content = data.content !== undefined ? (data.content as string | null) : item.content;
+        const reembed = extract || dto.content !== undefined || (titleChanged && !!content);
+        if (reembed) {
+            if (!extract && !content) Object.assign(data, { status: 'FAILED', status_error: KnowledgeErrors.NO_TEXT });
+            else Object.assign(data, { status: 'PROCESSING', status_error: null });
         }
         const updated = await this.prisma.knowledgeItem.update({ where: { id }, data, include: this.include });
+        if (reembed && updated.status === 'PROCESSING') await this.enqueue(id, extract);
+        if (reembed && updated.status === 'FAILED') await this.prisma.knowledgeChunk.deleteMany({ where: { knowledge_item_id: id } });
+        return this.shape(updated);
+    }
+
+    /** Reads the source again (file or web page) and re-indexes; notes are re-embedded. Used to retry failed items. */
+    async reindex(actor: Actor, id: string) {
+        const item = await this.prisma.knowledgeItem.findFirst({ where: { id, organization_id: actor.organization_id, deleted_at: null } });
+        if (!item) throw new NotFoundException('Knowledge not found');
+        await this.requireCanEdit(actor, item.bot_id);
+        const updated = await this.prisma.knowledgeItem.update({ where: { id }, data: { status: 'PROCESSING', status_error: null }, include: this.include });
+        await this.enqueue(id, item.kind !== 'TEXT');
         return this.shape(updated);
     }
 
@@ -150,22 +160,29 @@ export class KnowledgeService {
         return { organization_id: orgId, deleted_at: null, OR: [{ bot_id: bot.id }, ...(bot.org_knowledge_enabled ? [{ scope: 'ORGANIZATION' as const }] : [])] };
     }
 
-    async search(orgId: string, bot: { id: string; org_knowledge_enabled: boolean }, query: string, limit = 6) {
-        const items = await this.prisma.knowledgeItem.findMany({ where: { ...this.botWhere(orgId, bot), content: { not: null } }, select: { id: true, title: true, kind: true, url: true, content: true } });
-        const hits: { id: string; title: string; kind: string; url: string | null; chunk: number; score: number; excerpt: string }[] = [];
-        for (const it of items) {
-            chunkText(it.content ?? '').forEach((c, i) => {
-                const score = scoreChunk(`${it.title}\n${c}`, query);
-                if (score > 0) hits.push({ id: it.id, title: it.title, kind: it.kind, url: it.url, chunk: i, score, excerpt: c });
-            });
-        }
-        return hits.sort((a, b) => b.score - a.score).slice(0, limit).map(({ score: _s, ...h }) => h);
+    /** Vector search over the bot's knowledge: the passages closest in meaning to the query. */
+    async search(orgId: string, bot: { id: string; org_knowledge_enabled: boolean }, query: string, limit = SEARCH_LIMIT) {
+        const items = await this.prisma.knowledgeItem.findMany({ where: { ...this.botWhere(orgId, bot), status: 'READY' }, select: { id: true, title: true, kind: true, url: true, indexed_at: true } });
+        if (!items.length || !query.trim()) return [];
+        const [vector] = await this.ai.embedMany([query]);
+        const hits = await this.vectors.search(items, vector, limit, MIN_SEARCH_SCORE);
+        if (!hits.length) return [];
+        const chunks = await this.prisma.knowledgeChunk.findMany({
+            where: { OR: hits.map((h) => ({ knowledge_item_id: h.item_id, position: h.position })) },
+            select: { knowledge_item_id: true, position: true, content: true },
+        });
+        const text = new Map(chunks.map((c) => [`${c.knowledge_item_id}:${c.position}`, c.content]));
+        const byId = new Map(items.map((i) => [i.id, i]));
+        return hits.map((h) => {
+            const it = byId.get(h.item_id)!;
+            return { id: it.id, title: it.title, kind: it.kind, url: it.url, chunk: h.position, relevance: Math.round(h.score * 100) / 100, excerpt: text.get(`${h.item_id}:${h.position}`) ?? '' };
+        });
     }
 
     async read(orgId: string, bot: { id: string; org_knowledge_enabled: boolean }, id: string, offset = 0, length = 12_000) {
         const it = await this.prisma.knowledgeItem.findFirst({ where: { id, ...this.botWhere(orgId, bot) } });
         if (!it) throw new Error('That knowledge item does not exist or this bot cannot use it');
-        if (!it.content) return { id, title: it.title, error: 'This file could not be read as text (it may be an image or a scanned document).' };
+        if (!it.content) return { id, title: it.title, error: it.status === 'PROCESSING' ? 'This item is still being read. Try again in a minute.' : it.status_error || 'This item has no readable text.' };
         const text = it.content.slice(offset, offset + length);
         return { id, title: it.title, kind: it.kind, url: it.url, offset, total_characters: it.content.length, text, more: offset + length < it.content.length ? { next_offset: offset + length } : null };
     }

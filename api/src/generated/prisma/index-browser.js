@@ -410,6 +410,7 @@ exports.Prisma.OrganizationMemberScalarFieldEnum = {
   organization_id: 'organization_id',
   user_id: 'user_id',
   role: 'role',
+  color_theme: 'color_theme',
   joined_at: 'joined_at',
   updated_at: 'updated_at'
 };
@@ -583,11 +584,22 @@ exports.Prisma.KnowledgeItemScalarFieldEnum = {
   file_id: 'file_id',
   url: 'url',
   content: 'content',
+  status: 'status',
+  status_error: 'status_error',
   added_by_id: 'added_by_id',
   indexed_at: 'indexed_at',
   deleted_at: 'deleted_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
+};
+
+exports.Prisma.KnowledgeChunkScalarFieldEnum = {
+  id: 'id',
+  knowledge_item_id: 'knowledge_item_id',
+  position: 'position',
+  content: 'content',
+  embedding: 'embedding',
+  created_at: 'created_at'
 };
 
 exports.Prisma.KnowledgeLinkScalarFieldEnum = {
@@ -1769,6 +1781,22 @@ exports.ActionType = exports.$Enums.ActionType = {
   OTHER: 'OTHER'
 };
 
+exports.ColorTheme = exports.$Enums.ColorTheme = {
+  NEUTRAL: 'NEUTRAL',
+  GRAPE: 'GRAPE',
+  OCEAN: 'OCEAN',
+  SKY: 'SKY',
+  TEAL: 'TEAL',
+  FOREST: 'FOREST',
+  LIME: 'LIME',
+  SUNSET: 'SUNSET',
+  AMBER: 'AMBER',
+  ROSE: 'ROSE',
+  CRIMSON: 'CRIMSON',
+  LAVENDER: 'LAVENDER',
+  SLATE: 'SLATE'
+};
+
 exports.InvitationStatus = exports.$Enums.InvitationStatus = {
   PENDING: 'PENDING',
   ACCEPTED: 'ACCEPTED',
@@ -1840,6 +1868,12 @@ exports.KnowledgeKind = exports.$Enums.KnowledgeKind = {
   FILE: 'FILE',
   LINK: 'LINK',
   TEXT: 'TEXT'
+};
+
+exports.KnowledgeStatus = exports.$Enums.KnowledgeStatus = {
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED'
 };
 
 exports.MemoryKind = exports.$Enums.MemoryKind = {
@@ -2219,6 +2253,7 @@ exports.Prisma.ModelName = {
   BotCredential: 'BotCredential',
   BotSkill: 'BotSkill',
   KnowledgeItem: 'KnowledgeItem',
+  KnowledgeChunk: 'KnowledgeChunk',
   KnowledgeLink: 'KnowledgeLink',
   Memory: 'Memory',
   ConversationFolder: 'ConversationFolder',

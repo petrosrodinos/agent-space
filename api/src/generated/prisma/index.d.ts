@@ -154,6 +154,11 @@ export type BotSkill = $Result.DefaultSelection<Prisma.$BotSkillPayload>
  */
 export type KnowledgeItem = $Result.DefaultSelection<Prisma.$KnowledgeItemPayload>
 /**
+ * Model KnowledgeChunk
+ * A passage of a knowledge item with its embedding, for vector search (search_knowledge).
+ */
+export type KnowledgeChunk = $Result.DefaultSelection<Prisma.$KnowledgeChunkPayload>
+/**
  * Model KnowledgeLink
  * Links in a knowledge item that were crawled (one row per fetched page).
  */
@@ -509,6 +514,25 @@ export const Theme: {
 };
 
 export type Theme = (typeof Theme)[keyof typeof Theme]
+
+
+export const ColorTheme: {
+  NEUTRAL: 'NEUTRAL',
+  GRAPE: 'GRAPE',
+  OCEAN: 'OCEAN',
+  SKY: 'SKY',
+  TEAL: 'TEAL',
+  FOREST: 'FOREST',
+  LIME: 'LIME',
+  SUNSET: 'SUNSET',
+  AMBER: 'AMBER',
+  ROSE: 'ROSE',
+  CRIMSON: 'CRIMSON',
+  LAVENDER: 'LAVENDER',
+  SLATE: 'SLATE'
+};
+
+export type ColorTheme = (typeof ColorTheme)[keyof typeof ColorTheme]
 
 
 export const TextSize: {
@@ -1011,6 +1035,15 @@ export const KnowledgeKind: {
 };
 
 export type KnowledgeKind = (typeof KnowledgeKind)[keyof typeof KnowledgeKind]
+
+
+export const KnowledgeStatus: {
+  PROCESSING: 'PROCESSING',
+  READY: 'READY',
+  FAILED: 'FAILED'
+};
+
+export type KnowledgeStatus = (typeof KnowledgeStatus)[keyof typeof KnowledgeStatus]
 
 
 export const MemoryKind: {
@@ -1589,6 +1622,10 @@ export type Theme = $Enums.Theme
 
 export const Theme: typeof $Enums.Theme
 
+export type ColorTheme = $Enums.ColorTheme
+
+export const ColorTheme: typeof $Enums.ColorTheme
+
 export type TextSize = $Enums.TextSize
 
 export const TextSize: typeof $Enums.TextSize
@@ -1812,6 +1849,10 @@ export const KnowledgeScope: typeof $Enums.KnowledgeScope
 export type KnowledgeKind = $Enums.KnowledgeKind
 
 export const KnowledgeKind: typeof $Enums.KnowledgeKind
+
+export type KnowledgeStatus = $Enums.KnowledgeStatus
+
+export const KnowledgeStatus: typeof $Enums.KnowledgeStatus
 
 export type MemoryKind = $Enums.MemoryKind
 
@@ -2417,6 +2458,16 @@ export class PrismaClient<
     * ```
     */
   get knowledgeItem(): Prisma.KnowledgeItemDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.knowledgeChunk`: Exposes CRUD operations for the **KnowledgeChunk** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more KnowledgeChunks
+    * const knowledgeChunks = await prisma.knowledgeChunk.findMany()
+    * ```
+    */
+  get knowledgeChunk(): Prisma.KnowledgeChunkDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.knowledgeLink`: Exposes CRUD operations for the **KnowledgeLink** model.
@@ -3422,6 +3473,7 @@ export namespace Prisma {
     BotCredential: 'BotCredential',
     BotSkill: 'BotSkill',
     KnowledgeItem: 'KnowledgeItem',
+    KnowledgeChunk: 'KnowledgeChunk',
     KnowledgeLink: 'KnowledgeLink',
     Memory: 'Memory',
     ConversationFolder: 'ConversationFolder',
@@ -3490,7 +3542,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5563,6 +5615,80 @@ export namespace Prisma {
           count: {
             args: Prisma.KnowledgeItemCountArgs<ExtArgs>
             result: $Utils.Optional<KnowledgeItemCountAggregateOutputType> | number
+          }
+        }
+      }
+      KnowledgeChunk: {
+        payload: Prisma.$KnowledgeChunkPayload<ExtArgs>
+        fields: Prisma.KnowledgeChunkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.KnowledgeChunkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.KnowledgeChunkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          findFirst: {
+            args: Prisma.KnowledgeChunkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.KnowledgeChunkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          findMany: {
+            args: Prisma.KnowledgeChunkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>[]
+          }
+          create: {
+            args: Prisma.KnowledgeChunkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          createMany: {
+            args: Prisma.KnowledgeChunkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.KnowledgeChunkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>[]
+          }
+          delete: {
+            args: Prisma.KnowledgeChunkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          update: {
+            args: Prisma.KnowledgeChunkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          deleteMany: {
+            args: Prisma.KnowledgeChunkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.KnowledgeChunkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.KnowledgeChunkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>[]
+          }
+          upsert: {
+            args: Prisma.KnowledgeChunkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$KnowledgeChunkPayload>
+          }
+          aggregate: {
+            args: Prisma.KnowledgeChunkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateKnowledgeChunk>
+          }
+          groupBy: {
+            args: Prisma.KnowledgeChunkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<KnowledgeChunkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.KnowledgeChunkCountArgs<ExtArgs>
+            result: $Utils.Optional<KnowledgeChunkCountAggregateOutputType> | number
           }
         }
       }
@@ -9639,6 +9765,7 @@ export namespace Prisma {
     botCredential?: BotCredentialOmit
     botSkill?: BotSkillOmit
     knowledgeItem?: KnowledgeItemOmit
+    knowledgeChunk?: KnowledgeChunkOmit
     knowledgeLink?: KnowledgeLinkOmit
     memory?: MemoryOmit
     conversationFolder?: ConversationFolderOmit
@@ -10962,10 +11089,12 @@ export namespace Prisma {
 
   export type KnowledgeItemCountOutputType = {
     links: number
+    chunks: number
   }
 
   export type KnowledgeItemCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     links?: boolean | KnowledgeItemCountOutputTypeCountLinksArgs
+    chunks?: boolean | KnowledgeItemCountOutputTypeCountChunksArgs
   }
 
   // Custom InputTypes
@@ -10984,6 +11113,13 @@ export namespace Prisma {
    */
   export type KnowledgeItemCountOutputTypeCountLinksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: KnowledgeLinkWhereInput
+  }
+
+  /**
+   * KnowledgeItemCountOutputType without action
+   */
+  export type KnowledgeItemCountOutputTypeCountChunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: KnowledgeChunkWhereInput
   }
 
 
@@ -31751,6 +31887,7 @@ export namespace Prisma {
     organization_id: string | null
     user_id: string | null
     role: $Enums.OrganizationRole | null
+    color_theme: $Enums.ColorTheme | null
     joined_at: Date | null
     updated_at: Date | null
   }
@@ -31760,6 +31897,7 @@ export namespace Prisma {
     organization_id: string | null
     user_id: string | null
     role: $Enums.OrganizationRole | null
+    color_theme: $Enums.ColorTheme | null
     joined_at: Date | null
     updated_at: Date | null
   }
@@ -31769,6 +31907,7 @@ export namespace Prisma {
     organization_id: number
     user_id: number
     role: number
+    color_theme: number
     joined_at: number
     updated_at: number
     _all: number
@@ -31780,6 +31919,7 @@ export namespace Prisma {
     organization_id?: true
     user_id?: true
     role?: true
+    color_theme?: true
     joined_at?: true
     updated_at?: true
   }
@@ -31789,6 +31929,7 @@ export namespace Prisma {
     organization_id?: true
     user_id?: true
     role?: true
+    color_theme?: true
     joined_at?: true
     updated_at?: true
   }
@@ -31798,6 +31939,7 @@ export namespace Prisma {
     organization_id?: true
     user_id?: true
     role?: true
+    color_theme?: true
     joined_at?: true
     updated_at?: true
     _all?: true
@@ -31880,6 +32022,7 @@ export namespace Prisma {
     organization_id: string
     user_id: string
     role: $Enums.OrganizationRole
+    color_theme: $Enums.ColorTheme
     joined_at: Date
     updated_at: Date
     _count: OrganizationMemberCountAggregateOutputType | null
@@ -31906,6 +32049,7 @@ export namespace Prisma {
     organization_id?: boolean
     user_id?: boolean
     role?: boolean
+    color_theme?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -31917,6 +32061,7 @@ export namespace Prisma {
     organization_id?: boolean
     user_id?: boolean
     role?: boolean
+    color_theme?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -31928,6 +32073,7 @@ export namespace Prisma {
     organization_id?: boolean
     user_id?: boolean
     role?: boolean
+    color_theme?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -31939,11 +32085,12 @@ export namespace Prisma {
     organization_id?: boolean
     user_id?: boolean
     role?: boolean
+    color_theme?: boolean
     joined_at?: boolean
     updated_at?: boolean
   }
 
-  export type OrganizationMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "role" | "joined_at" | "updated_at", ExtArgs["result"]["organizationMember"]>
+  export type OrganizationMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "role" | "color_theme" | "joined_at" | "updated_at", ExtArgs["result"]["organizationMember"]>
   export type OrganizationMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -31968,6 +32115,10 @@ export namespace Prisma {
       organization_id: string
       user_id: string
       role: $Enums.OrganizationRole
+      /**
+       * This member's colour theme inside this organisation (each org can look different per user).
+       */
+      color_theme: $Enums.ColorTheme
       joined_at: Date
       updated_at: Date
     }, ExtArgs["result"]["organizationMember"]>
@@ -32399,6 +32550,7 @@ export namespace Prisma {
     readonly organization_id: FieldRef<"OrganizationMember", 'String'>
     readonly user_id: FieldRef<"OrganizationMember", 'String'>
     readonly role: FieldRef<"OrganizationMember", 'OrganizationRole'>
+    readonly color_theme: FieldRef<"OrganizationMember", 'ColorTheme'>
     readonly joined_at: FieldRef<"OrganizationMember", 'DateTime'>
     readonly updated_at: FieldRef<"OrganizationMember", 'DateTime'>
   }
@@ -47745,6 +47897,8 @@ export namespace Prisma {
     file_id: string | null
     url: string | null
     content: string | null
+    status: $Enums.KnowledgeStatus | null
+    status_error: string | null
     added_by_id: string | null
     indexed_at: Date | null
     deleted_at: Date | null
@@ -47762,6 +47916,8 @@ export namespace Prisma {
     file_id: string | null
     url: string | null
     content: string | null
+    status: $Enums.KnowledgeStatus | null
+    status_error: string | null
     added_by_id: string | null
     indexed_at: Date | null
     deleted_at: Date | null
@@ -47779,6 +47935,8 @@ export namespace Prisma {
     file_id: number
     url: number
     content: number
+    status: number
+    status_error: number
     added_by_id: number
     indexed_at: number
     deleted_at: number
@@ -47798,6 +47956,8 @@ export namespace Prisma {
     file_id?: true
     url?: true
     content?: true
+    status?: true
+    status_error?: true
     added_by_id?: true
     indexed_at?: true
     deleted_at?: true
@@ -47815,6 +47975,8 @@ export namespace Prisma {
     file_id?: true
     url?: true
     content?: true
+    status?: true
+    status_error?: true
     added_by_id?: true
     indexed_at?: true
     deleted_at?: true
@@ -47832,6 +47994,8 @@ export namespace Prisma {
     file_id?: true
     url?: true
     content?: true
+    status?: true
+    status_error?: true
     added_by_id?: true
     indexed_at?: true
     deleted_at?: true
@@ -47922,6 +48086,8 @@ export namespace Prisma {
     file_id: string | null
     url: string | null
     content: string | null
+    status: $Enums.KnowledgeStatus
+    status_error: string | null
     added_by_id: string | null
     indexed_at: Date | null
     deleted_at: Date | null
@@ -47956,6 +48122,8 @@ export namespace Prisma {
     file_id?: boolean
     url?: boolean
     content?: boolean
+    status?: boolean
+    status_error?: boolean
     added_by_id?: boolean
     indexed_at?: boolean
     deleted_at?: boolean
@@ -47966,6 +48134,7 @@ export namespace Prisma {
     file?: boolean | KnowledgeItem$fileArgs<ExtArgs>
     added_by?: boolean | KnowledgeItem$added_byArgs<ExtArgs>
     links?: boolean | KnowledgeItem$linksArgs<ExtArgs>
+    chunks?: boolean | KnowledgeItem$chunksArgs<ExtArgs>
     _count?: boolean | KnowledgeItemCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["knowledgeItem"]>
 
@@ -47979,6 +48148,8 @@ export namespace Prisma {
     file_id?: boolean
     url?: boolean
     content?: boolean
+    status?: boolean
+    status_error?: boolean
     added_by_id?: boolean
     indexed_at?: boolean
     deleted_at?: boolean
@@ -48000,6 +48171,8 @@ export namespace Prisma {
     file_id?: boolean
     url?: boolean
     content?: boolean
+    status?: boolean
+    status_error?: boolean
     added_by_id?: boolean
     indexed_at?: boolean
     deleted_at?: boolean
@@ -48021,6 +48194,8 @@ export namespace Prisma {
     file_id?: boolean
     url?: boolean
     content?: boolean
+    status?: boolean
+    status_error?: boolean
     added_by_id?: boolean
     indexed_at?: boolean
     deleted_at?: boolean
@@ -48028,13 +48203,14 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type KnowledgeItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "scope" | "bot_id" | "kind" | "title" | "file_id" | "url" | "content" | "added_by_id" | "indexed_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["knowledgeItem"]>
+  export type KnowledgeItemOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "scope" | "bot_id" | "kind" | "title" | "file_id" | "url" | "content" | "status" | "status_error" | "added_by_id" | "indexed_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["knowledgeItem"]>
   export type KnowledgeItemInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     bot?: boolean | KnowledgeItem$botArgs<ExtArgs>
     file?: boolean | KnowledgeItem$fileArgs<ExtArgs>
     added_by?: boolean | KnowledgeItem$added_byArgs<ExtArgs>
     links?: boolean | KnowledgeItem$linksArgs<ExtArgs>
+    chunks?: boolean | KnowledgeItem$chunksArgs<ExtArgs>
     _count?: boolean | KnowledgeItemCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type KnowledgeItemIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -48058,6 +48234,7 @@ export namespace Prisma {
       file: Prisma.$FilePayload<ExtArgs> | null
       added_by: Prisma.$UserPayload<ExtArgs> | null
       links: Prisma.$KnowledgeLinkPayload<ExtArgs>[]
+      chunks: Prisma.$KnowledgeChunkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -48069,6 +48246,11 @@ export namespace Prisma {
       file_id: string | null
       url: string | null
       content: string | null
+      status: $Enums.KnowledgeStatus
+      /**
+       * Why indexing failed, in words people can act on (status FAILED).
+       */
+      status_error: string | null
       added_by_id: string | null
       indexed_at: Date | null
       deleted_at: Date | null
@@ -48473,6 +48655,7 @@ export namespace Prisma {
     file<T extends KnowledgeItem$fileArgs<ExtArgs> = {}>(args?: Subset<T, KnowledgeItem$fileArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     added_by<T extends KnowledgeItem$added_byArgs<ExtArgs> = {}>(args?: Subset<T, KnowledgeItem$added_byArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     links<T extends KnowledgeItem$linksArgs<ExtArgs> = {}>(args?: Subset<T, KnowledgeItem$linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    chunks<T extends KnowledgeItem$chunksArgs<ExtArgs> = {}>(args?: Subset<T, KnowledgeItem$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -48511,6 +48694,8 @@ export namespace Prisma {
     readonly file_id: FieldRef<"KnowledgeItem", 'String'>
     readonly url: FieldRef<"KnowledgeItem", 'String'>
     readonly content: FieldRef<"KnowledgeItem", 'String'>
+    readonly status: FieldRef<"KnowledgeItem", 'KnowledgeStatus'>
+    readonly status_error: FieldRef<"KnowledgeItem", 'String'>
     readonly added_by_id: FieldRef<"KnowledgeItem", 'String'>
     readonly indexed_at: FieldRef<"KnowledgeItem", 'DateTime'>
     readonly deleted_at: FieldRef<"KnowledgeItem", 'DateTime'>
@@ -48998,6 +49183,30 @@ export namespace Prisma {
   }
 
   /**
+   * KnowledgeItem.chunks
+   */
+  export type KnowledgeItem$chunksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    where?: KnowledgeChunkWhereInput
+    orderBy?: KnowledgeChunkOrderByWithRelationInput | KnowledgeChunkOrderByWithRelationInput[]
+    cursor?: KnowledgeChunkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: KnowledgeChunkScalarFieldEnum | KnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
    * KnowledgeItem without action
    */
   export type KnowledgeItemDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -49013,6 +49222,1119 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: KnowledgeItemInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model KnowledgeChunk
+   */
+
+  export type AggregateKnowledgeChunk = {
+    _count: KnowledgeChunkCountAggregateOutputType | null
+    _avg: KnowledgeChunkAvgAggregateOutputType | null
+    _sum: KnowledgeChunkSumAggregateOutputType | null
+    _min: KnowledgeChunkMinAggregateOutputType | null
+    _max: KnowledgeChunkMaxAggregateOutputType | null
+  }
+
+  export type KnowledgeChunkAvgAggregateOutputType = {
+    position: number | null
+  }
+
+  export type KnowledgeChunkSumAggregateOutputType = {
+    position: number | null
+  }
+
+  export type KnowledgeChunkMinAggregateOutputType = {
+    id: string | null
+    knowledge_item_id: string | null
+    position: number | null
+    content: string | null
+    embedding: Bytes | null
+    created_at: Date | null
+  }
+
+  export type KnowledgeChunkMaxAggregateOutputType = {
+    id: string | null
+    knowledge_item_id: string | null
+    position: number | null
+    content: string | null
+    embedding: Bytes | null
+    created_at: Date | null
+  }
+
+  export type KnowledgeChunkCountAggregateOutputType = {
+    id: number
+    knowledge_item_id: number
+    position: number
+    content: number
+    embedding: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type KnowledgeChunkAvgAggregateInputType = {
+    position?: true
+  }
+
+  export type KnowledgeChunkSumAggregateInputType = {
+    position?: true
+  }
+
+  export type KnowledgeChunkMinAggregateInputType = {
+    id?: true
+    knowledge_item_id?: true
+    position?: true
+    content?: true
+    embedding?: true
+    created_at?: true
+  }
+
+  export type KnowledgeChunkMaxAggregateInputType = {
+    id?: true
+    knowledge_item_id?: true
+    position?: true
+    content?: true
+    embedding?: true
+    created_at?: true
+  }
+
+  export type KnowledgeChunkCountAggregateInputType = {
+    id?: true
+    knowledge_item_id?: true
+    position?: true
+    content?: true
+    embedding?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type KnowledgeChunkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which KnowledgeChunk to aggregate.
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of KnowledgeChunks to fetch.
+     */
+    orderBy?: KnowledgeChunkOrderByWithRelationInput | KnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: KnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` KnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` KnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned KnowledgeChunks
+    **/
+    _count?: true | KnowledgeChunkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to average
+    **/
+    _avg?: KnowledgeChunkAvgAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to sum
+    **/
+    _sum?: KnowledgeChunkSumAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: KnowledgeChunkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: KnowledgeChunkMaxAggregateInputType
+  }
+
+  export type GetKnowledgeChunkAggregateType<T extends KnowledgeChunkAggregateArgs> = {
+        [P in keyof T & keyof AggregateKnowledgeChunk]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateKnowledgeChunk[P]>
+      : GetScalarType<T[P], AggregateKnowledgeChunk[P]>
+  }
+
+
+
+
+  export type KnowledgeChunkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: KnowledgeChunkWhereInput
+    orderBy?: KnowledgeChunkOrderByWithAggregationInput | KnowledgeChunkOrderByWithAggregationInput[]
+    by: KnowledgeChunkScalarFieldEnum[] | KnowledgeChunkScalarFieldEnum
+    having?: KnowledgeChunkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: KnowledgeChunkCountAggregateInputType | true
+    _avg?: KnowledgeChunkAvgAggregateInputType
+    _sum?: KnowledgeChunkSumAggregateInputType
+    _min?: KnowledgeChunkMinAggregateInputType
+    _max?: KnowledgeChunkMaxAggregateInputType
+  }
+
+  export type KnowledgeChunkGroupByOutputType = {
+    id: string
+    knowledge_item_id: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at: Date
+    _count: KnowledgeChunkCountAggregateOutputType | null
+    _avg: KnowledgeChunkAvgAggregateOutputType | null
+    _sum: KnowledgeChunkSumAggregateOutputType | null
+    _min: KnowledgeChunkMinAggregateOutputType | null
+    _max: KnowledgeChunkMaxAggregateOutputType | null
+  }
+
+  type GetKnowledgeChunkGroupByPayload<T extends KnowledgeChunkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<KnowledgeChunkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof KnowledgeChunkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], KnowledgeChunkGroupByOutputType[P]>
+            : GetScalarType<T[P], KnowledgeChunkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type KnowledgeChunkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    knowledge_item_id?: boolean
+    position?: boolean
+    content?: boolean
+    embedding?: boolean
+    created_at?: boolean
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["knowledgeChunk"]>
+
+  export type KnowledgeChunkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    knowledge_item_id?: boolean
+    position?: boolean
+    content?: boolean
+    embedding?: boolean
+    created_at?: boolean
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["knowledgeChunk"]>
+
+  export type KnowledgeChunkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    knowledge_item_id?: boolean
+    position?: boolean
+    content?: boolean
+    embedding?: boolean
+    created_at?: boolean
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["knowledgeChunk"]>
+
+  export type KnowledgeChunkSelectScalar = {
+    id?: boolean
+    knowledge_item_id?: boolean
+    position?: boolean
+    content?: boolean
+    embedding?: boolean
+    created_at?: boolean
+  }
+
+  export type KnowledgeChunkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "knowledge_item_id" | "position" | "content" | "embedding" | "created_at", ExtArgs["result"]["knowledgeChunk"]>
+  export type KnowledgeChunkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }
+  export type KnowledgeChunkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }
+  export type KnowledgeChunkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    knowledge_item?: boolean | KnowledgeItemDefaultArgs<ExtArgs>
+  }
+
+  export type $KnowledgeChunkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "KnowledgeChunk"
+    objects: {
+      knowledge_item: Prisma.$KnowledgeItemPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      knowledge_item_id: string
+      position: number
+      content: string
+      /**
+       * Float32 little-endian vector (EMBEDDING_DIMS values) of "title + content".
+       */
+      embedding: Prisma.Bytes
+      created_at: Date
+    }, ExtArgs["result"]["knowledgeChunk"]>
+    composites: {}
+  }
+
+  type KnowledgeChunkGetPayload<S extends boolean | null | undefined | KnowledgeChunkDefaultArgs> = $Result.GetResult<Prisma.$KnowledgeChunkPayload, S>
+
+  type KnowledgeChunkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<KnowledgeChunkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: KnowledgeChunkCountAggregateInputType | true
+    }
+
+  export interface KnowledgeChunkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['KnowledgeChunk'], meta: { name: 'KnowledgeChunk' } }
+    /**
+     * Find zero or one KnowledgeChunk that matches the filter.
+     * @param {KnowledgeChunkFindUniqueArgs} args - Arguments to find a KnowledgeChunk
+     * @example
+     * // Get one KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends KnowledgeChunkFindUniqueArgs>(args: SelectSubset<T, KnowledgeChunkFindUniqueArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one KnowledgeChunk that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {KnowledgeChunkFindUniqueOrThrowArgs} args - Arguments to find a KnowledgeChunk
+     * @example
+     * // Get one KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends KnowledgeChunkFindUniqueOrThrowArgs>(args: SelectSubset<T, KnowledgeChunkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first KnowledgeChunk that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkFindFirstArgs} args - Arguments to find a KnowledgeChunk
+     * @example
+     * // Get one KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends KnowledgeChunkFindFirstArgs>(args?: SelectSubset<T, KnowledgeChunkFindFirstArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first KnowledgeChunk that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkFindFirstOrThrowArgs} args - Arguments to find a KnowledgeChunk
+     * @example
+     * // Get one KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends KnowledgeChunkFindFirstOrThrowArgs>(args?: SelectSubset<T, KnowledgeChunkFindFirstOrThrowArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more KnowledgeChunks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all KnowledgeChunks
+     * const knowledgeChunks = await prisma.knowledgeChunk.findMany()
+     * 
+     * // Get first 10 KnowledgeChunks
+     * const knowledgeChunks = await prisma.knowledgeChunk.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const knowledgeChunkWithIdOnly = await prisma.knowledgeChunk.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends KnowledgeChunkFindManyArgs>(args?: SelectSubset<T, KnowledgeChunkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a KnowledgeChunk.
+     * @param {KnowledgeChunkCreateArgs} args - Arguments to create a KnowledgeChunk.
+     * @example
+     * // Create one KnowledgeChunk
+     * const KnowledgeChunk = await prisma.knowledgeChunk.create({
+     *   data: {
+     *     // ... data to create a KnowledgeChunk
+     *   }
+     * })
+     * 
+     */
+    create<T extends KnowledgeChunkCreateArgs>(args: SelectSubset<T, KnowledgeChunkCreateArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many KnowledgeChunks.
+     * @param {KnowledgeChunkCreateManyArgs} args - Arguments to create many KnowledgeChunks.
+     * @example
+     * // Create many KnowledgeChunks
+     * const knowledgeChunk = await prisma.knowledgeChunk.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends KnowledgeChunkCreateManyArgs>(args?: SelectSubset<T, KnowledgeChunkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many KnowledgeChunks and returns the data saved in the database.
+     * @param {KnowledgeChunkCreateManyAndReturnArgs} args - Arguments to create many KnowledgeChunks.
+     * @example
+     * // Create many KnowledgeChunks
+     * const knowledgeChunk = await prisma.knowledgeChunk.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many KnowledgeChunks and only return the `id`
+     * const knowledgeChunkWithIdOnly = await prisma.knowledgeChunk.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends KnowledgeChunkCreateManyAndReturnArgs>(args?: SelectSubset<T, KnowledgeChunkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a KnowledgeChunk.
+     * @param {KnowledgeChunkDeleteArgs} args - Arguments to delete one KnowledgeChunk.
+     * @example
+     * // Delete one KnowledgeChunk
+     * const KnowledgeChunk = await prisma.knowledgeChunk.delete({
+     *   where: {
+     *     // ... filter to delete one KnowledgeChunk
+     *   }
+     * })
+     * 
+     */
+    delete<T extends KnowledgeChunkDeleteArgs>(args: SelectSubset<T, KnowledgeChunkDeleteArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one KnowledgeChunk.
+     * @param {KnowledgeChunkUpdateArgs} args - Arguments to update one KnowledgeChunk.
+     * @example
+     * // Update one KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends KnowledgeChunkUpdateArgs>(args: SelectSubset<T, KnowledgeChunkUpdateArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more KnowledgeChunks.
+     * @param {KnowledgeChunkDeleteManyArgs} args - Arguments to filter KnowledgeChunks to delete.
+     * @example
+     * // Delete a few KnowledgeChunks
+     * const { count } = await prisma.knowledgeChunk.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends KnowledgeChunkDeleteManyArgs>(args?: SelectSubset<T, KnowledgeChunkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more KnowledgeChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many KnowledgeChunks
+     * const knowledgeChunk = await prisma.knowledgeChunk.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends KnowledgeChunkUpdateManyArgs>(args: SelectSubset<T, KnowledgeChunkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more KnowledgeChunks and returns the data updated in the database.
+     * @param {KnowledgeChunkUpdateManyAndReturnArgs} args - Arguments to update many KnowledgeChunks.
+     * @example
+     * // Update many KnowledgeChunks
+     * const knowledgeChunk = await prisma.knowledgeChunk.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more KnowledgeChunks and only return the `id`
+     * const knowledgeChunkWithIdOnly = await prisma.knowledgeChunk.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends KnowledgeChunkUpdateManyAndReturnArgs>(args: SelectSubset<T, KnowledgeChunkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one KnowledgeChunk.
+     * @param {KnowledgeChunkUpsertArgs} args - Arguments to update or create a KnowledgeChunk.
+     * @example
+     * // Update or create a KnowledgeChunk
+     * const knowledgeChunk = await prisma.knowledgeChunk.upsert({
+     *   create: {
+     *     // ... data to create a KnowledgeChunk
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the KnowledgeChunk we want to update
+     *   }
+     * })
+     */
+    upsert<T extends KnowledgeChunkUpsertArgs>(args: SelectSubset<T, KnowledgeChunkUpsertArgs<ExtArgs>>): Prisma__KnowledgeChunkClient<$Result.GetResult<Prisma.$KnowledgeChunkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of KnowledgeChunks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkCountArgs} args - Arguments to filter KnowledgeChunks to count.
+     * @example
+     * // Count the number of KnowledgeChunks
+     * const count = await prisma.knowledgeChunk.count({
+     *   where: {
+     *     // ... the filter for the KnowledgeChunks we want to count
+     *   }
+     * })
+    **/
+    count<T extends KnowledgeChunkCountArgs>(
+      args?: Subset<T, KnowledgeChunkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], KnowledgeChunkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a KnowledgeChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends KnowledgeChunkAggregateArgs>(args: Subset<T, KnowledgeChunkAggregateArgs>): Prisma.PrismaPromise<GetKnowledgeChunkAggregateType<T>>
+
+    /**
+     * Group by KnowledgeChunk.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {KnowledgeChunkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends KnowledgeChunkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: KnowledgeChunkGroupByArgs['orderBy'] }
+        : { orderBy?: KnowledgeChunkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, KnowledgeChunkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetKnowledgeChunkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the KnowledgeChunk model
+   */
+  readonly fields: KnowledgeChunkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for KnowledgeChunk.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__KnowledgeChunkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    knowledge_item<T extends KnowledgeItemDefaultArgs<ExtArgs> = {}>(args?: Subset<T, KnowledgeItemDefaultArgs<ExtArgs>>): Prisma__KnowledgeItemClient<$Result.GetResult<Prisma.$KnowledgeItemPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the KnowledgeChunk model
+   */
+  interface KnowledgeChunkFieldRefs {
+    readonly id: FieldRef<"KnowledgeChunk", 'String'>
+    readonly knowledge_item_id: FieldRef<"KnowledgeChunk", 'String'>
+    readonly position: FieldRef<"KnowledgeChunk", 'Int'>
+    readonly content: FieldRef<"KnowledgeChunk", 'String'>
+    readonly embedding: FieldRef<"KnowledgeChunk", 'Bytes'>
+    readonly created_at: FieldRef<"KnowledgeChunk", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * KnowledgeChunk findUnique
+   */
+  export type KnowledgeChunkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which KnowledgeChunk to fetch.
+     */
+    where: KnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * KnowledgeChunk findUniqueOrThrow
+   */
+  export type KnowledgeChunkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which KnowledgeChunk to fetch.
+     */
+    where: KnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * KnowledgeChunk findFirst
+   */
+  export type KnowledgeChunkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which KnowledgeChunk to fetch.
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of KnowledgeChunks to fetch.
+     */
+    orderBy?: KnowledgeChunkOrderByWithRelationInput | KnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for KnowledgeChunks.
+     */
+    cursor?: KnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` KnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` KnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of KnowledgeChunks.
+     */
+    distinct?: KnowledgeChunkScalarFieldEnum | KnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * KnowledgeChunk findFirstOrThrow
+   */
+  export type KnowledgeChunkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which KnowledgeChunk to fetch.
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of KnowledgeChunks to fetch.
+     */
+    orderBy?: KnowledgeChunkOrderByWithRelationInput | KnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for KnowledgeChunks.
+     */
+    cursor?: KnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` KnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` KnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of KnowledgeChunks.
+     */
+    distinct?: KnowledgeChunkScalarFieldEnum | KnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * KnowledgeChunk findMany
+   */
+  export type KnowledgeChunkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter, which KnowledgeChunks to fetch.
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of KnowledgeChunks to fetch.
+     */
+    orderBy?: KnowledgeChunkOrderByWithRelationInput | KnowledgeChunkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing KnowledgeChunks.
+     */
+    cursor?: KnowledgeChunkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` KnowledgeChunks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` KnowledgeChunks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of KnowledgeChunks.
+     */
+    distinct?: KnowledgeChunkScalarFieldEnum | KnowledgeChunkScalarFieldEnum[]
+  }
+
+  /**
+   * KnowledgeChunk create
+   */
+  export type KnowledgeChunkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a KnowledgeChunk.
+     */
+    data: XOR<KnowledgeChunkCreateInput, KnowledgeChunkUncheckedCreateInput>
+  }
+
+  /**
+   * KnowledgeChunk createMany
+   */
+  export type KnowledgeChunkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many KnowledgeChunks.
+     */
+    data: KnowledgeChunkCreateManyInput | KnowledgeChunkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * KnowledgeChunk createManyAndReturn
+   */
+  export type KnowledgeChunkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * The data used to create many KnowledgeChunks.
+     */
+    data: KnowledgeChunkCreateManyInput | KnowledgeChunkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * KnowledgeChunk update
+   */
+  export type KnowledgeChunkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a KnowledgeChunk.
+     */
+    data: XOR<KnowledgeChunkUpdateInput, KnowledgeChunkUncheckedUpdateInput>
+    /**
+     * Choose, which KnowledgeChunk to update.
+     */
+    where: KnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * KnowledgeChunk updateMany
+   */
+  export type KnowledgeChunkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update KnowledgeChunks.
+     */
+    data: XOR<KnowledgeChunkUpdateManyMutationInput, KnowledgeChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which KnowledgeChunks to update
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * Limit how many KnowledgeChunks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * KnowledgeChunk updateManyAndReturn
+   */
+  export type KnowledgeChunkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * The data used to update KnowledgeChunks.
+     */
+    data: XOR<KnowledgeChunkUpdateManyMutationInput, KnowledgeChunkUncheckedUpdateManyInput>
+    /**
+     * Filter which KnowledgeChunks to update
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * Limit how many KnowledgeChunks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * KnowledgeChunk upsert
+   */
+  export type KnowledgeChunkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the KnowledgeChunk to update in case it exists.
+     */
+    where: KnowledgeChunkWhereUniqueInput
+    /**
+     * In case the KnowledgeChunk found by the `where` argument doesn't exist, create a new KnowledgeChunk with this data.
+     */
+    create: XOR<KnowledgeChunkCreateInput, KnowledgeChunkUncheckedCreateInput>
+    /**
+     * In case the KnowledgeChunk was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<KnowledgeChunkUpdateInput, KnowledgeChunkUncheckedUpdateInput>
+  }
+
+  /**
+   * KnowledgeChunk delete
+   */
+  export type KnowledgeChunkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
+    /**
+     * Filter which KnowledgeChunk to delete.
+     */
+    where: KnowledgeChunkWhereUniqueInput
+  }
+
+  /**
+   * KnowledgeChunk deleteMany
+   */
+  export type KnowledgeChunkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which KnowledgeChunks to delete
+     */
+    where?: KnowledgeChunkWhereInput
+    /**
+     * Limit how many KnowledgeChunks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * KnowledgeChunk without action
+   */
+  export type KnowledgeChunkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the KnowledgeChunk
+     */
+    select?: KnowledgeChunkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the KnowledgeChunk
+     */
+    omit?: KnowledgeChunkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: KnowledgeChunkInclude<ExtArgs> | null
   }
 
 
@@ -116323,6 +117645,7 @@ export namespace Prisma {
     organization_id: 'organization_id',
     user_id: 'user_id',
     role: 'role',
+    color_theme: 'color_theme',
     joined_at: 'joined_at',
     updated_at: 'updated_at'
   };
@@ -116535,6 +117858,8 @@ export namespace Prisma {
     file_id: 'file_id',
     url: 'url',
     content: 'content',
+    status: 'status',
+    status_error: 'status_error',
     added_by_id: 'added_by_id',
     indexed_at: 'indexed_at',
     deleted_at: 'deleted_at',
@@ -116543,6 +117868,18 @@ export namespace Prisma {
   };
 
   export type KnowledgeItemScalarFieldEnum = (typeof KnowledgeItemScalarFieldEnum)[keyof typeof KnowledgeItemScalarFieldEnum]
+
+
+  export const KnowledgeChunkScalarFieldEnum: {
+    id: 'id',
+    knowledge_item_id: 'knowledge_item_id',
+    position: 'position',
+    content: 'content',
+    embedding: 'embedding',
+    created_at: 'created_at'
+  };
+
+  export type KnowledgeChunkScalarFieldEnum = (typeof KnowledgeChunkScalarFieldEnum)[keyof typeof KnowledgeChunkScalarFieldEnum]
 
 
   export const KnowledgeLinkScalarFieldEnum: {
@@ -118403,6 +119740,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ColorTheme'
+   */
+  export type EnumColorThemeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ColorTheme'>
+    
+
+
+  /**
+   * Reference to a field of type 'ColorTheme[]'
+   */
+  export type ListEnumColorThemeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ColorTheme[]'>
+    
+
+
+  /**
    * Reference to a field of type 'InvitationStatus'
    */
   export type EnumInvitationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvitationStatus'>
@@ -118595,6 +119946,34 @@ export namespace Prisma {
    * Reference to a field of type 'KnowledgeKind[]'
    */
   export type ListEnumKnowledgeKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KnowledgeKind[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'KnowledgeStatus'
+   */
+  export type EnumKnowledgeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KnowledgeStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'KnowledgeStatus[]'
+   */
+  export type ListEnumKnowledgeStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'KnowledgeStatus[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes'
+   */
+  export type BytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes'>
+    
+
+
+  /**
+   * Reference to a field of type 'Bytes[]'
+   */
+  export type ListBytesFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Bytes[]'>
     
 
 
@@ -121182,6 +122561,7 @@ export namespace Prisma {
     organization_id?: StringFilter<"OrganizationMember"> | string
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -121193,6 +122573,7 @@ export namespace Prisma {
     organization_id?: SortOrder
     user_id?: SortOrder
     role?: SortOrder
+    color_theme?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
@@ -121208,6 +122589,7 @@ export namespace Prisma {
     organization_id?: StringFilter<"OrganizationMember"> | string
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -121219,6 +122601,7 @@ export namespace Prisma {
     organization_id?: SortOrder
     user_id?: SortOrder
     role?: SortOrder
+    color_theme?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
     _count?: OrganizationMemberCountOrderByAggregateInput
@@ -121234,6 +122617,7 @@ export namespace Prisma {
     organization_id?: StringWithAggregatesFilter<"OrganizationMember"> | string
     user_id?: StringWithAggregatesFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleWithAggregatesFilter<"OrganizationMember"> | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeWithAggregatesFilter<"OrganizationMember"> | $Enums.ColorTheme
     joined_at?: DateTimeWithAggregatesFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"OrganizationMember"> | Date | string
   }
@@ -122384,6 +123768,8 @@ export namespace Prisma {
     file_id?: StringNullableFilter<"KnowledgeItem"> | string | null
     url?: StringNullableFilter<"KnowledgeItem"> | string | null
     content?: StringNullableFilter<"KnowledgeItem"> | string | null
+    status?: EnumKnowledgeStatusFilter<"KnowledgeItem"> | $Enums.KnowledgeStatus
+    status_error?: StringNullableFilter<"KnowledgeItem"> | string | null
     added_by_id?: StringNullableFilter<"KnowledgeItem"> | string | null
     indexed_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
@@ -122394,6 +123780,7 @@ export namespace Prisma {
     file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     added_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     links?: KnowledgeLinkListRelationFilter
+    chunks?: KnowledgeChunkListRelationFilter
   }
 
   export type KnowledgeItemOrderByWithRelationInput = {
@@ -122406,6 +123793,8 @@ export namespace Prisma {
     file_id?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
+    status?: SortOrder
+    status_error?: SortOrderInput | SortOrder
     added_by_id?: SortOrderInput | SortOrder
     indexed_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
@@ -122416,6 +123805,7 @@ export namespace Prisma {
     file?: FileOrderByWithRelationInput
     added_by?: UserOrderByWithRelationInput
     links?: KnowledgeLinkOrderByRelationAggregateInput
+    chunks?: KnowledgeChunkOrderByRelationAggregateInput
   }
 
   export type KnowledgeItemWhereUniqueInput = Prisma.AtLeast<{
@@ -122431,6 +123821,8 @@ export namespace Prisma {
     title?: StringFilter<"KnowledgeItem"> | string
     url?: StringNullableFilter<"KnowledgeItem"> | string | null
     content?: StringNullableFilter<"KnowledgeItem"> | string | null
+    status?: EnumKnowledgeStatusFilter<"KnowledgeItem"> | $Enums.KnowledgeStatus
+    status_error?: StringNullableFilter<"KnowledgeItem"> | string | null
     added_by_id?: StringNullableFilter<"KnowledgeItem"> | string | null
     indexed_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
@@ -122441,6 +123833,7 @@ export namespace Prisma {
     file?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     added_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     links?: KnowledgeLinkListRelationFilter
+    chunks?: KnowledgeChunkListRelationFilter
   }, "id" | "file_id">
 
   export type KnowledgeItemOrderByWithAggregationInput = {
@@ -122453,6 +123846,8 @@ export namespace Prisma {
     file_id?: SortOrderInput | SortOrder
     url?: SortOrderInput | SortOrder
     content?: SortOrderInput | SortOrder
+    status?: SortOrder
+    status_error?: SortOrderInput | SortOrder
     added_by_id?: SortOrderInput | SortOrder
     indexed_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
@@ -122476,11 +123871,76 @@ export namespace Prisma {
     file_id?: StringNullableWithAggregatesFilter<"KnowledgeItem"> | string | null
     url?: StringNullableWithAggregatesFilter<"KnowledgeItem"> | string | null
     content?: StringNullableWithAggregatesFilter<"KnowledgeItem"> | string | null
+    status?: EnumKnowledgeStatusWithAggregatesFilter<"KnowledgeItem"> | $Enums.KnowledgeStatus
+    status_error?: StringNullableWithAggregatesFilter<"KnowledgeItem"> | string | null
     added_by_id?: StringNullableWithAggregatesFilter<"KnowledgeItem"> | string | null
     indexed_at?: DateTimeNullableWithAggregatesFilter<"KnowledgeItem"> | Date | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"KnowledgeItem"> | Date | string | null
     created_at?: DateTimeWithAggregatesFilter<"KnowledgeItem"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"KnowledgeItem"> | Date | string
+  }
+
+  export type KnowledgeChunkWhereInput = {
+    AND?: KnowledgeChunkWhereInput | KnowledgeChunkWhereInput[]
+    OR?: KnowledgeChunkWhereInput[]
+    NOT?: KnowledgeChunkWhereInput | KnowledgeChunkWhereInput[]
+    id?: StringFilter<"KnowledgeChunk"> | string
+    knowledge_item_id?: StringFilter<"KnowledgeChunk"> | string
+    position?: IntFilter<"KnowledgeChunk"> | number
+    content?: StringFilter<"KnowledgeChunk"> | string
+    embedding?: BytesFilter<"KnowledgeChunk"> | Bytes
+    created_at?: DateTimeFilter<"KnowledgeChunk"> | Date | string
+    knowledge_item?: XOR<KnowledgeItemScalarRelationFilter, KnowledgeItemWhereInput>
+  }
+
+  export type KnowledgeChunkOrderByWithRelationInput = {
+    id?: SortOrder
+    knowledge_item_id?: SortOrder
+    position?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    created_at?: SortOrder
+    knowledge_item?: KnowledgeItemOrderByWithRelationInput
+  }
+
+  export type KnowledgeChunkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    knowledge_item_id_position?: KnowledgeChunkKnowledge_item_idPositionCompoundUniqueInput
+    AND?: KnowledgeChunkWhereInput | KnowledgeChunkWhereInput[]
+    OR?: KnowledgeChunkWhereInput[]
+    NOT?: KnowledgeChunkWhereInput | KnowledgeChunkWhereInput[]
+    knowledge_item_id?: StringFilter<"KnowledgeChunk"> | string
+    position?: IntFilter<"KnowledgeChunk"> | number
+    content?: StringFilter<"KnowledgeChunk"> | string
+    embedding?: BytesFilter<"KnowledgeChunk"> | Bytes
+    created_at?: DateTimeFilter<"KnowledgeChunk"> | Date | string
+    knowledge_item?: XOR<KnowledgeItemScalarRelationFilter, KnowledgeItemWhereInput>
+  }, "id" | "knowledge_item_id_position">
+
+  export type KnowledgeChunkOrderByWithAggregationInput = {
+    id?: SortOrder
+    knowledge_item_id?: SortOrder
+    position?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    created_at?: SortOrder
+    _count?: KnowledgeChunkCountOrderByAggregateInput
+    _avg?: KnowledgeChunkAvgOrderByAggregateInput
+    _max?: KnowledgeChunkMaxOrderByAggregateInput
+    _min?: KnowledgeChunkMinOrderByAggregateInput
+    _sum?: KnowledgeChunkSumOrderByAggregateInput
+  }
+
+  export type KnowledgeChunkScalarWhereWithAggregatesInput = {
+    AND?: KnowledgeChunkScalarWhereWithAggregatesInput | KnowledgeChunkScalarWhereWithAggregatesInput[]
+    OR?: KnowledgeChunkScalarWhereWithAggregatesInput[]
+    NOT?: KnowledgeChunkScalarWhereWithAggregatesInput | KnowledgeChunkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"KnowledgeChunk"> | string
+    knowledge_item_id?: StringWithAggregatesFilter<"KnowledgeChunk"> | string
+    position?: IntWithAggregatesFilter<"KnowledgeChunk"> | number
+    content?: StringWithAggregatesFilter<"KnowledgeChunk"> | string
+    embedding?: BytesWithAggregatesFilter<"KnowledgeChunk"> | Bytes
+    created_at?: DateTimeWithAggregatesFilter<"KnowledgeChunk"> | Date | string
   }
 
   export type KnowledgeLinkWhereInput = {
@@ -130189,6 +131649,7 @@ export namespace Prisma {
   export type OrganizationMemberCreateInput = {
     id?: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
@@ -130200,6 +131661,7 @@ export namespace Prisma {
     organization_id: string
     user_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -130207,6 +131669,7 @@ export namespace Prisma {
   export type OrganizationMemberUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
@@ -130218,6 +131681,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -130227,6 +131691,7 @@ export namespace Prisma {
     organization_id: string
     user_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -130234,6 +131699,7 @@ export namespace Prisma {
   export type OrganizationMemberUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -130243,6 +131709,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -131478,6 +132945,8 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -131487,6 +132956,7 @@ export namespace Prisma {
     file?: FileCreateNestedOneWithoutKnowledge_itemInput
     added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
     links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateInput = {
@@ -131499,12 +132969,15 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUpdateInput = {
@@ -131514,6 +132987,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131523,6 +132998,7 @@ export namespace Prisma {
     file?: FileUpdateOneWithoutKnowledge_itemNestedInput
     added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
     links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateInput = {
@@ -131535,12 +133011,15 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemCreateManyInput = {
@@ -131553,6 +133032,8 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -131567,6 +133048,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -131583,11 +133066,75 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkCreateInput = {
+    id?: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+    knowledge_item: KnowledgeItemCreateNestedOneWithoutChunksInput
+  }
+
+  export type KnowledgeChunkUncheckedCreateInput = {
+    id?: string
+    knowledge_item_id: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+  }
+
+  export type KnowledgeChunkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    knowledge_item?: KnowledgeItemUpdateOneRequiredWithoutChunksNestedInput
+  }
+
+  export type KnowledgeChunkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    knowledge_item_id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkCreateManyInput = {
+    id?: string
+    knowledge_item_id: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+  }
+
+  export type KnowledgeChunkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    knowledge_item_id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type KnowledgeLinkCreateInput = {
@@ -139991,6 +141538,13 @@ export namespace Prisma {
     _max?: NestedEnumSessionInactivityFilter<$PrismaModel>
   }
 
+  export type EnumColorThemeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ColorTheme | EnumColorThemeFieldRefInput<$PrismaModel>
+    in?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    not?: NestedEnumColorThemeFilter<$PrismaModel> | $Enums.ColorTheme
+  }
+
   export type OrganizationMemberOrganization_idUser_idCompoundUniqueInput = {
     organization_id: string
     user_id: string
@@ -140001,6 +141555,7 @@ export namespace Prisma {
     organization_id?: SortOrder
     user_id?: SortOrder
     role?: SortOrder
+    color_theme?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -140010,6 +141565,7 @@ export namespace Prisma {
     organization_id?: SortOrder
     user_id?: SortOrder
     role?: SortOrder
+    color_theme?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -140019,8 +141575,19 @@ export namespace Prisma {
     organization_id?: SortOrder
     user_id?: SortOrder
     role?: SortOrder
+    color_theme?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type EnumColorThemeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ColorTheme | EnumColorThemeFieldRefInput<$PrismaModel>
+    in?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    not?: NestedEnumColorThemeWithAggregatesFilter<$PrismaModel> | $Enums.ColorTheme
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumColorThemeFilter<$PrismaModel>
+    _max?: NestedEnumColorThemeFilter<$PrismaModel>
   }
 
   export type EnumInvitationStatusFilter<$PrismaModel = never> = {
@@ -141040,6 +142607,23 @@ export namespace Prisma {
     not?: NestedEnumKnowledgeKindFilter<$PrismaModel> | $Enums.KnowledgeKind
   }
 
+  export type EnumKnowledgeStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.KnowledgeStatus | EnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumKnowledgeStatusFilter<$PrismaModel> | $Enums.KnowledgeStatus
+  }
+
+  export type KnowledgeChunkListRelationFilter = {
+    every?: KnowledgeChunkWhereInput
+    some?: KnowledgeChunkWhereInput
+    none?: KnowledgeChunkWhereInput
+  }
+
+  export type KnowledgeChunkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
   export type KnowledgeItemCountOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
@@ -141050,6 +142634,8 @@ export namespace Prisma {
     file_id?: SortOrder
     url?: SortOrder
     content?: SortOrder
+    status?: SortOrder
+    status_error?: SortOrder
     added_by_id?: SortOrder
     indexed_at?: SortOrder
     deleted_at?: SortOrder
@@ -141067,6 +142653,8 @@ export namespace Prisma {
     file_id?: SortOrder
     url?: SortOrder
     content?: SortOrder
+    status?: SortOrder
+    status_error?: SortOrder
     added_by_id?: SortOrder
     indexed_at?: SortOrder
     deleted_at?: SortOrder
@@ -141084,6 +142672,8 @@ export namespace Prisma {
     file_id?: SortOrder
     url?: SortOrder
     content?: SortOrder
+    status?: SortOrder
+    status_error?: SortOrder
     added_by_id?: SortOrder
     indexed_at?: SortOrder
     deleted_at?: SortOrder
@@ -141111,9 +142701,76 @@ export namespace Prisma {
     _max?: NestedEnumKnowledgeKindFilter<$PrismaModel>
   }
 
+  export type EnumKnowledgeStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.KnowledgeStatus | EnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumKnowledgeStatusWithAggregatesFilter<$PrismaModel> | $Enums.KnowledgeStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumKnowledgeStatusFilter<$PrismaModel>
+    _max?: NestedEnumKnowledgeStatusFilter<$PrismaModel>
+  }
+
+  export type BytesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
+  }
+
   export type KnowledgeItemScalarRelationFilter = {
     is?: KnowledgeItemWhereInput
     isNot?: KnowledgeItemWhereInput
+  }
+
+  export type KnowledgeChunkKnowledge_item_idPositionCompoundUniqueInput = {
+    knowledge_item_id: string
+    position: number
+  }
+
+  export type KnowledgeChunkCountOrderByAggregateInput = {
+    id?: SortOrder
+    knowledge_item_id?: SortOrder
+    position?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type KnowledgeChunkAvgOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type KnowledgeChunkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    knowledge_item_id?: SortOrder
+    position?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type KnowledgeChunkMinOrderByAggregateInput = {
+    id?: SortOrder
+    knowledge_item_id?: SortOrder
+    position?: SortOrder
+    content?: SortOrder
+    embedding?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type KnowledgeChunkSumOrderByAggregateInput = {
+    position?: SortOrder
+  }
+
+  export type BytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type KnowledgeLinkCountOrderByAggregateInput = {
@@ -149149,6 +150806,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
+  export type EnumColorThemeFieldUpdateOperationsInput = {
+    set?: $Enums.ColorTheme
+  }
+
   export type OrganizationUpdateOneRequiredWithoutMembersNestedInput = {
     create?: XOR<OrganizationCreateWithoutMembersInput, OrganizationUncheckedCreateWithoutMembersInput>
     connectOrCreate?: OrganizationCreateOrConnectWithoutMembersInput
@@ -151108,11 +152769,25 @@ export namespace Prisma {
     connect?: KnowledgeLinkWhereUniqueInput | KnowledgeLinkWhereUniqueInput[]
   }
 
+  export type KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput = {
+    create?: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeChunkCreateWithoutKnowledge_itemInput[] | KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput[]
+    connectOrCreate?: KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput[]
+    createMany?: KnowledgeChunkCreateManyKnowledge_itemInputEnvelope
+    connect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+  }
+
   export type KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput = {
     create?: XOR<KnowledgeLinkCreateWithoutKnowledge_itemInput, KnowledgeLinkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeLinkCreateWithoutKnowledge_itemInput[] | KnowledgeLinkUncheckedCreateWithoutKnowledge_itemInput[]
     connectOrCreate?: KnowledgeLinkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeLinkCreateOrConnectWithoutKnowledge_itemInput[]
     createMany?: KnowledgeLinkCreateManyKnowledge_itemInputEnvelope
     connect?: KnowledgeLinkWhereUniqueInput | KnowledgeLinkWhereUniqueInput[]
+  }
+
+  export type KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput = {
+    create?: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeChunkCreateWithoutKnowledge_itemInput[] | KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput[]
+    connectOrCreate?: KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput[]
+    createMany?: KnowledgeChunkCreateManyKnowledge_itemInputEnvelope
+    connect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
   }
 
   export type EnumKnowledgeScopeFieldUpdateOperationsInput = {
@@ -151121,6 +152796,10 @@ export namespace Prisma {
 
   export type EnumKnowledgeKindFieldUpdateOperationsInput = {
     set?: $Enums.KnowledgeKind
+  }
+
+  export type EnumKnowledgeStatusFieldUpdateOperationsInput = {
+    set?: $Enums.KnowledgeStatus
   }
 
   export type OrganizationUpdateOneRequiredWithoutKnowledge_itemsNestedInput = {
@@ -151175,6 +152854,20 @@ export namespace Prisma {
     deleteMany?: KnowledgeLinkScalarWhereInput | KnowledgeLinkScalarWhereInput[]
   }
 
+  export type KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput = {
+    create?: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeChunkCreateWithoutKnowledge_itemInput[] | KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput[]
+    connectOrCreate?: KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput[]
+    upsert?: KnowledgeChunkUpsertWithWhereUniqueWithoutKnowledge_itemInput | KnowledgeChunkUpsertWithWhereUniqueWithoutKnowledge_itemInput[]
+    createMany?: KnowledgeChunkCreateManyKnowledge_itemInputEnvelope
+    set?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    disconnect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    delete?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    connect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    update?: KnowledgeChunkUpdateWithWhereUniqueWithoutKnowledge_itemInput | KnowledgeChunkUpdateWithWhereUniqueWithoutKnowledge_itemInput[]
+    updateMany?: KnowledgeChunkUpdateManyWithWhereWithoutKnowledge_itemInput | KnowledgeChunkUpdateManyWithWhereWithoutKnowledge_itemInput[]
+    deleteMany?: KnowledgeChunkScalarWhereInput | KnowledgeChunkScalarWhereInput[]
+  }
+
   export type KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput = {
     create?: XOR<KnowledgeLinkCreateWithoutKnowledge_itemInput, KnowledgeLinkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeLinkCreateWithoutKnowledge_itemInput[] | KnowledgeLinkUncheckedCreateWithoutKnowledge_itemInput[]
     connectOrCreate?: KnowledgeLinkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeLinkCreateOrConnectWithoutKnowledge_itemInput[]
@@ -151187,6 +152880,38 @@ export namespace Prisma {
     update?: KnowledgeLinkUpdateWithWhereUniqueWithoutKnowledge_itemInput | KnowledgeLinkUpdateWithWhereUniqueWithoutKnowledge_itemInput[]
     updateMany?: KnowledgeLinkUpdateManyWithWhereWithoutKnowledge_itemInput | KnowledgeLinkUpdateManyWithWhereWithoutKnowledge_itemInput[]
     deleteMany?: KnowledgeLinkScalarWhereInput | KnowledgeLinkScalarWhereInput[]
+  }
+
+  export type KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput = {
+    create?: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput> | KnowledgeChunkCreateWithoutKnowledge_itemInput[] | KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput[]
+    connectOrCreate?: KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput | KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput[]
+    upsert?: KnowledgeChunkUpsertWithWhereUniqueWithoutKnowledge_itemInput | KnowledgeChunkUpsertWithWhereUniqueWithoutKnowledge_itemInput[]
+    createMany?: KnowledgeChunkCreateManyKnowledge_itemInputEnvelope
+    set?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    disconnect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    delete?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    connect?: KnowledgeChunkWhereUniqueInput | KnowledgeChunkWhereUniqueInput[]
+    update?: KnowledgeChunkUpdateWithWhereUniqueWithoutKnowledge_itemInput | KnowledgeChunkUpdateWithWhereUniqueWithoutKnowledge_itemInput[]
+    updateMany?: KnowledgeChunkUpdateManyWithWhereWithoutKnowledge_itemInput | KnowledgeChunkUpdateManyWithWhereWithoutKnowledge_itemInput[]
+    deleteMany?: KnowledgeChunkScalarWhereInput | KnowledgeChunkScalarWhereInput[]
+  }
+
+  export type KnowledgeItemCreateNestedOneWithoutChunksInput = {
+    create?: XOR<KnowledgeItemCreateWithoutChunksInput, KnowledgeItemUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: KnowledgeItemCreateOrConnectWithoutChunksInput
+    connect?: KnowledgeItemWhereUniqueInput
+  }
+
+  export type BytesFieldUpdateOperationsInput = {
+    set?: Bytes
+  }
+
+  export type KnowledgeItemUpdateOneRequiredWithoutChunksNestedInput = {
+    create?: XOR<KnowledgeItemCreateWithoutChunksInput, KnowledgeItemUncheckedCreateWithoutChunksInput>
+    connectOrCreate?: KnowledgeItemCreateOrConnectWithoutChunksInput
+    upsert?: KnowledgeItemUpsertWithoutChunksInput
+    connect?: KnowledgeItemWhereUniqueInput
+    update?: XOR<XOR<KnowledgeItemUpdateToOneWithWhereWithoutChunksInput, KnowledgeItemUpdateWithoutChunksInput>, KnowledgeItemUncheckedUpdateWithoutChunksInput>
   }
 
   export type KnowledgeItemCreateNestedOneWithoutLinksInput = {
@@ -158730,6 +160455,23 @@ export namespace Prisma {
     _max?: NestedEnumSessionInactivityFilter<$PrismaModel>
   }
 
+  export type NestedEnumColorThemeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ColorTheme | EnumColorThemeFieldRefInput<$PrismaModel>
+    in?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    not?: NestedEnumColorThemeFilter<$PrismaModel> | $Enums.ColorTheme
+  }
+
+  export type NestedEnumColorThemeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ColorTheme | EnumColorThemeFieldRefInput<$PrismaModel>
+    in?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ColorTheme[] | ListEnumColorThemeFieldRefInput<$PrismaModel>
+    not?: NestedEnumColorThemeWithAggregatesFilter<$PrismaModel> | $Enums.ColorTheme
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumColorThemeFilter<$PrismaModel>
+    _max?: NestedEnumColorThemeFilter<$PrismaModel>
+  }
+
   export type NestedEnumInvitationStatusFilter<$PrismaModel = never> = {
     equals?: $Enums.InvitationStatus | EnumInvitationStatusFieldRefInput<$PrismaModel>
     in?: $Enums.InvitationStatus[] | ListEnumInvitationStatusFieldRefInput<$PrismaModel>
@@ -159060,6 +160802,13 @@ export namespace Prisma {
     not?: NestedEnumKnowledgeKindFilter<$PrismaModel> | $Enums.KnowledgeKind
   }
 
+  export type NestedEnumKnowledgeStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.KnowledgeStatus | EnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumKnowledgeStatusFilter<$PrismaModel> | $Enums.KnowledgeStatus
+  }
+
   export type NestedEnumKnowledgeScopeWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.KnowledgeScope | EnumKnowledgeScopeFieldRefInput<$PrismaModel>
     in?: $Enums.KnowledgeScope[] | ListEnumKnowledgeScopeFieldRefInput<$PrismaModel>
@@ -159078,6 +160827,33 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumKnowledgeKindFilter<$PrismaModel>
     _max?: NestedEnumKnowledgeKindFilter<$PrismaModel>
+  }
+
+  export type NestedEnumKnowledgeStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.KnowledgeStatus | EnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.KnowledgeStatus[] | ListEnumKnowledgeStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumKnowledgeStatusWithAggregatesFilter<$PrismaModel> | $Enums.KnowledgeStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumKnowledgeStatusFilter<$PrismaModel>
+    _max?: NestedEnumKnowledgeStatusFilter<$PrismaModel>
+  }
+
+  export type NestedBytesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesFilter<$PrismaModel> | Bytes
+  }
+
+  export type NestedBytesWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: Bytes | BytesFieldRefInput<$PrismaModel>
+    in?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    notIn?: Bytes[] | ListBytesFieldRefInput<$PrismaModel>
+    not?: NestedBytesWithAggregatesFilter<$PrismaModel> | Bytes
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedBytesFilter<$PrismaModel>
+    _max?: NestedBytesFilter<$PrismaModel>
   }
 
   export type NestedEnumMemoryKindFilter<$PrismaModel = never> = {
@@ -160380,6 +162156,7 @@ export namespace Prisma {
   export type OrganizationMemberCreateWithoutUserInput = {
     id?: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
@@ -160389,6 +162166,7 @@ export namespace Prisma {
     id?: string
     organization_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -162318,6 +164096,8 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -162326,6 +164106,7 @@ export namespace Prisma {
     bot?: BotCreateNestedOneWithoutKnowledge_itemsInput
     file?: FileCreateNestedOneWithoutKnowledge_itemInput
     links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateWithoutAdded_byInput = {
@@ -162338,11 +164119,14 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemCreateOrConnectWithoutAdded_byInput = {
@@ -162804,6 +164588,7 @@ export namespace Prisma {
     organization_id?: StringFilter<"OrganizationMember"> | string
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
   }
@@ -164111,6 +165896,8 @@ export namespace Prisma {
     file_id?: StringNullableFilter<"KnowledgeItem"> | string | null
     url?: StringNullableFilter<"KnowledgeItem"> | string | null
     content?: StringNullableFilter<"KnowledgeItem"> | string | null
+    status?: EnumKnowledgeStatusFilter<"KnowledgeItem"> | $Enums.KnowledgeStatus
+    status_error?: StringNullableFilter<"KnowledgeItem"> | string | null
     added_by_id?: StringNullableFilter<"KnowledgeItem"> | string | null
     indexed_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"KnowledgeItem"> | Date | string | null
@@ -168207,6 +169994,7 @@ export namespace Prisma {
   export type OrganizationMemberCreateWithoutOrganizationInput = {
     id?: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutMembershipsInput
@@ -168216,6 +170004,7 @@ export namespace Prisma {
     id?: string
     user_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -168911,6 +170700,8 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -168919,6 +170710,7 @@ export namespace Prisma {
     file?: FileCreateNestedOneWithoutKnowledge_itemInput
     added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
     links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateWithoutOrganizationInput = {
@@ -168930,12 +170722,15 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemCreateOrConnectWithoutOrganizationInput = {
@@ -175489,6 +177284,8 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -175497,6 +177294,7 @@ export namespace Prisma {
     file?: FileCreateNestedOneWithoutKnowledge_itemInput
     added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
     links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateWithoutBotInput = {
@@ -175508,12 +177306,15 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemCreateOrConnectWithoutBotInput = {
@@ -180255,6 +182056,32 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type KnowledgeChunkCreateWithoutKnowledge_itemInput = {
+    id?: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+  }
+
+  export type KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput = {
+    id?: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+  }
+
+  export type KnowledgeChunkCreateOrConnectWithoutKnowledge_itemInput = {
+    where: KnowledgeChunkWhereUniqueInput
+    create: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput>
+  }
+
+  export type KnowledgeChunkCreateManyKnowledge_itemInputEnvelope = {
+    data: KnowledgeChunkCreateManyKnowledge_itemInput | KnowledgeChunkCreateManyKnowledge_itemInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutKnowledge_itemsInput = {
     update: XOR<OrganizationUpdateWithoutKnowledge_itemsInput, OrganizationUncheckedUpdateWithoutKnowledge_itemsInput>
     create: XOR<OrganizationCreateWithoutKnowledge_itemsInput, OrganizationUncheckedCreateWithoutKnowledge_itemsInput>
@@ -180761,13 +182588,43 @@ export namespace Prisma {
     data: XOR<KnowledgeLinkUpdateManyMutationInput, KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemInput>
   }
 
-  export type KnowledgeItemCreateWithoutLinksInput = {
+  export type KnowledgeChunkUpsertWithWhereUniqueWithoutKnowledge_itemInput = {
+    where: KnowledgeChunkWhereUniqueInput
+    update: XOR<KnowledgeChunkUpdateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedUpdateWithoutKnowledge_itemInput>
+    create: XOR<KnowledgeChunkCreateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedCreateWithoutKnowledge_itemInput>
+  }
+
+  export type KnowledgeChunkUpdateWithWhereUniqueWithoutKnowledge_itemInput = {
+    where: KnowledgeChunkWhereUniqueInput
+    data: XOR<KnowledgeChunkUpdateWithoutKnowledge_itemInput, KnowledgeChunkUncheckedUpdateWithoutKnowledge_itemInput>
+  }
+
+  export type KnowledgeChunkUpdateManyWithWhereWithoutKnowledge_itemInput = {
+    where: KnowledgeChunkScalarWhereInput
+    data: XOR<KnowledgeChunkUpdateManyMutationInput, KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemInput>
+  }
+
+  export type KnowledgeChunkScalarWhereInput = {
+    AND?: KnowledgeChunkScalarWhereInput | KnowledgeChunkScalarWhereInput[]
+    OR?: KnowledgeChunkScalarWhereInput[]
+    NOT?: KnowledgeChunkScalarWhereInput | KnowledgeChunkScalarWhereInput[]
+    id?: StringFilter<"KnowledgeChunk"> | string
+    knowledge_item_id?: StringFilter<"KnowledgeChunk"> | string
+    position?: IntFilter<"KnowledgeChunk"> | number
+    content?: StringFilter<"KnowledgeChunk"> | string
+    embedding?: BytesFilter<"KnowledgeChunk"> | Bytes
+    created_at?: DateTimeFilter<"KnowledgeChunk"> | Date | string
+  }
+
+  export type KnowledgeItemCreateWithoutChunksInput = {
     id?: string
     scope: $Enums.KnowledgeScope
     kind: $Enums.KnowledgeKind
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -180776,6 +182633,103 @@ export namespace Prisma {
     bot?: BotCreateNestedOneWithoutKnowledge_itemsInput
     file?: FileCreateNestedOneWithoutKnowledge_itemInput
     added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
+    links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+  }
+
+  export type KnowledgeItemUncheckedCreateWithoutChunksInput = {
+    id?: string
+    organization_id: string
+    scope: $Enums.KnowledgeScope
+    bot_id?: string | null
+    kind: $Enums.KnowledgeKind
+    title: string
+    file_id?: string | null
+    url?: string | null
+    content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
+    added_by_id?: string | null
+    indexed_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+  }
+
+  export type KnowledgeItemCreateOrConnectWithoutChunksInput = {
+    where: KnowledgeItemWhereUniqueInput
+    create: XOR<KnowledgeItemCreateWithoutChunksInput, KnowledgeItemUncheckedCreateWithoutChunksInput>
+  }
+
+  export type KnowledgeItemUpsertWithoutChunksInput = {
+    update: XOR<KnowledgeItemUpdateWithoutChunksInput, KnowledgeItemUncheckedUpdateWithoutChunksInput>
+    create: XOR<KnowledgeItemCreateWithoutChunksInput, KnowledgeItemUncheckedCreateWithoutChunksInput>
+    where?: KnowledgeItemWhereInput
+  }
+
+  export type KnowledgeItemUpdateToOneWithWhereWithoutChunksInput = {
+    where?: KnowledgeItemWhereInput
+    data: XOR<KnowledgeItemUpdateWithoutChunksInput, KnowledgeItemUncheckedUpdateWithoutChunksInput>
+  }
+
+  export type KnowledgeItemUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumKnowledgeScopeFieldUpdateOperationsInput | $Enums.KnowledgeScope
+    kind?: EnumKnowledgeKindFieldUpdateOperationsInput | $Enums.KnowledgeKind
+    title?: StringFieldUpdateOperationsInput | string
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
+    indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutKnowledge_itemsNestedInput
+    bot?: BotUpdateOneWithoutKnowledge_itemsNestedInput
+    file?: FileUpdateOneWithoutKnowledge_itemNestedInput
+    added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
+    links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+  }
+
+  export type KnowledgeItemUncheckedUpdateWithoutChunksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    scope?: EnumKnowledgeScopeFieldUpdateOperationsInput | $Enums.KnowledgeScope
+    bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    kind?: EnumKnowledgeKindFieldUpdateOperationsInput | $Enums.KnowledgeKind
+    title?: StringFieldUpdateOperationsInput | string
+    file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    url?: NullableStringFieldUpdateOperationsInput | string | null
+    content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
+    added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+  }
+
+  export type KnowledgeItemCreateWithoutLinksInput = {
+    id?: string
+    scope: $Enums.KnowledgeScope
+    kind: $Enums.KnowledgeKind
+    title: string
+    url?: string | null
+    content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
+    indexed_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutKnowledge_itemsInput
+    bot?: BotCreateNestedOneWithoutKnowledge_itemsInput
+    file?: FileCreateNestedOneWithoutKnowledge_itemInput
+    added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateWithoutLinksInput = {
@@ -180788,11 +182742,14 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemCreateOrConnectWithoutLinksInput = {
@@ -180953,6 +182910,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -180961,6 +182920,7 @@ export namespace Prisma {
     bot?: BotUpdateOneWithoutKnowledge_itemsNestedInput
     file?: FileUpdateOneWithoutKnowledge_itemNestedInput
     added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateWithoutLinksInput = {
@@ -180973,11 +182933,14 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type UserUpsertWithoutKnowledge_linksInput = {
@@ -207034,6 +208997,8 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -207042,6 +209007,7 @@ export namespace Prisma {
     bot?: BotCreateNestedOneWithoutKnowledge_itemsInput
     added_by?: UserCreateNestedOneWithoutKnowledge_itemsInput
     links?: KnowledgeLinkCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemUncheckedCreateWithoutFileInput = {
@@ -207053,12 +209019,15 @@ export namespace Prisma {
     title: string
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     links?: KnowledgeLinkUncheckedCreateNestedManyWithoutKnowledge_itemInput
+    chunks?: KnowledgeChunkUncheckedCreateNestedManyWithoutKnowledge_itemInput
   }
 
   export type KnowledgeItemCreateOrConnectWithoutFileInput = {
@@ -208228,6 +210197,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -208236,6 +210207,7 @@ export namespace Prisma {
     bot?: BotUpdateOneWithoutKnowledge_itemsNestedInput
     added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
     links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateWithoutFileInput = {
@@ -208247,12 +210219,15 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type UserUpsertWithoutAvatarInput = {
@@ -219125,6 +221100,7 @@ export namespace Prisma {
     id?: string
     organization_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -219762,6 +221738,8 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
@@ -219989,6 +221967,7 @@ export namespace Prisma {
   export type OrganizationMemberUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
@@ -219998,6 +221977,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -220006,6 +221986,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -222198,6 +224179,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -222206,6 +224189,7 @@ export namespace Prisma {
     bot?: BotUpdateOneWithoutKnowledge_itemsNestedInput
     file?: FileUpdateOneWithoutKnowledge_itemNestedInput
     links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateWithoutAdded_byInput = {
@@ -222218,11 +224202,14 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateManyWithoutAdded_byInput = {
@@ -222235,6 +224222,8 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -222716,6 +224705,7 @@ export namespace Prisma {
     id?: string
     user_id: string
     role?: $Enums.OrganizationRole
+    color_theme?: $Enums.ColorTheme
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -222948,6 +224938,8 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -223262,6 +225254,7 @@ export namespace Prisma {
   export type OrganizationMemberUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMembershipsNestedInput
@@ -223271,6 +225264,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -223279,6 +225273,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
+    color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -224063,6 +226058,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -224071,6 +226068,7 @@ export namespace Prisma {
     file?: FileUpdateOneWithoutKnowledge_itemNestedInput
     added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
     links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateWithoutOrganizationInput = {
@@ -224082,12 +226080,15 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateManyWithoutOrganizationInput = {
@@ -224099,6 +226100,8 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -226461,6 +228464,8 @@ export namespace Prisma {
     file_id?: string | null
     url?: string | null
     content?: string | null
+    status?: $Enums.KnowledgeStatus
+    status_error?: string | null
     added_by_id?: string | null
     indexed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -227110,6 +229115,8 @@ export namespace Prisma {
     title?: StringFieldUpdateOperationsInput | string
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -227118,6 +229125,7 @@ export namespace Prisma {
     file?: FileUpdateOneWithoutKnowledge_itemNestedInput
     added_by?: UserUpdateOneWithoutKnowledge_itemsNestedInput
     links?: KnowledgeLinkUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateWithoutBotInput = {
@@ -227129,12 +229137,15 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     links?: KnowledgeLinkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
+    chunks?: KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemNestedInput
   }
 
   export type KnowledgeItemUncheckedUpdateManyWithoutBotInput = {
@@ -227146,6 +229157,8 @@ export namespace Prisma {
     file_id?: NullableStringFieldUpdateOperationsInput | string | null
     url?: NullableStringFieldUpdateOperationsInput | string | null
     content?: NullableStringFieldUpdateOperationsInput | string | null
+    status?: EnumKnowledgeStatusFieldUpdateOperationsInput | $Enums.KnowledgeStatus
+    status_error?: NullableStringFieldUpdateOperationsInput | string | null
     added_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     indexed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -228311,6 +230324,14 @@ export namespace Prisma {
     created_at?: Date | string
   }
 
+  export type KnowledgeChunkCreateManyKnowledge_itemInput = {
+    id?: string
+    position: number
+    content: string
+    embedding: Bytes
+    created_at?: Date | string
+  }
+
   export type KnowledgeLinkUpdateWithoutKnowledge_itemInput = {
     id?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
@@ -228335,6 +230356,30 @@ export namespace Prisma {
     title?: NullableStringFieldUpdateOperationsInput | string | null
     fetched_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     fetched_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkUpdateWithoutKnowledge_itemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkUncheckedUpdateWithoutKnowledge_itemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type KnowledgeChunkUncheckedUpdateManyWithoutKnowledge_itemInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    position?: IntFieldUpdateOperationsInput | number
+    content?: StringFieldUpdateOperationsInput | string
+    embedding?: BytesFieldUpdateOperationsInput | Bytes
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

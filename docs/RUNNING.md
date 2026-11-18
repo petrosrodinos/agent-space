@@ -42,7 +42,7 @@ npm run build      # static files in dist/ (no SSR, API address from VITE_API_UR
   - **Network:** the current Daytona account tier only lets sandboxes reach "essential" hosts (PyPI, npm, GitHub…); other websites are reset. Browsing arbitrary sites needs a Daytona tier with full internet access — no code change.
 - **Voice mode (OpenAI Realtime):** `OPENAI_API_KEY`; optional `VOICE_MODEL` (default `gpt-realtime`; the key also has `gpt-realtime-2.1`), `VOICE_TRANSCRIBE_MODEL`, `VOICE_SAMPLE_MODEL`. The browser's SDP offer goes to `POST /api/voice/sessions`; the API answers with the real key server-side and attaches a sideband WebSocket that runs every tool call. The browser needs microphone permission.
 - **Web push:** `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT` (generate with `npx web-push generate-vapid-keys`). Users turn it on per device in Settings → Notifications.
-- **Knowledge and skill files:** PDF, Word, text, Markdown, CSV and web pages are read as text at upload time; bots use `search_knowledge` / `read_knowledge` / `read_file`.
+- **Knowledge and skill files:** PDF, Word, Excel/ODS, PowerPoint, text, Markdown, CSV, HTML and web pages are read as text. Knowledge items are indexed by the `knowledge` queue (worker): images and scanned PDF pages go through `gpt-4.1-mini` vision (OCR), then passages are embedded with `text-embedding-3-small` into `knowledge_chunks` and searched by exact cosine similarity (`KnowledgeVectorStore`). Needs `OPENAI_API_KEY`. Items left Processing are re-queued when the worker starts. Bots use `search_knowledge` / `read_knowledge` / `read_file`.
 
 ## Artifacts (§7.5)
 
@@ -67,7 +67,8 @@ Build the web bundle for the API the apps should talk to first: `VITE_API_URL=ht
 | `npm run dev` | Opens the app against the Vite dev server (`http://localhost:5180`, or `AGENTSPACE_DEV_URL`) |
 | `npm start` | Opens the bundled `../app/dist` through the `app://agentspace` protocol |
 | `npm run package:dir` | Unpacked app in `release/win-unpacked` (quick local test) |
-| `npm run package:win` / `package:mac` | Builds `app/` and makes the NSIS installer / DMG + ZIP |
+| `npm run package:win` / `package:mac` | Builds `app/` and makes the NSIS installer / DMG + ZIP (no update feed) |
+| `npm run release -- patch` | Versioned release uploaded to GCS, with automatic updates (see below) |
 
 - **Security:** `contextIsolation`, `sandbox`, no `nodeIntegration`. The page has a strict CSP and can't navigate away from the app; outside links and sign-in pages open in the system browser. Permissions (microphone, notifications, clipboard) are granted to the app origin only, and every IPC call checks the sender.
 - **What it adds:**
@@ -79,7 +80,15 @@ Build the web bundle for the API the apps should talk to first: `VITE_API_URL=ht
 - **Signing:**
   - Windows: `CSC_LINK`, `CSC_KEY_PASSWORD`.
   - Mac: `CSC_LINK`, `CSC_KEY_PASSWORD`, `APPLE_ID`, `APPLE_APP_SPECIFIC_PASSWORD`, `APPLE_TEAM_ID`, and set `mac.notarize: true` in `electron-builder.yml`.
-- **Automatic updates:** set `publish` in `electron-builder.yml` (e.g. a generic feed URL). Without it the updater logs "disabled" and Settings → Devices says so.
+- **Releases (Google Cloud Storage):** `npm run release -- [patch|minor|major|x.y.z] [--win|--mac]` bumps `desktop/package.json`, builds `app/` against `$PUBLIC_API_URL/api` and the installer with the update feed baked in, and uploads to the `desktop-releases/` folder of the API bucket (`GCS_BUCKET_NAME`):
+  - `<version>/…` immutable installer, zip (Mac) and blockmaps per version; existing versions are never overwritten (`--force` to override)
+  - `latest.yml` / `latest-mac.yml` the live update feeds, switched over last
+  - `releases.json` index of all versions; `download/AgentSpace-Setup.exe`, `download/AgentSpace.dmg` stable "latest" download links
+  - Config: read from `api/.env.staging` (`GCS_PROJECT_ID`, `GCS_BUCKET_NAME`, `GCS_CREDENTIALS_JSON_BASE64`, `PUBLIC_API_URL`); real environment variables win.
+  - Serving: the bucket is private (uniform access, user files), so the API serves the folder publicly at `GET /api/desktop/releases/<path>` (`api/src/modules/desktop-releases`): `.yml`/`.json` are returned directly (no-cache), everything else redirects to a 15-minute signed GCS URL. The app's feed is `$PUBLIC_API_URL/api/desktop/releases`, and the latest Windows installer is `…/download/AgentSpace-Setup.exe`.
+  - `--dry-run` prints what would happen; `--build-only` builds without uploading. Mac builds need a Mac; run the script once per OS for the same version.
+  - Rolling back: release a higher version (the updater never downgrades).
+- **Automatic updates:** the packaged app checks the feed 10 s after launch, every 4 hours and when the computer wakes, downloads in the background, then shows "Restart to update" (toast and Settings → Devices). If ignored, it installs on the next quit. Builds made with `package:*` have no feed and report updates as not set up.
 - **Windows note:** real-time antivirus can lock `default_app.asar` while electron-builder extracts Electron. `package:dir` therefore uses the already-installed `node_modules/electron/dist` (`electronDist`).
 
 **Mobile (`app/`, Capacitor 8)**

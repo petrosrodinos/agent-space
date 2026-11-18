@@ -1,7 +1,8 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { Platform, Prisma } from 'generated/prisma';
+import { ColorTheme, Platform, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
+import type { OrgMembership } from '@/shared/guards/org.guard';
 import { toPublicUser } from '../auth/auth.service';
 import { OrganizationsService } from '../organizations/organizations.service';
 import { UpdateProfileDto, UpdateUserSettingsDto } from './dto/user.dto';
@@ -34,6 +35,16 @@ export class UsersService {
             },
         });
         return toPublicUser(user);
+    }
+
+    /** Sets this member's colour theme in one organisation only (other organisations keep their own). */
+    async updateColorTheme(membership: OrgMembership, colorTheme: ColorTheme) {
+        const member = await this.prisma.organizationMember.update({
+            where: { organization_id_user_id: { organization_id: membership.organization_id, user_id: membership.user_id } },
+            data: { color_theme: colorTheme },
+            select: { organization_id: true, color_theme: true },
+        });
+        return member;
     }
 
     async updateSettings(userId: string, dto: UpdateUserSettingsDto) {

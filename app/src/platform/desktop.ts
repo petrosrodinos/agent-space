@@ -73,6 +73,9 @@ export function createDesktopPlatform(bridge: DesktopBridge): Platform {
       getQuickAskShortcut: () => bridge.getQuickAskShortcut(),
       setQuickAskShortcut: (a) => bridge.setQuickAskShortcut(a),
       checkForUpdates: () => bridge.checkForUpdates(),
+      getUpdateState: () => bridge.getUpdateState(),
+      installUpdate: () => bridge.installUpdate(),
+      onUpdateState: (cb) => bridge.onUpdateState(cb),
     },
   };
 }

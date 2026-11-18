@@ -17,7 +17,7 @@ import { BotEmojiSuggestions } from "@/config/constants/dropdowns/shared/bot-col
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 
 /** Side panel: name/emoji, people and bots (add/remove), lead bot (§7.1, §7.2). */
-export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose: () => void; menu?: ReactNode }> = ({ conversation: c, meId, onClose, menu }) => {
+export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose?: () => void; menu?: ReactNode }> = ({ conversation: c, meId, onClose, menu }) => {
   const update = useUpdateConversation();
   const add = useAddParticipants();
   const remove = useRemoveParticipant();
@@ -38,9 +38,11 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
         </h2>
         <div className="flex items-center gap-2">
           {menu}
-          <Button variant="outline" size="icon" className="h-10 w-10 rounded-full" onClick={onClose} aria-label="Close panel">
-            <X />
-          </Button>
+          {onClose && (
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full" onClick={onClose} aria-label="Close panel">
+              <X />
+            </Button>
+          )}
         </div>
       </div>
       <div className="scrollbar-thin flex-1 space-y-6 overflow-y-auto p-5">

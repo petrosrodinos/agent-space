@@ -1,6 +1,23 @@
 export const Themes = { SYSTEM: "SYSTEM", LIGHT: "LIGHT", DARK: "DARK" } as const;
 export type Theme = (typeof Themes)[keyof typeof Themes];
-export const SpeakingSpeeds = { SLOWER: "SLOWER", NORMAL: "NORMAL", FASTER: "FASTER" } as const;
+/** Colour preset per user per organisation (stored on the membership). */
+export const ColorThemes = {
+  NEUTRAL: "NEUTRAL",
+  GRAPE: "GRAPE",
+  OCEAN: "OCEAN",
+  SKY: "SKY",
+  TEAL: "TEAL",
+  FOREST: "FOREST",
+  LIME: "LIME",
+  SUNSET: "SUNSET",
+  AMBER: "AMBER",
+  ROSE: "ROSE",
+  CRIMSON: "CRIMSON",
+  LAVENDER: "LAVENDER",
+  SLATE: "SLATE",
+} as const;
+export type ColorTheme = (typeof ColorThemes)[keyof typeof ColorThemes];
+export const SpeakingSpeeds ={ SLOWER: "SLOWER", NORMAL: "NORMAL", FASTER: "FASTER" } as const;
 export type SpeakingSpeed = (typeof SpeakingSpeeds)[keyof typeof SpeakingSpeeds];
 export const VoiceInputModes = { HANDS_FREE: "HANDS_FREE", PUSH_TO_TALK: "PUSH_TO_TALK" } as const;
 export type VoiceInputMode = (typeof VoiceInputModes)[keyof typeof VoiceInputModes];
@@ -48,6 +65,7 @@ export interface OrganizationSummary {
   logo_file_id: string | null;
   is_personal: boolean;
   role: OrgRole;
+  color_theme: ColorTheme;
   member_count: number;
 }
 

@@ -45,9 +45,12 @@ import {
   useRevokeSession,
   useSessions,
   useSignOutDevice,
+  useUpdateColorTheme,
   useUpdateProfile,
   useUpdateSettings,
 } from "@/features/users/hooks/use-users";
+import { useOrganizationStore } from "@/stores/organization";
+import { ColorThemePicker } from "./color-theme-picker";
 import type { UserSettings } from "@/features/users/interfaces/users.interfaces";
 import {
   useMarkAllNotificationsRead,
@@ -309,15 +312,35 @@ export const ProfileSection: FC = () => {
 
 export const AppearanceSection: FC = () => {
   const { s, set } = useSettings();
+  const { data: me } = useMe();
+  const currentOrgId = useOrganizationStore((st) => st.current_id);
+  const updateColorTheme = useUpdateColorTheme();
+  const currentOrg = me?.organizations.find((o) => o.id === currentOrgId);
   if (!s) return <SettingsSkeleton />;
   return (
     <SettingsCard title="Appearance">
       <SegmentSetting
-        label="Theme"
+        label="Mode"
         value={s.theme}
         options={ThemeOptions}
         onChange={(v) => set("theme", v)}
       />
+      {currentOrg && (
+        <SettingRow
+          label="Colour theme"
+          description={
+            <>
+              Applies to you in <strong className="text-ink">{currentOrg.name}</strong> only. Each organisation keeps its own theme.
+            </>
+          }
+          stack
+        >
+          <ColorThemePicker
+            value={currentOrg.color_theme}
+            onChange={(v) => updateColorTheme.mutate(v)}
+          />
+        </SettingRow>
+      )}
       <SegmentSetting
         label="Text size"
         value={s.text_size}

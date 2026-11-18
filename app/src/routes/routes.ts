@@ -1,4 +1,5 @@
 import { NEW_SKILL_ID } from "@/features/skills/interfaces/skills.interfaces";
+import { ConversationViews } from "@/features/conversations/interfaces/conversations.interfaces";
 /** Every screen has a stable path (§14.1) — notifications, emails and deep links open these. */
 export const Routes = {
   home: "/",
@@ -13,7 +14,10 @@ export const Routes = {
   chat: {
     root: "/c",
     conversation: (id: string) => `/c/${id}`,
-    pattern: "/c/:conversationId",
+    /** Phones: the bot / details panel as its own page (wider screens show it beside the chat). */
+    details: (id: string) => `/c/${id}/${ConversationViews.DETAILS}`,
+    /** `view` is optional: absent for the chat, `details` for the panel page. */
+    pattern: "/c/:conversationId/:view?",
   },
   bots: {
     root: "/bots",

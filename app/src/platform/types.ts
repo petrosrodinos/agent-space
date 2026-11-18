@@ -79,6 +79,28 @@ export interface LifecycleCapability {
   onOnlineChange(cb: (online: boolean) => void): () => void;
 }
 
+/** Mirrors desktop/src/updater.ts. */
+export const DesktopUpdateStatus = {
+  disabled: "disabled",
+  idle: "idle",
+  checking: "checking",
+  none: "none",
+  available: "available",
+  downloading: "downloading",
+  downloaded: "downloaded",
+  error: "error",
+} as const;
+export type DesktopUpdateStatus = (typeof DesktopUpdateStatus)[keyof typeof DesktopUpdateStatus];
+
+export interface DesktopUpdateState {
+  status: DesktopUpdateStatus;
+  version?: string;
+  /** 0–100 while downloading. */
+  percent?: number;
+  message?: string;
+  checkedAt?: number;
+}
+
 /** Desktop-only extras (§14.2): launch at start-up, quick-ask shortcut, automatic updates. */
 export interface DesktopCapability {
   getLaunchAtStartup(): Promise<boolean>;
@@ -86,7 +108,12 @@ export interface DesktopCapability {
   getQuickAskShortcut(): Promise<string>;
   /** Electron accelerator, e.g. "CommandOrControl+Shift+Space". Returns false when the shortcut is taken. */
   setQuickAskShortcut(accelerator: string): Promise<boolean>;
-  checkForUpdates(): Promise<{ status: "disabled" | "none" | "available" | "downloaded" | "error"; version?: string; message?: string }>;
+  /** Checks the release feed now; a found update downloads in the background. */
+  checkForUpdates(): Promise<DesktopUpdateState>;
+  getUpdateState(): Promise<DesktopUpdateState>;
+  /** Restarts the app into the downloaded update. Returns false when nothing is downloaded yet. */
+  installUpdate(): Promise<boolean>;
+  onUpdateState(cb: (state: DesktopUpdateState) => void): () => void;
 }
 
 export interface Platform {

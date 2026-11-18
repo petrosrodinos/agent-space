@@ -11,6 +11,7 @@ import { AutomationsModule } from './modules/automations/automations.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { ComputersModule } from './modules/computers/computers.module';
 import { VoiceModule } from './modules/voice/voice.module';
+import { DesktopReleasesModule } from './modules/desktop-releases/desktop-releases.module';
 
 /** Feature modules registered in AppModule. Kept in one list so api/worker roles share the same graph. */
-export const FEATURE_MODULES = [CatalogModule, UsageModule, FilesModule, BotsModule, ConversationsModule, ConnectionsModule, SkillsModule, RealtimeModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule, VoiceModule];
+export const FEATURE_MODULES = [CatalogModule, UsageModule, FilesModule, BotsModule, ConversationsModule, ConnectionsModule, SkillsModule, RealtimeModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule, VoiceModule, DesktopReleasesModule];

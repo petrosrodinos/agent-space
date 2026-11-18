@@ -5,11 +5,11 @@
  * - Local files, notifications, the global quick-ask shortcut, deep links and updates live here, never in the page.
  */
 import { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, Menu, net, Notification, protocol, safeStorage, session, shell, type IpcMainInvokeEvent } from 'electron';
-import { autoUpdater } from 'electron-updater';
 import { existsSync, promises as fs } from 'fs';
 import os from 'os';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import { checkForUpdates, getUpdateState, initUpdater, installUpdate } from './updater';
 
 const DEV = process.argv.includes('--dev') || !!process.env.AGENTSPACE_DEV_URL;
 const DEV_URL = process.env.AGENTSPACE_DEV_URL || 'http://localhost:5180';
@@ -202,24 +202,6 @@ function registerShortcut(accelerator: string): boolean {
     }
 }
 
-// ---------------- Updates ----------------
-
-type UpdateResult = { status: 'disabled' | 'none' | 'available' | 'downloaded' | 'error'; version?: string; message?: string };
-
-async function checkForUpdates(): Promise<UpdateResult> {
-    if (!app.isPackaged || !existsSync(path.join(process.resourcesPath, 'app-update.yml'))) {
-        console.log('[updates] disabled: no publish feed configured');
-        return { status: 'disabled' };
-    }
-    try {
-        const r = await autoUpdater.checkForUpdatesAndNotify();
-        if (!r?.updateInfo || r.updateInfo.version === app.getVersion()) return { status: 'none' };
-        return { status: 'available', version: r.updateInfo.version };
-    } catch (e) {
-        return { status: 'error', message: (e as Error).message };
-    }
-}
-
 // ---------------- IPC (bridge) ----------------
 
 function guard(e: IpcMainInvokeEvent) {
@@ -298,7 +280,9 @@ function registerIpc() {
         else registerShortcut(s.quickAskShortcut);
         return ok;
     });
-    ipcMain.handle('updates:check', (e) => (guard(e), checkForUpdates()));
+    ipcMain.handle('updates:check', (e) => (guard(e), checkForUpdates({ force: true })));
+    ipcMain.handle('updates:state', (e) => (guard(e), getUpdateState()));
+    ipcMain.handle('updates:install', (e) => (guard(e), installUpdate()));
 }
 
 // ---------------- App lifecycle ----------------
@@ -331,7 +315,7 @@ if (!app.requestSingleInstanceLock()) {
         createWindow();
         handleArgv(process.argv);
         registerShortcut((await readSettings()).quickAskShortcut);
-        void checkForUpdates();
+        initUpdater(() => win);
         app.on('activate', () => {
             if (!BrowserWindow.getAllWindows().length) createWindow();
         });

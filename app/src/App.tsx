@@ -1,6 +1,7 @@
 import { BrowserRouter } from "react-router-dom";
 import AppRoutes from "@/routes";
 import { DeepLinkListener } from "@/hooks/use-deep-links";
+import { DesktopUpdateListener } from "@/hooks/use-desktop-updates";
 import QueryProvider from "@/components/providers/query-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -12,6 +13,7 @@ function App() {
       <QueryProvider>
         <TooltipProvider delayDuration={300}>
           <DeepLinkListener />
+          <DesktopUpdateListener />
           <AppRoutes />
           <Toaster />
           <RadixPointerEventsGuard />

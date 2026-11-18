@@ -1,8 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useAuthStore, AuthStatuses } from "@/stores/auth";
-import type { MeResponse, UserSettings } from "../interfaces/users.interfaces";
-import { deleteAccount, getDevices, getMe, getSessions, renameDevice, revokeOtherSessions, revokeSession, signOutDevice, updateProfile, updateSettings } from "../services/users.services";
+import { getOrganizationStoreState } from "@/stores/organization";
+import type { ColorTheme, MeResponse, UserSettings } from "../interfaces/users.interfaces";
+import { deleteAccount, getDevices, getMe, getSessions, renameDevice, revokeOtherSessions, revokeSession, signOutDevice, updateColorTheme, updateProfile, updateSettings } from "../services/users.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 
 export const useMe = () => {
@@ -40,6 +41,33 @@ export const useUpdateSettings = (opts: { silent?: boolean } = {}) => {
     onError: (e, _dto, ctx) => {
       if (ctx?.prev) qc.setQueryData([QueryKeys.ME], ctx.prev);
       toast({ title: "Could not save the setting", description: e.message, variant: "error" });
+    },
+  });
+};
+
+/** Optimistic: the colour theme of the selected organisation switches instantly. */
+export const useUpdateColorTheme = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: updateColorTheme,
+    onMutate: async (color_theme: ColorTheme) => {
+      await qc.cancelQueries({ queryKey: [QueryKeys.ME] });
+      const prev = qc.getQueryData<MeResponse>([QueryKeys.ME]);
+      const orgId = getOrganizationStoreState().current_id;
+      if (prev)
+        qc.setQueryData<MeResponse>([QueryKeys.ME], {
+          ...prev,
+          organizations: prev.organizations.map((o) => (o.id === orgId ? { ...o, color_theme } : o)),
+        });
+      return { prev };
+    },
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QueryKeys.ME] });
+      toast({ title: "Theme saved", duration: 1200 });
+    },
+    onError: (e, _dto, ctx) => {
+      if (ctx?.prev) qc.setQueryData([QueryKeys.ME], ctx.prev);
+      toast({ title: "Could not save the theme", description: e.message, variant: "error" });
     },
   });
 };

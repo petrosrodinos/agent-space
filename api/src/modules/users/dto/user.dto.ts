@@ -2,7 +2,7 @@ import { ApiPropertyOptional, ApiProperty } from '@nestjs/swagger';
 import { IsBoolean, IsEnum, IsIn, IsObject, IsOptional, IsString, Matches, MaxLength, MinLength } from 'class-validator';
 import {
     ActivityStepsDisplay, AppLanguage, ApprovalChannel, ApprovalLevel, ApprovalTimeout, ArtifactOpenMode, ArtifactSharingLevel,
-    AutomationResultsDestination, ClarifyingQuestions, ConversationRetention, EmojiUsage, GroupReplyMode, LayoutDensity, ReadAloudMode,
+    AutomationResultsDestination, ClarifyingQuestions, ColorTheme, ConversationRetention, EmojiUsage, GroupReplyMode, LayoutDensity, ReadAloudMode,
     ReplyFormatting, ReplyLanguage, ReplyLength, ReplyTone, SendWithKey, SpeakingSpeed, TaskCheckIn, TextSize, Theme, TimeFormat, VoiceInputMode,
 } from 'generated/prisma';
 
@@ -72,6 +72,11 @@ export class UpdateUserSettingsDto {
     @ApiPropertyOptional() @IsOptional() @IsBoolean() daily_email_digest?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() sounds_enabled?: boolean;
     @ApiPropertyOptional({ enum: ConversationRetention }) @IsOptional() @IsEnum(ConversationRetention) auto_delete_conversations?: ConversationRetention;
+}
+
+/** Colour theme for the selected organisation (stored per user per organisation). */
+export class UpdateColorThemeDto {
+    @ApiProperty({ enum: ColorTheme }) @IsEnum(ColorTheme) color_theme: ColorTheme;
 }
 
 export class DeleteAccountDto {

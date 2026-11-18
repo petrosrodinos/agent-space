@@ -90,11 +90,11 @@ export class PromptBuilder {
             s.push(
                 `## Knowledge\n${knowledge
                     .map((k) =>
-                        k.kind === 'TEXT' && (k.content ?? '').length <= 4000
+                        k.kind === 'TEXT' && k.content && k.content.length <= 4000
                             ? `### ${k.title}\n${k.content ?? ''}`
-                            : `- ${k.kind === 'LINK' ? 'Web page' : k.kind === 'FILE' ? 'File' : 'Note'} "${k.title}" (id: ${k.id}${k.url ? `, ${k.url}` : ''}${k.content ? `, ${Math.round(k.content.length / 1000)}k characters` : ', not readable as text'})`,
+                            : `- ${k.kind === 'LINK' ? 'Web page' : k.kind === 'FILE' ? 'File' : 'Note'} "${k.title}" (id: ${k.id}${k.url ? `, ${k.url}` : ''}${k.status === 'READY' ? `, ${Math.round((k.content ?? '').length / 1000)}k characters` : k.status === 'PROCESSING' ? ', still being read' : ', could not be read'})`,
                     )
-                    .join('\n')}\nUse search_knowledge to find relevant passages and read_knowledge to read an item in full. Prefer your knowledge over guessing, and say which item you used.`,
+                    .join('\n')}\nUse search_knowledge (semantic search: ask in natural language) to find relevant passages and read_knowledge to read an item in full. Prefer your knowledge over guessing, and say which item you used.`,
             );
         }
         if (skills.length && bot.use_skills_automatically) {

@@ -1,12 +1,12 @@
 import { useEffect, useState, type FC } from "react";
-import { Loader2 } from "lucide-react";
+import { CircleAlert, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { useKnowledgeItem, useUpdateKnowledge } from "@/features/knowledge/hooks/use-knowledge";
-import { KnowledgeKinds } from "@/features/knowledge/interfaces/knowledge.interfaces";
+import { KnowledgeKinds, KnowledgeStatuses } from "@/features/knowledge/interfaces/knowledge.interfaces";
 
 const DESCRIPTIONS = {
   [KnowledgeKinds.TEXT]: "Change the title or the note.",
@@ -67,6 +67,16 @@ export const KnowledgeEditDialog: FC<KnowledgeEditDialogProps> = ({ itemId, botI
             </div>
           ) : (
             <>
+              {item.status === KnowledgeStatuses.FAILED && item.status_error && (
+                <p className="flex items-start gap-2 rounded-md border border-destructive/40 bg-destructive/5 px-3 py-2 text-sm text-destructive">
+                  <CircleAlert className="mt-0.5 h-4 w-4 shrink-0" /> {item.status_error}
+                </p>
+              )}
+              {item.status === KnowledgeStatuses.PROCESSING && (
+                <p className="flex items-center gap-2 text-sm text-muted-foreground">
+                  <Loader2 className="h-4 w-4 animate-spin" /> Still reading and indexing. The text appears here when it's done.
+                </p>
+              )}
               <div className="space-y-1.5">
                 <Label htmlFor="k-title">Title</Label>
                 <Input id="k-title" value={form.title} maxLength={200} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} />

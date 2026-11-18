@@ -1,3 +1,4 @@
+import { htmlTitle, htmlToText } from '@/shared/utils/files/html-to-text.utils';
 import { lookup } from 'dns/promises';
 import { isIP } from 'net';
 
@@ -36,22 +37,7 @@ export async function fetchReadable(raw: string, maxChars = 20000) {
     const body = (await res.text()).slice(0, 2_000_000);
     if (!res.ok) throw new Error(`The page returned ${res.status}`);
     if (!/html/i.test(type)) return { url: res.url, title: null, status: res.status, text: body.slice(0, maxChars) };
-    const title = /<title[^>]*>([\s\S]*?)<\/title>/i.exec(body)?.[1]?.trim() ?? null;
-    const text = body
-        .replace(/<(script|style|noscript|svg|iframe|template)[\s\S]*?<\/\1>/gi, ' ')
-        .replace(/<(nav|footer|header|aside)[\s\S]*?<\/\1>/gi, ' ')
-        .replace(/<a\s[^>]*href="([^"]+)"[^>]*>([\s\S]*?)<\/a>/gi, (_m, href, inner) => `${inner.replace(/<[^>]+>/g, '')} (${href})`)
-        .replace(/<(br|\/p|\/div|\/li|\/h[1-6]|\/tr)>/gi, '\n')
-        .replace(/<li[^>]*>/gi, '• ')
-        .replace(/<[^>]+>/g, ' ')
-        .replace(/&nbsp;/g, ' ')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>')
-        .replace(/&quot;/g, '"')
-        .replace(/&#39;/g, "'")
-        .replace(/[ \t]+/g, ' ')
-        .replace(/\n\s*\n+/g, '\n\n')
-        .trim();
+    const title = htmlTitle(body);
+    const text = htmlToText(body);
     return { url: res.url, title, status: res.status, text: text.slice(0, maxChars) };
 }

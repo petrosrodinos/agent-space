@@ -15,6 +15,7 @@ export const ApiRoutes = {
   me: {
     root: "/me",
     settings: "/me/settings",
+    color_theme: "/me/color-theme",
     delete_account: "/me/delete-account",
     devices: "/me/devices",
     device: (id: string) => `/me/devices/${id}`,
@@ -158,6 +159,7 @@ export const ApiRoutes = {
     root: "/knowledge",
     bot: (botId: string) => `/knowledge/bot/${botId}`,
     one: (id: string) => `/knowledge/${id}`,
+    reindex: (id: string) => `/knowledge/${id}/reindex`,
   },
   artifacts: {
     root: "/artifacts",

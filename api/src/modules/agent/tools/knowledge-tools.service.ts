@@ -30,8 +30,9 @@ export class KnowledgeToolsService {
     private searchKnowledge(): ToolDef {
         return {
             name: 'search_knowledge',
-            description: 'Search your knowledge (files, links and notes you were given, plus the organisation library when enabled) for passages relevant to a question. Use before answering questions about the company, products, policies or anything your knowledge may cover.',
-            parameters: obj({ query: { type: 'string', description: 'What to look for, in keywords' } }, ['query']),
+            description:
+                'Semantic search over your knowledge (files, web pages and notes you were given, plus the organisation library when enabled): returns the passages closest in meaning to the query, best first, with a relevance score (0–1). Use before answering questions about the company, products, policies or anything your knowledge may cover. If results are weak, search again with different wording.',
+            parameters: obj({ query: { type: 'string', description: 'A question or a description of the information you need, in natural language (any language).' } }, ['query']),
             step_type: 'TOOL_CALL',
             runs_on: 'server',
             title: (a) => `Searching knowledge for "${String(a.query).slice(0, 60)}"`,
@@ -57,7 +58,7 @@ export class KnowledgeToolsService {
     private readFile(): ToolDef {
         return {
             name: 'read_file',
-            description: 'Read the text of a file by id: a file attached in this conversation, a file of a skill you are following, or a knowledge file. Works for text, CSV, JSON, Markdown, PDF and Word documents. Long files are returned in pages.',
+            description: 'Read the text of a file by id: a file attached in this conversation, a file of a skill you are following, or a knowledge file. Works for text, CSV, JSON, Markdown, HTML, PDF, Word, Excel/ODS and PowerPoint files. Long files are returned in pages.',
             parameters: obj({ file_id: { type: 'string' }, offset: { type: 'number', description: 'Character offset, default 0' } }, ['file_id']),
             step_type: 'TOOL_CALL',
             runs_on: 'server',

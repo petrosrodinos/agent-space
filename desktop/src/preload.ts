@@ -33,4 +33,7 @@ contextBridge.exposeInMainWorld('agentspaceDesktop', {
     getQuickAskShortcut: () => ipcRenderer.invoke('shortcut:get'),
     setQuickAskShortcut: (accelerator: string) => ipcRenderer.invoke('shortcut:set', accelerator),
     checkForUpdates: () => ipcRenderer.invoke('updates:check'),
+    getUpdateState: () => ipcRenderer.invoke('updates:state'),
+    installUpdate: () => ipcRenderer.invoke('updates:install'),
+    onUpdateState: (cb: (state: unknown) => void) => listen('updates:status', cb),
 });

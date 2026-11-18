@@ -1,3 +1,5 @@
+import type { DesktopUpdateState } from "./types";
+
 /**
  * The typed bridge the Electron preload exposes as `window.agentspaceDesktop` (desktop/src/preload.ts mirrors this).
  * Only plain data crosses it; the page never gets Node or Electron objects (§14.2 security).
@@ -20,7 +22,10 @@ export interface DesktopBridge {
   setLaunchAtStartup(on: boolean): Promise<void>;
   getQuickAskShortcut(): Promise<string>;
   setQuickAskShortcut(accelerator: string): Promise<boolean>;
-  checkForUpdates(): Promise<{ status: "disabled" | "none" | "available" | "downloaded" | "error"; version?: string; message?: string }>;
+  checkForUpdates(): Promise<DesktopUpdateState>;
+  getUpdateState(): Promise<DesktopUpdateState>;
+  installUpdate(): Promise<boolean>;
+  onUpdateState(cb: (state: DesktopUpdateState) => void): () => void;
 }
 
 export const getDesktopBridge = (): DesktopBridge | null => (typeof window !== "undefined" ? ((window as unknown as { agentspaceDesktop?: DesktopBridge }).agentspaceDesktop ?? null) : null);

@@ -1,13 +1,16 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request } from "@/lib/request";
-import type { Device, MeResponse, SessionInfo, UpdateProfileDto, User, UserSettings } from "../interfaces/users.interfaces";
+import type { ColorTheme, Device, MeResponse, SessionInfo, UpdateProfileDto, User, UserSettings } from "../interfaces/users.interfaces";
 import { Platforms } from "../interfaces/users.interfaces";
 
 export const getMe = () => request<MeResponse>(() => axiosInstance.get(ApiRoutes.me.root));
 export const updateProfile = (dto: UpdateProfileDto) => request<User>(() => axiosInstance.patch(ApiRoutes.me.root, dto));
 export const updateSettings = (dto: Partial<UserSettings>) => request<UserSettings>(() => axiosInstance.patch(ApiRoutes.me.settings, dto));
-export const deleteAccount = (password: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.me.delete_account, { password }));
+/** Saves the colour theme for the currently selected organisation (X-Organization-Id header). */
+export const updateColorTheme = (color_theme: ColorTheme) =>
+  request<{ organization_id: string; color_theme: ColorTheme }>(() => axiosInstance.patch(ApiRoutes.me.color_theme, { color_theme }));
+export const deleteAccount =(password: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.me.delete_account, { password }));
 export const getDevices = () => request<Device[]>(() => axiosInstance.get(ApiRoutes.me.devices));
 export const renameDevice = (id: string, name: string) => request<{ ok: boolean }>(() => axiosInstance.patch(ApiRoutes.me.device(id), { name }));
 export const signOutDevice = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.me.device(id)));

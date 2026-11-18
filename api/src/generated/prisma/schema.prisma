@@ -88,6 +88,22 @@ enum Theme {
   DARK
 }
 
+/// Colour preset a member picks per organisation (§13.2 Appearance). Light/dark mode is chosen separately.
+enum ColorTheme {
+  GRAPE
+  OCEAN
+  SKY
+  TEAL
+  FOREST
+  LIME
+  SUNSET
+  AMBER
+  ROSE
+  CRIMSON
+  LAVENDER
+  SLATE
+}
+
 enum TextSize {
   SMALL
   MEDIUM
@@ -428,6 +444,13 @@ enum KnowledgeKind {
   FILE
   LINK
   TEXT
+}
+
+/// Indexing state of a knowledge item: text extraction (incl. OCR) + embeddings, done by the `knowledge` queue.
+enum KnowledgeStatus {
+  PROCESSING
+  READY
+  FAILED
 }
 
 enum MemoryKind {
@@ -1376,6 +1399,8 @@ model OrganizationMember {
   organization_id String
   user_id         String
   role            OrganizationRole @default(MEMBER)
+  /// This member's colour theme inside this organisation (each org can look different per user).
+  color_theme     ColorTheme       @default(GRAPE)
   joined_at       DateTime         @default(now())
   updated_at      DateTime         @updatedAt
 
@@ -1706,31 +1731,51 @@ model BotSkill {
 
 /// §6.2 Knowledge and §13.4 organisation knowledge library. Files, links or text.
 model KnowledgeItem {
-  id              String         @id @default(uuid())
+  id              String          @id @default(uuid())
   organization_id String
   scope           KnowledgeScope
   bot_id          String?
   kind            KnowledgeKind
   title           String
-  file_id         String?        @unique
+  file_id         String?         @unique
   url             String?
   content         String?
+  status          KnowledgeStatus @default(PROCESSING)
+  /// Why indexing failed, in words people can act on (status FAILED).
+  status_error    String?
   added_by_id     String?
   indexed_at      DateTime?
   deleted_at      DateTime?
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
 
-  organization Organization    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  bot          Bot?            @relation(fields: [bot_id], references: [id], onDelete: Cascade)
-  file         File?           @relation(fields: [file_id], references: [id], onDelete: SetNull)
-  added_by     User?           @relation(fields: [added_by_id], references: [id], onDelete: SetNull)
+  organization Organization     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  bot          Bot?             @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  file         File?            @relation(fields: [file_id], references: [id], onDelete: SetNull)
+  added_by     User?            @relation(fields: [added_by_id], references: [id], onDelete: SetNull)
   links        KnowledgeLink[]
+  chunks       KnowledgeChunk[]
 
   @@index([organization_id, scope])
   @@index([bot_id])
   @@index([added_by_id])
   @@map("knowledge_items")
+}
+
+/// A passage of a knowledge item with its embedding, for vector search (search_knowledge).
+model KnowledgeChunk {
+  id                String   @id @default(uuid())
+  knowledge_item_id String
+  position          Int
+  content           String
+  /// Float32 little-endian vector (EMBEDDING_DIMS values) of "title + content".
+  embedding         Bytes
+  created_at        DateTime @default(now())
+
+  knowledge_item KnowledgeItem @relation(fields: [knowledge_item_id], references: [id], onDelete: Cascade)
+
+  @@unique([knowledge_item_id, position])
+  @@map("knowledge_chunks")
 }
 
 /// Links in a knowledge item that were crawled (one row per fetched page).

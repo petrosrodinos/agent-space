@@ -67,6 +67,8 @@ export const AiModels = {
         gpt4Turbo: 'gpt-4-turbo',
         gpt4: 'gpt-4',
         gpt35Turbo: 'gpt-3.5-turbo',
+        gpt41Mini: 'gpt-4.1-mini',
+        textEmbedding3Small: 'text-embedding-3-small',
     },
     grok: {
         grokBeta: 'grok-beta',
@@ -84,3 +86,23 @@ export type AiProvider = typeof AiProviders[keyof typeof AiProviders];
 export type AiModel = string;
 
 
+
+/** Embeddings for knowledge search: OpenAI text-embedding-3-small, 1536 dimensions. */
+export const EMBEDDING_MODEL = AiModels.openai.textEmbedding3Small;
+export const EMBEDDING_DIMS = 1536;
+
+/** Reads images and scanned PDF pages (OCR + descriptions of visuals). */
+export const VISION_MODEL = AiModels.openai.gpt41Mini;
+
+export interface TranscribeInput {
+    data: Buffer;
+    /** image/png, image/jpeg, image/webp, image/gif or application/pdf. */
+    mediaType: string;
+    filename?: string;
+}
+
+export interface TranscribeResult {
+    text: string;
+    /** The model hit its output limit, so the end of the document may be missing. */
+    truncated: boolean;
+}

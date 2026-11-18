@@ -1,10 +1,14 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { embed, generateObject, generateText, streamText } from 'ai';
+import { embed, embedMany, generateObject, generateText, streamText } from 'ai';
 import {
     AIGenerateObjectResponse,
     AIGenerateOptions,
     AIGenerateTextResponse,
     AIStreamTextOptions,
+    EMBEDDING_MODEL,
+    TranscribeInput,
+    TranscribeResult,
+    VISION_MODEL,
 } from '../interfaces/ai.interface';
 import { AiConfig } from '../utils/ai.config';
 import { z } from 'zod';
@@ -136,13 +140,50 @@ export class AiService {
     }
 
     async embedText(text: string): Promise<number[]> {
-        const embeddingModel = openai.embedding('text-embedding-3-small');
-        const { embedding } = await embed({
-            model: embeddingModel,
-            value: text,
-        });
+        const { embedding } = await embed({ model: openai.embedding(EMBEDDING_MODEL), value: text });
         return embedding;
     }
 
+    /** Embeds many texts in batches (order preserved). */
+    async embedMany(values: string[]): Promise<number[][]> {
+        this.requireOpenAiKey();
+        if (!values.length) return [];
+        const { embeddings } = await embedMany({ model: openai.embedding(EMBEDDING_MODEL), values, maxParallelCalls: 4, maxRetries: 3 });
+        return embeddings;
+    }
+
+    /**
+     * Reads an image or PDF with a vision model: transcribes all visible text (OCR) as Markdown and briefly describes
+     * charts, diagrams and photos, so the result can be searched like any other document.
+     */
+    async transcribe(input: TranscribeInput): Promise<TranscribeResult> {
+        this.requireOpenAiKey();
+        const isImage = input.mediaType.startsWith('image/');
+        const { text, finishReason } = await generateText({
+            model: openai(VISION_MODEL),
+            system:
+                'You convert documents into searchable text. Transcribe ALL visible text exactly, in its original language and reading order, as Markdown ' +
+                '(headings, lists, and Markdown tables for tables). For charts, diagrams, photos and other visuals, add a short factual description in ' +
+                'square brackets, including any numbers they show. Do not summarise, translate, comment or add anything else. If there is nothing to read ' +
+                'or describe, reply with an empty message.',
+            messages: [
+                {
+                    role: 'user',
+                    content: [
+                        { type: 'text', text: isImage ? 'Transcribe this image.' : 'Transcribe every page of this document, separating pages with a blank line.' },
+                        { type: 'file', data: input.data, mediaType: input.mediaType, filename: input.filename },
+                    ],
+                },
+            ],
+            temperature: 0,
+            maxOutputTokens: 32_000,
+            maxRetries: 3,
+        });
+        return { text: text.trim(), truncated: finishReason === 'length' };
+    }
+
+    private requireOpenAiKey() {
+        if (!process.env.OPENAI_API_KEY) throw new Error('OPENAI_API_KEY is not configured');
+    }
 
 }

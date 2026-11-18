@@ -48,6 +48,12 @@ export class KnowledgeController {
         return this.knowledge.update(actor(m), id, dto);
     }
 
+    /** Reads the source again and re-indexes (retry after a failure). */
+    @Post(':id/reindex')
+    reindex(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.knowledge.reindex(actor(m), id);
+    }
+
     @Delete(':id')
     remove(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.knowledge.remove(actor(m), id);

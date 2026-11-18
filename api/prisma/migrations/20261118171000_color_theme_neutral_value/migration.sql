@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "ColorTheme" ADD VALUE 'NEUTRAL' BEFORE 'GRAPE';

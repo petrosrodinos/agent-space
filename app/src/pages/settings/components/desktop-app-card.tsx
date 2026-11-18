@@ -1,11 +1,30 @@
 import { useEffect, useState, type FC } from "react";
-import { RefreshCw } from "lucide-react";
+import { RefreshCw, RotateCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { SettingRow, SettingsCard } from "@/components/ui/setting-row";
-import { platform } from "@/platform";
+import { platform, DesktopUpdateStatus, type DesktopUpdateState } from "@/platform";
+import { useDesktopUpdateState } from "@/hooks/use-desktop-updates";
 import { toast } from "@/hooks/use-toast";
+
+function updateDescription(u: DesktopUpdateState | null): string {
+  switch (u?.status) {
+    case DesktopUpdateStatus.disabled:
+      return "Automatic updates aren't set up for this build.";
+    case DesktopUpdateStatus.checking:
+      return "Checking for updates…";
+    case DesktopUpdateStatus.available:
+    case DesktopUpdateStatus.downloading:
+      return `Downloading version ${u.version ?? ""}${u.percent != null ? ` (${u.percent}%)` : ""}…`;
+    case DesktopUpdateStatus.downloaded:
+      return `Version ${u.version} is ready. It installs when you restart the app.`;
+    case DesktopUpdateStatus.error:
+      return "The last update check failed. Agent Space tries again in a few hours.";
+    default:
+      return "Agent Space checks for updates in the background and installs them when you restart.";
+  }
+}
 
 /** Desktop app only (§14.2): launch at start-up, the global quick-ask shortcut and updates. */
 export const DesktopAppCard: FC = () => {
@@ -14,6 +33,7 @@ export const DesktopAppCard: FC = () => {
   const [shortcut, setShortcut] = useState("");
   const [saved, setSaved] = useState("");
   const [checking, setChecking] = useState(false);
+  const update = useDesktopUpdateState();
 
   useEffect(() => {
     if (!desktop) return;
@@ -54,19 +74,26 @@ export const DesktopAppCard: FC = () => {
           </Button>
         </form>
       </SettingRow>
-      <SettingRow label="Updates" description="Updates install automatically when you restart the app.">
-        <Button
-          variant="outline"
-          loading={checking}
-          onClick={async () => {
-            setChecking(true);
-            const r = await desktop.checkForUpdates().finally(() => setChecking(false));
-            const title = { disabled: "Automatic updates aren't set up for this build", none: "You have the latest version", available: `Version ${r.version} is downloading`, downloaded: "Restart to finish updating", error: "Couldn't check for updates" }[r.status];
-            toast({ title, description: r.message, variant: r.status === "error" ? "error" : undefined });
-          }}
-        >
-          <RefreshCw /> Check now
-        </Button>
+      <SettingRow label="Updates" description={updateDescription(update)}>
+        {update?.status === DesktopUpdateStatus.downloaded ? (
+          <Button onClick={() => void desktop.installUpdate()}>
+            <RotateCw /> Restart to update
+          </Button>
+        ) : (
+          <Button
+            variant="outline"
+            loading={checking}
+            disabled={update?.status === DesktopUpdateStatus.disabled || update?.status === DesktopUpdateStatus.downloading}
+            onClick={async () => {
+              setChecking(true);
+              const r = await desktop.checkForUpdates().finally(() => setChecking(false));
+              if (r.status === DesktopUpdateStatus.none) toast({ title: "You have the latest version", duration: 1800 });
+              if (r.status === DesktopUpdateStatus.error) toast({ title: "Couldn't check for updates", description: r.message, variant: "error" });
+            }}
+          >
+            <RefreshCw /> Check now
+          </Button>
+        )}
       </SettingRow>
     </SettingsCard>
   );

@@ -1,5 +1,5 @@
 import { useState, type FC } from "react";
-import { FileText, Globe, Loader2, NotebookPen, Pencil, Trash2, Upload } from "lucide-react";
+import { CircleAlert, FileText, Globe, Loader2, NotebookPen, Pencil, RotateCw, Trash2, Upload } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -8,16 +8,16 @@ import { SettingsCard } from "@/components/ui/setting-row";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { KnowledgeEditDialog } from "@/components/layout/knowledge-edit-dialog";
-import { useAddKnowledge, useDeleteKnowledge, useKnowledge } from "@/features/knowledge/hooks/use-knowledge";
+import { useAddKnowledge, useDeleteKnowledge, useKnowledge, useReindexKnowledge } from "@/features/knowledge/hooks/use-knowledge";
 import type { KnowledgeItem, KnowledgeKind } from "@/features/knowledge/interfaces/knowledge.interfaces";
 import { uploadFile } from "@/features/files/services/files.services";
 import { platform } from "@/platform";
 import { toast } from "@/hooks/use-toast";
 import { formatBytes, timeAgo } from "@/lib/date";
-import { KnowledgeKinds } from "@/features/knowledge/interfaces/knowledge.interfaces";
+import { KnowledgeKinds, KnowledgeStatuses } from "@/features/knowledge/interfaces/knowledge.interfaces";
 
 const KIND_ICON: Record<KnowledgeKind, typeof FileText> = { FILE: FileText, LINK: Globe, TEXT: NotebookPen };
-const ACCEPT = ".pdf,.docx,.txt,.md,.csv,.json,.yaml,.yml,.xml,.html";
+const ACCEPT = ".pdf,.docx,.xlsx,.xlsm,.xls,.ods,.pptx,.txt,.md,.csv,.tsv,.json,.yaml,.yml,.xml,.html,.htm,.png,.jpg,.jpeg,.webp,.gif";
 
 /**
  * Knowledge for one bot (§6.2) or the organisation library (botId = null): files, web pages and notes the bot reads
@@ -27,6 +27,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
   const { data, isPending } = useKnowledge(botId);
   const add = useAddKnowledge(botId);
   const remove = useDeleteKnowledge(botId);
+  const reindex = useReindexKnowledge(botId);
   const [mode, setMode] = useState<KnowledgeKind>(KnowledgeKinds.FILE);
   const [url, setUrl] = useState("");
   const [note, setNote] = useState({ title: "", content: "" });
@@ -49,7 +50,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
   };
 
   return (
-    <SettingsCard title={title} description={description ?? "Files, web pages and notes this bot can search and read when answering. PDF, Word, text, Markdown and CSV are read in full."}>
+    <SettingsCard title={title} description={description ?? "Files, web pages and notes this bot searches by meaning when answering. PDF, Word, Excel, PowerPoint, text, CSV and HTML are read in full; images and scanned pages are read with OCR."}>
       {canEdit && (
         <div className="space-y-3 border-b border-hairline pb-4">
           <SegmentedControl
@@ -120,9 +121,34 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
                   <span className="block truncate text-xs text-muted-foreground">
                     {k.kind === KnowledgeKinds.FILE && k.file ? `${formatBytes(k.file.size)} · ` : ""}
                     {k.kind === KnowledgeKinds.LINK && k.url ? `${k.url} · ` : ""}
-                    {k.readable ? `${Math.max(1, Math.round(k.characters / 1000))}k characters` : "Couldn't read the text"} · {timeAgo(k.created_at)}
+                    {k.status === KnowledgeStatuses.READY ? `${Math.max(1, Math.round(k.characters / 1000))}k characters · ` : ""}
+                    {timeAgo(k.created_at)}
                   </span>
+                  {k.status === KnowledgeStatuses.PROCESSING && (
+                    <span className="mt-0.5 flex items-center gap-1 text-xs text-muted-foreground">
+                      <Loader2 className="h-3 w-3 shrink-0 animate-spin" /> Reading and indexing…
+                    </span>
+                  )}
+                  {k.status === KnowledgeStatuses.FAILED && (
+                    <span className="mt-0.5 flex items-start gap-1 text-xs text-destructive">
+                      <CircleAlert className="mt-px h-3 w-3 shrink-0" />
+                      <span className="line-clamp-2">{k.status_error ?? "Couldn't read the text"}</span>
+                    </span>
+                  )}
                 </span>
+                {canEdit && k.status === KnowledgeStatuses.FAILED && (
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-9 w-9"
+                    aria-label={`Try reading ${k.title} again`}
+                    title="Try again"
+                    disabled={reindex.isPending && reindex.variables === k.id}
+                    onClick={() => reindex.mutate(k.id)}
+                  >
+                    <RotateCw />
+                  </Button>
+                )}
                 {canEdit && (
                   <>
                     <Button variant="ghost" size="icon" className="h-9 w-9" aria-label={`Edit ${k.title}`} onClick={() => setEditingId(k.id)}>

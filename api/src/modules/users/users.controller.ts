@@ -8,7 +8,9 @@ import { JwtGuard } from '@/shared/guards/jwt.guard';
 import { CurrentUser } from '@/shared/decorators/current-user.decorator';
 import type { AuthUser } from '../auth/interfaces/auth.interface';
 import { UsersService } from './users.service';
-import { DeleteAccountDto, HeartbeatDto, UpdateProfileDto, UpdateUserSettingsDto } from './dto/user.dto';
+import { DeleteAccountDto, HeartbeatDto, UpdateColorThemeDto, UpdateProfileDto, UpdateUserSettingsDto } from './dto/user.dto';
+import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
+import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
 
 class RenameDeviceDto {
     @IsString() @MinLength(1) @MaxLength(80) name: string;
@@ -49,6 +51,13 @@ export class UsersController {
     @ApiOperation({ summary: 'Update personal settings (§13.2)' })
     updateSettings(@CurrentUser('id') userId: string, @Body() dto: UpdateUserSettingsDto) {
         return this.users.updateSettings(userId, dto);
+    }
+
+    @Patch('color-theme')
+    @UseGuards(OrgGuard)
+    @ApiOperation({ summary: 'Set my colour theme for the selected organisation (X-Organization-Id)' })
+    updateColorTheme(@CurrentMembership() membership: OrgMembership, @Body() dto: UpdateColorThemeDto) {
+        return this.users.updateColorTheme(membership, dto.color_theme);
     }
 
     @Post('delete-account')

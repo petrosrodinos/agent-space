@@ -75,6 +75,7 @@ export class OrganizationsService {
             logo_file_id: m.organization.logo_file_id,
             is_personal: m.organization.is_personal,
             role: m.role,
+            color_theme: m.color_theme,
             member_count: m.organization._count.members,
         }));
     }

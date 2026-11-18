@@ -33,7 +33,8 @@ function useShellBootstrap() {
   const setCommandOpen = useUiStore((s) => s.setCommandOpen);
   const navigate = useNavigate();
 
-  useAppearance(me?.settings.theme, me?.settings.text_size, me?.settings.layout_density);
+  const colorTheme = me?.organizations.find((o) => o.id === currentOrg)?.color_theme;
+  useAppearance(me?.settings.theme, me?.settings.text_size, me?.settings.layout_density, colorTheme);
   useRealtimeConnection();
 
   useEffect(() => {

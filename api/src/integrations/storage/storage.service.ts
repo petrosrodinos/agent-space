@@ -167,6 +167,39 @@ export class StorageService {
         await this.client().bucket(this.bucketName(bucket)).file(this.objectKey(bucket, objectPath)).delete({ ignoreNotFound: true });
     }
 
+    // ---- objects outside the per-kind file layout (desktop releases): always GCS, in GCS_BUCKET_NAME ----
+
+    private rawFile(objectKey: string) {
+        const bucket = this.config.get<string>('GCS_BUCKET_NAME');
+        if (!bucket) throw new NotFoundException('Storage is not configured');
+        return this.client().bucket(bucket).file(objectKey);
+    }
+
+    /** Downloads an object by its full key; null when it doesn't exist. */
+    async readRaw(objectKey: string): Promise<Buffer | null> {
+        try {
+            const [buf] = await this.rawFile(objectKey).download();
+            return buf;
+        } catch (e) {
+            if ((e as { code?: number }).code === 404) return null;
+            throw e;
+        }
+    }
+
+    /** Short-lived signed read URL for an object by its full key; null when it doesn't exist. */
+    async createRawDownloadUrl(objectKey: string, filename: string, ttlMs = DOWNLOAD_TTL_MS): Promise<string | null> {
+        const file = this.rawFile(objectKey);
+        const [exists] = await file.exists();
+        if (!exists) return null;
+        const [url] = await file.getSignedUrl({
+            version: 'v4',
+            action: 'read',
+            expires: Date.now() + ttlMs,
+            responseDisposition: `attachment; filename="${filename.replace(/["\r\n]/g, '_')}"`,
+        });
+        return url;
+    }
+
     // ---- local driver endpoints (called by FilesController) ----
 
     async verifyLocalToken(token: string): Promise<LocalTokenPayload> {

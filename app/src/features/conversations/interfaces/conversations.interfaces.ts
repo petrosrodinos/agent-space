@@ -1,5 +1,8 @@
 import type { BotBrief } from "@/features/bots/interfaces/bots.interfaces";
 
+/** Sub-views of a conversation URL (`/c/:id/:view`). */
+export const ConversationViews = { DETAILS: "details" } as const;
+export type ConversationView = (typeof ConversationViews)[keyof typeof ConversationViews];
 export const ConversationTypes = { DIRECT: "DIRECT", SHARED_BOT: "SHARED_BOT", GROUP: "GROUP" } as const;
 export type ConversationType = (typeof ConversationTypes)[keyof typeof ConversationTypes];
 

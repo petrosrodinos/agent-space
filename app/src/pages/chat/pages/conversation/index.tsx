@@ -32,10 +32,11 @@ import { ConversationHeader } from "../../components/conversation-header";
 import { ConversationInfoPanel } from "../../components/conversation-info-panel";
 import { BotPanel } from "../../components/bot-panel";
 import { ConversationMenu } from "../../components/conversation-menu";
+import { MobileTopBar, useBack } from "@/components/layout/mobile-top-bar";
 import { ResizableAside } from "@/components/ui/resizable-aside";
 import { CONVERSATION_PANEL_WIDTH, useUiStore } from "@/stores/ui";
 import { QueryKeys } from "@/config/constants/query-keys";
-import { ConversationTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
+import { ConversationTypes, ConversationViews, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfaces/tasks.interfaces";
 import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
 
@@ -64,7 +65,7 @@ const MessagesSkeleton: FC = () => (
 );
 
 const ConversationPage: FC = () => {
-  const { conversationId = "" } = useParams();
+  const { conversationId = "", view } = useParams();
   const navigate = useNavigate();
   const qc = useQueryClient();
   const { data: me } = useMe();
@@ -87,7 +88,19 @@ const ConversationPage: FC = () => {
   const deleteConv = useDeleteConversation();
 
   const isDesktop = useMediaQuery("(min-width: 1200px)");
-  // Desktop: the panel sits beside the chat and is remembered across chats. Below 1200px it is a sheet that starts closed.
+  const isPhone = !useMediaQuery("(min-width: 768px)");
+  // Phones: the panel is its own page (/c/:id/details) over the chat, with a back button. The chat stays mounted underneath
+  // so going back keeps its scroll position.
+  const detailsPage = view === ConversationViews.DETAILS;
+  const back = useBack(Routes.chat.conversation(conversationId));
+  // Wider screens have no details page: fall back to the chat with the panel open.
+  useEffect(() => {
+    if (detailsPage && !isPhone) {
+      navigate(Routes.chat.conversation(conversationId), { replace: true });
+      if (isDesktop) useUiStore.getState().setConversationPanelOpen(true);
+    }
+  }, [detailsPage, isPhone, isDesktop, conversationId, navigate]);
+  // Desktop: the panel sits beside the chat and is remembered across chats. Tablets: a sheet that starts closed.
   const desktopPanel = useUiStore((s) => s.conversation_panel_open);
   const setDesktopPanel = useUiStore((s) => s.setConversationPanelOpen);
   const panelWidth = useUiStore((s) => s.conversation_panel_width);
@@ -250,14 +263,14 @@ const ConversationPage: FC = () => {
     ));
 
   return (
-    <div className="flex h-full min-h-0">
+    <div className="relative flex h-full min-h-0">
       <div className="relative flex min-w-0 flex-1 flex-col">
         {conversation ? (
           <ConversationHeader
             conversation={conversation}
             working={working}
-            panelOpen={panel}
-            onInfo={() => setPanel(!panel)}
+            panelOpen={isPhone ? detailsPage : panel}
+            onInfo={() => (isPhone ? navigate(Routes.chat.details(conversationId)) : setPanel(!panel))}
             onSearch={() => setSearchOpen(true)}
           />
         ) : (
@@ -360,7 +373,23 @@ const ConversationPage: FC = () => {
           {panelContent}
         </ResizableAside>
       )}
-      {conversation && !isDesktop && (
+      {conversation && isPhone && detailsPage && (
+        <div className="absolute inset-0 z-40 flex flex-col bg-canvas duration-300 animate-in fade-in slide-in-from-right-8">
+          <MobileTopBar
+            className="static"
+            onBack={back}
+            actions={menu}
+          />
+          <div className="min-h-0 flex-1">
+            {conversation.type === ConversationTypes.DIRECT && leadBotId ? (
+              <BotPanel botId={leadBotId} working={working.includes(leadBotId)} />
+            ) : (
+              <ConversationInfoPanel conversation={conversation} meId={me?.user.id ?? ""} />
+            )}
+          </div>
+        </div>
+      )}
+      {conversation && !isDesktop && !isPhone && (
         <Sheet open={panel} onOpenChange={setPanel}>
           <SheetContent side="right" className="w-full p-0 sm:max-w-[420px] [&>button:last-child]:hidden">
             <SheetTitle className="sr-only">Conversation details</SheetTitle>

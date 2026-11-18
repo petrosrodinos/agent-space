@@ -18,4 +18,5 @@ function selectPlatform(): Platform {
 
 export const platform: Platform = selectPlatform();
 
-export type { Platform, PlatformKind, CapabilityName, PushRegistration, DesktopCapability } from "./types";
+export type { Platform, PlatformKind, CapabilityName, PushRegistration, DesktopCapability, DesktopUpdateState } from "./types";
+export { DesktopUpdateStatus } from "./types";

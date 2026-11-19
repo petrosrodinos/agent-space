@@ -16,9 +16,9 @@ const buttonVariants = cva("inline-flex items-center justify-center gap-2 whites
       link: "text-primary underline-offset-4 hover:underline",
     },
     size: {
-      default: "h-10 px-5",
-      sm: "h-8 px-3 text-xs",
-      lg: "h-12 px-8 text-[15px]",
+      default: "h-control px-5",
+      sm: "h-control-sm px-3 text-xs",
+      lg: "h-control-lg px-8 text-[15px]",
       icon: "h-9 w-9",
     },
   },

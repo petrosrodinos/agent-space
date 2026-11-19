@@ -21,7 +21,7 @@ export const TimezonePicker: FC<{ value: string; onChange: (v: string) => void; 
   return (
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
-        <Button id={id} type="button" variant="outline" role="combobox" aria-expanded={open} disabled={disabled} className="h-[42px] w-full justify-between rounded-md font-medium sm:w-[260px]">
+        <Button id={id} type="button" variant="outline" role="combobox" aria-expanded={open} disabled={disabled} className="h-control w-full justify-between rounded-md font-medium sm:w-[260px]">
           <span className="truncate">{value || "Choose a time zone"}</span>
           <ChevronsUpDown className="opacity-50" />
         </Button>

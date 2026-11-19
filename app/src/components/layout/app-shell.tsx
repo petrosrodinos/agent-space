@@ -3,7 +3,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { WifiOff } from "lucide-react";
 import { useMe } from "@/features/users/hooks/use-users";
 import { heartbeat, getVersionPolicy } from "@/features/users/services/users.services";
-import { useRealtimeConnection, useRealtimeStatus } from "@/features/realtime/hooks/use-realtime";
+import { useRealtimeConnection, useRealtimeOffline } from "@/features/realtime/hooks/use-realtime";
 import { useOrganizationStore } from "@/stores/organization";
 import { useUiStore } from "@/stores/ui";
 import { useAppearance } from "@/hooks/use-theme";
@@ -88,7 +88,7 @@ function useShellBootstrap() {
  */
 const AppShell: FC = () => {
   const { ready } = useShellBootstrap();
-  const connected = useRealtimeStatus();
+  const offline = useRealtimeOffline();
   const location = useLocation();
 
   if (!ready) return <SplashSkeleton />;
@@ -105,7 +105,7 @@ const AppShell: FC = () => {
       </div>
 
       <main className="scrollbar-thin relative flex min-h-0 min-w-0 flex-1 flex-col overflow-y-auto" key={location.pathname.split("/")[1]}>
-        {!connected && (
+        {offline && (
           <div className="flex items-center justify-center gap-2 bg-warning-soft px-3 py-1 text-xs font-semibold text-warning" role="status">
             <WifiOff className="h-3.5 w-3.5" /> Reconnecting… live updates will resume automatically
           </div>

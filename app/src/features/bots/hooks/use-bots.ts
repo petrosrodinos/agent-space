@@ -3,7 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import type { ActionType, UpdateBotDto } from "../interfaces/bots.interfaces";
 import {
-  addOrgMemory, clearAllMemories, clearBotMemories, createBot, deleteBot, deleteMemory, draftBot, duplicateBot, getBot, getBotMemories, getBots, getModels, getOrgMemories,
+  addBotMemory, addOrgMemory, clearAllMemories, clearBotMemories, createBot, deleteBot, deleteMemory, draftBot, duplicateBot, getBot, getBotMemories, getBots, getModels, getMyMemories, getOrgMemories,
   getTemplates, getVoices, setApprovalRules, setBotConnections, updateBot, updateMemory,
 } from "../services/bots.services";
 import { QueryKeys } from "@/config/constants/query-keys";
@@ -95,6 +95,7 @@ export const useSetBotConnections = (id: string) => {
 };
 
 export const useBotMemories = (botId: string) => useQuery({ queryKey: [QueryKeys.BOT_MEMORIES, botId], queryFn: () => getBotMemories(botId), enabled: !!botId });
+export const useMyMemories = () => useQuery({ queryKey: [QueryKeys.MY_MEMORIES], queryFn: getMyMemories, enabled: useOrgReady() });
 export const useOrgMemories = () => useQuery({ queryKey: [QueryKeys.ORG_MEMORIES], queryFn: getOrgMemories, enabled: useOrgReady() });
 
 const useMemoryMutation = <T,>(fn: (v: T) => Promise<unknown>, title: string) => {
@@ -104,6 +105,8 @@ const useMemoryMutation = <T,>(fn: (v: T) => Promise<unknown>, title: string) =>
     onSuccess: () => {
       qc.invalidateQueries({ queryKey: [QueryKeys.BOT_MEMORIES] });
       qc.invalidateQueries({ queryKey: [QueryKeys.ORG_MEMORIES] });
+      qc.invalidateQueries({ queryKey: [QueryKeys.MY_MEMORIES] });
+      qc.invalidateQueries({ queryKey: [QueryKeys.BOT] });
       toast({ title, duration: 1500 });
     },
     onError: (e: Error) => toast({ title: "Something went wrong", description: e.message, variant: "error" }),
@@ -114,4 +117,5 @@ export const useUpdateMemory = () => useMemoryMutation(({ id, content }: { id: s
 export const useDeleteMemory = () => useMemoryMutation(deleteMemory, "Forgotten");
 export const useClearBotMemories = () => useMemoryMutation(clearBotMemories, "Memories cleared");
 export const useClearAllMemories = () => useMemoryMutation(() => clearAllMemories(), "All memories cleared");
+export const useAddBotMemory = () => useMemoryMutation(({ botId, content }: { botId: string; content: string }) => addBotMemory(botId, content), "Memory saved");
 export const useAddOrgMemory = () => useMemoryMutation(addOrgMemory, "Company fact saved");

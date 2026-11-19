@@ -160,6 +160,11 @@ export interface Memory {
   updated_at: string;
 }
 
+/** A memory about the current user, with the bot that remembers it (Settings → Memory). */
+export interface MyMemory extends Memory {
+  bot: { id: string; name: string } | null;
+}
+
 /** Tabs of the bot side panel in a direct chat. */
 export const BotPanelTabs = { ACTIVITY: "activity", LIBRARY: "library" } as const;
 export type BotPanelTab = (typeof BotPanelTabs)[keyof typeof BotPanelTabs];

@@ -15,6 +15,8 @@ import { RunsService } from '../runs/runs.service';
 import { UsageService } from '../usage/usage.service';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
+import { extractFollowUps } from '../agent/follow-ups.utils';
+import { DEFAULT_VOICE_MODEL, VOICE_MODELS, type VoiceModelPrice } from './voice-models';
 
 /** Voices offered for bots (§7.6 "Voices"). */
 export const VOICES = [
@@ -43,8 +45,6 @@ const MAX_OUTPUT = 8000;
 const DIRECT_TOOLS_BUDGET = 40_000;
 const APP_TOOL_RESULTS = 4;
 const VoiceGatewayTools = { FIND: 'find_app_tools', USE: 'use_app_tool' } as const;
-/** gpt-realtime list prices, USD per 1M tokens. */
-const PRICE = { audio_in: 32, audio_out: 64, text_in: 4, text_out: 16, cached: 0.4 };
 
 const realtimeTool = (t: Pick<ToolDef, 'name' | 'description' | 'parameters'>) => ({ type: 'function', name: t.name, description: t.description.slice(0, 1024), parameters: t.parameters });
 
@@ -77,6 +77,22 @@ const searchTools = (tools: ToolDef[], query: string) => {
         .map(({ t }) => ({ name: t.name, description: t.description.slice(0, 400), parameters: t.parameters }));
 };
 
+/**
+ * Top-level argument check against the tool schema. Realtime models sometimes guess names ("to" instead of
+ * Gmail's "recipient_email"); catching that here lets the model retry with the right fields instead of the
+ * service failing with a vague error.
+ */
+const checkArgs = (schema: Record<string, unknown>, args: Record<string, unknown>): string | null => {
+    const props = (schema.properties ?? {}) as Record<string, unknown>;
+    const required = Array.isArray(schema.required) ? (schema.required as string[]) : [];
+    const missing = required.filter((k) => args[k] === undefined || args[k] === null || args[k] === '');
+    const unknown = Object.keys(props).length && schema.additionalProperties !== true ? Object.keys(args).filter((k) => !(k in props)) : [];
+    if (!missing.length && !unknown.length) return null;
+    return [missing.length ? `Missing required: ${missing.join(', ')}.` : '', unknown.length ? `Unknown arguments: ${unknown.join(', ')}.` : '', 'Call it again using exactly the parameter names in expected_parameters.']
+        .filter(Boolean)
+        .join(' ');
+};
+
 interface PendingApproval {
     approval_id: string;
     call_id: string;
@@ -100,6 +116,10 @@ interface Live {
     org_id: string;
     bot_message: { id: string; parts: MessagePart[] } | null;
     pending: Map<string, PendingApproval>;
+    /** When each spoken turn started (by Realtime item id), so the transcript sorts before the bot's reply. */
+    spoken_at: Map<string, Date>;
+    /** "runId:status" of start_task tasks already announced, so each state change is told once. */
+    announced_tasks: Set<string>;
     last_activity: number;
     started_at: number;
     max_ms: number;
@@ -107,6 +127,8 @@ interface Live {
     timer: NodeJS.Timeout;
     closing: boolean;
     usage: { input: number; output: number; cost: number };
+    /** Prices of the voice model this session runs on. */
+    price: VoiceModelPrice;
     seq: number;
     /** Realtime events are handled strictly in order (deltas, message creation). */
     queue: Promise<void>;
@@ -146,12 +168,24 @@ export class VoiceService implements OnModuleDestroy {
         return k;
     }
 
-    private get model() {
-        return this.config.get<string>('VOICE_MODEL') || 'gpt-realtime';
+    /** Platform default: the VOICE_MODEL env var when it names a supported model, else gpt-realtime-2.1. */
+    private get defaultModel() {
+        const env = this.config.get<string>('VOICE_MODEL');
+        return env && VOICE_MODELS.some((m) => m.id === env) ? env : DEFAULT_VOICE_MODEL;
+    }
+
+    /** The organisation's choice (§13.4) wins over the platform default. */
+    private modelFor(orgModel: string | null | undefined) {
+        const id = orgModel && VOICE_MODELS.some((m) => m.id === orgModel) ? orgModel : this.defaultModel;
+        return VOICE_MODELS.find((m) => m.id === id)!;
     }
 
     voices() {
         return { voices: VOICES, default: DEFAULT_VOICE };
+    }
+
+    models() {
+        return { models: VOICE_MODELS.map(({ id, label, description }) => ({ id, label, description })), default: this.defaultModel };
     }
 
     private sampleCache = new Map<string, Buffer>();
@@ -209,7 +243,8 @@ export class VoiceService implements OnModuleDestroy {
             data: { organization_id: actor.organization_id, conversation_id: conversation.id, bot_id: bot.id, user_id: actor.user_id, type: 'CHAT_REPLY', status: 'RUNNING', started_at: new Date(), title: 'Voice conversation', voice_session_id: vs.id, state: {} },
         });
 
-        const live: Partial<Live> = { id: vs.id, bot_message: null, pending: new Map(), usage: { input: 0, output: 0, cost: 0 }, seq: 0, queue: Promise.resolve() };
+        const voiceModel = this.modelFor(orgSettings?.voice_model);
+        const live: Partial<Live> = { price: voiceModel.price, id: vs.id, bot_message: null, pending: new Map(), spoken_at: new Map(), announced_tasks: new Set(), usage: { input: 0, output: 0, cost: 0 }, seq: 0, queue: Promise.resolve() };
         const ctx: ToolContext = {
             run,
             bot,
@@ -237,7 +272,9 @@ export class VoiceService implements OnModuleDestroy {
         live.app_tools = deferApps ? appTools : [];
         const exposed = deferApps ? [...all.filter((t) => !t.connectionFor).map(realtimeTool), ...gatewayTools()] : all.map(realtimeTool);
 
-        const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: true, ...(await this.runner.computerPrompt(ctx, tools)) };
+        // Spoken replies can't show follow-up chips, so the "[[followups: …]]" line would be read out loud.
+        const voiceUserSettings = { ...(userSettings ?? {}), suggested_follow_ups: false } as NonNullable<typeof userSettings>;
+        const pctx = { run, bot, user, user_settings: voiceUserSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: true, ...(await this.runner.computerPrompt(ctx, tools)) };
         const system = await this.prompt.system(pctx);
         const history = await this.prompt.history(pctx, { excludeMessageIds: [], limit: 24, vision: false });
         const transcript = history
@@ -248,16 +285,20 @@ export class VoiceService implements OnModuleDestroy {
             system,
             `## Voice mode\nYou are now talking with ${user.name ?? 'the user'} out loud, in real time. You are the same bot with the same tools, rules and approvals as in text chat.\n` +
             `- Keep spoken replies short and conversational (one to three sentences). Never read out URLs, tables, code or long lists: put long content in the chat with your tools (e.g. create_document or show_ui) and say "I've put it in the chat".\n` +
-            `- Before a tool step that takes a moment, say a short line first ("Checking your calendar…").\n` +
+            `- You can only change or do things by calling a tool. Never say something is done, changed, saved or sent unless a tool call in this conversation returned success. Requests to change yourself (your name, emoji, colour, instructions, model) are real, permanent changes: call update_bot with bot "this bot" (not remember), never pretend or play along "for this session". If they leave the choice to you, suggest one and wait for their pick before calling it.\n` +
+            `- For questions about how Agent Space works or where something is, call app_help and say the way there in words ("Settings, then AI models"); never read the links out.\n` +
+            `- When you say you'll do something ("I'll create the file", "Checking your calendar…"), call the tool in that same reply. Never end a reply with a promise to do work later: nothing happens until you call a tool, and the user will just be waiting. When the tools finish, tell them the result without waiting to be asked.\n` +
             `- When a tool returns waiting_for_approval: read the short summary and ask "Shall I go ahead?". If they say yes/no, call resolve_approval. If tap_only is true (payments, passwords), tell them to tap Approve on the card in the chat instead.\n` +
             `- If a request will take more than about 30 seconds (deep research, a long computer job, a big artifact), call start_task and keep talking.\n` +
             `- Never ask for or repeat secrets out loud. If one is needed call request_secret and ask them to paste it in the secure box on screen. If they start reading a key out loud, stop them politely.\n` +
-            `- When they say "that's all", "goodbye" or "exit voice mode", say a short goodbye and call end_voice.\n` +
+            `- Only when they say "that's all", "goodbye" or "exit voice mode" in this voice session, say a short goodbye and call end_voice.\n` +
             `- Speak the user's language (English or Greek) and switch if they do.`,
             deferApps
                 ? `## Connected app tools\nTools for connected apps and tool servers are not loaded directly. To use one, call ${VoiceGatewayTools.FIND} with what you want to do (e.g. "list Linear projects"), then call ${VoiceGatewayTools.USE} with the exact tool name and its arguments. Never say you lack access to a connected app before searching. Available tools:\n${appTools.map((t) => t.name).join(', ')}`
                 : '',
-            transcript ? `## Recent conversation (text and voice)\n${transcript}` : '',
+            transcript
+                ? `## Earlier in this conversation (text and voice)\nContext only: everything below was already handled, including any earlier request to end voice mode. Respond only to what the user says now.\n${transcript}`
+                : '',
         ]
             .filter(Boolean)
             .join('\n\n')
@@ -265,12 +306,12 @@ export class VoiceService implements OnModuleDestroy {
 
         const session = {
             type: 'realtime',
-            model: this.model,
+            model: voiceModel.id,
             instructions,
             output_modalities: ['audio'],
             audio: {
                 input: {
-                    transcription: { model: this.config.get('VOICE_TRANSCRIBE_MODEL') || 'gpt-4o-mini-transcribe' },
+                    transcription: { model: this.config.get('VOICE_TRANSCRIBE_MODEL') || 'gpt-4o-mini-transcribe', prompt: 'The speaker talks English or Greek.' },
                     noise_reduction: { type: 'near_field' },
                     turn_detection: inputMode === 'PUSH_TO_TALK' ? null : { type: 'semantic_vad', eagerness: 'auto', create_response: true, interrupt_response: true },
                 },
@@ -328,7 +369,7 @@ export class VoiceService implements OnModuleDestroy {
         });
         ws.on('close', () => void this.close(vs.id, 'CONNECTION_LOST'));
         ws.on('error', (e) => this.logger.warn(`Voice sideband error: ${e.message}`));
-        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'voice.started', target_type: 'conversation', target_id: conversation.id, run_id: run.id, metadata: { bot_id: bot.id, voice } });
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'voice.started', target_type: 'conversation', target_id: conversation.id, run_id: run.id, metadata: { bot_id: bot.id, voice, model: voiceModel.id } });
         return { id: vs.id, sdp: answer, bot_id: bot.id, voice, input_mode: inputMode, max_minutes: maxMs / 60_000 };
     }
 
@@ -389,12 +430,17 @@ export class VoiceService implements OnModuleDestroy {
         const e = JSON.parse(raw) as Record<string, any>;
         switch (e.type) {
             case 'input_audio_buffer.speech_started':
+            case 'input_audio_buffer.committed':
                 live.last_activity = Date.now();
+                if (e.item_id && !live.spoken_at.has(e.item_id)) live.spoken_at.set(String(e.item_id), new Date());
                 break;
             case 'conversation.item.input_audio_transcription.completed': {
                 live.last_activity = Date.now();
                 const text = String(e.transcript ?? '').trim();
-                if (text) await this.saveUserMessage(live, text);
+                // Transcription finishes after the bot has started replying; date the message from when the user spoke.
+                const at = live.spoken_at.get(String(e.item_id));
+                live.spoken_at.delete(String(e.item_id));
+                if (text) await this.saveUserMessage(live, text, at);
                 break;
             }
             case 'response.output_audio_transcript.delta':
@@ -433,7 +479,7 @@ export class VoiceService implements OnModuleDestroy {
         const inD = u.input_token_details ?? {};
         const outD = u.output_token_details ?? {};
         const cost =
-            ((inD.audio_tokens ?? 0) * PRICE.audio_in + (inD.text_tokens ?? 0) * PRICE.text_in + (inD.cached_tokens ?? 0) * PRICE.cached + (outD.audio_tokens ?? 0) * PRICE.audio_out + (outD.text_tokens ?? 0) * PRICE.text_out) / 1_000_000;
+            ((inD.audio_tokens ?? 0) * live.price.audio_in + (inD.text_tokens ?? 0) * live.price.text_in + (inD.cached_tokens ?? 0) * live.price.cached + (outD.audio_tokens ?? 0) * live.price.audio_out + (outD.text_tokens ?? 0) * live.price.text_out) / 1_000_000;
         live.usage.input += u.input_tokens ?? 0;
         live.usage.output += u.output_tokens ?? 0;
         live.usage.cost += cost;
@@ -469,6 +515,8 @@ export class VoiceService implements OnModuleDestroy {
 
     /** Approval engine, then execution — shared by direct calls and use_app_tool. */
     private async runTool(live: Live, callId: string, def: ToolDef, args: Record<string, unknown>, reply: (output: unknown, images?: string[]) => Promise<void>) {
+        const invalid = checkArgs(def.parameters, args);
+        if (invalid) return reply({ error: invalid, expected_parameters: def.parameters });
 
         // Approval engine — same rules as text chat (§11); app-management changes always confirm.
         if (def.name !== 'resolve_approval') {
@@ -575,11 +623,35 @@ export class VoiceService implements OnModuleDestroy {
         }
     }
 
+    /** Long jobs handed off with start_task: when one ends during the session, the bot says so (§7.6 "Long jobs"). */
+    private async announceFinishedTasks(live: Live) {
+        const runs = await this.prisma.run.findMany({
+            where: { voice_session_id: live.id, type: 'TASK', status: { in: ['COMPLETED', 'FAILED', 'STOPPED', 'WAITING_APPROVAL', 'WAITING_INPUT'] } },
+            select: { id: true, title: true, status: true, error: true },
+        });
+        for (const run of runs) {
+            const key = `${run.id}:${run.status}`;
+            if (live.announced_tasks.has(key)) continue;
+            live.announced_tasks.add(key);
+            const reply = await this.prisma.message.findFirst({ where: { run_id: run.id, author_type: 'BOT' }, orderBy: { created_at: 'desc' }, select: { content: true } });
+            const result = (reply?.content ?? '').slice(0, 2000);
+            const note =
+                run.status === 'COMPLETED'
+                    ? `The task "${run.title}" just finished. Its reply in the chat: ${result || '(no text)'}. Tell the user briefly that it's done and point them to the chat for the details.`
+                    : run.status === 'WAITING_APPROVAL' || run.status === 'WAITING_INPUT'
+                      ? `The task "${run.title}" is waiting for the user (${run.status === 'WAITING_APPROVAL' ? 'an approval' : 'an answer'} in the chat). Tell them briefly.`
+                      : `The task "${run.title}" ${run.status === 'STOPPED' ? 'was stopped' : `failed: ${run.error ?? 'unknown error'}`}. Tell the user briefly.`;
+            live.last_activity = Date.now();
+            this.send(live, { type: 'conversation.item.create', item: { type: 'message', role: 'system', content: [{ type: 'input_text', text: note }] } });
+            this.send(live, { type: 'response.create' });
+        }
+    }
+
     // ---------------- Messages ----------------
 
-    private async saveUserMessage(live: Live, text: string) {
+    private async saveUserMessage(live: Live, text: string, createdAt?: Date) {
         const msg = await this.prisma.message.create({
-            data: { organization_id: live.org_id, conversation_id: live.conversation_id, author_type: 'USER', author_user_id: live.user_id, source: 'VOICE', status: 'COMPLETED', content: text, parts: [{ type: 'text', text }] },
+            data: { organization_id: live.org_id, conversation_id: live.conversation_id, author_type: 'USER', author_user_id: live.user_id, source: 'VOICE', status: 'COMPLETED', content: text, parts: [{ type: 'text', text }], ...(createdAt ? { created_at: createdAt } : {}) },
         });
         await this.messageEvents.created(msg.id);
         await this.touchConversation(live);
@@ -615,6 +687,10 @@ export class VoiceService implements OnModuleDestroy {
             await this.events.toConversation(live.conversation_id, ConversationEvents.MESSAGE_DELETED, { id: m.id, conversation_id: live.conversation_id });
             return;
         }
+        // Voice sessions aren't asked for "[[followups: …]]", but if the model writes one anyway, show it as chips.
+        const { parts, followUps } = extractFollowUps(m.parts);
+        m.parts = parts;
+        if (followUps.length && live.ctx.user_settings?.suggested_follow_ups !== false) m.parts.push({ type: 'follow-ups', items: followUps });
         live.bot_message = m;
         await this.saveBotMessage(live, true);
         live.bot_message = null;
@@ -661,6 +737,7 @@ export class VoiceService implements OnModuleDestroy {
         if (!live || live.closing) return;
         const now = Date.now();
         await this.checkTappedApprovals(live).catch((e) => this.logger.warn(`Approval check failed: ${(e as Error).message}`));
+        await this.announceFinishedTasks(live).catch((e) => this.logger.warn(`Task check failed: ${(e as Error).message}`));
         if (now - live.last_activity > SILENCE_MS && !live.pending.size) return this.close(id, 'SILENCE');
         if (!live.warned && now - live.started_at > live.max_ms - 60_000) {
             live.warned = true;

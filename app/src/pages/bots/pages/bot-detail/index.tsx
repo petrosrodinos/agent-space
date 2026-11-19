@@ -1,6 +1,6 @@
 import { useState, type FC, type ReactNode } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import { Brain, Copy, LibraryBig, MessageCircle, Monitor, MoreHorizontal, Plug, Share2, ShieldCheck, SlidersHorizontal, Sparkles, Trash2, Wrench, type LucideIcon } from "lucide-react";
+import { Brain, Copy, LibraryBig, MessageCircle, Monitor, MoreHorizontal, Pencil, Plug, Share2, ShieldCheck, SlidersHorizontal, Sparkles, Trash2, Wrench, type LucideIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CircleButton } from "@/components/ui/circle-button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -11,6 +11,9 @@ import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigge
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { KnowledgePanel } from "@/components/layout/knowledge-panel";
 import { MobileTopBar, useBack } from "@/components/layout/mobile-top-bar";
+import { PageContainer, PageHeader } from "@/components/ui/page-header";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { cn } from "@/lib/utils";
 import { ComputerTab } from "../../components/computer-tab";
 import { useBot, useDeleteBot, useDuplicateBot } from "@/features/bots/hooks/use-bots";
 import { useOpenDirect } from "@/features/conversations/hooks/use-conversations";
@@ -61,6 +64,9 @@ const CONFIGURE_SECTIONS: SectionDef[] = [
   { id: BotSections.SHARING, label: "Sharing", icon: Share2 },
 ];
 const SECTION_LABELS: Record<BotSection, string> = { ...Object.fromEntries([...MAIN_SECTIONS, ...CONFIGURE_SECTIONS].map((s) => [s.id, s.label])), [BotSections.IDENTITY]: "Edit bot" } as Record<BotSection, string>;
+/** Desktop side navigation (same layout as Settings): identity first, then the bot's own stuff. */
+const DESKTOP_MAIN_SECTIONS: SectionDef[] = [{ id: BotSections.IDENTITY, label: "Identity", icon: Pencil }, ...MAIN_SECTIONS];
+const DESKTOP_LABELS: Record<BotSection, string> = { ...SECTION_LABELS, [BotSections.IDENTITY]: "Identity" };
 const isBotSection = (v: string | null): v is BotSection => !!v && Object.values(BotSections).includes(v as BotSection);
 
 const SectionBody: FC<{ section: BotSection; bot: Bot; isAdmin: boolean }> = ({ section, bot, isAdmin }) => {
@@ -89,6 +95,56 @@ const SectionBody: FC<{ section: BotSection; bot: Bot; isAdmin: boolean }> = ({ 
   }
 };
 
+/** Desktop nav group, styled like the Settings side navigation. */
+const BotNavList: FC<{ sections: SectionDef[]; title: string; bot: Bot; active: BotSection; onSelect: (id: BotSection) => void }> = ({ sections, title, bot, active, onSelect }) => (
+  <div>
+    <p className="eyebrow mb-1 px-3">{title}</p>
+    <nav className="space-y-0.5">
+      {sections.map((s) => {
+        const value = s.value?.(bot);
+        const isActive = s.id === active;
+        return (
+          <button
+            key={s.id}
+            type="button"
+            onClick={() => onSelect(s.id)}
+            aria-current={isActive ? "page" : undefined}
+            className={cn(
+              "flex min-h-[44px] w-full items-center gap-3 rounded-md px-3 text-left text-[15px] font-bold [&_svg]:h-5 [&_svg]:w-5",
+              isActive ? "bg-primary-soft text-accent-foreground" : "text-body hover:bg-surface-sunken",
+            )}
+          >
+            <s.icon />
+            <span className="flex-1">{s.label}</span>
+            {value && <span className="text-sm font-medium text-muted-foreground">{value}</span>}
+          </button>
+        );
+      })}
+    </nav>
+  </div>
+);
+
+/** Duplicate / delete menu shared by the mobile and desktop layouts. */
+const BotMenu: FC<{ bot: Bot; onDuplicate: () => void; onDelete: () => void }> = ({ bot, onDuplicate, onDelete }) => (
+  <DropdownMenu>
+    <DropdownMenuTrigger asChild>
+      <CircleButton aria-label="Bot menu">
+        <MoreHorizontal />
+      </CircleButton>
+    </DropdownMenuTrigger>
+    <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5 shadow-pop">
+      <DropdownMenuItem className="gap-2 rounded-sm py-2" onSelect={onDuplicate}>
+        <Copy className="h-4 w-4" /> Duplicate
+      </DropdownMenuItem>
+      {bot.can_edit && !bot.is_starter && (
+        <DropdownMenuItem className="gap-2 rounded-sm py-2 text-error focus:text-error" onSelect={onDelete}>
+          <Trash2 className="h-4 w-4" /> Delete bot
+        </DropdownMenuItem>
+      )}
+    </DropdownMenuContent>
+  </DropdownMenu>
+);
+
 const Frame: FC<{ children: ReactNode; wide?: boolean }> = ({ children, wide }) => <div className={wide ? "mx-auto w-full max-w-[760px] px-4 pb-10" : "mx-auto w-full max-w-[600px] px-4 pb-10"}>{children}</div>;
 
 /** Bot page (Grok-style): big avatar, name, Chat / Edit pills and grouped rows; each row opens its settings section. */
@@ -106,7 +162,10 @@ const BotDetailPage: FC = () => {
   const [confirmDelete, setConfirmDelete] = useState(false);
   const navigate = useNavigate();
   const backToOverview = useBack(Routes.bots.detail(botId));
+  const isMobile = useIsMobile();
   const openSection = (id: BotSection) => setParams({ [SECTION_PARAM]: id });
+  const startChat = (id: string) => openDirect.mutate({ bot_id: id }, { onSuccess: (c) => navigate(Routes.chat.conversation(c.id)) });
+  const onDuplicate = (id: string) => duplicate.mutate(id, { onSuccess: (b) => navigate(Routes.bots.detail(b.id)) });
 
   if (isPending)
     return (
@@ -131,6 +190,56 @@ const BotDetailPage: FC = () => {
       </>
     );
 
+  const deleteDialog = (
+    <ConfirmationDialog
+      isOpen={confirmDelete}
+      onClose={() => setConfirmDelete(false)}
+      title={`Delete ${bot.name}?`}
+      description="The bot will be removed from your chats. Past messages stay in conversations."
+      confirmText="Delete"
+      variant="destructive"
+      isLoading={del.isPending}
+      onConfirm={() => del.mutate(bot.id, { onSuccess: () => navigate(Routes.bots.root, { replace: true }) })}
+    />
+  );
+  const menu = <BotMenu bot={bot} onDuplicate={() => onDuplicate(bot.id)} onDelete={() => setConfirmDelete(true)} />;
+
+  // Desktop: Settings-style layout — side navigation on the left, the open section on the right.
+  if (!isMobile) {
+    const active = section ?? BotSections.IDENTITY;
+    return (
+      <PageContainer wide>
+        <PageHeader title={DESKTOP_LABELS[active]} className="mb-5" backTo={Routes.bots.root} />
+        <div className="flex gap-8">
+          <aside className="w-60 shrink-0 space-y-5">
+            <div className="space-y-3 px-3">
+              <div className="flex items-center gap-3">
+                <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={40} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-[16px] font-bold text-ink">{bot.name}</p>
+                  {bot.description && <p className="truncate text-sm text-muted-foreground">{bot.description}</p>}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <Button className="flex-1" loading={openDirect.isPending} onClick={() => startChat(bot.id)}>
+                  <MessageCircle /> Chat
+                </Button>
+                {menu}
+              </div>
+            </div>
+            <BotNavList sections={DESKTOP_MAIN_SECTIONS} title="Bot" bot={bot} active={active} onSelect={openSection} />
+            <BotNavList sections={CONFIGURE_SECTIONS} title="Configure bot" bot={bot} active={active} onSelect={openSection} />
+            <p className="px-3 text-xs text-muted-foreground">{`${bot.model?.name ?? "Recommended model"} · created by ${bot.created_by?.name ?? "someone"}`}</p>
+          </aside>
+          <div className="min-w-0 max-w-[720px] flex-1">
+            <SectionBody section={active} bot={bot} isAdmin={isAdmin} />
+          </div>
+        </div>
+        {deleteDialog}
+      </PageContainer>
+    );
+  }
+
   if (section)
     return (
       <>
@@ -152,25 +261,7 @@ const BotDetailPage: FC = () => {
   return (
     <>
       <MobileTopBar
-        actions={
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <CircleButton aria-label="Bot menu">
-                <MoreHorizontal />
-              </CircleButton>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5 shadow-pop">
-              <DropdownMenuItem className="gap-2 rounded-sm py-2" onSelect={() => duplicate.mutate(bot.id, { onSuccess: (b) => navigate(Routes.bots.detail(b.id)) })}>
-                <Copy className="h-4 w-4" /> Duplicate
-              </DropdownMenuItem>
-              {bot.can_edit && !bot.is_starter && (
-                <DropdownMenuItem className="gap-2 rounded-sm py-2 text-error focus:text-error" onSelect={() => setConfirmDelete(true)}>
-                  <Trash2 className="h-4 w-4" /> Delete bot
-                </DropdownMenuItem>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-        }
+        actions={menu}
       />
       <Frame>
         <div className="flex flex-col items-center text-center">
@@ -178,7 +269,7 @@ const BotDetailPage: FC = () => {
           <h1 className="mt-4 font-display text-[30px] font-bold leading-tight text-ink">{bot.name}</h1>
           {bot.description && <p className="mt-1 max-w-md text-[15px] text-muted-foreground">{bot.description}</p>}
           <div className="mt-4 flex gap-2">
-            <Button loading={openDirect.isPending} onClick={() => openDirect.mutate({ bot_id: bot.id }, { onSuccess: (c) => navigate(Routes.chat.conversation(c.id)) })}>
+            <Button loading={openDirect.isPending} onClick={() => startChat(bot.id)}>
               <MessageCircle /> Chat
             </Button>
             <Button variant="secondary" onClick={() => openSection(BotSections.IDENTITY)}>
@@ -201,16 +292,7 @@ const BotDetailPage: FC = () => {
         </div>
       </Frame>
 
-      <ConfirmationDialog
-        isOpen={confirmDelete}
-        onClose={() => setConfirmDelete(false)}
-        title={`Delete ${bot.name}?`}
-        description="The bot will be removed from your chats. Past messages stay in conversations."
-        confirmText="Delete"
-        variant="destructive"
-        isLoading={del.isPending}
-        onConfirm={() => del.mutate(bot.id, { onSuccess: () => navigate(Routes.bots.root, { replace: true }) })}
-      />
+      {deleteDialog}
     </>
   );
 };

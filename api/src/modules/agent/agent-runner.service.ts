@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { extractFollowUps } from './follow-ups.utils';
 import { Prisma, RunStatus } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService, HeldLock } from '@/core/databases/redis/redis.service';
@@ -510,15 +511,9 @@ export class AgentRunnerService {
 
     private async complete(runId: string, state: RunState, withFollowUps: boolean) {
         // Pull "[[followups: a || b || c]]" into a follow-ups part.
-        const followups: string[] = [];
-        for (const p of state.parts ?? []) {
-            if (p.type !== 'text') continue;
-            const m = /\[\[followups:([^\]]*)\]\]/.exec(String((p as any).text));
-            if (m) followups.push(...m[1].split('||').map((s) => s.trim()).filter(Boolean));
-            (p as any).text = String((p as any).text).replace(/\s*\[\[followups:[^\]]*\]\]\s*/g, '').trimEnd();
-        }
-        state.parts = (state.parts ?? []).filter((p) => !(p.type === 'text' && !String((p as any).text).trim()));
-        if (withFollowUps && followups.length) state.parts.push({ type: 'follow-ups', items: followups.slice(0, 3) });
+        const { parts, followUps } = extractFollowUps(state.parts ?? []);
+        state.parts = parts;
+        if (withFollowUps && followUps.length) state.parts.push({ type: 'follow-ups', items: followUps });
         const run = await this.prisma.run.update({
             where: { id: runId },
             data: { status: 'COMPLETED', finished_at: new Date(), state: { ...state, messages: undefined } as unknown as Prisma.InputJsonValue },

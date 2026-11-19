@@ -66,8 +66,10 @@ import {
   useAddOrgMemory,
   useBots,
   useClearAllMemories,
+  useMyMemories,
   useOrgMemories,
 } from "@/features/bots/hooks/use-bots";
+import { MemoryList } from "./memory-list";
 import {
   ActivityStepsOptions,
   AppLanguageOptions,
@@ -791,7 +793,8 @@ const PushDeviceCard: FC = () => {
 export const MemorySection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
   const { s, set } = useSettings();
   const clear = useClearAllMemories();
-  const { data: orgMemories } = useOrgMemories();
+  const myMemories = useMyMemories();
+  const orgMemories = useOrgMemories();
   const add = useAddOrgMemory();
   const [fact, setFact] = useState("");
   const [confirm, setConfirm] = useState(false);
@@ -820,39 +823,44 @@ export const MemorySection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
             )
           }
         />
-        <SettingRow
-          label="Clear all memories"
-          description="Everything every bot remembers about you. Each bot's Memory tab lets you edit single facts."
-        >
-          <Button variant="outline" onClick={() => setConfirm(true)}>
-            Clear all
-          </Button>
-        </SettingRow>
+      </SettingsCard>
+      <SettingsCard
+        title="What bots remember about you"
+        description="Facts bots have learned from your conversations. Edit or delete anything."
+        actions={
+          !!myMemories.data?.length && (
+            <Button variant="outline" size="sm" onClick={() => setConfirm(true)}>
+              Clear all
+            </Button>
+          )
+        }
+      >
+        <MemoryList
+          memories={myMemories.data}
+          isPending={myMemories.isPending}
+          emptyText="Nothing remembered yet."
+          meta={(m) => m.bot?.name ?? null}
+        />
       </SettingsCard>
       {isAdmin && (
         <SettingsCard
           title="Organisation memory"
           description="Company facts every bot can use (products, tone of voice, key contacts)."
         >
-          <ul className="divide-y divide-hairline">
-            {orgMemories?.map((m) => (
-              <li key={m.id} className="py-2.5 text-[15px] text-ink">
-                {m.content}
-              </li>
-            ))}
-            {!orgMemories?.length && (
-              <li className="py-3 text-sm text-muted-foreground">
-                No company facts yet.
-              </li>
-            )}
-          </ul>
-          <div className="flex gap-2 pt-3">
-            <Input
-              placeholder="Our fiscal year starts in April"
-              value={fact}
-              onChange={(e) => setFact(e.target.value)}
-              aria-label="New company fact"
-            />
+          <MemoryList
+            memories={orgMemories.data}
+            isPending={orgMemories.isPending}
+            emptyText="No company facts yet."
+          />
+          <div className="flex items-center gap-2 pt-3">
+            <div className="min-w-0 flex-1">
+              <Input
+                placeholder="Our fiscal year starts in April"
+                value={fact}
+                onChange={(e) => setFact(e.target.value)}
+                aria-label="New company fact"
+              />
+            </div>
             <Button
               disabled={!fact.trim()}
               loading={add.isPending}

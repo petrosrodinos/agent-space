@@ -29,8 +29,9 @@ import type { OrgRole } from "@/features/users/interfaces/users.interfaces";
 import { useBots, useModels } from "@/features/bots/hooks/use-bots";
 import { useActivity, useSetUsageLimit, useUsage } from "@/features/usage/hooks/use-usage";
 import { useMe } from "@/features/users/hooks/use-users";
+import { useVoiceModels } from "@/features/voice/hooks/use-voice-session";
 import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
-import { EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, UsageLimitScopeOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions } from "@/config/constants/dropdowns/organizations/organization-form.options";
+import { EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, UsageLimitScopeOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions, fromApprovalTimeoutValue, toApprovalTimeoutValue } from "@/config/constants/dropdowns/organizations/organization-form.options";
 import { AppLanguageOptions } from "@/config/constants/dropdowns/users/user-settings-form.options";
 import { ModelCostTierOptions } from "@/config/constants/dropdowns/bots/bot-settings-form.options";
 import { UsageKindOptions } from "@/config/constants/dropdowns/shared/status.options";
@@ -276,6 +277,7 @@ export const MembersSection: FC<{ org: Organization }> = ({ org }) => {
 export const AiModelsSection: FC = () => {
   const { org, s, set, update } = useOrgSetting();
   const { data: models } = useModels();
+  const { data: voiceModels } = useVoiceModels();
   const [allowed, setAllowed] = useState<Set<string>>(new Set());
   useEffect(() => setAllowed(new Set(org?.allowed_model_ids ?? [])), [org]);
   if (!s || !org) return <SettingsSkeleton />;
@@ -301,12 +303,22 @@ export const AiModelsSection: FC = () => {
       )}
       <SwitchSetting label="Automatic fallback to a similar model" checked={s.model_auto_fallback} onChange={(v) => set("model_auto_fallback", v)} />
       <SwitchSetting label="Compare replies with another model" checked={s.model_compare_enabled} onChange={(v) => set("model_compare_enabled", v)} />
+      <SelectSetting
+        label="Voice mode model"
+        description={voiceModels?.models.find((m) => m.id === (s.voice_model ?? voiceModels.default))?.description ?? "Used for real-time voice conversations with every bot."}
+        value={s.voice_model ?? PickerValues.RECOMMENDED}
+        options={[
+          { id: PickerValues.RECOMMENDED, label: `Default${voiceModels ? ` (${voiceModels.models.find((m) => m.id === voiceModels.default)?.label ?? voiceModels.default})` : ""}` },
+          ...(voiceModels?.models ?? []).map((m) => ({ id: m.id, label: m.label })),
+        ]}
+        onChange={(v) => set("voice_model", v === PickerValues.RECOMMENDED ? null : v)}
+      />
     </SettingsCard>
   );
 };
 
 export const SafetySection: FC = () => {
-  const { s, set } = useOrgSetting();
+  const { s, set, update } = useOrgSetting();
   if (!s) return <SettingsSkeleton />;
   const enforced = new Set(s.enforced_approvals);
   return (
@@ -325,9 +337,10 @@ export const SafetySection: FC = () => {
       <SwitchSetting label="Bots consulting other bots" checked={s.bots_consulting_enabled} onChange={(v) => set("bots_consulting_enabled", v)} />
       <SelectSetting
         label="Approval timeout"
-        value={String(s.approval_timeout_minutes ?? PickerValues.KEEP_WAITING)}
+        description="Accepting automatically never applies to the actions above that always require approval, or to payments and passwords."
+        value={toApprovalTimeoutValue(s.approval_timeout_minutes, s.approval_timeout_action)}
         options={ApprovalTimeoutMinuteOptions}
-        onChange={(v) => set("approval_timeout_minutes", v === PickerValues.KEEP_WAITING ? null : Number(v))}
+        onChange={(v) => update.mutate(fromApprovalTimeoutValue(v))}
       />
       <SelectSetting label="When a usage limit is reached" value={s.limit_reached_action} options={LimitReachedActionOptions} onChange={(v) => set("limit_reached_action", v as OrganizationSettings["limit_reached_action"])} />
     </SettingsCard>

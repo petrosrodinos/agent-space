@@ -1,11 +1,10 @@
 import type { FC, ReactNode } from "react";
 import { Link, NavLink, useLocation } from "react-router-dom";
-import { Bell, ChevronUp, Grid2x2Plus } from "lucide-react";
+import { ChevronUp, Grid2x2Plus } from "lucide-react";
 import { Routes } from "@/routes/routes";
 import { PersonAvatar } from "@/components/ui/bot-avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useConversations } from "@/features/conversations/hooks/use-conversations";
-import { useNotifications } from "@/features/notifications/hooks/use-notifications";
 import { useMe } from "@/features/users/hooks/use-users";
 import { useUiStore } from "@/stores/ui";
 import { cn } from "@/lib/utils";
@@ -129,7 +128,6 @@ const WorkspaceNav: FC<{ collapsed?: boolean; onNavigate?: () => void }> = ({ co
 /** Left sidebar (288px desktop, 72px rail on tablet). DESIGN.MD App shell. */
 export const AppSidebar: FC<{ collapsed?: boolean; onNavigate?: () => void; className?: string }> = ({ collapsed, onNavigate, className }) => {
   const { data: conversations, isPending } = useConversations();
-  const { data: notifications } = useNotifications();
   const { data: me } = useMe();
 
   return (
@@ -158,12 +156,6 @@ export const AppSidebar: FC<{ collapsed?: boolean; onNavigate?: () => void; clas
           >
             <PersonAvatar name={me?.user.name} email={me?.user.email} size={32} />
             {!collapsed && <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-ink">{me?.user.name ?? "…"}</span>}
-            {!collapsed && !!notifications?.unread && (
-              <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-extrabold text-primary-foreground">
-                <Bell className="h-3 w-3" />
-                {notifications.unread}
-              </span>
-            )}
           </button>
         </AccountMenu>
         <Tooltip>

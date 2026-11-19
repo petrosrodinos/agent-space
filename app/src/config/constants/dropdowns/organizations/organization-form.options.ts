@@ -1,4 +1,5 @@
 import { PickerValues } from "@/config/constants/filters";
+import { ApprovalTimeoutActions, type ApprovalTimeoutAction } from "@/features/organizations/interfaces/organizations.interfaces";
 import type { OrgRole } from "@/features/users/interfaces/users.interfaces";
 
 export const OrgRoleFormOptions: { id: OrgRole; label: string; description: string }[] = [
@@ -63,10 +64,33 @@ export const UsageLimitScopeOptions = [
   { id: "BOT", label: "Per bot" },
 ] as const;
 
-/** Organisation approval timeout (minutes as strings; KEEP_WAITING = no timeout). */
+/** Prefix marking an "accept automatically" timeout option, e.g. `approve:60`. */
+const AUTO_APPROVE_PREFIX = "approve:";
+
+/**
+ * Organisation approval timeout: what happens and after how long, as one picker value.
+ * KEEP_WAITING = no timeout; "60" = cancel after 60 minutes; "approve:60" = accept automatically after 60 minutes.
+ */
 export const ApprovalTimeoutMinuteOptions = [
   { id: PickerValues.KEEP_WAITING, label: "Keep waiting" },
   { id: "60", label: "Cancel after 1 hour" },
   { id: "1440", label: "Cancel after 24 hours" },
   { id: "10080", label: "Cancel after 7 days" },
+  { id: `${AUTO_APPROVE_PREFIX}60`, label: "Accept automatically after 1 hour" },
+  { id: `${AUTO_APPROVE_PREFIX}1440`, label: "Accept automatically after 24 hours" },
+  { id: `${AUTO_APPROVE_PREFIX}10080`, label: "Accept automatically after 7 days" },
 ] as const;
+
+/** Settings → picker value. */
+export const toApprovalTimeoutValue = (minutes: number | null, action: ApprovalTimeoutAction): string =>
+  minutes == null ? PickerValues.KEEP_WAITING : action === ApprovalTimeoutActions.APPROVE ? `${AUTO_APPROVE_PREFIX}${minutes}` : String(minutes);
+
+/** Picker value → settings. */
+export const fromApprovalTimeoutValue = (v: string): { approval_timeout_minutes: number | null; approval_timeout_action: ApprovalTimeoutAction } => {
+  if (v === PickerValues.KEEP_WAITING) return { approval_timeout_minutes: null, approval_timeout_action: ApprovalTimeoutActions.CANCEL };
+  const auto = v.startsWith(AUTO_APPROVE_PREFIX);
+  return {
+    approval_timeout_minutes: Number(auto ? v.slice(AUTO_APPROVE_PREFIX.length) : v),
+    approval_timeout_action: auto ? ApprovalTimeoutActions.APPROVE : ApprovalTimeoutActions.CANCEL,
+  };
+};

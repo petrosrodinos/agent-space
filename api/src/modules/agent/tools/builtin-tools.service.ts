@@ -1,4 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Prisma } from 'generated/prisma';
@@ -18,6 +19,7 @@ import { UsageService } from '../../usage/usage.service';
 import { ModelsService } from '../../catalog/models.service';
 import { AccessService } from '../../access/access.service';
 import { fetchReadable } from './web.utils';
+import { appGuide, AppGuideTopics } from '../app-guide';
 import { obj, ToolContext, ToolDef } from './tool.types';
 
 const UI_BLOCK_TYPES = ['heading', 'text', 'card', 'stats', 'table', 'chart', 'list', 'checklist', 'progress', 'buttons', 'form', 'tabs', 'image', 'kv', 'callout', 'divider'];
@@ -53,6 +55,7 @@ export class BuiltinToolsService {
         private readonly usage: UsageService,
         private readonly models: ModelsService,
         private readonly access: AccessService,
+        private readonly config: ConfigService,
     ) { }
 
     tools(ctx: ToolContext): ToolDef[] {
@@ -61,7 +64,7 @@ export class BuiltinToolsService {
         const bot = ctx.bot;
 
         if (bot.web_search_enabled && org?.builtin_web_search !== false) t.push(this.webSearch());
-        t.push(this.readWebpage());
+        t.push(this.readWebpage(), this.appHelp());
         if (bot.memory_enabled && !ctx.is_temporary && ctx.user_settings?.memory_enabled !== false) t.push(this.remember(), this.forget());
         const ui = org?.interactive_replies_mode !== 'OFF' && bot.interactive_replies_mode !== 'OFF' && ctx.user_settings?.interactive_replies !== false;
         if (ui) t.push(this.showUi());
@@ -73,6 +76,22 @@ export class BuiltinToolsService {
             if (bot.can_ask_other_bots && org?.bots_consulting_enabled !== false) t.push(this.askBot());
         }
         return t;
+    }
+
+    // ---------------- App help ----------------
+
+    /** How Agent Space works, with direct links — loaded only when the user asks about the app. */
+    private appHelp(): ToolDef {
+        return {
+            name: 'app_help',
+            description:
+                'How Agent Space itself works: features, where each page and setting is, and direct links to them. Call it whenever the user asks how to do something in the app, where a setting is, or what a feature does — never guess screens. Include the returned links in your reply as Markdown links.',
+            parameters: obj({ topic: { type: 'string', enum: Object.values(AppGuideTopics), description: 'Pick the closest topic; "overview" lists every page' } }, ['topic']),
+            step_type: 'TOOL_CALL',
+            runs_on: 'server',
+            title: () => 'Checking how Agent Space works',
+            execute: async (a) => ({ output: appGuide(a.topic, this.config.get<string>('APP_URL') || '') }),
+        };
     }
 
     // ---------------- Web ----------------

@@ -5,6 +5,8 @@ export const VoicePhases = {
   LISTENING: "listening",
   USER_SPEAKING: "user_speaking",
   THINKING: "thinking",
+  /** Tool calls are running (searching, writing files, sending…). */
+  WORKING: "working",
   BOT_SPEAKING: "bot_speaking",
   RECONNECTING: "reconnecting",
 } as const;
@@ -23,7 +25,13 @@ export const RealtimeAudioEvents = {
   OUTPUT_CLEAR: "output_audio_buffer.clear",
   RESPONSE_CANCEL: "response.cancel",
   RESPONSE_CREATE: "response.create",
+  FUNCTION_CALL_DONE: "response.function_call_arguments.done",
+  ITEM_ADDED: "conversation.item.added",
+  ITEM_DONE: "conversation.item.done",
 } as const;
+
+/** Realtime conversation item types the voice bar watches. */
+export const RealtimeItemTypes = { FUNCTION_CALL_OUTPUT: "function_call_output" } as const;
 
 /** Data channel label expected by OpenAI Realtime. */
 export const REALTIME_DATA_CHANNEL = "oai-events";

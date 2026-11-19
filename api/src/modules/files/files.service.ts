@@ -9,6 +9,17 @@ import type { Actor } from '../bots/bots.service';
 const MAX_BYTES: Record<MaxFileSize, number> = { MB_25: 25 * 1024 ** 2, MB_50: 50 * 1024 ** 2, MB_100: 100 * 1024 ** 2 };
 const BLOCKED_EXT = /\.(exe|msi|bat|cmd|com|scr|ps1|vbs|jar|sh|app|dmg|apk|dll)$/i;
 
+const PREVIEW_TEXT_MAX_BYTES = 1024 ** 2;
+const TEXT_MIME = /^(text\/|application\/(json|xml|javascript|x-yaml|yaml|x-sh|sql|toml|csv))/i;
+const TEXT_EXT = /\.(txt|md|markdown|csv|tsv|json|jsonl|xml|ya?ml|toml|ini|log|html?|css|js|jsx|ts|tsx|py|rb|go|rs|java|kt|c|h|cpp|cs|php|sh|sql|svg)$/i;
+const SHEET_PREVIEW_MAX_FILE_BYTES = 20 * 1024 ** 2;
+const SHEET_PREVIEW_MAX_ROWS = 500;
+const SHEET_PREVIEW_MAX_COLS = 50;
+const SHEET_EXT = /\.(xlsx|xlsm|xls|ods)$/i;
+const SHEET_MIME = /^application\/(vnd\.openxmlformats-officedocument\.spreadsheetml|vnd\.ms-excel|vnd\.oasis\.opendocument\.spreadsheet)/i;
+const isSpreadsheet = (mimetype: string, filename: string) => SHEET_MIME.test(mimetype) || SHEET_EXT.test(filename);
+const isTextLike = (mimetype: string, filename: string) => TEXT_MIME.test(mimetype) || TEXT_EXT.test(filename);
+
 export type UploadPurpose = 'chat' | 'knowledge' | 'avatar' | 'logo' | 'bot_image' | 'skill';
 
 const PURPOSE: Record<UploadPurpose, { bucket: FileBucket; area: FileArea }> = {
@@ -102,6 +113,32 @@ export class FilesService {
         const f = await this.assertCanRead(actor, id);
         const signed = await this.storage.createDownloadUrl(f.bucket, f.object_path, f.filename, inline ? 'inline' : 'attachment');
         return { ...signed, filename: f.filename, mimetype: f.mimetype };
+    }
+
+    /** Text content for in-app previews (text-like files only, capped so huge logs stay cheap). */
+    async previewText(actor: Actor, id: string) {
+        const f = await this.assertCanRead(actor, id);
+        if (!isTextLike(f.mimetype, f.filename)) throw new BadRequestException('This file cannot be previewed as text');
+        const data = await this.storage.read(f.bucket, f.object_path);
+        const truncated = data.length > PREVIEW_TEXT_MAX_BYTES;
+        return { text: data.subarray(0, PREVIEW_TEXT_MAX_BYTES).toString('utf8'), truncated, filename: f.filename, mimetype: f.mimetype };
+    }
+
+    /** Spreadsheet (xlsx/xls/ods) as display-formatted rows per sheet, capped for in-app previews. */
+    async previewSheets(actor: Actor, id: string) {
+        const f = await this.assertCanRead(actor, id);
+        if (!isSpreadsheet(f.mimetype, f.filename)) throw new BadRequestException('This file is not a spreadsheet');
+        if (Number(f.size) > SHEET_PREVIEW_MAX_FILE_BYTES) throw new BadRequestException('This spreadsheet is too large to preview. Download it instead.');
+        const data = await this.storage.read(f.bucket, f.object_path);
+        const XLSX = await import('xlsx');
+        const wb = XLSX.read(data, { type: 'buffer', sheetRows: SHEET_PREVIEW_MAX_ROWS + 1, cellDates: true });
+        const sheets = wb.SheetNames.map((name) => {
+            const all = XLSX.utils.sheet_to_json<unknown[]>(wb.Sheets[name], { header: 1, raw: false, defval: '', blankrows: false });
+            const rows = all.slice(0, SHEET_PREVIEW_MAX_ROWS).map((r) => r.slice(0, SHEET_PREVIEW_MAX_COLS).map((c) => String(c ?? '')));
+            const truncated = all.length > SHEET_PREVIEW_MAX_ROWS || all.some((r) => r.length > SHEET_PREVIEW_MAX_COLS);
+            return { name, rows, truncated };
+        });
+        return { sheets, filename: f.filename };
     }
 
     async get(actor: Actor, id: string) {

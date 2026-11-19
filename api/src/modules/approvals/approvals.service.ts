@@ -47,6 +47,10 @@ export class ApprovalsService {
         const userMs = TIMEOUT_MS[userSettings?.approval_timeout ?? 'KEEP_WAITING'];
         const orgMs = orgSettings?.approval_timeout_minutes ? orgSettings.approval_timeout_minutes * 60_000 : null;
         const ms = [userMs, orgMs].filter((x): x is number => !!x).sort((a, b) => a - b)[0];
+        const requiresTap = input.requires_tap || TAP_ONLY.includes(input.action_type);
+        // Auto-accept only when the organisation timeout is the one that fires, and never for enforced or tap-only actions.
+        const autoApprove =
+            !!ms && ms === orgMs && orgSettings?.approval_timeout_action === 'APPROVE' && !requiresTap && !orgSettings.enforced_approvals.includes(input.action_type);
         const approval = await this.prisma.approval.create({
             data: {
                 organization_id: input.organization_id,
@@ -59,13 +63,13 @@ export class ApprovalsService {
                 title: input.title.slice(0, 300),
                 preview: input.preview as Prisma.InputJsonValue,
                 tool_call_id: input.tool_call_id,
-                requires_tap: input.requires_tap || TAP_ONLY.includes(input.action_type),
+                requires_tap: requiresTap,
                 is_urgent: input.action_type === 'PURCHASE_PAYMENT',
                 timeout_at: ms ? new Date(Date.now() + ms) : null,
             },
             include: { bot: { select: { id: true, name: true, emoji: true, color: true } } },
         });
-        if (ms) await this.queue.add(Jobs.approvals.TIMEOUT, { approval_id: approval.id }, { jobId: `approval:${approval.id}`, delay: ms, attempts: 3 });
+        if (ms) await this.queue.add(Jobs.approvals.TIMEOUT, { approval_id: approval.id, auto_approve: autoApprove }, { jobId: `approval:${approval.id}`, delay: ms, attempts: 3 });
         if (input.conversation_id) await this.events.toConversation(input.conversation_id, ConversationEvents.APPROVAL_CREATED, approval);
         if (input.requested_from_id) {
             await this.events.toUser(input.requested_from_id, UserEvents.APPROVALS_CHANGED, { approval_id: approval.id });
@@ -123,10 +127,19 @@ export class ApprovalsService {
         return this.get(actor, id);
     }
 
-    /** Timeout job: cancel the approval; the run ends as failed per §10.3 / §13.2. */
-    async expire(id: string) {
-        const res = await this.prisma.approval.updateMany({ where: { id, status: 'PENDING' }, data: { status: 'EXPIRED', resolved_at: new Date() } });
-        if (res.count) await this.afterResolved(id);
+    /**
+     * Timeout job: cancel the approval (the run ends as failed per §10.3 / §13.2), or — when the organisation
+     * chose "Accept automatically" — approve it and let the run continue.
+     */
+    async expire(id: string, autoApprove = false) {
+        const status = autoApprove ? 'APPROVED' : 'EXPIRED';
+        const res = await this.prisma.approval.updateMany({ where: { id, status: 'PENDING' }, data: { status, resolved_at: new Date() } });
+        if (!res.count) return;
+        await this.afterResolved(id);
+        if (autoApprove) {
+            const a = await this.prisma.approval.findUniqueOrThrow({ where: { id } });
+            await this.activity.log({ organization_id: a.organization_id, actor_user_id: null, action: 'approval.auto_approved', target_type: 'approval', target_id: id, run_id: a.run_id, metadata: { action_type: a.action_type, title: a.title } });
+        }
     }
 
     private async afterResolved(id: string) {

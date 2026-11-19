@@ -14,8 +14,8 @@ export class ApprovalsProcessor extends WorkerHost {
         super();
     }
 
-    async process(job: Job<{ approval_id: string }>) {
-        if (job.name === Jobs.approvals.TIMEOUT) await this.approvals.expire(job.data.approval_id);
+    async process(job: Job<{ approval_id: string; auto_approve?: boolean }>) {
+        if (job.name === Jobs.approvals.TIMEOUT) await this.approvals.expire(job.data.approval_id, !!job.data.auto_approve);
     }
 }
 

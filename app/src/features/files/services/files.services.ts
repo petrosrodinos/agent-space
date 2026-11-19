@@ -49,3 +49,15 @@ export async function uploadFile(file: File, purpose: UploadPurpose, opts: { con
 }
 
 export const getFileUrl = (id: string, inline = false) => request<{ url: string; filename: string; mimetype: string; expires_at: string }>(() => axiosInstance.get(ApiRoutes.files.url(id), { params: { inline } }));
+
+/** Text content of a text-like file for in-app previews (capped server-side at 1 MB). */
+export const getFileText = (id: string) => request<{ text: string; truncated: boolean; filename: string; mimetype: string }>(() => axiosInstance.get(ApiRoutes.files.text(id)), "Could not load the preview.");
+
+export interface PreviewSheet {
+  name: string;
+  rows: string[][];
+  truncated: boolean;
+}
+
+/** Spreadsheet (xlsx/xls/ods) parsed server-side for in-app previews (first 500 rows × 50 columns per sheet). */
+export const getFileSheets = (id: string) => request<{ sheets: PreviewSheet[]; filename: string }>(() => axiosInstance.get(ApiRoutes.files.sheets(id)), "Could not load the preview.");

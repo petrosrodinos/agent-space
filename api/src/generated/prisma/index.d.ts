@@ -824,6 +824,14 @@ export const MaxSession: {
 export type MaxSession = (typeof MaxSession)[keyof typeof MaxSession]
 
 
+export const ApprovalTimeoutAction: {
+  CANCEL: 'CANCEL',
+  APPROVE: 'APPROVE'
+};
+
+export type ApprovalTimeoutAction = (typeof ApprovalTimeoutAction)[keyof typeof ApprovalTimeoutAction]
+
+
 export const MinApprovalLevel: {
   NONE: 'NONE',
   IMPORTANT_ACTIONS: 'IMPORTANT_ACTIONS',
@@ -1769,6 +1777,10 @@ export const IdlePause: typeof $Enums.IdlePause
 export type MaxSession = $Enums.MaxSession
 
 export const MaxSession: typeof $Enums.MaxSession
+
+export type ApprovalTimeoutAction = $Enums.ApprovalTimeoutAction
+
+export const ApprovalTimeoutAction: typeof $Enums.ApprovalTimeoutAction
 
 export type MinApprovalLevel = $Enums.MinApprovalLevel
 
@@ -31221,6 +31233,7 @@ export namespace Prisma {
     min_approval_level: $Enums.MinApprovalLevel | null
     bots_consulting_enabled: boolean | null
     approval_timeout_minutes: number | null
+    approval_timeout_action: $Enums.ApprovalTimeoutAction | null
     who_can_create_skills: $Enums.WhoCan | null
     starter_skills_enabled: boolean | null
     skill_import_enabled: boolean | null
@@ -31237,6 +31250,7 @@ export namespace Prisma {
     voice_max_session: $Enums.VoiceSessionLength | null
     voice_approvals_enabled: boolean | null
     voice_keep_transcripts: boolean | null
+    voice_model: string | null
     automations_enabled: boolean | null
     max_automations_per_member: number | null
     automations_cloud_computer: boolean | null
@@ -31290,6 +31304,7 @@ export namespace Prisma {
     min_approval_level: $Enums.MinApprovalLevel | null
     bots_consulting_enabled: boolean | null
     approval_timeout_minutes: number | null
+    approval_timeout_action: $Enums.ApprovalTimeoutAction | null
     who_can_create_skills: $Enums.WhoCan | null
     starter_skills_enabled: boolean | null
     skill_import_enabled: boolean | null
@@ -31306,6 +31321,7 @@ export namespace Prisma {
     voice_max_session: $Enums.VoiceSessionLength | null
     voice_approvals_enabled: boolean | null
     voice_keep_transcripts: boolean | null
+    voice_model: string | null
     automations_enabled: boolean | null
     max_automations_per_member: number | null
     automations_cloud_computer: boolean | null
@@ -31365,6 +31381,7 @@ export namespace Prisma {
     enforced_approvals: number
     bots_consulting_enabled: number
     approval_timeout_minutes: number
+    approval_timeout_action: number
     who_can_create_skills: number
     starter_skills_enabled: number
     skill_import_enabled: number
@@ -31381,6 +31398,7 @@ export namespace Prisma {
     voice_max_session: number
     voice_approvals_enabled: number
     voice_keep_transcripts: number
+    voice_model: number
     automations_enabled: number
     max_automations_per_member: number
     automations_cloud_computer: number
@@ -31454,6 +31472,7 @@ export namespace Prisma {
     min_approval_level?: true
     bots_consulting_enabled?: true
     approval_timeout_minutes?: true
+    approval_timeout_action?: true
     who_can_create_skills?: true
     starter_skills_enabled?: true
     skill_import_enabled?: true
@@ -31470,6 +31489,7 @@ export namespace Prisma {
     voice_max_session?: true
     voice_approvals_enabled?: true
     voice_keep_transcripts?: true
+    voice_model?: true
     automations_enabled?: true
     max_automations_per_member?: true
     automations_cloud_computer?: true
@@ -31523,6 +31543,7 @@ export namespace Prisma {
     min_approval_level?: true
     bots_consulting_enabled?: true
     approval_timeout_minutes?: true
+    approval_timeout_action?: true
     who_can_create_skills?: true
     starter_skills_enabled?: true
     skill_import_enabled?: true
@@ -31539,6 +31560,7 @@ export namespace Prisma {
     voice_max_session?: true
     voice_approvals_enabled?: true
     voice_keep_transcripts?: true
+    voice_model?: true
     automations_enabled?: true
     max_automations_per_member?: true
     automations_cloud_computer?: true
@@ -31598,6 +31620,7 @@ export namespace Prisma {
     enforced_approvals?: true
     bots_consulting_enabled?: true
     approval_timeout_minutes?: true
+    approval_timeout_action?: true
     who_can_create_skills?: true
     starter_skills_enabled?: true
     skill_import_enabled?: true
@@ -31614,6 +31637,7 @@ export namespace Prisma {
     voice_max_session?: true
     voice_approvals_enabled?: true
     voice_keep_transcripts?: true
+    voice_model?: true
     automations_enabled?: true
     max_automations_per_member?: true
     automations_cloud_computer?: true
@@ -31762,6 +31786,7 @@ export namespace Prisma {
     enforced_approvals: $Enums.ActionType[]
     bots_consulting_enabled: boolean
     approval_timeout_minutes: number | null
+    approval_timeout_action: $Enums.ApprovalTimeoutAction
     who_can_create_skills: $Enums.WhoCan
     starter_skills_enabled: boolean
     skill_import_enabled: boolean
@@ -31778,6 +31803,7 @@ export namespace Prisma {
     voice_max_session: $Enums.VoiceSessionLength
     voice_approvals_enabled: boolean
     voice_keep_transcripts: boolean
+    voice_model: string | null
     automations_enabled: boolean
     max_automations_per_member: number | null
     automations_cloud_computer: boolean
@@ -31858,6 +31884,7 @@ export namespace Prisma {
     enforced_approvals?: boolean
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: boolean
+    approval_timeout_action?: boolean
     who_can_create_skills?: boolean
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -31874,6 +31901,7 @@ export namespace Prisma {
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: boolean
     automations_enabled?: boolean
     max_automations_per_member?: boolean
     automations_cloud_computer?: boolean
@@ -31937,6 +31965,7 @@ export namespace Prisma {
     enforced_approvals?: boolean
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: boolean
+    approval_timeout_action?: boolean
     who_can_create_skills?: boolean
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -31953,6 +31982,7 @@ export namespace Prisma {
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: boolean
     automations_enabled?: boolean
     max_automations_per_member?: boolean
     automations_cloud_computer?: boolean
@@ -32016,6 +32046,7 @@ export namespace Prisma {
     enforced_approvals?: boolean
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: boolean
+    approval_timeout_action?: boolean
     who_can_create_skills?: boolean
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -32032,6 +32063,7 @@ export namespace Prisma {
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: boolean
     automations_enabled?: boolean
     max_automations_per_member?: boolean
     automations_cloud_computer?: boolean
@@ -32095,6 +32127,7 @@ export namespace Prisma {
     enforced_approvals?: boolean
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: boolean
+    approval_timeout_action?: boolean
     who_can_create_skills?: boolean
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -32111,6 +32144,7 @@ export namespace Prisma {
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: boolean
     automations_enabled?: boolean
     max_automations_per_member?: boolean
     automations_cloud_computer?: boolean
@@ -32130,7 +32164,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type OrganizationSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "default_language" | "default_timezone" | "default_working_hours" | "invite_links_enabled" | "default_invite_role" | "auto_join_domain" | "invitation_expiry" | "company_instructions" | "who_can_create_bots" | "max_bots_per_member" | "default_model_id" | "model_policy" | "model_auto_fallback" | "model_compare_enabled" | "service_policy" | "service_list" | "members_private_tool_servers" | "members_api_key_connections" | "builtin_web_search" | "builtin_image_generation" | "builtin_document_creation" | "interactive_replies_mode" | "device_tools_enabled" | "allowed_device_tools" | "members_local_tool_servers" | "automations_desktop_tools" | "biometric_approval_scopes" | "cloud_computers_enabled" | "cloud_computers_who" | "computer_idle_pause" | "computer_max_session" | "computer_storage_limit_bytes" | "members_take_control" | "record_replays" | "blocked_websites" | "min_approval_level" | "enforced_approvals" | "bots_consulting_enabled" | "approval_timeout_minutes" | "who_can_create_skills" | "starter_skills_enabled" | "skill_import_enabled" | "artifacts_enabled" | "public_link_policy" | "public_link_require_password" | "public_link_max_lifetime" | "public_artifact_ai_enabled" | "public_artifact_uploads" | "artifact_embedding_enabled" | "artifact_design_default" | "voice_mode_enabled" | "voice_mode_who" | "voice_max_session" | "voice_approvals_enabled" | "voice_keep_transcripts" | "automations_enabled" | "max_automations_per_member" | "automations_cloud_computer" | "automation_pre_approvals" | "max_schedule_frequency" | "usage_alert_thresholds" | "limit_reached_action" | "conversation_retention" | "computer_retention" | "max_file_size" | "members_may_export" | "temporary_chats_allowed" | "require_two_factor" | "allowed_sign_in_methods" | "session_inactivity" | "created_at" | "updated_at", ExtArgs["result"]["organizationSettings"]>
+  export type OrganizationSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "default_language" | "default_timezone" | "default_working_hours" | "invite_links_enabled" | "default_invite_role" | "auto_join_domain" | "invitation_expiry" | "company_instructions" | "who_can_create_bots" | "max_bots_per_member" | "default_model_id" | "model_policy" | "model_auto_fallback" | "model_compare_enabled" | "service_policy" | "service_list" | "members_private_tool_servers" | "members_api_key_connections" | "builtin_web_search" | "builtin_image_generation" | "builtin_document_creation" | "interactive_replies_mode" | "device_tools_enabled" | "allowed_device_tools" | "members_local_tool_servers" | "automations_desktop_tools" | "biometric_approval_scopes" | "cloud_computers_enabled" | "cloud_computers_who" | "computer_idle_pause" | "computer_max_session" | "computer_storage_limit_bytes" | "members_take_control" | "record_replays" | "blocked_websites" | "min_approval_level" | "enforced_approvals" | "bots_consulting_enabled" | "approval_timeout_minutes" | "approval_timeout_action" | "who_can_create_skills" | "starter_skills_enabled" | "skill_import_enabled" | "artifacts_enabled" | "public_link_policy" | "public_link_require_password" | "public_link_max_lifetime" | "public_artifact_ai_enabled" | "public_artifact_uploads" | "artifact_embedding_enabled" | "artifact_design_default" | "voice_mode_enabled" | "voice_mode_who" | "voice_max_session" | "voice_approvals_enabled" | "voice_keep_transcripts" | "voice_model" | "automations_enabled" | "max_automations_per_member" | "automations_cloud_computer" | "automation_pre_approvals" | "max_schedule_frequency" | "usage_alert_thresholds" | "limit_reached_action" | "conversation_retention" | "computer_retention" | "max_file_size" | "members_may_export" | "temporary_chats_allowed" | "require_two_factor" | "allowed_sign_in_methods" | "session_inactivity" | "created_at" | "updated_at", ExtArgs["result"]["organizationSettings"]>
   export type OrganizationSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     default_model?: boolean | OrganizationSettings$default_modelArgs<ExtArgs>
@@ -32192,6 +32226,7 @@ export namespace Prisma {
       enforced_approvals: $Enums.ActionType[]
       bots_consulting_enabled: boolean
       approval_timeout_minutes: number | null
+      approval_timeout_action: $Enums.ApprovalTimeoutAction
       who_can_create_skills: $Enums.WhoCan
       starter_skills_enabled: boolean
       skill_import_enabled: boolean
@@ -32208,6 +32243,7 @@ export namespace Prisma {
       voice_max_session: $Enums.VoiceSessionLength
       voice_approvals_enabled: boolean
       voice_keep_transcripts: boolean
+      voice_model: string | null
       automations_enabled: boolean
       max_automations_per_member: number | null
       automations_cloud_computer: boolean
@@ -32691,6 +32727,7 @@ export namespace Prisma {
     readonly enforced_approvals: FieldRef<"OrganizationSettings", 'ActionType[]'>
     readonly bots_consulting_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly approval_timeout_minutes: FieldRef<"OrganizationSettings", 'Int'>
+    readonly approval_timeout_action: FieldRef<"OrganizationSettings", 'ApprovalTimeoutAction'>
     readonly who_can_create_skills: FieldRef<"OrganizationSettings", 'WhoCan'>
     readonly starter_skills_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly skill_import_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
@@ -32707,6 +32744,7 @@ export namespace Prisma {
     readonly voice_max_session: FieldRef<"OrganizationSettings", 'VoiceSessionLength'>
     readonly voice_approvals_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly voice_keep_transcripts: FieldRef<"OrganizationSettings", 'Boolean'>
+    readonly voice_model: FieldRef<"OrganizationSettings", 'String'>
     readonly automations_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly max_automations_per_member: FieldRef<"OrganizationSettings", 'Int'>
     readonly automations_cloud_computer: FieldRef<"OrganizationSettings", 'Boolean'>
@@ -118955,6 +118993,7 @@ export namespace Prisma {
     enforced_approvals: 'enforced_approvals',
     bots_consulting_enabled: 'bots_consulting_enabled',
     approval_timeout_minutes: 'approval_timeout_minutes',
+    approval_timeout_action: 'approval_timeout_action',
     who_can_create_skills: 'who_can_create_skills',
     starter_skills_enabled: 'starter_skills_enabled',
     skill_import_enabled: 'skill_import_enabled',
@@ -118971,6 +119010,7 @@ export namespace Prisma {
     voice_max_session: 'voice_max_session',
     voice_approvals_enabled: 'voice_approvals_enabled',
     voice_keep_transcripts: 'voice_keep_transcripts',
+    voice_model: 'voice_model',
     automations_enabled: 'automations_enabled',
     max_automations_per_member: 'max_automations_per_member',
     automations_cloud_computer: 'automations_cloud_computer',
@@ -120966,6 +121006,20 @@ export namespace Prisma {
    * Reference to a field of type 'ActionType'
    */
   export type EnumActionTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ActionType'>
+    
+
+
+  /**
+   * Reference to a field of type 'ApprovalTimeoutAction'
+   */
+  export type EnumApprovalTimeoutActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalTimeoutAction'>
+    
+
+
+  /**
+   * Reference to a field of type 'ApprovalTimeoutAction[]'
+   */
+  export type ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ApprovalTimeoutAction[]'>
     
 
 
@@ -123643,6 +123697,7 @@ export namespace Prisma {
     enforced_approvals?: EnumActionTypeNullableListFilter<"OrganizationSettings">
     bots_consulting_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     approval_timeout_minutes?: IntNullableFilter<"OrganizationSettings"> | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFilter<"OrganizationSettings"> | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     starter_skills_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     skill_import_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123659,6 +123714,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     voice_keep_transcripts?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_model?: StringNullableFilter<"OrganizationSettings"> | string | null
     automations_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     max_automations_per_member?: IntNullableFilter<"OrganizationSettings"> | number | null
     automations_cloud_computer?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123722,6 +123778,7 @@ export namespace Prisma {
     enforced_approvals?: SortOrder
     bots_consulting_enabled?: SortOrder
     approval_timeout_minutes?: SortOrderInput | SortOrder
+    approval_timeout_action?: SortOrder
     who_can_create_skills?: SortOrder
     starter_skills_enabled?: SortOrder
     skill_import_enabled?: SortOrder
@@ -123738,6 +123795,7 @@ export namespace Prisma {
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
     voice_keep_transcripts?: SortOrder
+    voice_model?: SortOrderInput | SortOrder
     automations_enabled?: SortOrder
     max_automations_per_member?: SortOrderInput | SortOrder
     automations_cloud_computer?: SortOrder
@@ -123804,6 +123862,7 @@ export namespace Prisma {
     enforced_approvals?: EnumActionTypeNullableListFilter<"OrganizationSettings">
     bots_consulting_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     approval_timeout_minutes?: IntNullableFilter<"OrganizationSettings"> | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFilter<"OrganizationSettings"> | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     starter_skills_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     skill_import_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123820,6 +123879,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     voice_keep_transcripts?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_model?: StringNullableFilter<"OrganizationSettings"> | string | null
     automations_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     max_automations_per_member?: IntNullableFilter<"OrganizationSettings"> | number | null
     automations_cloud_computer?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123883,6 +123943,7 @@ export namespace Prisma {
     enforced_approvals?: SortOrder
     bots_consulting_enabled?: SortOrder
     approval_timeout_minutes?: SortOrderInput | SortOrder
+    approval_timeout_action?: SortOrder
     who_can_create_skills?: SortOrder
     starter_skills_enabled?: SortOrder
     skill_import_enabled?: SortOrder
@@ -123899,6 +123960,7 @@ export namespace Prisma {
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
     voice_keep_transcripts?: SortOrder
+    voice_model?: SortOrderInput | SortOrder
     automations_enabled?: SortOrder
     max_automations_per_member?: SortOrderInput | SortOrder
     automations_cloud_computer?: SortOrder
@@ -123968,6 +124030,7 @@ export namespace Prisma {
     enforced_approvals?: EnumActionTypeNullableListFilter<"OrganizationSettings">
     bots_consulting_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     approval_timeout_minutes?: IntNullableWithAggregatesFilter<"OrganizationSettings"> | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionWithAggregatesFilter<"OrganizationSettings"> | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanWithAggregatesFilter<"OrganizationSettings"> | $Enums.WhoCan
     starter_skills_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     skill_import_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
@@ -123984,6 +124047,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthWithAggregatesFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     voice_keep_transcripts?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
+    voice_model?: StringNullableWithAggregatesFilter<"OrganizationSettings"> | string | null
     automations_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     max_automations_per_member?: IntNullableWithAggregatesFilter<"OrganizationSettings"> | number | null
     automations_cloud_computer?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
@@ -132697,6 +132761,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -132713,6 +132778,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -132776,6 +132842,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -132792,6 +132859,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -132851,6 +132919,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -132867,6 +132936,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -132930,6 +133000,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -132946,6 +133017,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -133007,6 +133079,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -133023,6 +133096,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -133082,6 +133156,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133098,6 +133173,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -133159,6 +133235,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133175,6 +133252,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -142630,6 +142708,13 @@ export namespace Prisma {
     isEmpty?: boolean
   }
 
+  export type EnumApprovalTimeoutActionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalTimeoutAction | EnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel> | $Enums.ApprovalTimeoutAction
+  }
+
   export type EnumPublicLinkPolicyFilter<$PrismaModel = never> = {
     equals?: $Enums.PublicLinkPolicy | EnumPublicLinkPolicyFieldRefInput<$PrismaModel>
     in?: $Enums.PublicLinkPolicy[] | ListEnumPublicLinkPolicyFieldRefInput<$PrismaModel>
@@ -142763,6 +142848,7 @@ export namespace Prisma {
     enforced_approvals?: SortOrder
     bots_consulting_enabled?: SortOrder
     approval_timeout_minutes?: SortOrder
+    approval_timeout_action?: SortOrder
     who_can_create_skills?: SortOrder
     starter_skills_enabled?: SortOrder
     skill_import_enabled?: SortOrder
@@ -142779,6 +142865,7 @@ export namespace Prisma {
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
     voice_keep_transcripts?: SortOrder
+    voice_model?: SortOrder
     automations_enabled?: SortOrder
     max_automations_per_member?: SortOrder
     automations_cloud_computer?: SortOrder
@@ -142842,6 +142929,7 @@ export namespace Prisma {
     min_approval_level?: SortOrder
     bots_consulting_enabled?: SortOrder
     approval_timeout_minutes?: SortOrder
+    approval_timeout_action?: SortOrder
     who_can_create_skills?: SortOrder
     starter_skills_enabled?: SortOrder
     skill_import_enabled?: SortOrder
@@ -142858,6 +142946,7 @@ export namespace Prisma {
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
     voice_keep_transcripts?: SortOrder
+    voice_model?: SortOrder
     automations_enabled?: SortOrder
     max_automations_per_member?: SortOrder
     automations_cloud_computer?: SortOrder
@@ -142911,6 +143000,7 @@ export namespace Prisma {
     min_approval_level?: SortOrder
     bots_consulting_enabled?: SortOrder
     approval_timeout_minutes?: SortOrder
+    approval_timeout_action?: SortOrder
     who_can_create_skills?: SortOrder
     starter_skills_enabled?: SortOrder
     skill_import_enabled?: SortOrder
@@ -142927,6 +143017,7 @@ export namespace Prisma {
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
     voice_keep_transcripts?: SortOrder
+    voice_model?: SortOrder
     automations_enabled?: SortOrder
     max_automations_per_member?: SortOrder
     automations_cloud_computer?: SortOrder
@@ -143072,6 +143163,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumMinApprovalLevelFilter<$PrismaModel>
     _max?: NestedEnumMinApprovalLevelFilter<$PrismaModel>
+  }
+
+  export type EnumApprovalTimeoutActionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalTimeoutAction | EnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalTimeoutActionWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalTimeoutAction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel>
+    _max?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel>
   }
 
   export type EnumPublicLinkPolicyWithAggregatesFilter<$PrismaModel = never> = {
@@ -152485,6 +152586,10 @@ export namespace Prisma {
   export type OrganizationSettingsUpdateenforced_approvalsInput = {
     set?: $Enums.ActionType[]
     push?: $Enums.ActionType | $Enums.ActionType[]
+  }
+
+  export type EnumApprovalTimeoutActionFieldUpdateOperationsInput = {
+    set?: $Enums.ApprovalTimeoutAction
   }
 
   export type EnumPublicLinkPolicyFieldUpdateOperationsInput = {
@@ -161930,6 +162035,13 @@ export namespace Prisma {
     not?: NestedEnumMinApprovalLevelFilter<$PrismaModel> | $Enums.MinApprovalLevel
   }
 
+  export type NestedEnumApprovalTimeoutActionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalTimeoutAction | EnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel> | $Enums.ApprovalTimeoutAction
+  }
+
   export type NestedEnumPublicLinkPolicyFilter<$PrismaModel = never> = {
     equals?: $Enums.PublicLinkPolicy | EnumPublicLinkPolicyFieldRefInput<$PrismaModel>
     in?: $Enums.PublicLinkPolicy[] | ListEnumPublicLinkPolicyFieldRefInput<$PrismaModel>
@@ -162131,6 +162243,16 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumMinApprovalLevelFilter<$PrismaModel>
     _max?: NestedEnumMinApprovalLevelFilter<$PrismaModel>
+  }
+
+  export type NestedEnumApprovalTimeoutActionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ApprovalTimeoutAction | EnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    in?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ApprovalTimeoutAction[] | ListEnumApprovalTimeoutActionFieldRefInput<$PrismaModel>
+    not?: NestedEnumApprovalTimeoutActionWithAggregatesFilter<$PrismaModel> | $Enums.ApprovalTimeoutAction
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel>
+    _max?: NestedEnumApprovalTimeoutActionFilter<$PrismaModel>
   }
 
   export type NestedEnumPublicLinkPolicyWithAggregatesFilter<$PrismaModel = never> = {
@@ -172257,6 +172379,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -172273,6 +172396,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -172334,6 +172458,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -172350,6 +172475,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -174358,6 +174484,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -174374,6 +174501,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -174435,6 +174563,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -174451,6 +174580,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -177073,6 +177203,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -177089,6 +177220,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -177150,6 +177282,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -177166,6 +177299,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -177567,6 +177701,7 @@ export namespace Prisma {
     enforced_approvals?: EnumActionTypeNullableListFilter<"OrganizationSettings">
     bots_consulting_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     approval_timeout_minutes?: IntNullableFilter<"OrganizationSettings"> | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFilter<"OrganizationSettings"> | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     starter_skills_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     skill_import_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -177583,6 +177718,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     voice_keep_transcripts?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_model?: StringNullableFilter<"OrganizationSettings"> | string | null
     automations_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     max_automations_per_member?: IntNullableFilter<"OrganizationSettings"> | number | null
     automations_cloud_computer?: BoolFilter<"OrganizationSettings"> | boolean
@@ -230245,6 +230381,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsCreateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: boolean
     approval_timeout_minutes?: number | null
+    approval_timeout_action?: $Enums.ApprovalTimeoutAction
     who_can_create_skills?: $Enums.WhoCan
     starter_skills_enabled?: boolean
     skill_import_enabled?: boolean
@@ -230261,6 +230398,7 @@ export namespace Prisma {
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
     voice_keep_transcripts?: boolean
+    voice_model?: string | null
     automations_enabled?: boolean
     max_automations_per_member?: number | null
     automations_cloud_computer?: boolean
@@ -230711,6 +230849,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -230727,6 +230866,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -230788,6 +230928,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -230804,6 +230945,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean
@@ -230864,6 +231006,7 @@ export namespace Prisma {
     enforced_approvals?: OrganizationSettingsUpdateenforced_approvalsInput | $Enums.ActionType[]
     bots_consulting_enabled?: BoolFieldUpdateOperationsInput | boolean
     approval_timeout_minutes?: NullableIntFieldUpdateOperationsInput | number | null
+    approval_timeout_action?: EnumApprovalTimeoutActionFieldUpdateOperationsInput | $Enums.ApprovalTimeoutAction
     who_can_create_skills?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     starter_skills_enabled?: BoolFieldUpdateOperationsInput | boolean
     skill_import_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -230880,6 +231023,7 @@ export namespace Prisma {
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
     voice_keep_transcripts?: BoolFieldUpdateOperationsInput | boolean
+    voice_model?: NullableStringFieldUpdateOperationsInput | string | null
     automations_enabled?: BoolFieldUpdateOperationsInput | boolean
     max_automations_per_member?: NullableIntFieldUpdateOperationsInput | number | null
     automations_cloud_computer?: BoolFieldUpdateOperationsInput | boolean

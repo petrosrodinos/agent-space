@@ -1,9 +1,10 @@
 import { ApiProperty, ApiPropertyOptional, PartialType } from '@nestjs/swagger';
 import { IsArray, IsBoolean, IsEmail, IsEnum, IsIn, IsInt, IsOptional, IsString, Matches, Max, MaxLength, Min, MinLength, ArrayMaxSize } from 'class-validator';
 import {
-    ActionType, AppLanguage, InvitationExpiry, InteractiveRepliesMode, MinApprovalLevel, ModelPolicy, OrganizationRole,
+    ActionType, AppLanguage, ApprovalTimeoutAction, InvitationExpiry, InteractiveRepliesMode, MinApprovalLevel, ModelPolicy, OrganizationRole,
     OrgConversationRetention, PublicLinkPolicy, WhoCan, MaxFileSize, ScheduleFrequency, LimitReachedAction,
 } from 'generated/prisma';
+import { VOICE_MODEL_IDS } from '@/modules/voice/voice-models';
 
 export class CreateOrganizationDto {
     @ApiProperty({ example: 'Acme' }) @IsString() @MinLength(1) @MaxLength(80) name: string;
@@ -40,11 +41,13 @@ export class UpdateOrganizationSettingsDto {
     @ApiPropertyOptional({ enum: ActionType, isArray: true }) @IsOptional() @IsArray() @IsEnum(ActionType, { each: true }) enforced_approvals?: ActionType[];
     @ApiPropertyOptional() @IsOptional() @IsBoolean() bots_consulting_enabled?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsInt() @Min(5) @Max(60 * 24 * 30) approval_timeout_minutes?: number | null;
+    @ApiPropertyOptional({ enum: ApprovalTimeoutAction, description: 'APPROVE = accept automatically when the timeout is reached' }) @IsOptional() @IsEnum(ApprovalTimeoutAction) approval_timeout_action?: ApprovalTimeoutAction;
     @ApiPropertyOptional({ enum: WhoCan }) @IsOptional() @IsEnum(WhoCan) who_can_create_skills?: WhoCan;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() starter_skills_enabled?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() artifacts_enabled?: boolean;
     @ApiPropertyOptional({ enum: PublicLinkPolicy }) @IsOptional() @IsEnum(PublicLinkPolicy) public_link_policy?: PublicLinkPolicy;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() voice_mode_enabled?: boolean;
+    @ApiPropertyOptional({ enum: VOICE_MODEL_IDS, nullable: true, description: 'null = platform default' }) @IsOptional() @IsIn([...VOICE_MODEL_IDS, null]) voice_model?: string | null;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() automations_enabled?: boolean;
     @ApiPropertyOptional({ enum: ScheduleFrequency }) @IsOptional() @IsEnum(ScheduleFrequency) max_schedule_frequency?: ScheduleFrequency;
     @ApiPropertyOptional({ enum: LimitReachedAction }) @IsOptional() @IsEnum(LimitReachedAction) limit_reached_action?: LimitReachedAction;

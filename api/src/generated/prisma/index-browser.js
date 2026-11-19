@@ -381,6 +381,7 @@ exports.Prisma.OrganizationSettingsScalarFieldEnum = {
   enforced_approvals: 'enforced_approvals',
   bots_consulting_enabled: 'bots_consulting_enabled',
   approval_timeout_minutes: 'approval_timeout_minutes',
+  approval_timeout_action: 'approval_timeout_action',
   who_can_create_skills: 'who_can_create_skills',
   starter_skills_enabled: 'starter_skills_enabled',
   skill_import_enabled: 'skill_import_enabled',
@@ -397,6 +398,7 @@ exports.Prisma.OrganizationSettingsScalarFieldEnum = {
   voice_max_session: 'voice_max_session',
   voice_approvals_enabled: 'voice_approvals_enabled',
   voice_keep_transcripts: 'voice_keep_transcripts',
+  voice_model: 'voice_model',
   automations_enabled: 'automations_enabled',
   max_automations_per_member: 'max_automations_per_member',
   automations_cloud_computer: 'automations_cloud_computer',
@@ -1720,6 +1722,11 @@ exports.MinApprovalLevel = exports.$Enums.MinApprovalLevel = {
   NONE: 'NONE',
   IMPORTANT_ACTIONS: 'IMPORTANT_ACTIONS',
   ALWAYS_ASK: 'ALWAYS_ASK'
+};
+
+exports.ApprovalTimeoutAction = exports.$Enums.ApprovalTimeoutAction = {
+  CANCEL: 'CANCEL',
+  APPROVE: 'APPROVE'
 };
 
 exports.PublicLinkPolicy = exports.$Enums.PublicLinkPolicy = {

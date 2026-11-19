@@ -18,6 +18,13 @@ export interface StartedVoiceSession {
   max_minutes: number;
 }
 
+export interface VoiceModelOption {
+  id: string;
+  label: string;
+  description: string;
+}
+
+export const getVoiceModels = () => request<{ models: VoiceModelOption[]; default: string }>(() => axiosInstance.get(ApiRoutes.voice.models));
 export const getVoices = () => request<{ voices: VoiceOption[]; default: string }>(() => axiosInstance.get(ApiRoutes.voice.voices));
 export const getVoiceSample = (voice: string) => request<Blob>(() => axiosInstance.get(ApiRoutes.voice.sample(voice), { responseType: "blob" }));
 export const startVoiceSession = (dto: { conversation_id: string; bot_id?: string; sdp: string; input_mode?: VoiceInputMode }) =>

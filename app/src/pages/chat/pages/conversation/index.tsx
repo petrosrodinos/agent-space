@@ -212,6 +212,7 @@ const ConversationPage: FC = () => {
     }
   };
 
+  const { sessionId: voiceSessionId, sendText: sendVoiceText } = voice;
   const actions: MessageActions = useMemo(
     () => ({
       onRetry: (m, modelId) => retry.mutate({ id: m.id, model_id: modelId }),
@@ -222,12 +223,14 @@ const ConversationPage: FC = () => {
       onDelete: (m) => setDeletingMsg(m),
       onFollowUp: (text) => {
         atBottom.current = true;
-        send.mutate({ content: text });
+        // In voice mode the bot answers out loud in the same session, like typing with the Keyboard button.
+        if (voiceSessionId) void sendVoiceText(text);
+        else send.mutate({ content: text });
       },
       onReply: (m) => setReplyingToId(m.id),
       onJumpToMessage: (id) => void jumpToMessage(id),
     }),
-    [retry, react, pin, edit, send, jumpToMessage],
+    [retry, react, pin, edit, send, jumpToMessage, voiceSessionId, sendVoiceText],
   );
 
   if (convError) {

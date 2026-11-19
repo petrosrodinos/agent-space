@@ -17,11 +17,8 @@ export interface NotifyInput {
     is_urgent?: boolean;
 }
 
-/** Default channels per event when the user has no saved preference (§12, §13.2). */
-export const DEFAULT_CHANNELS: Partial<Record<NotificationEvent, NotificationChannel[]>> = {
-    INVITATION_RECEIVED: ['IN_APP', 'EMAIL'],
-    EXPORT_READY: ['IN_APP', 'EMAIL'],
-};
+/** Default channels when the user has no saved preference. Email is opt-in per event. */
+export const DEFAULT_CHANNELS: NotificationChannel[] = ['IN_APP', 'PUSH'];
 
 @Injectable()
 export class NotificationsService {
@@ -81,7 +78,7 @@ export class NotificationsService {
             return {
                 event,
                 enabled: p?.enabled ?? true,
-                channels: p?.channels ?? DEFAULT_CHANNELS[event] ?? (['IN_APP', 'PUSH'] as NotificationChannel[]),
+                channels: p?.channels ?? [...DEFAULT_CHANNELS],
             };
         });
     }

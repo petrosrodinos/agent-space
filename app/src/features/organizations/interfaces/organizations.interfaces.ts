@@ -28,6 +28,7 @@ export interface OrganizationSettings {
   enforced_approvals: string[];
   bots_consulting_enabled: boolean;
   approval_timeout_minutes: number | null;
+  approval_timeout_action: ApprovalTimeoutAction;
   who_can_create_skills: WhoCan;
   starter_skills_enabled: boolean;
   conversation_retention: "FOREVER" | "YEAR_1" | "DAYS_90" | "DAYS_30";
@@ -35,6 +36,9 @@ export interface OrganizationSettings {
   temporary_chats_allowed: boolean;
   members_may_export: boolean;
   require_two_factor: boolean;
+  voice_mode_enabled: boolean;
+  /** OpenAI Realtime model for voice mode; null = platform default. */
+  voice_model: string | null;
   limit_reached_action: "PAUSE_AND_NOTIFY" | "SWITCH_TO_CHEAPER_MODEL" | "NOTIFY_ONLY";
   [key: string]: unknown;
 }
@@ -83,3 +87,7 @@ export interface InvitationPreview {
 
 /** Per-email result of sending invitations. */
 export const InviteResultStatuses = { INVITED: "invited", ALREADY_MEMBER: "already_member" } as const;
+
+/** What happens when the organisation approval timeout is reached. */
+export const ApprovalTimeoutActions = { CANCEL: "CANCEL", APPROVE: "APPROVE" } as const;
+export type ApprovalTimeoutAction = (typeof ApprovalTimeoutActions)[keyof typeof ApprovalTimeoutActions];

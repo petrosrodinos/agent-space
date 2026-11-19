@@ -9,6 +9,7 @@ export const QueryKeys = {
   AUTOMATIONS: "automations",
   BOT: "bot",
   BOT_MEMORIES: "bot-memories",
+  MY_MEMORIES: "my-memories",
   BOT_TEMPLATES: "bot-templates",
   BOTS: "bots",
   COMPUTER: "computer",
@@ -24,6 +25,8 @@ export const QueryKeys = {
   CREDENTIALS: "credentials",
   DEVICES: "devices",
   FILE_URL: "file-url",
+  FILE_TEXT: "file-text",
+  FILE_SHEETS: "file-sheets",
   INVITATION: "invitation",
   INVITATIONS: "invitations",
   KNOWLEDGE: "knowledge",
@@ -48,5 +51,6 @@ export const QueryKeys = {
   TOOL_SERVERS: "tool-servers",
   USAGE: "usage",
   VOICES: "voices",
+  VOICE_MODELS: "voice-models",
 } as const;
 export type QueryKey = (typeof QueryKeys)[keyof typeof QueryKeys];

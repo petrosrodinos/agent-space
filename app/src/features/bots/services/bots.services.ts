@@ -1,7 +1,7 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request } from "@/lib/request";
-import type { ActionType, AiModel, Bot, BotDraft, BotTemplate, CreateBotDto, Memory, UpdateBotDto } from "../interfaces/bots.interfaces";
+import type { ActionType, AiModel, Bot, BotDraft, BotTemplate, CreateBotDto, Memory, MyMemory, UpdateBotDto } from "../interfaces/bots.interfaces";
 import { type ApprovalOverrideChoice } from "@/features/bots/interfaces/bots.interfaces";
 
 export const getModels = () => request<AiModel[]>(() => axiosInstance.get(ApiRoutes.catalog.models));
@@ -17,9 +17,11 @@ export const duplicateBot = (id: string) => request<Bot>(() => axiosInstance.pos
 export const setApprovalRules = (id: string, rules: { action_type: ActionType; override: ApprovalOverrideChoice }[]) => request<Bot>(() => axiosInstance.put(ApiRoutes.bots.approval_rules(id), { rules }));
 export const setBotConnections = (id: string, connections: { connection_id: string; is_default_for_service?: boolean }[]) => request<Bot>(() => axiosInstance.put(ApiRoutes.bots.connections(id), { connections }));
 export const getBotMemories = (id: string) => request<Memory[]>(() => axiosInstance.get(ApiRoutes.bots.memories(id)));
+export const addBotMemory = (botId: string, content: string) => request<Memory>(() => axiosInstance.post(ApiRoutes.bots.memories(botId), { content }));
 export const updateMemory = (id: string, content: string) => request<Memory>(() => axiosInstance.patch(ApiRoutes.bots.memory(id), { content }));
 export const deleteMemory = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.memory(id)));
 export const clearBotMemories = (botId: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.memories(botId)));
+export const getMyMemories = () => request<MyMemory[]>(() => axiosInstance.get(ApiRoutes.bots.all_memories));
 export const clearAllMemories = () => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.bots.all_memories));
 export const getOrgMemories = () => request<Memory[]>(() => axiosInstance.get(ApiRoutes.bots.org_memory));
 export const addOrgMemory = (content: string) => request<Memory>(() => axiosInstance.post(ApiRoutes.bots.org_memory, { content }));

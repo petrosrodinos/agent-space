@@ -323,6 +323,21 @@ export class BotsService {
         });
     }
 
+    /** Everything bots remember about the current user, across every bot (Settings → Memory). */
+    listMyMemories(actor: Actor) {
+        return this.prisma.memory.findMany({
+            where: { organization_id: actor.organization_id, user_id: actor.user_id, kind: 'BOT_USER' },
+            include: { bot: { select: { id: true, name: true } } },
+            orderBy: { updated_at: 'desc' },
+        });
+    }
+
+    /** Adds a fact this bot should remember about the current user (Memory tab). */
+    async addMemory(actor: Actor, botId: string, content: string) {
+        await this.access.requireUsableBot(actor.organization_id, actor.user_id, botId);
+        return this.prisma.memory.create({ data: { organization_id: actor.organization_id, kind: 'BOT_USER', bot_id: botId, user_id: actor.user_id, content } });
+    }
+
     private async ownMemory(actor: Actor, id: string) {
         const m = await this.prisma.memory.findFirst({ where: { id, organization_id: actor.organization_id } });
         if (!m) throw new NotFoundException('Memory not found');

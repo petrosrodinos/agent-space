@@ -56,6 +56,18 @@ export class FilesController {
         return this.files.downloadUrl(actor(m), id, inline === 'true' || inline === '1');
     }
 
+    @Get(':id/text')
+    @UseGuards(JwtGuard, OrgGuard)
+    text(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.files.previewText(actor(m), id);
+    }
+
+    @Get(':id/sheets')
+    @UseGuards(JwtGuard, OrgGuard)
+    sheets(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.files.previewSheets(actor(m), id);
+    }
+
     // ---- STORAGE_DRIVER=local: short-lived signed links served by the API (development only) ----
 
     @Put('local/:token')

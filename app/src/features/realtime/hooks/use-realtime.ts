@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { toast } from "@/hooks/use-toast";
@@ -15,7 +15,10 @@ import { RunStatuses } from "@/features/tasks/interfaces/tasks.interfaces";
 /** Connects once per signed-in session and reacts to user-stream events (sidebar, tasks, approvals, notifications). */
 export function useRealtimeConnection() {
   const qc = useQueryClient();
+  // useNavigate() returns a new function on every route change; keep it in a ref so navigating doesn't tear down the socket.
   const navigate = useNavigate();
+  const navigateRef = useRef(navigate);
+  navigateRef.current = navigate;
   const signedIn = useAuthStore((s) => s.status === AuthStatuses.SIGNED_IN);
 
   useEffect(() => {
@@ -56,7 +59,7 @@ export function useRealtimeConnection() {
           const onConversation = n.link_path && window.location.pathname === n.link_path;
           if (!onConversation && n.event !== NotificationEvents.NEW_MESSAGE) {
             toast({ title: n.title, description: n.body ?? undefined, duration: 5000 });
-            if (!platform.lifecycle.isVisible()) platform.notifications.show(n.title, { body: n.body ?? undefined, onClick: () => n.link_path && navigate(n.link_path) });
+            if (!platform.lifecycle.isVisible()) platform.notifications.show(n.title, { body: n.body ?? undefined, onClick: () => n.link_path && navigateRef.current(n.link_path) });
           }
           break;
         }
@@ -71,7 +74,7 @@ export function useRealtimeConnection() {
       offResync();
       realtime.disconnect();
     };
-  }, [signedIn, qc, navigate]);
+  }, [signedIn, qc]);
 }
 
 export type RunStatusMap = Record<string, { status: string; run_id: string }>;
@@ -121,8 +124,25 @@ export function useConversationStream(conversationId: string | undefined) {
   }, [conversationId, qc]);
 }
 
-export function useRealtimeStatus() {
-  const [connected, setConnected] = useState(realtime.connected);
-  useEffect(() => realtime.onStatus(setConnected), []);
-  return connected;
+/** Grace period before showing the offline banner, so the first connect and quick reconnects don't flash it. */
+const OFFLINE_BANNER_DELAY_MS = 3000;
+
+/** True once the live connection has been down for longer than the grace period. */
+export function useRealtimeOffline() {
+  const [offline, setOffline] = useState(false);
+  useEffect(() => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const apply = (connected: boolean) => {
+      clearTimeout(timer);
+      if (connected) setOffline(false);
+      else timer = setTimeout(() => setOffline(true), OFFLINE_BANNER_DELAY_MS);
+    };
+    apply(realtime.connected);
+    const off = realtime.onStatus(apply);
+    return () => {
+      clearTimeout(timer);
+      off();
+    };
+  }, []);
+  return offline;
 }

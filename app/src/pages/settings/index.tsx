@@ -1,6 +1,6 @@
 import { useEffect, type FC, type ReactNode } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { Activity, BarChart3, Bell, BookOpen, Brain, Building2, Cpu, Download, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Bell, Brain, Building2, Cpu, Download, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { ListGroup, ListRow, ListRowTones } from "@/components/ui/list-group";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -40,7 +40,7 @@ const PERSONAL: Section[] = [
   { id: SettingsSections.APPEARANCE, path: Routes.settings.appearance, label: "Appearance", icon: Palette },
   { id: SettingsSections.REPLIES, path: Routes.settings.replies, label: "Replies & chat", icon: MessageSquareText },
   { id: SettingsSections.NOTIFICATIONS, path: Routes.settings.notifications, label: "Notifications", icon: Bell },
-  { id: SettingsSections.MEMORY, path: Routes.settings.memory, label: "Memory & data", icon: Brain },
+  { id: SettingsSections.MEMORY, path: Routes.settings.memory, label: "Memory & knowledge", icon: Brain },
   { id: SettingsSections.SECURITY, path: Routes.settings.security, label: "Security", icon: ShieldCheck },
   { id: SettingsSections.DEVICES, path: Routes.settings.devices, label: "Devices", icon: Monitor },
 ];
@@ -48,7 +48,6 @@ const PERSONAL: Section[] = [
 const ORGANISATION: Section[] = [
   { id: SettingsSections.ORGANIZATION, path: Routes.settings.organization, label: "General", icon: Building2, admin: true },
   { id: SettingsSections.MEMBERS, path: Routes.settings.members, label: "Members", icon: Users },
-  { id: SettingsSections.KNOWLEDGE, path: Routes.settings.knowledge, label: "Knowledge library", icon: BookOpen },
   { id: SettingsSections.AI_MODELS, path: Routes.settings.ai_models, label: "AI models", icon: Cpu, admin: true },
   { id: SettingsSections.SAFETY, path: Routes.settings.safety, label: "Approvals & safety", icon: ShieldAlert, admin: true },
   { id: SettingsSections.USAGE, path: Routes.settings.usage, label: "Usage", icon: BarChart3 },
@@ -98,6 +97,8 @@ const SettingsPage: FC = () => {
 
   useEffect(() => {
     if (!section && !isMobile) navigate(Routes.settings.profile, { replace: true });
+    // The knowledge library now lives on the Memory page; keep old links working.
+    if (section === SettingsSections.KNOWLEDGE) navigate(Routes.settings.memory, { replace: true });
   }, [section, isMobile, navigate]);
 
   const all = [...PERSONAL, ...ORGANISATION];
@@ -122,7 +123,12 @@ const SettingsPage: FC = () => {
         body = <NotificationsSection />;
         break;
       case SettingsSections.MEMORY:
-        body = <MemorySection isAdmin={isAdmin} />;
+        body = (
+          <div className="space-y-4">
+            <MemorySection isAdmin={isAdmin} />
+            <KnowledgePanel botId={null} canEdit={isAdmin} title="Knowledge library" description="Company documents, pages and notes that every bot with “Organisation knowledge” turned on can search and read." />
+          </div>
+        );
         break;
       case SettingsSections.SECURITY:
         body = <SecuritySection />;
@@ -135,9 +141,6 @@ const SettingsPage: FC = () => {
         break;
       case SettingsSections.MEMBERS:
         body = <MembersSection org={org} />;
-        break;
-      case SettingsSections.KNOWLEDGE:
-        body = <KnowledgePanel botId={null} canEdit={isAdmin} title="Knowledge library" description="Company documents, pages and notes that every bot with “Organisation knowledge” turned on can search and read." />;
         break;
       case SettingsSections.AI_MODELS:
         body = <AiModelsSection />;

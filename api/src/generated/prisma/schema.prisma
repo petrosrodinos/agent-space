@@ -297,6 +297,12 @@ enum MaxSession {
   HOUR_24
 }
 
+/// What happens when an organisation approval timeout is reached.
+enum ApprovalTimeoutAction {
+  CANCEL
+  APPROVE
+}
+
 enum MinApprovalLevel {
   NONE
   IMPORTANT_ACTIONS
@@ -1366,10 +1372,11 @@ model OrganizationSettings {
   blocked_websites             String[]   @default([])
 
   // Approvals and safety
-  min_approval_level       MinApprovalLevel @default(NONE)
-  enforced_approvals       ActionType[]     @default([EXTERNAL_EMAIL, PURCHASE_PAYMENT])
-  bots_consulting_enabled  Boolean          @default(true)
+  min_approval_level       MinApprovalLevel      @default(NONE)
+  enforced_approvals       ActionType[]          @default([EXTERNAL_EMAIL, PURCHASE_PAYMENT])
+  bots_consulting_enabled  Boolean               @default(true)
   approval_timeout_minutes Int? // null = keep waiting
+  approval_timeout_action  ApprovalTimeoutAction @default(CANCEL) // enforced / tap-only actions are always cancelled
 
   // Skills
   who_can_create_skills  WhoCan  @default(EVERYONE)
@@ -1392,6 +1399,7 @@ model OrganizationSettings {
   voice_max_session       VoiceSessionLength @default(MIN_30)
   voice_approvals_enabled Boolean            @default(true)
   voice_keep_transcripts  Boolean            @default(true)
+  voice_model             String? // OpenAI Realtime model id (voice-models.ts); null = platform default
 
   // Automations
   automations_enabled        Boolean           @default(true)

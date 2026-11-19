@@ -15,7 +15,7 @@ import { StatusPill } from "@/components/ui/status-pill";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import type { ActionType, Bot } from "@/features/bots/interfaces/bots.interfaces";
-import { useBotMemories, useClearBotMemories, useDeleteMemory, useSetApprovalRules, useSetBotConnections, useUpdateBot, useUpdateMemory } from "@/features/bots/hooks/use-bots";
+import { useAddBotMemory, useBotMemories, useClearBotMemories, useDeleteMemory, useSetApprovalRules, useSetBotConnections, useUpdateBot, useUpdateMemory } from "@/features/bots/hooks/use-bots";
 import { useConnections } from "@/features/connections/hooks/use-connections";
 import { useSetBotSkills, useSkills } from "@/features/skills/hooks/use-skills";
 import {
@@ -442,7 +442,10 @@ export const MemoryTab: FC<TabProps> = ({ bot }) => {
   const updateMemory = useUpdateMemory();
   const deleteMemory = useDeleteMemory();
   const clear = useClearBotMemories();
+  const add = useAddBotMemory();
+  const [fact, setFact] = useState("");
   const [editing, setEditing] = useState<{ id: string; content: string } | null>(null);
+  const addFact = () => fact.trim() && add.mutate({ botId: bot.id, content: fact.trim() }, { onSuccess: () => setFact("") });
   const [confirmClear, setConfirmClear] = useState(false);
   return (
     <SettingsCard
@@ -496,6 +499,14 @@ export const MemoryTab: FC<TabProps> = ({ bot }) => {
           ))}
         </ul>
       )}
+      <div className="flex items-center gap-2 pt-3">
+        <div className="min-w-0 flex-1">
+          <Input placeholder="I prefer replies in bullet points" value={fact} onChange={(e) => setFact(e.target.value)} onKeyDown={(e) => e.key === "Enter" && addFact()} aria-label="New memory" />
+        </div>
+        <Button disabled={!fact.trim()} loading={add.isPending} onClick={addFact}>
+          Add
+        </Button>
+      </div>
       <ConfirmationDialog
         isOpen={confirmClear}
         onClose={() => setConfirmClear(false)}

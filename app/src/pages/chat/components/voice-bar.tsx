@@ -39,6 +39,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
   const color = bot?.color ?? "var(--primary)";
   const ptt = voice.mode === VoiceInputModes.PUSH_TO_TALK;
   const label = voice.muted ? "Mic muted" : getDropdownOptionLabel(VoicePhaseOptions, voice.phase, "");
+  const spinning = voice.phase === VoicePhases.CONNECTING || voice.phase === VoicePhases.RECONNECTING || voice.phase === VoicePhases.WORKING;
 
   const controls = (
     <div className="flex items-center gap-1.5">
@@ -110,7 +111,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
         <div className="flex flex-col items-center gap-4 text-center">
           {bot && <BotAvatar emoji={bot.emoji} color={bot.color} size={88} name={bot.name} />}
           <p className="font-display text-2xl font-bold text-ink">{bot?.name}</p>
-          <p className="text-sm font-semibold text-muted-foreground" aria-live="polite">{label}</p>
+          <p className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground" aria-live="polite">{spinning && <Loader2 className="h-4 w-4 animate-spin" />} {label}</p>
         </div>
         <Waveform level={voice.level} color={color} big />
         <div className="flex w-full max-w-sm flex-col items-center gap-4">
@@ -129,7 +130,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
           {bot && <BotAvatar emoji={bot.emoji} color={bot.color} size={40} />}
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground" aria-live="polite">
-              {(voice.phase === VoicePhases.CONNECTING || voice.phase === VoicePhases.RECONNECTING) && <Loader2 className="h-3 w-3 animate-spin" />} {label}
+              {spinning && <Loader2 className="h-3 w-3 animate-spin" />} {label}
             </p>
             <Waveform level={voice.level} color={color} />
           </div>

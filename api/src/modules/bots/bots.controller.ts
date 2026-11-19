@@ -44,6 +44,12 @@ export class BotsController {
         return this.bots.addOrgMemory(actor(m), dto.content);
     }
 
+    @Get('memories')
+    @ApiOperation({ summary: 'List what bots remember about the current user, across all bots' })
+    myMemories(@CurrentMembership() m: OrgMembership) {
+        return this.bots.listMyMemories(actor(m));
+    }
+
     @Patch('memories/:memoryId')
     updateMemory(@CurrentMembership() m: OrgMembership, @Param('memoryId', ParseUUIDPipe) id: string, @Body() dto: UpdateMemoryDto) {
         return this.bots.updateMemory(actor(m), id, dto.content);
@@ -92,6 +98,12 @@ export class BotsController {
     @Get(':id/memories')
     memories(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.bots.listMemories(actor(m), id);
+    }
+
+    @Post(':id/memories')
+    @ApiOperation({ summary: 'Add a fact this bot remembers about the current user' })
+    addMemory(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMemoryDto) {
+        return this.bots.addMemory(actor(m), id, dto.content);
     }
 
     @Delete(':id/memories')

@@ -3,9 +3,9 @@ import { useQuery } from "@tanstack/react-query";
 import { platform } from "@/platform";
 import { realtime } from "@/features/realtime/services/realtime.services";
 import { toast } from "@/hooks/use-toast";
-import { endVoiceSession, getVoices, sendVoiceText, startVoiceSession } from "../services/voice.services";
+import { endVoiceSession, getVoiceModels, getVoices, sendVoiceText, startVoiceSession } from "../services/voice.services";
 import { QueryKeys } from "@/config/constants/query-keys";
-import { VoicePhases, RealtimeAudioEvents, REALTIME_DATA_CHANNEL, type VoicePhase, SDP_ANSWER } from "../interfaces/voice.interfaces";
+import { VoicePhases, RealtimeAudioEvents, RealtimeItemTypes, REALTIME_DATA_CHANNEL, type VoicePhase, SDP_ANSWER } from "../interfaces/voice.interfaces";
 import { RtcConnectionStates, DataChannelStates } from "@/config/constants/browser.constants";
 import { VoiceInputModes, type VoiceInputMode } from "@/features/users/interfaces/users.interfaces";
 import { UserEventTypes } from "@/features/realtime/interfaces/realtime.interfaces";
@@ -14,6 +14,7 @@ import { VoiceEndReasonOptions } from "@/config/constants/dropdowns/voice/voice.
 
 
 export const useVoices = () => useQuery({ queryKey: [QueryKeys.VOICES], queryFn: getVoices, staleTime: Infinity });
+export const useVoiceModels = () => useQuery({ queryKey: [QueryKeys.VOICE_MODELS], queryFn: getVoiceModels, staleTime: Infinity });
 
 /**
  * Voice mode client (§7.6): microphone → WebRTC → OpenAI Realtime. The SDP offer goes to our API, which answers
@@ -34,6 +35,8 @@ export function useVoiceSession(conversationId: string) {
   const meter = useRef<{ ctx: AudioContext; raf: number } | null>(null);
   const sessionRef = useRef<string | null>(null);
   const dropTimer = useRef<number | null>(null);
+  /** Tool calls the server is still running (call ids), so the bar shows "Working…" instead of "Listening". */
+  const toolCalls = useRef<Set<string>>(new Set());
 
   const cleanup = useCallback(() => {
     if (dropTimer.current) window.clearTimeout(dropTimer.current);
@@ -55,6 +58,7 @@ export function useVoiceSession(conversationId: string) {
     mic.current = null;
     audio.current = null;
     sessionRef.current = null;
+    toolCalls.current.clear();
     setSessionId(null);
     setPhase(VoicePhases.IDLE);
     setMuted(false);
@@ -145,11 +149,20 @@ export function useVoiceSession(conversationId: string) {
         dc.current = channel;
         channel.onmessage = (m) => {
           try {
-            const ev = JSON.parse(m.data as string) as { type: string };
+            const ev = JSON.parse(m.data as string) as { type: string; call_id?: string; item?: { type?: string; call_id?: string } };
+            const idle = () => (toolCalls.current.size ? VoicePhases.WORKING : VoicePhases.LISTENING);
             if (ev.type === RealtimeAudioEvents.SPEECH_STARTED) setPhase(VoicePhases.USER_SPEAKING);
             else if (ev.type === RealtimeAudioEvents.SPEECH_STOPPED || ev.type === RealtimeAudioEvents.INPUT_COMMITTED) setPhase(VoicePhases.THINKING);
             else if (ev.type === RealtimeAudioEvents.OUTPUT_STARTED) setPhase(VoicePhases.BOT_SPEAKING);
-            else if (ev.type === RealtimeAudioEvents.OUTPUT_STOPPED || ev.type === RealtimeAudioEvents.OUTPUT_CLEARED) setPhase(VoicePhases.LISTENING);
+            else if (ev.type === RealtimeAudioEvents.OUTPUT_STOPPED || ev.type === RealtimeAudioEvents.OUTPUT_CLEARED) setPhase(idle());
+            else if (ev.type === RealtimeAudioEvents.FUNCTION_CALL_DONE && ev.call_id) {
+              toolCalls.current.add(ev.call_id);
+              setPhase((p) => (p === VoicePhases.BOT_SPEAKING ? p : VoicePhases.WORKING));
+            } else if ((ev.type === RealtimeAudioEvents.ITEM_ADDED || ev.type === RealtimeAudioEvents.ITEM_DONE) && ev.item?.type === RealtimeItemTypes.FUNCTION_CALL_OUTPUT && ev.item.call_id) {
+              // The server answered the tool call; the bot's spoken reply follows.
+              toolCalls.current.delete(ev.item.call_id);
+              setPhase((p) => (p === VoicePhases.WORKING && !toolCalls.current.size ? VoicePhases.THINKING : p));
+            }
           } catch {
             /* ignore non-JSON */
           }

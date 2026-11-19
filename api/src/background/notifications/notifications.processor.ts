@@ -52,7 +52,7 @@ export class NotificationsProcessor extends WorkerHost {
         if (!n) return;
         const pref = await this.prisma.notificationPreference.findUnique({ where: { user_id_event: { user_id: n.user_id, event: n.event } } });
         if (pref && !pref.enabled) return { skipped: 'disabled' };
-        const channels: NotificationChannel[] = pref?.channels ?? DEFAULT_CHANNELS[n.event] ?? ['IN_APP', 'PUSH'];
+        const channels: NotificationChannel[] = pref?.channels ?? [...DEFAULT_CHANNELS];
         const s = n.user.settings;
         // Approvals reach the user by email too when they chose "In app + push, also email".
         if (n.event === 'APPROVAL_NEEDED' && s?.approval_channel === 'IN_APP_PUSH_EMAIL' && !channels.includes('EMAIL')) channels.push('EMAIL');

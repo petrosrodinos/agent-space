@@ -15,6 +15,7 @@ export const VoicePhaseOptions = [
   { id: VoicePhases.LISTENING, label: "Listening" },
   { id: VoicePhases.USER_SPEAKING, label: "Listening…" },
   { id: VoicePhases.THINKING, label: "Thinking…" },
+  { id: VoicePhases.WORKING, label: "Working…" },
   { id: VoicePhases.BOT_SPEAKING, label: "Speaking" },
   { id: VoicePhases.RECONNECTING, label: "Reconnecting…" },
   { id: VoicePhases.IDLE, label: "" },

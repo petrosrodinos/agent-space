@@ -35,6 +35,11 @@ export class VoiceController {
         return this.voice.voices();
     }
 
+    @Get('models')
+    models() {
+        return this.voice.models();
+    }
+
     @Get('voices/:voice/sample')
     @Throttle({ default: { limit: 20, ttl: 60_000 } })
     async sample(@Param('voice') voice: string, @Res() res: Response) {

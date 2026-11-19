@@ -35,8 +35,47 @@ const SPEED = { SLOWER: 0.85, NORMAL: 1, FASTER: 1.2 } as const;
 const MAX_MINUTES = { MIN_15: 15, MIN_30: 30, MIN_60: 60 } as const;
 const SILENCE_MS = 2 * 60_000;
 const MAX_OUTPUT = 8000;
+/**
+ * gpt-realtime has a 32k-token context. Tool schemas count against it on every response, and once instructions +
+ * tools + output overflow it OpenAI fails each reply a few words in (status "failed", server_error). Above this
+ * budget (~10k tokens of schemas) connected-app tools are reached through find_app_tools / use_app_tool instead.
+ */
+const DIRECT_TOOLS_BUDGET = 40_000;
+const APP_TOOL_RESULTS = 4;
+const VoiceGatewayTools = { FIND: 'find_app_tools', USE: 'use_app_tool' } as const;
 /** gpt-realtime list prices, USD per 1M tokens. */
 const PRICE = { audio_in: 32, audio_out: 64, text_in: 4, text_out: 16, cached: 0.4 };
+
+const realtimeTool = (t: Pick<ToolDef, 'name' | 'description' | 'parameters'>) => ({ type: 'function', name: t.name, description: t.description.slice(0, 1024), parameters: t.parameters });
+
+const gatewayTools = () => [
+    realtimeTool({
+        name: VoiceGatewayTools.FIND,
+        description: 'Find tools for connected apps and tool servers (Gmail, Calendar, Slack, Linear, HubSpot…). Returns matching tool names with their arguments schema. Call this before use_app_tool.',
+        parameters: { type: 'object', properties: { query: { type: 'string', description: 'What you want to do, with the app name, e.g. "list Linear projects"' } }, required: ['query'], additionalProperties: false },
+    }),
+    realtimeTool({
+        name: VoiceGatewayTools.USE,
+        description: 'Run a connected-app tool found with find_app_tools. Same approvals as calling it directly.',
+        parameters: { type: 'object', properties: { name: { type: 'string', description: 'Exact tool name' }, arguments: { type: 'object', description: 'Arguments matching the tool schema', additionalProperties: true } }, required: ['name', 'arguments'], additionalProperties: false },
+    }),
+];
+
+/** Keyword match over tool names and descriptions; name hits weigh more. */
+const searchTools = (tools: ToolDef[], query: string) => {
+    const words = query.toLowerCase().split(/[^a-z0-9]+/).filter((w) => w.length > 1);
+    return tools
+        .map((t) => {
+            const name = t.name.toLowerCase();
+            const desc = t.description.toLowerCase();
+            const score = words.reduce((s, w) => s + (name.includes(w) ? 3 : 0) + (desc.includes(w) ? 1 : 0), 0);
+            return { t, score };
+        })
+        .filter((x) => x.score > 0)
+        .sort((a, b) => b.score - a.score)
+        .slice(0, APP_TOOL_RESULTS)
+        .map(({ t }) => ({ name: t.name, description: t.description.slice(0, 400), parameters: t.parameters }));
+};
 
 interface PendingApproval {
     approval_id: string;
@@ -52,6 +91,8 @@ interface Live {
     ws: WebSocket;
     ctx: ToolContext;
     tools: Map<string, ToolDef>;
+    /** Connected-app tools reached through find_app_tools / use_app_tool (empty when all tools are sent directly). */
+    app_tools: ToolDef[];
     run_id: string;
     conversation_id: string;
     user_id: string;
@@ -191,6 +232,10 @@ export class VoiceService implements OnModuleDestroy {
         const voiceTools = this.voiceTools(live as Live);
         const all = [...toolDefs, ...voiceTools];
         const tools = new Map(all.map((t) => [t.name, t]));
+        const appTools = toolDefs.filter((t) => t.connectionFor);
+        const deferApps = appTools.length > 0 && JSON.stringify(all.map(realtimeTool)).length > DIRECT_TOOLS_BUDGET;
+        live.app_tools = deferApps ? appTools : [];
+        const exposed = deferApps ? [...all.filter((t) => !t.connectionFor).map(realtimeTool), ...gatewayTools()] : all.map(realtimeTool);
 
         const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: true, ...(await this.runner.computerPrompt(ctx, tools)) };
         const system = await this.prompt.system(pctx);
@@ -209,6 +254,9 @@ export class VoiceService implements OnModuleDestroy {
             `- Never ask for or repeat secrets out loud. If one is needed call request_secret and ask them to paste it in the secure box on screen. If they start reading a key out loud, stop them politely.\n` +
             `- When they say "that's all", "goodbye" or "exit voice mode", say a short goodbye and call end_voice.\n` +
             `- Speak the user's language (English or Greek) and switch if they do.`,
+            deferApps
+                ? `## Connected app tools\nTools for connected apps and tool servers are not loaded directly. To use one, call ${VoiceGatewayTools.FIND} with what you want to do (e.g. "list Linear projects"), then call ${VoiceGatewayTools.USE} with the exact tool name and its arguments. Never say you lack access to a connected app before searching. Available tools:\n${appTools.map((t) => t.name).join(', ')}`
+                : '',
             transcript ? `## Recent conversation (text and voice)\n${transcript}` : '',
         ]
             .filter(Boolean)
@@ -228,7 +276,7 @@ export class VoiceService implements OnModuleDestroy {
                 },
                 output: { voice, speed: SPEED[userSettings?.speaking_speed ?? 'NORMAL'] },
             },
-            tools: all.map((t) => ({ type: 'function', name: t.name, description: t.description.slice(0, 1024), parameters: t.parameters })),
+            tools: exposed,
             tool_choice: 'auto',
         };
 
@@ -369,6 +417,7 @@ export class VoiceService implements OnModuleDestroy {
             case 'response.done': {
                 const u = e.response?.usage;
                 if (u) this.addUsage(live, u);
+                if (e.response?.status === 'failed') this.logger.warn(`Realtime response failed: ${JSON.stringify(e.response.status_details ?? {}).slice(0, 400)}`);
                 if (live.bot_message) {
                     await this.finishBotMessage(live);
                 }
@@ -399,13 +448,27 @@ export class VoiceService implements OnModuleDestroy {
             if (images?.length) this.send(live, { type: 'conversation.item.create', item: { type: 'message', role: 'user', content: images.slice(0, 1).map((url) => ({ type: 'input_image', image_url: url })) } });
             this.send(live, { type: 'response.create' });
         };
-        if (!def) return reply({ error: `Unknown tool ${name}` });
         let args: Record<string, unknown> = {};
         try {
             args = rawArgs ? JSON.parse(rawArgs) : {};
         } catch {
             return reply({ error: 'The arguments were not valid JSON' });
         }
+        if (name === VoiceGatewayTools.FIND) {
+            const results = searchTools(live.app_tools, String(args.query ?? ''));
+            return reply(results.length ? { tools: results } : { tools: [], note: 'No matching tool. Try other words, or check the tool list in your instructions.' });
+        }
+        if (name === VoiceGatewayTools.USE) {
+            const target = live.app_tools.find((t) => t.name === String(args.name));
+            if (!target) return reply({ error: `Unknown app tool ${String(args.name)}. Call ${VoiceGatewayTools.FIND} first.` });
+            return this.runTool(live, callId, target, (args.arguments ?? {}) as Record<string, unknown>, reply);
+        }
+        if (!def) return reply({ error: `Unknown tool ${name}` });
+        return this.runTool(live, callId, def, args, reply);
+    }
+
+    /** Approval engine, then execution — shared by direct calls and use_app_tool. */
+    private async runTool(live: Live, callId: string, def: ToolDef, args: Record<string, unknown>, reply: (output: unknown, images?: string[]) => Promise<void>) {
 
         // Approval engine — same rules as text chat (§11); app-management changes always confirm.
         if (def.name !== 'resolve_approval') {

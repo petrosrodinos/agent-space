@@ -313,6 +313,17 @@ exports.Prisma.UserServiceDefaultScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.UserToolPermissionScalarFieldEnum = {
+  id: 'id',
+  user_id: 'user_id',
+  organization_id: 'organization_id',
+  service_key: 'service_key',
+  tool_slug: 'tool_slug',
+  permission: 'permission',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
@@ -1650,6 +1661,13 @@ exports.NotificationChannel = exports.$Enums.NotificationChannel = {
   EMAIL: 'EMAIL'
 };
 
+exports.ToolPermission = exports.$Enums.ToolPermission = {
+  ALWAYS_ALLOW: 'ALWAYS_ALLOW',
+  AUTO_REVIEW: 'AUTO_REVIEW',
+  NEEDS_APPROVAL: 'NEEDS_APPROVAL',
+  BLOCKED: 'BLOCKED'
+};
+
 exports.OrganizationRole = exports.$Enums.OrganizationRole = {
   OWNER: 'OWNER',
   ADMIN: 'ADMIN',
@@ -2240,6 +2258,7 @@ exports.Prisma.ModelName = {
   UserSettings: 'UserSettings',
   NotificationPreference: 'NotificationPreference',
   UserServiceDefault: 'UserServiceDefault',
+  UserToolPermission: 'UserToolPermission',
   Organization: 'Organization',
   OrganizationSettings: 'OrganizationSettings',
   OrganizationMember: 'OrganizationMember',

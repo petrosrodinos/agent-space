@@ -24,6 +24,15 @@ export class CreateApiKeyConnectionDto {
     @ApiPropertyOptional() @IsOptional() @IsArray() @IsUUID('all', { each: true }) bot_ids?: string[];
 }
 
+export const ToolPermissions = { ALWAYS_ALLOW: 'ALWAYS_ALLOW', AUTO_REVIEW: 'AUTO_REVIEW', NEEDS_APPROVAL: 'NEEDS_APPROVAL', BLOCKED: 'BLOCKED' } as const;
+export type ToolPermissionValue = (typeof ToolPermissions)[keyof typeof ToolPermissions];
+
+/** Sets one permission on several tools of a service at once (a single tool, or a whole Reads/Writes group). */
+export class SetToolPermissionsDto {
+    @ApiProperty({ example: ['NOTION_CREATE_PAGE'] }) @IsArray() @ArrayMaxSize(500) @IsString({ each: true }) @MaxLength(120, { each: true }) tool_slugs: string[];
+    @ApiProperty({ enum: Object.values(ToolPermissions) }) @IsIn(Object.values(ToolPermissions)) permission: ToolPermissionValue;
+}
+
 export class SetServiceDefaultDto {
     @ApiProperty() @IsString() service_key: string;
     @ApiProperty() @IsUUID() connection_id: string;

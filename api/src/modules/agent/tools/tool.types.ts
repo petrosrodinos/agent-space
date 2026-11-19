@@ -1,4 +1,4 @@
-import { ActionType, Bot, BotApprovalRule, OrganizationSettings, Run, RunStepType, User, UserSettings } from 'generated/prisma';
+import { ActionType, Bot, BotApprovalRule, OrganizationSettings, Run, RunStepType, ToolPermission, User, UserSettings } from 'generated/prisma';
 
 export type MessagePart = Record<string, unknown> & { type: string };
 
@@ -62,6 +62,8 @@ export interface ToolDef {
     connection_id?: string;
     /** Which connection a call would use — matched against automation pre-approvals (§10.3). */
     connectionFor?: (args: any) => string | undefined;
+    /** The acting user's permission for this connected-service tool (service details page). Absent = AUTO_REVIEW. */
+    tool_permission?: ToolPermission;
 }
 
 export const obj = (properties: Record<string, unknown>, required: string[] = []) => ({ type: 'object', properties, required, additionalProperties: false });

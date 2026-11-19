@@ -14,6 +14,7 @@ export const QueryKeys = {
   COMPUTER: "computer",
   CONNECTION_CATALOG: "connection-catalog",
   CONNECTION_CATEGORIES: "connection-categories",
+  CONNECTION_SERVICE: "connection-service",
   CONNECTIONS: "connections",
   CONVERSATION: "conversation",
   CONVERSATION_SEARCH: "conversation-search",

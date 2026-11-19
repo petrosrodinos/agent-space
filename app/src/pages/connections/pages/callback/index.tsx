@@ -6,11 +6,15 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { PageContainer } from "@/components/ui/page-header";
 import { useCompleteConnection } from "@/features/connections/hooks/use-connections";
 import { Routes } from "@/routes/routes";
+import { toast } from "@/hooks/use-toast";
 import { ConnectionStatuses, ProviderCallbackStatuses } from "@/features/connections/interfaces/connections.interfaces";
 
-type Result = { status: string; label: string; account_identifier: string | null } | null;
+type Result = { status: string; service_key: string; label: string; account_identifier: string | null } | null;
 
-/** Return address for service sign-ins (§14.1). Confirms the connection with the API, retrying briefly while it activates. */
+/**
+ * Return address for service sign-ins (§14.1). Confirms the connection with the API, retrying briefly while it
+ * activates, then opens the service's details page (accounts + tool permissions). Failures stay here.
+ */
 const ConnectionCallbackPage: FC = () => {
   const [params] = useSearchParams();
   const id = params.get("connection");
@@ -28,19 +32,25 @@ const ConnectionCallbackPage: FC = () => {
       setError("This link is missing the connection details.");
       return;
     }
-    let attempts = 0;
-    const run = () =>
-      complete.mutate(id, {
-        onSuccess: (r) => {
-          if (r.status === ConnectionStatuses.ACTIVE || attempts >= 5 || providerStatus === ProviderCallbackStatuses.FAILED) setResult(r);
-          else {
-            attempts++;
-            setTimeout(run, 1500);
-          }
-        },
-        onError: (e) => setError(e.message),
-      });
-    run();
+    // mutateAsync, not mutate(…, { onSuccess }): React StrictMode remounts the page in development, which drops
+    // per-call mutate callbacks, and the `started` guard stops the second mount from starting over — the page
+    // then sat on the skeleton forever. A promise resolves regardless.
+    const run = async () => {
+      for (let attempt = 0; ; attempt++) {
+        const r = await complete.mutateAsync(id);
+        if (r.status === ConnectionStatuses.ACTIVE) {
+          toast({ title: `${r.label} is connected`, description: r.account_identifier ?? undefined, duration: 2500 });
+          navigate(Routes.connections.service(r.service_key), { replace: true });
+          return;
+        }
+        if (attempt >= 5 || providerStatus === ProviderCallbackStatuses.FAILED) {
+          setResult(r);
+          return;
+        }
+        await new Promise((resolve) => setTimeout(resolve, 1500));
+      }
+    };
+    run().catch((e: Error) => setError(e.message));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 

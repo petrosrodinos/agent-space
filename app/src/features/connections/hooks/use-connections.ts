@@ -1,10 +1,10 @@
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
-import type { CreateCredentialDto, ReplaceCredentialDto } from "../interfaces/connections.interfaces";
+import type { CreateCredentialDto, ReplaceCredentialDto, ServiceDetails, ToolPermission } from "../interfaces/connections.interfaces";
 import {
   addApiKeyConnection, cancelSecretRequest, completeConnection, connectService, createCredential, deleteConnection, deleteCredential, getCatalog, getCategories, getConnections,
-  getCredentialHistory, getCredentialUsage, getCredentials, reconnectConnection, replaceCredential, setServiceDefault, updateConnection, updateCredential,
+  getCredentialHistory, getCredentialUsage, getCredentials, getServiceDetails, reconnectConnection, replaceCredential, setServiceDefault, setToolPermissions, updateConnection, updateCredential,
 } from "../services/connections.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { type Visibility } from "@/features/connections/interfaces/connections.interfaces";
@@ -22,6 +22,29 @@ export const useCatalog = (search: string, category: string) =>
     enabled: useOrgReady(),
     staleTime: 5 * 60_000,
   });
+
+export const useServiceDetails = (slug: string) => useQuery({ queryKey: [QueryKeys.CONNECTION_SERVICE, slug], queryFn: () => getServiceDetails(slug), enabled: useOrgReady() && !!slug, staleTime: 60_000 });
+
+/** Optimistic: the dropdowns flip at once and roll back if the save fails. */
+export const useSetToolPermissions = (slug: string) => {
+  const qc = useQueryClient();
+  const key = [QueryKeys.CONNECTION_SERVICE, slug];
+  return useMutation({
+    mutationFn: (dto: { tool_slugs: string[]; permission: ToolPermission }) => setToolPermissions(slug, dto),
+    onMutate: async (dto) => {
+      await qc.cancelQueries({ queryKey: key });
+      const previous = qc.getQueryData<ServiceDetails>(key);
+      const changed = new Set(dto.tool_slugs);
+      if (previous) qc.setQueryData<ServiceDetails>(key, { ...previous, tools: previous.tools.map((t) => (changed.has(t.slug) ? { ...t, permission: dto.permission } : t)) });
+      return { previous };
+    },
+    onError: (e, _dto, context) => {
+      if (context?.previous) qc.setQueryData(key, context.previous);
+      toast({ title: "Could not save the permission", description: e.message, variant: "error" });
+    },
+    onSettled: () => qc.invalidateQueries({ queryKey: key }),
+  });
+};
 
 export const useConnectService = () =>
   useMutation({ mutationFn: connectService, onError: (e) => toast({ title: "Could not start connecting", description: e.message, variant: "error" }) });
@@ -48,6 +71,8 @@ const useConnMutation = <T, R = unknown>(fn: (v: T) => Promise<R>, success: stri
 
 export const useUpdateConnection = () => useConnMutation(({ id, ...dto }: { id: string; label?: string; visibility?: Visibility; restricted_bot_ids?: string[] }) => updateConnection(id, dto), "Connection saved", "Could not save");
 export const useDeleteConnection = () => useConnMutation(deleteConnection, "Disconnected", "Could not disconnect");
+/** Service page "Disconnect": removes every account of that service the user may manage. */
+export const useDisconnectAccounts = () => useConnMutation((ids: string[]) => Promise.all(ids.map((id) => deleteConnection(id))), "Disconnected", "Could not disconnect");
 export const useAddApiKeyConnection = () => useConnMutation(addApiKeyConnection, "Key saved securely", "Could not save the key");
 export const useSetServiceDefault = () => useConnMutation(setServiceDefault, "Default account set", "Could not set default");
 

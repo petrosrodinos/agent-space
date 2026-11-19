@@ -13,6 +13,7 @@ export interface ComposioToolkit {
     managed: boolean;
     no_auth: boolean;
     tools_count: number;
+    website: string | null;
 }
 
 export interface ComposioTool {
@@ -82,6 +83,7 @@ export class ComposioService {
             managed: (t.composio_managed_auth_schemes ?? []).length > 0,
             no_auth: !!t.no_auth,
             tools_count: t.meta?.tools_count ?? 0,
+            website: t.meta?.app_url ?? null,
         };
     }
 
@@ -175,6 +177,23 @@ export class ComposioService {
             items = items.concat((all.items ?? []).filter((t: any) => !t.is_deprecated && !seen.has(t.slug)));
         }
         return items.slice(0, limit).map(map);
+    }
+
+    /** Every tool of a toolkit (cursor-paged), for the service details page. Capped so a huge toolkit can't stall the request. */
+    async listAllTools(toolkitSlug: string, max = 500): Promise<ComposioTool[]> {
+        const out: ComposioTool[] = [];
+        let cursor: string | null = null;
+        do {
+            const q = new URLSearchParams({ toolkit_slug: toolkitSlug, limit: '200' });
+            if (cursor) q.set('cursor', cursor);
+            const res = await this.call<any>(`/tools?${q}`);
+            for (const t of res.items ?? []) {
+                if (t.is_deprecated) continue;
+                out.push({ slug: t.slug, name: t.name, description: (t.description ?? t.human_description ?? '').slice(0, 900), toolkit: t.toolkit?.slug ?? toolkitSlug, input_parameters: {}, tags: t.tags ?? [] });
+            }
+            cursor = res.next_cursor ?? null;
+        } while (cursor && out.length < max);
+        return out.slice(0, max);
     }
 
     /**

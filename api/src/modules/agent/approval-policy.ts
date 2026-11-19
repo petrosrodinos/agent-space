@@ -1,4 +1,4 @@
-import { ActionType, ApprovalLevel, Bot, BotApprovalRule, OrganizationSettings } from 'generated/prisma';
+import { ActionType, ApprovalLevel, Bot, BotApprovalRule, OrganizationSettings, ToolPermission } from 'generated/prisma';
 
 /** Actions "hard to undo or that go outside the company" (§11) — asked for at the default level. */
 const IMPORTANT: ActionType[] = ['SEND_MESSAGE', 'POST_PUBLICLY', 'DELETE_DATA', 'PURCHASE_PAYMENT', 'SHARE_FILES', 'ENTER_PASSWORD', 'EXTERNAL_EMAIL', 'CONSULT_SENSITIVE_BOT'];
@@ -9,22 +9,26 @@ const LEVEL_ORDER: Record<ApprovalLevel, number> = { DONT_ASK: 0, IMPORTANT_ACTI
 
 export interface ApprovalDecision {
     required: boolean;
-    reason: 'enforced' | 'bot_rule' | 'level' | 'confirmation' | 'pre_approved' | 'none';
+    reason: 'enforced' | 'tool_rule' | 'bot_rule' | 'level' | 'confirmation' | 'pre_approved' | 'none';
 }
 
 /**
- * §13.1 order: organisation-enforced rules always win, then automation pre-approvals (§10.3), then the bot's
- * per-action override, then the effective level (bot level, raised to the organisation minimum).
+ * §13.1 order: the user's "Needs approval" on a specific tool, then organisation-enforced rules (which also beat a
+ * user's "Always allow"), then automation pre-approvals (§10.3), then the bot's per-action override, then the
+ * effective level (bot level, raised to the organisation minimum). BLOCKED tools are never offered, so never get here.
  */
 export function decideApproval(
     action: ActionType | null,
     bot: Bot & { approval_rules?: BotApprovalRule[] },
     org: OrganizationSettings | null,
-    opts: { preApproved?: boolean } = {},
+    opts: { preApproved?: boolean; toolPermission?: ToolPermission } = {},
 ): ApprovalDecision {
+    // Asked for even on read-only tools: the user chose to see every call of this tool.
+    if (opts.toolPermission === 'NEEDS_APPROVAL') return { required: true, reason: 'tool_rule' };
     if (!action) return { required: false, reason: 'none' };
     if (action === 'CONSULT_SENSITIVE_BOT') return { required: true, reason: 'enforced' };
     if (org?.enforced_approvals?.includes(action)) return { required: true, reason: 'enforced' };
+    if (opts.toolPermission === 'ALWAYS_ALLOW') return { required: false, reason: 'tool_rule' };
     if (opts.preApproved) return { required: false, reason: 'pre_approved' };
 
     const rule = bot.approval_rules?.find((r) => r.action_type === action);

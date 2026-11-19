@@ -1,114 +1,22 @@
 import { useMemo, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { Bot as BotIcon, Check, KeyRound, MoreHorizontal, Pencil, Plug, RefreshCw, Search, Star, Trash2, Users } from "lucide-react";
+import { Check, ChevronRight, KeyRound, Plug, Search } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { StatusPill } from "@/components/ui/status-pill";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { useCatalog, useCategories, useConnections, useDeleteConnection, useReconnect, useSetServiceDefault, useUpdateConnection } from "@/features/connections/hooks/use-connections";
+import { useCatalog, useCategories, useConnections, useDeleteConnection } from "@/features/connections/hooks/use-connections";
 import { useCurrentOrganization } from "@/features/organizations/hooks/use-organizations";
-import type { Connection, Toolkit } from "@/features/connections/interfaces/connections.interfaces";
-import { ConnectionStatusOptions } from "@/config/constants/dropdowns/shared/status.options";
-import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
-import { platform } from "@/platform";
+import type { Connection } from "@/features/connections/interfaces/connections.interfaces";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
-import { ApiKeyDialog, ConnectDialog, LimitBotsDialog, RenameConnectionDialog } from "./components/connection-dialogs";
+import { ApiKeyDialog, LimitBotsDialog, RenameConnectionDialog } from "./components/connection-dialogs";
 import { ToolServersSection } from "./components/tool-servers-section";
-import { ConnectionStatuses, ConnectionKinds, Visibilities } from "@/features/connections/interfaces/connections.interfaces";
+import { ConnectionTile, ServiceLogo } from "./components/connection-tile";
+import { ConnectionKinds } from "@/features/connections/interfaces/connections.interfaces";
 import { OrgRoles } from "@/features/users/interfaces/users.interfaces";
 import { ALL_FILTER } from "@/config/constants/filters";
-
-const Logo: FC<{ src?: string | null; name: string; size?: number }> = ({ src, name, size = 40 }) =>
-  src ? (
-    <img src={src} alt="" className="shrink-0 rounded-md bg-white object-contain p-1.5 shadow-sticker" style={{ width: size, height: size }} loading="lazy" />
-  ) : (
-    <span className="inline-flex shrink-0 items-center justify-center rounded-md bg-surface-sunken font-extrabold text-body" style={{ width: size, height: size }}>
-      {name.slice(0, 1).toUpperCase()}
-    </span>
-  );
-
-const tone = (s: string) => (s === ConnectionStatuses.ACTIVE ? "success" : s === ConnectionStatuses.ERROR ? "error" : "warning") as "success" | "error" | "warning";
-
-const ConnectionTile: FC<{ c: Connection; logo?: string | null; isAdmin: boolean; onRename: () => void; onLimit: () => void; onDelete: () => void }> = ({ c, logo, isAdmin, onRename, onLimit, onDelete }) => {
-  const reconnect = useReconnect();
-  const update = useUpdateConnection();
-  const setDefault = useSetServiceDefault();
-  return (
-    <div className="flex items-start gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
-      <Logo src={logo} name={c.service_name} />
-      <div className="min-w-0 flex-1">
-        <div className="flex flex-wrap items-center gap-1.5">
-          <span className="truncate font-bold text-ink">{c.label}</span>
-          {c.visibility === Visibilities.SHARED && (
-            <Badge variant="secondary">
-              <Users className="h-3 w-3" /> Shared
-            </Badge>
-          )}
-          {c.is_default && (
-            <Badge variant="secondary">
-              <Star className="h-3 w-3" /> Default
-            </Badge>
-          )}
-        </div>
-        <p className="truncate text-sm text-muted-foreground">{c.account_identifier ?? c.service_name}{c.masked_hint ? ` · ${c.masked_hint}` : ""}</p>
-        <div className="mt-2 flex flex-wrap items-center gap-2">
-          <StatusPill tone={tone(c.status)}>{getDropdownOptionLabel(ConnectionStatusOptions, c.status)}</StatusPill>
-          {c.restricted_bots.length > 0 && <span className="text-xs text-muted-foreground">Only {c.restricted_bots.map((b) => b.name).join(", ")}</span>}
-          {c.status !== ConnectionStatuses.ACTIVE && c.kind === ConnectionKinds.COMPOSIO && c.can_manage && (
-            <Button size="sm" variant="outline" loading={reconnect.isPending} onClick={() => reconnect.mutate({ id: c.id, return_url: platform.links.returnUrl(Routes.connections.callback) }, { onSuccess: (r) => r.redirect_url && platform.links.redirect(r.redirect_url) })}>
-              <RefreshCw /> Reconnect
-            </Button>
-          )}
-        </div>
-      </div>
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="ghost" size="icon" className="h-11 w-11" aria-label={`Actions for ${c.label}`}>
-            <MoreHorizontal />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
-          {!c.is_default && (
-            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => setDefault.mutate({ service_key: c.service_key, connection_id: c.id })}>
-              <Star className="h-4 w-4" /> Use by default for {c.service_name}
-            </DropdownMenuItem>
-          )}
-          {c.can_manage && (
-            <>
-              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onRename}>
-                <Pencil className="h-4 w-4" /> Rename
-              </DropdownMenuItem>
-              {isAdmin && (
-                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => update.mutate({ id: c.id, visibility: c.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
-                  <Users className="h-4 w-4" /> {c.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}
-                </DropdownMenuItem>
-              )}
-              {c.visibility === Visibilities.SHARED && (
-                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onLimit}>
-                  <BotIcon className="h-4 w-4" /> Limit to bots
-                </DropdownMenuItem>
-              )}
-              {c.kind === ConnectionKinds.COMPOSIO && (
-                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => reconnect.mutate({ id: c.id, return_url: platform.links.returnUrl(Routes.connections.callback) }, { onSuccess: (r) => r.redirect_url && platform.links.redirect(r.redirect_url) })}>
-                  <RefreshCw className="h-4 w-4" /> Reconnect
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuSeparator />
-              <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={onDelete}>
-                <Trash2 className="h-4 w-4" /> Disconnect
-              </DropdownMenuItem>
-            </>
-          )}
-        </DropdownMenuContent>
-      </DropdownMenu>
-    </div>
-  );
-};
 
 const ConnectionsPage: FC = () => {
   const { data: allConnections, isPending } = useConnections();
@@ -121,7 +29,6 @@ const ConnectionsPage: FC = () => {
   const catalog = useCatalog(search, category);
   const { data: categories } = useCategories();
   const del = useDeleteConnection();
-  const [connecting, setConnecting] = useState<Toolkit | null>(null);
   const [apiKeyOpen, setApiKeyOpen] = useState(false);
   const [renaming, setRenaming] = useState<Connection | null>(null);
   const [limiting, setLimiting] = useState<Connection | null>(null);
@@ -194,22 +101,30 @@ const ConnectionsPage: FC = () => {
           <>
             <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4">
               {toolkits.map((t) => (
-                <div key={t.slug} className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
+                <Link
+                  key={t.slug}
+                  to={Routes.connections.service(t.slug)}
+                  className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                >
                   <div className="flex items-center gap-3">
-                    <Logo src={t.logo} name={t.name} />
+                    <ServiceLogo src={t.logo} name={t.name} />
                     <div className="min-w-0">
                       <p className="truncate font-bold text-ink">{t.name}</p>
                       <p className="truncate text-xs capitalize text-muted-foreground">{t.categories.slice(0, 2).join(" · ") || "Service"}</p>
                     </div>
                   </div>
                   <p className="mt-2 line-clamp-2 flex-1 text-sm text-body">{t.description}</p>
-                  <div className="mt-3 flex items-center justify-between gap-2">
-                    {t.connected_count > 0 ? <span className="inline-flex items-center gap-1 text-xs font-semibold text-success"><Check className="h-3 w-3" /> {t.connected_count} connected</span> : <span />}
-                    <Button size="sm" variant={t.connected_count ? "outline" : "default"} disabled={!t.allowed} onClick={() => setConnecting(t)} title={t.allowed ? undefined : "Not allowed by your organisation"}>
-                      {t.connected_count ? "Add another" : "Connect"}
-                    </Button>
+                  <div className="mt-3 flex items-center justify-between gap-2 text-xs font-semibold">
+                    {t.connected_count > 0 ? (
+                      <span className="inline-flex items-center gap-1 text-success">
+                        <Check className="h-3 w-3" /> {t.connected_count} connected
+                      </span>
+                    ) : (
+                      <span className="text-muted-foreground">{t.allowed ? "Not connected" : "Not allowed by your organisation"}</span>
+                    )}
+                    <ChevronRight className="h-4 w-4 text-muted-foreground" aria-hidden />
                   </div>
-                </div>
+                </Link>
               ))}
             </div>
             {catalog.hasNextPage && (
@@ -223,7 +138,6 @@ const ConnectionsPage: FC = () => {
         )}
       </section>
 
-      <ConnectDialog toolkit={connecting} isAdmin={isAdmin} onClose={() => setConnecting(null)} />
       <ApiKeyDialog open={apiKeyOpen} isAdmin={isAdmin} onClose={() => setApiKeyOpen(false)} />
       <RenameConnectionDialog connection={renaming} onClose={() => setRenaming(null)} />
       <LimitBotsDialog connection={limiting} onClose={() => setLimiting(null)} />

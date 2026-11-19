@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
+import { BadRequestException, Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards, type PipeTransform } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtGuard } from '@/shared/guards/jwt.guard';
@@ -11,8 +11,16 @@ import { ConnectionsService } from './connections.service';
 import { CredentialsService } from './credentials.service';
 import {
     CancelSecretRequestDto, CatalogQuery, CatalogQuerySchema, ConnectComposioDto, CreateApiKeyConnectionDto, CreateCredentialDto, CredentialQuery,
-    CredentialQuerySchema, ReplaceCredentialDto, SetServiceDefaultDto, UpdateConnectionDto, UpdateCredentialDto,
+    CredentialQuerySchema, ReplaceCredentialDto, SetServiceDefaultDto, SetToolPermissionsDto, UpdateConnectionDto, UpdateCredentialDto,
 } from './dto/connection.dto';
+
+/** Composio toolkit slugs: lowercase letters, digits, underscores and dashes. */
+class ParseSlugPipe implements PipeTransform<string, string> {
+    transform(value: string) {
+        if (!/^[a-z0-9_-]{1,80}$/.test(value ?? '')) throw new BadRequestException('Invalid service');
+        return value;
+    }
+}
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
 
@@ -37,6 +45,18 @@ export class ConnectionsController {
     @Get('categories')
     categories() {
         return this.connections.categories();
+    }
+
+    @Get('services/:slug')
+    @ApiOperation({ summary: 'Service details: description, every tool (reads/writes) and your permission for each' })
+    service(@CurrentMembership() m: OrgMembership, @Param('slug', new ParseSlugPipe()) slug: string) {
+        return this.connections.serviceDetails(actor(m), slug);
+    }
+
+    @Put('services/:slug/permissions')
+    @ApiOperation({ summary: 'Set your permission for one or more tools of a service' })
+    setPermissions(@CurrentMembership() m: OrgMembership, @Param('slug', new ParseSlugPipe()) slug: string, @Body() dto: SetToolPermissionsDto) {
+        return this.connections.setToolPermissions(actor(m), slug, dto);
     }
 
     @Post('composio')

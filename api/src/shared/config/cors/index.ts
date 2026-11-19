@@ -1,8 +1,7 @@
-export const LOCAL_CORS_ORIGINS = [
-    'http://localhost:5173',
-    'http://localhost:5174',
-    'http://localhost:3001',
-];
+/**
+ * Environments where the API accepts requests from any origin, without needing APP_URL / LANDING_URL / CORS_URLS.
+ */
+export const OPEN_CORS_ENVS = ['local', 'staging'];
 
 /**
  * Origins of the packaged apps (§14.2): Electron serves the bundle at app://agentspace, Capacitor at
@@ -19,14 +18,18 @@ export function parseCorsUrls(value: unknown): string[] | undefined {
     return urls.length ? urls : undefined;
 }
 
+/**
+ * `true` reflects the request's Origin back, so any origin is accepted (works with `credentials: true`,
+ * unlike `*`). Used in local and staging; other environments use an explicit allowlist.
+ */
 export function resolveCorsOrigins(options: {
     nodeEnv?: string;
     corsUrls?: string[];
     appUrl?: string;
     landingUrl?: string;
-}): string[] {
-    if (options.nodeEnv === 'local') {
-        return [...LOCAL_CORS_ORIGINS, ...APP_SHELL_ORIGINS];
+}): string[] | true {
+    if (options.nodeEnv && OPEN_CORS_ENVS.includes(options.nodeEnv)) {
+        return true;
     }
 
     if (options.corsUrls?.length) {

@@ -3,19 +3,27 @@ import { ConfigService } from '@nestjs/config';
 import { Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { EventsService, UserEvents } from '@/core/realtime/events.service';
-import { ComposioService } from '@/integrations/composio/composio.service';
+import { RedisService } from '@/core/databases/redis/redis.service';
+import { RedisKeys } from '@/core/databases/redis/redis.constants';
+import { ComposioService, ComposioTool } from '@/integrations/composio/composio.service';
 import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { AccessService, isAdminRole } from '../access/access.service';
+import { classifyToolSlug } from '../agent/approval-policy';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
 import { CredentialsService } from './credentials.service';
-import { CatalogQuery, ConnectComposioDto, CreateApiKeyConnectionDto, UpdateConnectionDto } from './dto/connection.dto';
+import { CatalogQuery, ConnectComposioDto, CreateApiKeyConnectionDto, SetToolPermissionsDto, ToolPermissions, UpdateConnectionDto } from './dto/connection.dto';
 
 const CONN_INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
     bot_restrictions: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
     credential: { select: { id: true, masked_hint: true, status: true } },
 } satisfies Prisma.ConnectionInclude;
+
+const ALL_TOOLS_CACHE_SECONDS = 600;
+
+/** How the service details page groups tools: read-only ones never need approval at the default level. */
+export const ToolGroups = { READ: 'READ', WRITE: 'WRITE' } as const;
 
 @Injectable()
 export class ConnectionsService {
@@ -30,6 +38,7 @@ export class ConnectionsService {
         private readonly events: EventsService,
         private readonly config: ConfigService,
         private readonly store: SecretStoreService,
+        private readonly redis: RedisService,
     ) { }
 
     async catalog(actor: Actor, q: CatalogQuery) {
@@ -45,6 +54,58 @@ export class ConnectionsService {
                 .map((t) => ({ ...t, connected_count: counts.get(t.slug) ?? 0, allowed: this.serviceAllowed(settings, t.slug) })),
             next_cursor: res.next_cursor,
         };
+    }
+
+    private async allTools(slug: string): Promise<ComposioTool[]> {
+        const key = this.redis.key(RedisKeys.composioAllToolsCache(slug));
+        const cached = await this.redis.client.get(key);
+        if (cached) return JSON.parse(cached);
+        const tools = await this.composio.listAllTools(slug);
+        await this.redis.client.set(key, JSON.stringify(tools), 'EX', ALL_TOOLS_CACHE_SECONDS);
+        return tools;
+    }
+
+    /** Service details page: the service, every tool grouped into reads/writes, and this user's permission for each. */
+    async serviceDetails(actor: Actor, slug: string) {
+        const [toolkit, tools, connected, settings, perms] = await Promise.all([
+            this.composio.getToolkit(slug),
+            this.allTools(slug),
+            this.prisma.connection.count({ where: { service_key: slug, ...this.access.usableConnectionsWhere(actor.organization_id, actor.user_id) } }),
+            this.prisma.organizationSettings.findUnique({ where: { organization_id: actor.organization_id } }),
+            this.prisma.userToolPermission.findMany({ where: { user_id: actor.user_id, organization_id: actor.organization_id, service_key: slug } }),
+        ]);
+        const permission = new Map(perms.map((p) => [p.tool_slug, p.permission]));
+        return {
+            toolkit: { ...toolkit, connected_count: connected, allowed: this.serviceAllowed(settings, toolkit.slug) },
+            tools: tools.map((t) => {
+                const action = classifyToolSlug(t.slug, {});
+                return {
+                    slug: t.slug,
+                    name: t.name,
+                    description: t.description,
+                    group: action ? ToolGroups.WRITE : ToolGroups.READ,
+                    action_type: action,
+                    permission: permission.get(t.slug) ?? ToolPermissions.AUTO_REVIEW,
+                };
+            }),
+        };
+    }
+
+    /** AUTO_REVIEW is the default, so it is stored as "no row". */
+    async setToolPermissions(actor: Actor, slug: string, dto: SetToolPermissionsDto) {
+        const known = new Set((await this.allTools(slug)).map((t) => t.slug));
+        const slugs = [...new Set(dto.tool_slugs)];
+        const unknown = slugs.filter((t) => !known.has(t));
+        if (unknown.length) throw new BadRequestException(`Unknown tool: ${unknown[0]}`);
+        const where = { user_id: actor.user_id, organization_id: actor.organization_id, service_key: slug, tool_slug: { in: slugs } };
+        await this.prisma.$transaction(async (tx) => {
+            await tx.userToolPermission.deleteMany({ where });
+            if (dto.permission !== ToolPermissions.AUTO_REVIEW) {
+                await tx.userToolPermission.createMany({ data: slugs.map((tool_slug) => ({ user_id: actor.user_id, organization_id: actor.organization_id, service_key: slug, tool_slug, permission: dto.permission })) });
+            }
+        });
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'connection.tool_permissions_updated', target_type: 'service', target_id: slug, metadata: { permission: dto.permission, tools: slugs.length } });
+        return { ok: true };
     }
 
     categories() {
@@ -157,7 +218,7 @@ export class ConnectionsService {
             await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'connection.created', target_type: 'connection', target_id: id, connection_id: id, metadata: { service: c.service_key, visibility: c.visibility } });
             await this.events.toUser(actor.user_id, UserEvents.CONNECTION_STATUS, { connection_id: id, status });
         }
-        return { connection_id: id, status: updated.status, label: updated.label, account_identifier: updated.account_identifier };
+        return { connection_id: id, service_key: updated.service_key, status: updated.status, label: updated.label, account_identifier: updated.account_identifier };
     }
 
     async reconnect(actor: Actor, id: string, returnUrl?: string) {

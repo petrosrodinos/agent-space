@@ -21,7 +21,7 @@ export const PageHeader: FC<PageHeaderProps> = ({ title, description, actions, c
       </div>
       {description && <p className="mt-1 text-[15px] text-muted-foreground">{description}</p>}
     </div>
-    {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
+    {actions && <div className="flex flex-wrap items-center gap-2 sm:shrink-0 sm:flex-nowrap">{actions}</div>}
   </div>
 );
 

@@ -410,7 +410,7 @@ export class VoiceService implements OnModuleDestroy {
         // Approval engine — same rules as text chat (§11); app-management changes always confirm.
         if (def.name !== 'resolve_approval') {
             const action = def.confirm ? 'OTHER' : await def.classify?.(args, live.ctx);
-            const decision = def.confirm ? { required: true } : decideApproval(action ?? null, live.ctx.bot, live.ctx.org_settings);
+            const decision = def.confirm ? { required: true } : decideApproval(action ?? null, live.ctx.bot, live.ctx.org_settings, { toolPermission: def.tool_permission });
             if (decision.required) {
                 const preview = def.preview ? await def.preview(args, live.ctx).catch(() => ({ title: def.title(args, live.ctx), action_type: action ?? 'OTHER', preview: { kind: 'tool', input: args } })) : { title: def.title(args, live.ctx), action_type: action ?? 'OTHER', preview: { kind: 'tool', input: args } };
                 const actionType = (preview as { action_type?: string }).action_type ?? action ?? 'OTHER';

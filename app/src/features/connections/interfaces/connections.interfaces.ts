@@ -19,8 +19,32 @@ export interface Toolkit {
   auth_schemes: string[];
   managed: boolean;
   tools_count: number;
+  /** The service's own site, when the catalog knows it. */
+  website?: string | null;
   connected_count: number;
   allowed: boolean;
+}
+
+/** Your permission for one tool of a connected service. AUTO_REVIEW follows the bot's approval level. */
+export const ToolPermissions = { ALWAYS_ALLOW: "ALWAYS_ALLOW", AUTO_REVIEW: "AUTO_REVIEW", NEEDS_APPROVAL: "NEEDS_APPROVAL", BLOCKED: "BLOCKED" } as const;
+export type ToolPermission = (typeof ToolPermissions)[keyof typeof ToolPermissions];
+
+/** Read-only tools vs tools that change something. */
+export const ToolGroups = { READ: "READ", WRITE: "WRITE" } as const;
+export type ToolGroup = (typeof ToolGroups)[keyof typeof ToolGroups];
+
+export interface ServiceTool {
+  slug: string;
+  name: string;
+  description: string;
+  group: ToolGroup;
+  action_type: string | null;
+  permission: ToolPermission;
+}
+
+export interface ServiceDetails {
+  toolkit: Toolkit;
+  tools: ServiceTool[];
 }
 
 export interface Connection {

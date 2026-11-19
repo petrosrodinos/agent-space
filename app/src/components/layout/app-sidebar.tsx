@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from "react";
-import { NavLink, useLocation } from "react-router-dom";
-import { Bell, ChevronUp } from "lucide-react";
+import { Link, NavLink, useLocation } from "react-router-dom";
+import { Bell, ChevronUp, Grid2x2Plus } from "lucide-react";
+import { Routes } from "@/routes/routes";
 import { PersonAvatar } from "@/components/ui/bot-avatar";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { useConversations } from "@/features/conversations/hooks/use-conversations";
@@ -149,16 +150,14 @@ export const AppSidebar: FC<{ collapsed?: boolean; onNavigate?: () => void; clas
 
       <WorkspaceNav collapsed={collapsed} onNavigate={onNavigate} />
 
-      <div className="border-t border-hairline p-2">
+      <div className={cn("flex items-center gap-1 border-t border-hairline p-2", collapsed && "flex-col")}>
         <AccountMenu>
-          <button className={cn("flex w-full items-center gap-3 rounded-md p-1.5 text-left hover:bg-surface-sunken", collapsed && "justify-center")} aria-label="Account menu">
+          <button
+            className={cn("flex min-w-0 flex-1 items-center gap-3 rounded-full p-1.5 pr-3 text-left hover:bg-surface-sunken", collapsed && "flex-none justify-center pr-1.5")}
+            aria-label="Account menu"
+          >
             <PersonAvatar name={me?.user.name} email={me?.user.email} size={32} />
-            {!collapsed && (
-              <span className="min-w-0 flex-1">
-                <span className="block truncate text-sm font-bold text-ink">{me?.user.name ?? "…"}</span>
-                <span className="block truncate text-xs text-muted-foreground">{me?.user.email}</span>
-              </span>
-            )}
+            {!collapsed && <span className="min-w-0 flex-1 truncate text-[15px] font-bold text-ink">{me?.user.name ?? "…"}</span>}
             {!collapsed && !!notifications?.unread && (
               <span className="inline-flex items-center gap-1 rounded-full bg-primary px-2 py-0.5 text-[11px] font-extrabold text-primary-foreground">
                 <Bell className="h-3 w-3" />
@@ -167,6 +166,19 @@ export const AppSidebar: FC<{ collapsed?: boolean; onNavigate?: () => void; clas
             )}
           </button>
         </AccountMenu>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <Link
+              to={Routes.connections.root}
+              onClick={onNavigate}
+              aria-label="Connections"
+              className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-surface-sunken text-ink transition-colors hover:bg-hairline-strong [&_svg]:h-[18px] [&_svg]:w-[18px]"
+            >
+              <Grid2x2Plus />
+            </Link>
+          </TooltipTrigger>
+          <TooltipContent side={collapsed ? "right" : "top"}>Connections</TooltipContent>
+        </Tooltip>
       </div>
     </aside>
   );

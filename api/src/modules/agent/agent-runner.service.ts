@@ -363,7 +363,7 @@ export class AgentRunnerService {
             } else {
                 const action = def.confirm ? 'OTHER' : await def.classify?.(args, ctx);
                 const preApproved = !def.confirm && ctx.run.automation_run_id ? await this.automations.isPreApproved(ctx.run, action ?? null, def.connectionFor?.(args), args) : false;
-                const decision = def.confirm ? { required: true } : decideApproval(action ?? null, ctx.bot, ctx.org_settings, { preApproved });
+                const decision = def.confirm ? { required: true } : decideApproval(action ?? null, ctx.bot, ctx.org_settings, { preApproved, toolPermission: def.tool_permission });
                 if (decision.required) {
                     let previewError: string | null = null;
                     const preview = def.preview

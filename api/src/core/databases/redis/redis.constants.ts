@@ -14,5 +14,6 @@ export const RedisKeys = {
     usageDirty: () => `usage:dirty`,
     modelsCache: () => `cache:openrouter:models`,
     composioToolsCache: (toolkit: string) => `cache:composio:tools:${toolkit}`,
+    composioAllToolsCache: (toolkit: string) => `cache:composio:all-tools:${toolkit}`,
     rateLimit: (key: string) => `ratelimit:${key}`,
 } as const;

@@ -74,6 +74,11 @@ export type NotificationPreference = $Result.DefaultSelection<Prisma.$Notificati
  */
 export type UserServiceDefault = $Result.DefaultSelection<Prisma.$UserServiceDefaultPayload>
 /**
+ * Model UserToolPermission
+ * A user's permission for one tool of a connected service (e.g. NOTION_CREATE_PAGE). No row = AUTO_REVIEW.
+ */
+export type UserToolPermission = $Result.DefaultSelection<Prisma.$UserToolPermissionPayload>
+/**
  * Model Organization
  * 
  */
@@ -1020,6 +1025,16 @@ export const ApprovalOverride: {
 export type ApprovalOverride = (typeof ApprovalOverride)[keyof typeof ApprovalOverride]
 
 
+export const ToolPermission: {
+  ALWAYS_ALLOW: 'ALWAYS_ALLOW',
+  AUTO_REVIEW: 'AUTO_REVIEW',
+  NEEDS_APPROVAL: 'NEEDS_APPROVAL',
+  BLOCKED: 'BLOCKED'
+};
+
+export type ToolPermission = (typeof ToolPermission)[keyof typeof ToolPermission]
+
+
 export const KnowledgeScope: {
   BOT: 'BOT',
   ORGANIZATION: 'ORGANIZATION'
@@ -1843,6 +1858,10 @@ export type ApprovalOverride = $Enums.ApprovalOverride
 
 export const ApprovalOverride: typeof $Enums.ApprovalOverride
 
+export type ToolPermission = $Enums.ToolPermission
+
+export const ToolPermission: typeof $Enums.ToolPermission
+
 export type KnowledgeScope = $Enums.KnowledgeScope
 
 export const KnowledgeScope: typeof $Enums.KnowledgeScope
@@ -2299,6 +2318,16 @@ export class PrismaClient<
     * ```
     */
   get userServiceDefault(): Prisma.UserServiceDefaultDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.userToolPermission`: Exposes CRUD operations for the **UserToolPermission** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more UserToolPermissions
+    * const userToolPermissions = await prisma.userToolPermission.findMany()
+    * ```
+    */
+  get userToolPermission(): Prisma.UserToolPermissionDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.organization`: Exposes CRUD operations for the **Organization** model.
@@ -3458,6 +3487,7 @@ export namespace Prisma {
     UserSettings: 'UserSettings',
     NotificationPreference: 'NotificationPreference',
     UserServiceDefault: 'UserServiceDefault',
+    UserToolPermission: 'UserToolPermission',
     Organization: 'Organization',
     OrganizationSettings: 'OrganizationSettings',
     OrganizationMember: 'OrganizationMember',
@@ -3543,7 +3573,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -4432,6 +4462,80 @@ export namespace Prisma {
           count: {
             args: Prisma.UserServiceDefaultCountArgs<ExtArgs>
             result: $Utils.Optional<UserServiceDefaultCountAggregateOutputType> | number
+          }
+        }
+      }
+      UserToolPermission: {
+        payload: Prisma.$UserToolPermissionPayload<ExtArgs>
+        fields: Prisma.UserToolPermissionFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.UserToolPermissionFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.UserToolPermissionFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          findFirst: {
+            args: Prisma.UserToolPermissionFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.UserToolPermissionFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          findMany: {
+            args: Prisma.UserToolPermissionFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>[]
+          }
+          create: {
+            args: Prisma.UserToolPermissionCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          createMany: {
+            args: Prisma.UserToolPermissionCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.UserToolPermissionCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>[]
+          }
+          delete: {
+            args: Prisma.UserToolPermissionDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          update: {
+            args: Prisma.UserToolPermissionUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          deleteMany: {
+            args: Prisma.UserToolPermissionDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.UserToolPermissionUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.UserToolPermissionUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>[]
+          }
+          upsert: {
+            args: Prisma.UserToolPermissionUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UserToolPermissionPayload>
+          }
+          aggregate: {
+            args: Prisma.UserToolPermissionAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUserToolPermission>
+          }
+          groupBy: {
+            args: Prisma.UserToolPermissionGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UserToolPermissionGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.UserToolPermissionCountArgs<ExtArgs>
+            result: $Utils.Optional<UserToolPermissionCountAggregateOutputType> | number
           }
         }
       }
@@ -9750,6 +9854,7 @@ export namespace Prisma {
     userSettings?: UserSettingsOmit
     notificationPreference?: NotificationPreferenceOmit
     userServiceDefault?: UserServiceDefaultOmit
+    userToolPermission?: UserToolPermissionOmit
     organization?: OrganizationOmit
     organizationSettings?: OrganizationSettingsOmit
     organizationMember?: OrganizationMemberOmit
@@ -9912,6 +10017,7 @@ export namespace Prisma {
     invitations_accepted: number
     bots_created: number
     bot_connection_defaults: number
+    tool_permissions: number
     conversations_created: number
     conversation_folders: number
     participations: number
@@ -9959,6 +10065,7 @@ export namespace Prisma {
     invitations_accepted?: boolean | UserCountOutputTypeCountInvitations_acceptedArgs
     bots_created?: boolean | UserCountOutputTypeCountBots_createdArgs
     bot_connection_defaults?: boolean | UserCountOutputTypeCountBot_connection_defaultsArgs
+    tool_permissions?: boolean | UserCountOutputTypeCountTool_permissionsArgs
     conversations_created?: boolean | UserCountOutputTypeCountConversations_createdArgs
     conversation_folders?: boolean | UserCountOutputTypeCountConversation_foldersArgs
     participations?: boolean | UserCountOutputTypeCountParticipationsArgs
@@ -10086,6 +10193,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountBot_connection_defaultsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserServiceDefaultWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountTool_permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserToolPermissionWhereInput
   }
 
   /**
@@ -10455,6 +10569,7 @@ export namespace Prisma {
     activity_logs: number
     data_exports: number
     service_defaults: number
+    tool_permissions: number
     saved_widgets: number
   }
 
@@ -10489,6 +10604,7 @@ export namespace Prisma {
     activity_logs?: boolean | OrganizationCountOutputTypeCountActivity_logsArgs
     data_exports?: boolean | OrganizationCountOutputTypeCountData_exportsArgs
     service_defaults?: boolean | OrganizationCountOutputTypeCountService_defaultsArgs
+    tool_permissions?: boolean | OrganizationCountOutputTypeCountTool_permissionsArgs
     saved_widgets?: boolean | OrganizationCountOutputTypeCountSaved_widgetsArgs
   }
 
@@ -10711,6 +10827,13 @@ export namespace Prisma {
    */
   export type OrganizationCountOutputTypeCountService_defaultsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UserServiceDefaultWhereInput
+  }
+
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountTool_permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserToolPermissionWhereInput
   }
 
   /**
@@ -12478,6 +12601,7 @@ export namespace Prisma {
     invitations_accepted?: boolean | User$invitations_acceptedArgs<ExtArgs>
     bots_created?: boolean | User$bots_createdArgs<ExtArgs>
     bot_connection_defaults?: boolean | User$bot_connection_defaultsArgs<ExtArgs>
+    tool_permissions?: boolean | User$tool_permissionsArgs<ExtArgs>
     conversations_created?: boolean | User$conversations_createdArgs<ExtArgs>
     conversation_folders?: boolean | User$conversation_foldersArgs<ExtArgs>
     participations?: boolean | User$participationsArgs<ExtArgs>
@@ -12594,6 +12718,7 @@ export namespace Prisma {
     invitations_accepted?: boolean | User$invitations_acceptedArgs<ExtArgs>
     bots_created?: boolean | User$bots_createdArgs<ExtArgs>
     bot_connection_defaults?: boolean | User$bot_connection_defaultsArgs<ExtArgs>
+    tool_permissions?: boolean | User$tool_permissionsArgs<ExtArgs>
     conversations_created?: boolean | User$conversations_createdArgs<ExtArgs>
     conversation_folders?: boolean | User$conversation_foldersArgs<ExtArgs>
     participations?: boolean | User$participationsArgs<ExtArgs>
@@ -12652,6 +12777,7 @@ export namespace Prisma {
       invitations_accepted: Prisma.$InvitationPayload<ExtArgs>[]
       bots_created: Prisma.$BotPayload<ExtArgs>[]
       bot_connection_defaults: Prisma.$UserServiceDefaultPayload<ExtArgs>[]
+      tool_permissions: Prisma.$UserToolPermissionPayload<ExtArgs>[]
       conversations_created: Prisma.$ConversationPayload<ExtArgs>[]
       conversation_folders: Prisma.$ConversationFolderPayload<ExtArgs>[]
       participations: Prisma.$ConversationParticipantPayload<ExtArgs>[]
@@ -13112,6 +13238,7 @@ export namespace Prisma {
     invitations_accepted<T extends User$invitations_acceptedArgs<ExtArgs> = {}>(args?: Subset<T, User$invitations_acceptedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$InvitationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bots_created<T extends User$bots_createdArgs<ExtArgs> = {}>(args?: Subset<T, User$bots_createdArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bot_connection_defaults<T extends User$bot_connection_defaultsArgs<ExtArgs> = {}>(args?: Subset<T, User$bot_connection_defaultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserServiceDefaultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tool_permissions<T extends User$tool_permissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$tool_permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations_created<T extends User$conversations_createdArgs<ExtArgs> = {}>(args?: Subset<T, User$conversations_createdArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation_folders<T extends User$conversation_foldersArgs<ExtArgs> = {}>(args?: Subset<T, User$conversation_foldersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationFolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     participations<T extends User$participationsArgs<ExtArgs> = {}>(args?: Subset<T, User$participationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -13915,6 +14042,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserServiceDefaultScalarFieldEnum | UserServiceDefaultScalarFieldEnum[]
+  }
+
+  /**
+   * User.tool_permissions
+   */
+  export type User$tool_permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    where?: UserToolPermissionWhereInput
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    cursor?: UserToolPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserToolPermissionScalarFieldEnum | UserToolPermissionScalarFieldEnum[]
   }
 
   /**
@@ -27753,6 +27904,1116 @@ export namespace Prisma {
 
 
   /**
+   * Model UserToolPermission
+   */
+
+  export type AggregateUserToolPermission = {
+    _count: UserToolPermissionCountAggregateOutputType | null
+    _min: UserToolPermissionMinAggregateOutputType | null
+    _max: UserToolPermissionMaxAggregateOutputType | null
+  }
+
+  export type UserToolPermissionMinAggregateOutputType = {
+    id: string | null
+    user_id: string | null
+    organization_id: string | null
+    service_key: string | null
+    tool_slug: string | null
+    permission: $Enums.ToolPermission | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type UserToolPermissionMaxAggregateOutputType = {
+    id: string | null
+    user_id: string | null
+    organization_id: string | null
+    service_key: string | null
+    tool_slug: string | null
+    permission: $Enums.ToolPermission | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type UserToolPermissionCountAggregateOutputType = {
+    id: number
+    user_id: number
+    organization_id: number
+    service_key: number
+    tool_slug: number
+    permission: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type UserToolPermissionMinAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    service_key?: true
+    tool_slug?: true
+    permission?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type UserToolPermissionMaxAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    service_key?: true
+    tool_slug?: true
+    permission?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type UserToolPermissionCountAggregateInputType = {
+    id?: true
+    user_id?: true
+    organization_id?: true
+    service_key?: true
+    tool_slug?: true
+    permission?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type UserToolPermissionAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserToolPermission to aggregate.
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserToolPermissions to fetch.
+     */
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: UserToolPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserToolPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserToolPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned UserToolPermissions
+    **/
+    _count?: true | UserToolPermissionCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: UserToolPermissionMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: UserToolPermissionMaxAggregateInputType
+  }
+
+  export type GetUserToolPermissionAggregateType<T extends UserToolPermissionAggregateArgs> = {
+        [P in keyof T & keyof AggregateUserToolPermission]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateUserToolPermission[P]>
+      : GetScalarType<T[P], AggregateUserToolPermission[P]>
+  }
+
+
+
+
+  export type UserToolPermissionGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UserToolPermissionWhereInput
+    orderBy?: UserToolPermissionOrderByWithAggregationInput | UserToolPermissionOrderByWithAggregationInput[]
+    by: UserToolPermissionScalarFieldEnum[] | UserToolPermissionScalarFieldEnum
+    having?: UserToolPermissionScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: UserToolPermissionCountAggregateInputType | true
+    _min?: UserToolPermissionMinAggregateInputType
+    _max?: UserToolPermissionMaxAggregateInputType
+  }
+
+  export type UserToolPermissionGroupByOutputType = {
+    id: string
+    user_id: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at: Date
+    updated_at: Date
+    _count: UserToolPermissionCountAggregateOutputType | null
+    _min: UserToolPermissionMinAggregateOutputType | null
+    _max: UserToolPermissionMaxAggregateOutputType | null
+  }
+
+  type GetUserToolPermissionGroupByPayload<T extends UserToolPermissionGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<UserToolPermissionGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof UserToolPermissionGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], UserToolPermissionGroupByOutputType[P]>
+            : GetScalarType<T[P], UserToolPermissionGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type UserToolPermissionSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    service_key?: boolean
+    tool_slug?: boolean
+    permission?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userToolPermission"]>
+
+  export type UserToolPermissionSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    service_key?: boolean
+    tool_slug?: boolean
+    permission?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userToolPermission"]>
+
+  export type UserToolPermissionSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    service_key?: boolean
+    tool_slug?: boolean
+    permission?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["userToolPermission"]>
+
+  export type UserToolPermissionSelectScalar = {
+    id?: boolean
+    user_id?: boolean
+    organization_id?: boolean
+    service_key?: boolean
+    tool_slug?: boolean
+    permission?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type UserToolPermissionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "organization_id" | "service_key" | "tool_slug" | "permission" | "created_at" | "updated_at", ExtArgs["result"]["userToolPermission"]>
+  export type UserToolPermissionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type UserToolPermissionIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+  export type UserToolPermissionIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+  }
+
+  export type $UserToolPermissionPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UserToolPermission"
+    objects: {
+      user: Prisma.$UserPayload<ExtArgs>
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      user_id: string
+      organization_id: string
+      service_key: string
+      tool_slug: string
+      permission: $Enums.ToolPermission
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["userToolPermission"]>
+    composites: {}
+  }
+
+  type UserToolPermissionGetPayload<S extends boolean | null | undefined | UserToolPermissionDefaultArgs> = $Result.GetResult<Prisma.$UserToolPermissionPayload, S>
+
+  type UserToolPermissionCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UserToolPermissionFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UserToolPermissionCountAggregateInputType | true
+    }
+
+  export interface UserToolPermissionDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UserToolPermission'], meta: { name: 'UserToolPermission' } }
+    /**
+     * Find zero or one UserToolPermission that matches the filter.
+     * @param {UserToolPermissionFindUniqueArgs} args - Arguments to find a UserToolPermission
+     * @example
+     * // Get one UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends UserToolPermissionFindUniqueArgs>(args: SelectSubset<T, UserToolPermissionFindUniqueArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one UserToolPermission that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {UserToolPermissionFindUniqueOrThrowArgs} args - Arguments to find a UserToolPermission
+     * @example
+     * // Get one UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends UserToolPermissionFindUniqueOrThrowArgs>(args: SelectSubset<T, UserToolPermissionFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserToolPermission that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionFindFirstArgs} args - Arguments to find a UserToolPermission
+     * @example
+     * // Get one UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends UserToolPermissionFindFirstArgs>(args?: SelectSubset<T, UserToolPermissionFindFirstArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first UserToolPermission that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionFindFirstOrThrowArgs} args - Arguments to find a UserToolPermission
+     * @example
+     * // Get one UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends UserToolPermissionFindFirstOrThrowArgs>(args?: SelectSubset<T, UserToolPermissionFindFirstOrThrowArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more UserToolPermissions that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all UserToolPermissions
+     * const userToolPermissions = await prisma.userToolPermission.findMany()
+     * 
+     * // Get first 10 UserToolPermissions
+     * const userToolPermissions = await prisma.userToolPermission.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const userToolPermissionWithIdOnly = await prisma.userToolPermission.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends UserToolPermissionFindManyArgs>(args?: SelectSubset<T, UserToolPermissionFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a UserToolPermission.
+     * @param {UserToolPermissionCreateArgs} args - Arguments to create a UserToolPermission.
+     * @example
+     * // Create one UserToolPermission
+     * const UserToolPermission = await prisma.userToolPermission.create({
+     *   data: {
+     *     // ... data to create a UserToolPermission
+     *   }
+     * })
+     * 
+     */
+    create<T extends UserToolPermissionCreateArgs>(args: SelectSubset<T, UserToolPermissionCreateArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many UserToolPermissions.
+     * @param {UserToolPermissionCreateManyArgs} args - Arguments to create many UserToolPermissions.
+     * @example
+     * // Create many UserToolPermissions
+     * const userToolPermission = await prisma.userToolPermission.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends UserToolPermissionCreateManyArgs>(args?: SelectSubset<T, UserToolPermissionCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many UserToolPermissions and returns the data saved in the database.
+     * @param {UserToolPermissionCreateManyAndReturnArgs} args - Arguments to create many UserToolPermissions.
+     * @example
+     * // Create many UserToolPermissions
+     * const userToolPermission = await prisma.userToolPermission.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many UserToolPermissions and only return the `id`
+     * const userToolPermissionWithIdOnly = await prisma.userToolPermission.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends UserToolPermissionCreateManyAndReturnArgs>(args?: SelectSubset<T, UserToolPermissionCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a UserToolPermission.
+     * @param {UserToolPermissionDeleteArgs} args - Arguments to delete one UserToolPermission.
+     * @example
+     * // Delete one UserToolPermission
+     * const UserToolPermission = await prisma.userToolPermission.delete({
+     *   where: {
+     *     // ... filter to delete one UserToolPermission
+     *   }
+     * })
+     * 
+     */
+    delete<T extends UserToolPermissionDeleteArgs>(args: SelectSubset<T, UserToolPermissionDeleteArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one UserToolPermission.
+     * @param {UserToolPermissionUpdateArgs} args - Arguments to update one UserToolPermission.
+     * @example
+     * // Update one UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends UserToolPermissionUpdateArgs>(args: SelectSubset<T, UserToolPermissionUpdateArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more UserToolPermissions.
+     * @param {UserToolPermissionDeleteManyArgs} args - Arguments to filter UserToolPermissions to delete.
+     * @example
+     * // Delete a few UserToolPermissions
+     * const { count } = await prisma.userToolPermission.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends UserToolPermissionDeleteManyArgs>(args?: SelectSubset<T, UserToolPermissionDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserToolPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many UserToolPermissions
+     * const userToolPermission = await prisma.userToolPermission.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends UserToolPermissionUpdateManyArgs>(args: SelectSubset<T, UserToolPermissionUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more UserToolPermissions and returns the data updated in the database.
+     * @param {UserToolPermissionUpdateManyAndReturnArgs} args - Arguments to update many UserToolPermissions.
+     * @example
+     * // Update many UserToolPermissions
+     * const userToolPermission = await prisma.userToolPermission.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more UserToolPermissions and only return the `id`
+     * const userToolPermissionWithIdOnly = await prisma.userToolPermission.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends UserToolPermissionUpdateManyAndReturnArgs>(args: SelectSubset<T, UserToolPermissionUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one UserToolPermission.
+     * @param {UserToolPermissionUpsertArgs} args - Arguments to update or create a UserToolPermission.
+     * @example
+     * // Update or create a UserToolPermission
+     * const userToolPermission = await prisma.userToolPermission.upsert({
+     *   create: {
+     *     // ... data to create a UserToolPermission
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the UserToolPermission we want to update
+     *   }
+     * })
+     */
+    upsert<T extends UserToolPermissionUpsertArgs>(args: SelectSubset<T, UserToolPermissionUpsertArgs<ExtArgs>>): Prisma__UserToolPermissionClient<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of UserToolPermissions.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionCountArgs} args - Arguments to filter UserToolPermissions to count.
+     * @example
+     * // Count the number of UserToolPermissions
+     * const count = await prisma.userToolPermission.count({
+     *   where: {
+     *     // ... the filter for the UserToolPermissions we want to count
+     *   }
+     * })
+    **/
+    count<T extends UserToolPermissionCountArgs>(
+      args?: Subset<T, UserToolPermissionCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], UserToolPermissionCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a UserToolPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends UserToolPermissionAggregateArgs>(args: Subset<T, UserToolPermissionAggregateArgs>): Prisma.PrismaPromise<GetUserToolPermissionAggregateType<T>>
+
+    /**
+     * Group by UserToolPermission.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {UserToolPermissionGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends UserToolPermissionGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: UserToolPermissionGroupByArgs['orderBy'] }
+        : { orderBy?: UserToolPermissionGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, UserToolPermissionGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUserToolPermissionGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the UserToolPermission model
+   */
+  readonly fields: UserToolPermissionFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for UserToolPermission.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__UserToolPermissionClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the UserToolPermission model
+   */
+  interface UserToolPermissionFieldRefs {
+    readonly id: FieldRef<"UserToolPermission", 'String'>
+    readonly user_id: FieldRef<"UserToolPermission", 'String'>
+    readonly organization_id: FieldRef<"UserToolPermission", 'String'>
+    readonly service_key: FieldRef<"UserToolPermission", 'String'>
+    readonly tool_slug: FieldRef<"UserToolPermission", 'String'>
+    readonly permission: FieldRef<"UserToolPermission", 'ToolPermission'>
+    readonly created_at: FieldRef<"UserToolPermission", 'DateTime'>
+    readonly updated_at: FieldRef<"UserToolPermission", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * UserToolPermission findUnique
+   */
+  export type UserToolPermissionFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserToolPermission to fetch.
+     */
+    where: UserToolPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserToolPermission findUniqueOrThrow
+   */
+  export type UserToolPermissionFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserToolPermission to fetch.
+     */
+    where: UserToolPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserToolPermission findFirst
+   */
+  export type UserToolPermissionFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserToolPermission to fetch.
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserToolPermissions to fetch.
+     */
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserToolPermissions.
+     */
+    cursor?: UserToolPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserToolPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserToolPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserToolPermissions.
+     */
+    distinct?: UserToolPermissionScalarFieldEnum | UserToolPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserToolPermission findFirstOrThrow
+   */
+  export type UserToolPermissionFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserToolPermission to fetch.
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserToolPermissions to fetch.
+     */
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for UserToolPermissions.
+     */
+    cursor?: UserToolPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserToolPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserToolPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserToolPermissions.
+     */
+    distinct?: UserToolPermissionScalarFieldEnum | UserToolPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserToolPermission findMany
+   */
+  export type UserToolPermissionFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter, which UserToolPermissions to fetch.
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of UserToolPermissions to fetch.
+     */
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing UserToolPermissions.
+     */
+    cursor?: UserToolPermissionWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` UserToolPermissions from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` UserToolPermissions.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of UserToolPermissions.
+     */
+    distinct?: UserToolPermissionScalarFieldEnum | UserToolPermissionScalarFieldEnum[]
+  }
+
+  /**
+   * UserToolPermission create
+   */
+  export type UserToolPermissionCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to create a UserToolPermission.
+     */
+    data: XOR<UserToolPermissionCreateInput, UserToolPermissionUncheckedCreateInput>
+  }
+
+  /**
+   * UserToolPermission createMany
+   */
+  export type UserToolPermissionCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many UserToolPermissions.
+     */
+    data: UserToolPermissionCreateManyInput | UserToolPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * UserToolPermission createManyAndReturn
+   */
+  export type UserToolPermissionCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to create many UserToolPermissions.
+     */
+    data: UserToolPermissionCreateManyInput | UserToolPermissionCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserToolPermission update
+   */
+  export type UserToolPermissionUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * The data needed to update a UserToolPermission.
+     */
+    data: XOR<UserToolPermissionUpdateInput, UserToolPermissionUncheckedUpdateInput>
+    /**
+     * Choose, which UserToolPermission to update.
+     */
+    where: UserToolPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserToolPermission updateMany
+   */
+  export type UserToolPermissionUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update UserToolPermissions.
+     */
+    data: XOR<UserToolPermissionUpdateManyMutationInput, UserToolPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which UserToolPermissions to update
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * Limit how many UserToolPermissions to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserToolPermission updateManyAndReturn
+   */
+  export type UserToolPermissionUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * The data used to update UserToolPermissions.
+     */
+    data: XOR<UserToolPermissionUpdateManyMutationInput, UserToolPermissionUncheckedUpdateManyInput>
+    /**
+     * Filter which UserToolPermissions to update
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * Limit how many UserToolPermissions to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * UserToolPermission upsert
+   */
+  export type UserToolPermissionUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * The filter to search for the UserToolPermission to update in case it exists.
+     */
+    where: UserToolPermissionWhereUniqueInput
+    /**
+     * In case the UserToolPermission found by the `where` argument doesn't exist, create a new UserToolPermission with this data.
+     */
+    create: XOR<UserToolPermissionCreateInput, UserToolPermissionUncheckedCreateInput>
+    /**
+     * In case the UserToolPermission was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<UserToolPermissionUpdateInput, UserToolPermissionUncheckedUpdateInput>
+  }
+
+  /**
+   * UserToolPermission delete
+   */
+  export type UserToolPermissionDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    /**
+     * Filter which UserToolPermission to delete.
+     */
+    where: UserToolPermissionWhereUniqueInput
+  }
+
+  /**
+   * UserToolPermission deleteMany
+   */
+  export type UserToolPermissionDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which UserToolPermissions to delete
+     */
+    where?: UserToolPermissionWhereInput
+    /**
+     * Limit how many UserToolPermissions to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * UserToolPermission without action
+   */
+  export type UserToolPermissionDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Model Organization
    */
 
@@ -28006,6 +29267,7 @@ export namespace Prisma {
     activity_logs?: boolean | Organization$activity_logsArgs<ExtArgs>
     data_exports?: boolean | Organization$data_exportsArgs<ExtArgs>
     service_defaults?: boolean | Organization$service_defaultsArgs<ExtArgs>
+    tool_permissions?: boolean | Organization$tool_permissionsArgs<ExtArgs>
     saved_widgets?: boolean | Organization$saved_widgetsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
@@ -28095,6 +29357,7 @@ export namespace Prisma {
     activity_logs?: boolean | Organization$activity_logsArgs<ExtArgs>
     data_exports?: boolean | Organization$data_exportsArgs<ExtArgs>
     service_defaults?: boolean | Organization$service_defaultsArgs<ExtArgs>
+    tool_permissions?: boolean | Organization$tool_permissionsArgs<ExtArgs>
     saved_widgets?: boolean | Organization$saved_widgetsArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -28144,6 +29407,7 @@ export namespace Prisma {
       activity_logs: Prisma.$ActivityLogPayload<ExtArgs>[]
       data_exports: Prisma.$DataExportPayload<ExtArgs>[]
       service_defaults: Prisma.$UserServiceDefaultPayload<ExtArgs>[]
+      tool_permissions: Prisma.$UserToolPermissionPayload<ExtArgs>[]
       saved_widgets: Prisma.$SavedWidgetPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -28587,6 +29851,7 @@ export namespace Prisma {
     activity_logs<T extends Organization$activity_logsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$activity_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     data_exports<T extends Organization$data_exportsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$data_exportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataExportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     service_defaults<T extends Organization$service_defaultsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$service_defaultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserServiceDefaultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    tool_permissions<T extends Organization$tool_permissionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$tool_permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     saved_widgets<T extends Organization$saved_widgetsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$saved_widgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedWidgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -29823,6 +31088,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UserServiceDefaultScalarFieldEnum | UserServiceDefaultScalarFieldEnum[]
+  }
+
+  /**
+   * Organization.tool_permissions
+   */
+  export type Organization$tool_permissionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the UserToolPermission
+     */
+    select?: UserToolPermissionSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the UserToolPermission
+     */
+    omit?: UserToolPermissionOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserToolPermissionInclude<ExtArgs> | null
+    where?: UserToolPermissionWhereInput
+    orderBy?: UserToolPermissionOrderByWithRelationInput | UserToolPermissionOrderByWithRelationInput[]
+    cursor?: UserToolPermissionWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: UserToolPermissionScalarFieldEnum | UserToolPermissionScalarFieldEnum[]
   }
 
   /**
@@ -117575,6 +118864,20 @@ export namespace Prisma {
   export type UserServiceDefaultScalarFieldEnum = (typeof UserServiceDefaultScalarFieldEnum)[keyof typeof UserServiceDefaultScalarFieldEnum]
 
 
+  export const UserToolPermissionScalarFieldEnum: {
+    id: 'id',
+    user_id: 'user_id',
+    organization_id: 'organization_id',
+    service_key: 'service_key',
+    tool_slug: 'tool_slug',
+    permission: 'permission',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type UserToolPermissionScalarFieldEnum = (typeof UserToolPermissionScalarFieldEnum)[keyof typeof UserToolPermissionScalarFieldEnum]
+
+
   export const OrganizationScalarFieldEnum: {
     id: 'id',
     name: 'name',
@@ -119467,6 +120770,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ToolPermission'
+   */
+  export type EnumToolPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ToolPermission'>
+    
+
+
+  /**
+   * Reference to a field of type 'ToolPermission[]'
+   */
+  export type ListEnumToolPermissionFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ToolPermission[]'>
+    
+
+
+  /**
    * Reference to a field of type 'OrganizationRole'
    */
   export type EnumOrganizationRoleFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationRole'>
@@ -120709,6 +122026,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationListRelationFilter
     bots_created?: BotListRelationFilter
     bot_connection_defaults?: UserServiceDefaultListRelationFilter
+    tool_permissions?: UserToolPermissionListRelationFilter
     conversations_created?: ConversationListRelationFilter
     conversation_folders?: ConversationFolderListRelationFilter
     participations?: ConversationParticipantListRelationFilter
@@ -120776,6 +122094,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationOrderByRelationAggregateInput
     bots_created?: BotOrderByRelationAggregateInput
     bot_connection_defaults?: UserServiceDefaultOrderByRelationAggregateInput
+    tool_permissions?: UserToolPermissionOrderByRelationAggregateInput
     conversations_created?: ConversationOrderByRelationAggregateInput
     conversation_folders?: ConversationFolderOrderByRelationAggregateInput
     participations?: ConversationParticipantOrderByRelationAggregateInput
@@ -120846,6 +122165,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationListRelationFilter
     bots_created?: BotListRelationFilter
     bot_connection_defaults?: UserServiceDefaultListRelationFilter
+    tool_permissions?: UserToolPermissionListRelationFilter
     conversations_created?: ConversationListRelationFilter
     conversation_folders?: ConversationFolderListRelationFilter
     participations?: ConversationParticipantListRelationFilter
@@ -121991,6 +123311,80 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"UserServiceDefault"> | Date | string
   }
 
+  export type UserToolPermissionWhereInput = {
+    AND?: UserToolPermissionWhereInput | UserToolPermissionWhereInput[]
+    OR?: UserToolPermissionWhereInput[]
+    NOT?: UserToolPermissionWhereInput | UserToolPermissionWhereInput[]
+    id?: StringFilter<"UserToolPermission"> | string
+    user_id?: StringFilter<"UserToolPermission"> | string
+    organization_id?: StringFilter<"UserToolPermission"> | string
+    service_key?: StringFilter<"UserToolPermission"> | string
+    tool_slug?: StringFilter<"UserToolPermission"> | string
+    permission?: EnumToolPermissionFilter<"UserToolPermission"> | $Enums.ToolPermission
+    created_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+    updated_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }
+
+  export type UserToolPermissionOrderByWithRelationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    service_key?: SortOrder
+    tool_slug?: SortOrder
+    permission?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    user?: UserOrderByWithRelationInput
+    organization?: OrganizationOrderByWithRelationInput
+  }
+
+  export type UserToolPermissionWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    user_id_organization_id_service_key_tool_slug?: UserToolPermissionUser_idOrganization_idService_keyTool_slugCompoundUniqueInput
+    AND?: UserToolPermissionWhereInput | UserToolPermissionWhereInput[]
+    OR?: UserToolPermissionWhereInput[]
+    NOT?: UserToolPermissionWhereInput | UserToolPermissionWhereInput[]
+    user_id?: StringFilter<"UserToolPermission"> | string
+    organization_id?: StringFilter<"UserToolPermission"> | string
+    service_key?: StringFilter<"UserToolPermission"> | string
+    tool_slug?: StringFilter<"UserToolPermission"> | string
+    permission?: EnumToolPermissionFilter<"UserToolPermission"> | $Enums.ToolPermission
+    created_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+    updated_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+  }, "id" | "user_id_organization_id_service_key_tool_slug">
+
+  export type UserToolPermissionOrderByWithAggregationInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    service_key?: SortOrder
+    tool_slug?: SortOrder
+    permission?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: UserToolPermissionCountOrderByAggregateInput
+    _max?: UserToolPermissionMaxOrderByAggregateInput
+    _min?: UserToolPermissionMinOrderByAggregateInput
+  }
+
+  export type UserToolPermissionScalarWhereWithAggregatesInput = {
+    AND?: UserToolPermissionScalarWhereWithAggregatesInput | UserToolPermissionScalarWhereWithAggregatesInput[]
+    OR?: UserToolPermissionScalarWhereWithAggregatesInput[]
+    NOT?: UserToolPermissionScalarWhereWithAggregatesInput | UserToolPermissionScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UserToolPermission"> | string
+    user_id?: StringWithAggregatesFilter<"UserToolPermission"> | string
+    organization_id?: StringWithAggregatesFilter<"UserToolPermission"> | string
+    service_key?: StringWithAggregatesFilter<"UserToolPermission"> | string
+    tool_slug?: StringWithAggregatesFilter<"UserToolPermission"> | string
+    permission?: EnumToolPermissionWithAggregatesFilter<"UserToolPermission"> | $Enums.ToolPermission
+    created_at?: DateTimeWithAggregatesFilter<"UserToolPermission"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"UserToolPermission"> | Date | string
+  }
+
   export type OrganizationWhereInput = {
     AND?: OrganizationWhereInput | OrganizationWhereInput[]
     OR?: OrganizationWhereInput[]
@@ -122041,6 +123435,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogListRelationFilter
     data_exports?: DataExportListRelationFilter
     service_defaults?: UserServiceDefaultListRelationFilter
+    tool_permissions?: UserToolPermissionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
   }
 
@@ -122091,6 +123486,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogOrderByRelationAggregateInput
     data_exports?: DataExportOrderByRelationAggregateInput
     service_defaults?: UserServiceDefaultOrderByRelationAggregateInput
+    tool_permissions?: UserToolPermissionOrderByRelationAggregateInput
     saved_widgets?: SavedWidgetOrderByRelationAggregateInput
   }
 
@@ -122144,6 +123540,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogListRelationFilter
     data_exports?: DataExportListRelationFilter
     service_defaults?: UserServiceDefaultListRelationFilter
+    tool_permissions?: UserToolPermissionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
   }, "id" | "slug" | "logo_file_id" | "stripe_customer_id">
 
@@ -129407,6 +130804,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -129473,6 +130871,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -129539,6 +130938,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -129605,6 +131005,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -130919,6 +132320,81 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type UserToolPermissionCreateInput = {
+    id?: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutTool_permissionsInput
+    organization: OrganizationCreateNestedOneWithoutTool_permissionsInput
+  }
+
+  export type UserToolPermissionUncheckedCreateInput = {
+    id?: string
+    user_id: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type UserToolPermissionUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTool_permissionsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutTool_permissionsNestedInput
+  }
+
+  export type UserToolPermissionUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionCreateManyInput = {
+    id?: string
+    user_id: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type UserToolPermissionUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type OrganizationCreateInput = {
     id?: string
     name: string
@@ -130964,6 +132440,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -131012,6 +132489,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -131060,6 +132538,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -131108,6 +132587,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -139055,6 +140535,12 @@ export namespace Prisma {
     none?: UserServiceDefaultWhereInput
   }
 
+  export type UserToolPermissionListRelationFilter = {
+    every?: UserToolPermissionWhereInput
+    some?: UserToolPermissionWhereInput
+    none?: UserToolPermissionWhereInput
+  }
+
   export type ConversationListRelationFilter = {
     every?: ConversationWhereInput
     some?: ConversationWhereInput
@@ -139287,6 +140773,10 @@ export namespace Prisma {
   }
 
   export type UserServiceDefaultOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type UserToolPermissionOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -140812,6 +142302,63 @@ export namespace Prisma {
     service_key?: SortOrder
     connection_id?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type EnumToolPermissionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ToolPermission | EnumToolPermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumToolPermissionFilter<$PrismaModel> | $Enums.ToolPermission
+  }
+
+  export type UserToolPermissionUser_idOrganization_idService_keyTool_slugCompoundUniqueInput = {
+    user_id: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+  }
+
+  export type UserToolPermissionCountOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    service_key?: SortOrder
+    tool_slug?: SortOrder
+    permission?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type UserToolPermissionMaxOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    service_key?: SortOrder
+    tool_slug?: SortOrder
+    permission?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type UserToolPermissionMinOrderByAggregateInput = {
+    id?: SortOrder
+    user_id?: SortOrder
+    organization_id?: SortOrder
+    service_key?: SortOrder
+    tool_slug?: SortOrder
+    permission?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type EnumToolPermissionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ToolPermission | EnumToolPermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumToolPermissionWithAggregatesFilter<$PrismaModel> | $Enums.ToolPermission
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumToolPermissionFilter<$PrismaModel>
+    _max?: NestedEnumToolPermissionFilter<$PrismaModel>
   }
 
   export type UserNullableScalarRelationFilter = {
@@ -146769,6 +148316,13 @@ export namespace Prisma {
     connect?: UserServiceDefaultWhereUniqueInput | UserServiceDefaultWhereUniqueInput[]
   }
 
+  export type UserToolPermissionCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput> | UserToolPermissionCreateWithoutUserInput[] | UserToolPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutUserInput | UserToolPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: UserToolPermissionCreateManyUserInputEnvelope
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+  }
+
   export type ConversationCreateNestedManyWithoutCreated_byInput = {
     create?: XOR<ConversationCreateWithoutCreated_byInput, ConversationUncheckedCreateWithoutCreated_byInput> | ConversationCreateWithoutCreated_byInput[] | ConversationUncheckedCreateWithoutCreated_byInput[]
     connectOrCreate?: ConversationCreateOrConnectWithoutCreated_byInput | ConversationCreateOrConnectWithoutCreated_byInput[]
@@ -147081,6 +148635,13 @@ export namespace Prisma {
     connectOrCreate?: UserServiceDefaultCreateOrConnectWithoutUserInput | UserServiceDefaultCreateOrConnectWithoutUserInput[]
     createMany?: UserServiceDefaultCreateManyUserInputEnvelope
     connect?: UserServiceDefaultWhereUniqueInput | UserServiceDefaultWhereUniqueInput[]
+  }
+
+  export type UserToolPermissionUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput> | UserToolPermissionCreateWithoutUserInput[] | UserToolPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutUserInput | UserToolPermissionCreateOrConnectWithoutUserInput[]
+    createMany?: UserToolPermissionCreateManyUserInputEnvelope
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
   }
 
   export type ConversationUncheckedCreateNestedManyWithoutCreated_byInput = {
@@ -147517,6 +149078,20 @@ export namespace Prisma {
     update?: UserServiceDefaultUpdateWithWhereUniqueWithoutUserInput | UserServiceDefaultUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserServiceDefaultUpdateManyWithWhereWithoutUserInput | UserServiceDefaultUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserServiceDefaultScalarWhereInput | UserServiceDefaultScalarWhereInput[]
+  }
+
+  export type UserToolPermissionUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput> | UserToolPermissionCreateWithoutUserInput[] | UserToolPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutUserInput | UserToolPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: UserToolPermissionUpsertWithWhereUniqueWithoutUserInput | UserToolPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserToolPermissionCreateManyUserInputEnvelope
+    set?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    disconnect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    delete?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    update?: UserToolPermissionUpdateWithWhereUniqueWithoutUserInput | UserToolPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserToolPermissionUpdateManyWithWhereWithoutUserInput | UserToolPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
   }
 
   export type ConversationUpdateManyWithoutCreated_byNestedInput = {
@@ -148143,6 +149718,20 @@ export namespace Prisma {
     update?: UserServiceDefaultUpdateWithWhereUniqueWithoutUserInput | UserServiceDefaultUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: UserServiceDefaultUpdateManyWithWhereWithoutUserInput | UserServiceDefaultUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: UserServiceDefaultScalarWhereInput | UserServiceDefaultScalarWhereInput[]
+  }
+
+  export type UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput> | UserToolPermissionCreateWithoutUserInput[] | UserToolPermissionUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutUserInput | UserToolPermissionCreateOrConnectWithoutUserInput[]
+    upsert?: UserToolPermissionUpsertWithWhereUniqueWithoutUserInput | UserToolPermissionUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UserToolPermissionCreateManyUserInputEnvelope
+    set?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    disconnect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    delete?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    update?: UserToolPermissionUpdateWithWhereUniqueWithoutUserInput | UserToolPermissionUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UserToolPermissionUpdateManyWithWhereWithoutUserInput | UserToolPermissionUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
   }
 
   export type ConversationUncheckedUpdateManyWithoutCreated_byNestedInput = {
@@ -149276,6 +150865,38 @@ export namespace Prisma {
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutUser_defaultsInput, ConnectionUpdateWithoutUser_defaultsInput>, ConnectionUncheckedUpdateWithoutUser_defaultsInput>
   }
 
+  export type UserCreateNestedOneWithoutTool_permissionsInput = {
+    create?: XOR<UserCreateWithoutTool_permissionsInput, UserUncheckedCreateWithoutTool_permissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTool_permissionsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type OrganizationCreateNestedOneWithoutTool_permissionsInput = {
+    create?: XOR<OrganizationCreateWithoutTool_permissionsInput, OrganizationUncheckedCreateWithoutTool_permissionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutTool_permissionsInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type EnumToolPermissionFieldUpdateOperationsInput = {
+    set?: $Enums.ToolPermission
+  }
+
+  export type UserUpdateOneRequiredWithoutTool_permissionsNestedInput = {
+    create?: XOR<UserCreateWithoutTool_permissionsInput, UserUncheckedCreateWithoutTool_permissionsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutTool_permissionsInput
+    upsert?: UserUpsertWithoutTool_permissionsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTool_permissionsInput, UserUpdateWithoutTool_permissionsInput>, UserUncheckedUpdateWithoutTool_permissionsInput>
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutTool_permissionsNestedInput = {
+    create?: XOR<OrganizationCreateWithoutTool_permissionsInput, OrganizationUncheckedCreateWithoutTool_permissionsInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutTool_permissionsInput
+    upsert?: OrganizationUpsertWithoutTool_permissionsInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutTool_permissionsInput, OrganizationUpdateWithoutTool_permissionsInput>, OrganizationUncheckedUpdateWithoutTool_permissionsInput>
+  }
+
   export type FileCreateNestedOneWithoutOrg_logoInput = {
     create?: XOR<FileCreateWithoutOrg_logoInput, FileUncheckedCreateWithoutOrg_logoInput>
     connectOrCreate?: FileCreateOrConnectWithoutOrg_logoInput
@@ -149510,6 +151131,13 @@ export namespace Prisma {
     connect?: UserServiceDefaultWhereUniqueInput | UserServiceDefaultWhereUniqueInput[]
   }
 
+  export type UserToolPermissionCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput> | UserToolPermissionCreateWithoutOrganizationInput[] | UserToolPermissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutOrganizationInput | UserToolPermissionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: UserToolPermissionCreateManyOrganizationInputEnvelope
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+  }
+
   export type SavedWidgetCreateNestedManyWithoutOrganizationInput = {
     create?: XOR<SavedWidgetCreateWithoutOrganizationInput, SavedWidgetUncheckedCreateWithoutOrganizationInput> | SavedWidgetCreateWithoutOrganizationInput[] | SavedWidgetUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutOrganizationInput | SavedWidgetCreateOrConnectWithoutOrganizationInput[]
@@ -149737,6 +151365,13 @@ export namespace Prisma {
     connectOrCreate?: UserServiceDefaultCreateOrConnectWithoutOrganizationInput | UserServiceDefaultCreateOrConnectWithoutOrganizationInput[]
     createMany?: UserServiceDefaultCreateManyOrganizationInputEnvelope
     connect?: UserServiceDefaultWhereUniqueInput | UserServiceDefaultWhereUniqueInput[]
+  }
+
+  export type UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput> | UserToolPermissionCreateWithoutOrganizationInput[] | UserToolPermissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutOrganizationInput | UserToolPermissionCreateOrConnectWithoutOrganizationInput[]
+    createMany?: UserToolPermissionCreateManyOrganizationInputEnvelope
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
   }
 
   export type SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput = {
@@ -150206,6 +151841,20 @@ export namespace Prisma {
     deleteMany?: UserServiceDefaultScalarWhereInput | UserServiceDefaultScalarWhereInput[]
   }
 
+  export type UserToolPermissionUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput> | UserToolPermissionCreateWithoutOrganizationInput[] | UserToolPermissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutOrganizationInput | UserToolPermissionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: UserToolPermissionUpsertWithWhereUniqueWithoutOrganizationInput | UserToolPermissionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: UserToolPermissionCreateManyOrganizationInputEnvelope
+    set?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    disconnect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    delete?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    update?: UserToolPermissionUpdateWithWhereUniqueWithoutOrganizationInput | UserToolPermissionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: UserToolPermissionUpdateManyWithWhereWithoutOrganizationInput | UserToolPermissionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
+  }
+
   export type SavedWidgetUpdateManyWithoutOrganizationNestedInput = {
     create?: XOR<SavedWidgetCreateWithoutOrganizationInput, SavedWidgetUncheckedCreateWithoutOrganizationInput> | SavedWidgetCreateWithoutOrganizationInput[] | SavedWidgetUncheckedCreateWithoutOrganizationInput[]
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutOrganizationInput | SavedWidgetCreateOrConnectWithoutOrganizationInput[]
@@ -150658,6 +152307,20 @@ export namespace Prisma {
     update?: UserServiceDefaultUpdateWithWhereUniqueWithoutOrganizationInput | UserServiceDefaultUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: UserServiceDefaultUpdateManyWithWhereWithoutOrganizationInput | UserServiceDefaultUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: UserServiceDefaultScalarWhereInput | UserServiceDefaultScalarWhereInput[]
+  }
+
+  export type UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput> | UserToolPermissionCreateWithoutOrganizationInput[] | UserToolPermissionUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UserToolPermissionCreateOrConnectWithoutOrganizationInput | UserToolPermissionCreateOrConnectWithoutOrganizationInput[]
+    upsert?: UserToolPermissionUpsertWithWhereUniqueWithoutOrganizationInput | UserToolPermissionUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: UserToolPermissionCreateManyOrganizationInputEnvelope
+    set?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    disconnect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    delete?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    connect?: UserToolPermissionWhereUniqueInput | UserToolPermissionWhereUniqueInput[]
+    update?: UserToolPermissionUpdateWithWhereUniqueWithoutOrganizationInput | UserToolPermissionUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: UserToolPermissionUpdateManyWithWhereWithoutOrganizationInput | UserToolPermissionUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
   }
 
   export type SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput = {
@@ -160143,6 +161806,23 @@ export namespace Prisma {
     _max?: NestedEnumNotificationEventFilter<$PrismaModel>
   }
 
+  export type NestedEnumToolPermissionFilter<$PrismaModel = never> = {
+    equals?: $Enums.ToolPermission | EnumToolPermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumToolPermissionFilter<$PrismaModel> | $Enums.ToolPermission
+  }
+
+  export type NestedEnumToolPermissionWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ToolPermission | EnumToolPermissionFieldRefInput<$PrismaModel>
+    in?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ToolPermission[] | ListEnumToolPermissionFieldRefInput<$PrismaModel>
+    not?: NestedEnumToolPermissionWithAggregatesFilter<$PrismaModel> | $Enums.ToolPermission
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumToolPermissionFilter<$PrismaModel>
+    _max?: NestedEnumToolPermissionFilter<$PrismaModel>
+  }
+
   export type NestedEnumOrganizationRoleFilter<$PrismaModel = never> = {
     equals?: $Enums.OrganizationRole | EnumOrganizationRoleFieldRefInput<$PrismaModel>
     in?: $Enums.OrganizationRole[] | ListEnumOrganizationRoleFieldRefInput<$PrismaModel>
@@ -162290,6 +163970,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -162337,6 +164018,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -162615,6 +164297,36 @@ export namespace Prisma {
 
   export type UserServiceDefaultCreateManyUserInputEnvelope = {
     data: UserServiceDefaultCreateManyUserInput | UserServiceDefaultCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type UserToolPermissionCreateWithoutUserInput = {
+    id?: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutTool_permissionsInput
+  }
+
+  export type UserToolPermissionUncheckedCreateWithoutUserInput = {
+    id?: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type UserToolPermissionCreateOrConnectWithoutUserInput = {
+    where: UserToolPermissionWhereUniqueInput
+    create: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserToolPermissionCreateManyUserInputEnvelope = {
+    data: UserToolPermissionCreateManyUserInput | UserToolPermissionCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -164847,6 +166559,36 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"UserServiceDefault"> | Date | string
   }
 
+  export type UserToolPermissionUpsertWithWhereUniqueWithoutUserInput = {
+    where: UserToolPermissionWhereUniqueInput
+    update: XOR<UserToolPermissionUpdateWithoutUserInput, UserToolPermissionUncheckedUpdateWithoutUserInput>
+    create: XOR<UserToolPermissionCreateWithoutUserInput, UserToolPermissionUncheckedCreateWithoutUserInput>
+  }
+
+  export type UserToolPermissionUpdateWithWhereUniqueWithoutUserInput = {
+    where: UserToolPermissionWhereUniqueInput
+    data: XOR<UserToolPermissionUpdateWithoutUserInput, UserToolPermissionUncheckedUpdateWithoutUserInput>
+  }
+
+  export type UserToolPermissionUpdateManyWithWhereWithoutUserInput = {
+    where: UserToolPermissionScalarWhereInput
+    data: XOR<UserToolPermissionUpdateManyMutationInput, UserToolPermissionUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type UserToolPermissionScalarWhereInput = {
+    AND?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
+    OR?: UserToolPermissionScalarWhereInput[]
+    NOT?: UserToolPermissionScalarWhereInput | UserToolPermissionScalarWhereInput[]
+    id?: StringFilter<"UserToolPermission"> | string
+    user_id?: StringFilter<"UserToolPermission"> | string
+    organization_id?: StringFilter<"UserToolPermission"> | string
+    service_key?: StringFilter<"UserToolPermission"> | string
+    tool_slug?: StringFilter<"UserToolPermission"> | string
+    permission?: EnumToolPermissionFilter<"UserToolPermission"> | $Enums.ToolPermission
+    created_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+    updated_at?: DateTimeFilter<"UserToolPermission"> | Date | string
+  }
+
   export type ConversationUpsertWithWhereUniqueWithoutCreated_byInput = {
     where: ConversationWhereUniqueInput
     update: XOR<ConversationUpdateWithoutCreated_byInput, ConversationUncheckedUpdateWithoutCreated_byInput>
@@ -166036,6 +167778,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -166101,6 +167844,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -166182,6 +167926,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -166247,6 +167992,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -166312,6 +168058,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -166377,6 +168124,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -166511,6 +168259,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -166576,6 +168325,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -166700,6 +168450,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -166765,6 +168516,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -166846,6 +168598,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -166911,6 +168664,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -166976,6 +168730,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -167041,6 +168796,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -167340,6 +169096,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -167405,6 +169162,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -167856,6 +169614,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -167921,6 +169680,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -168082,6 +169842,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -168147,6 +169908,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -168228,6 +169990,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -168293,6 +170056,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -168531,6 +170295,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -168596,6 +170361,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -168824,6 +170590,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -168889,6 +170656,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -168970,6 +170738,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -169035,6 +170804,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -169100,6 +170870,7 @@ export namespace Prisma {
     invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -169165,6 +170936,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -169248,6 +171020,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -169295,6 +171068,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -169416,6 +171190,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -169481,6 +171256,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -169570,6 +171346,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -169617,6 +171394,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -169695,6 +171473,494 @@ export namespace Prisma {
     transfers?: ComputerTransferUncheckedUpdateManyWithoutConnectionNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutConnectionNestedInput
     trigger_subscriptions?: AutomationTriggerSubscriptionUncheckedUpdateManyWithoutConnectionNestedInput
+  }
+
+  export type UserCreateWithoutTool_permissionsInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    avatar?: FileCreateNestedOneWithoutUser_avatarInput
+    settings?: UserSettingsCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    devices?: DeviceCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantCreateNestedManyWithoutUserInput
+    messages?: MessageCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    runs?: RunCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
+    memories?: MemoryCreateNestedManyWithoutUserInput
+    skills_owned?: SkillCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportCreateNestedManyWithoutReporterInput
+    connections?: ConnectionCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
+    automations?: AutomationCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+  }
+
+  export type UserUncheckedCreateWithoutTool_permissionsInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    avatar_file_id?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    devices?: DeviceUncheckedCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceUncheckedCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationUncheckedCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    runs?: RunUncheckedCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
+    skills_owned?: SkillUncheckedCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareUncheckedCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactUncheckedCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareUncheckedCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentUncheckedCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportUncheckedCreateNestedManyWithoutReporterInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventUncheckedCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+  }
+
+  export type UserCreateOrConnectWithoutTool_permissionsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutTool_permissionsInput, UserUncheckedCreateWithoutTool_permissionsInput>
+  }
+
+  export type OrganizationCreateWithoutTool_permissionsInput = {
+    id?: string
+    name: string
+    slug: string
+    brand_color?: string | null
+    is_personal?: boolean
+    stripe_customer_id?: string | null
+    deleted_at?: Date | string | null
+    purge_after?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    logo?: FileCreateNestedOneWithoutOrg_logoInput
+    created_by?: UserCreateNestedOneWithoutOwned_organizationsInput
+    settings?: OrganizationSettingsCreateNestedOneWithoutOrganizationInput
+    members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    allowed_models?: OrganizationAllowedModelCreateNestedManyWithoutOrganizationInput
+    allowed_templates?: OrganizationTemplateCreateNestedManyWithoutOrganizationInput
+    starter_skills?: OrganizationStarterSkillCreateNestedManyWithoutOrganizationInput
+    bots?: BotCreateNestedManyWithoutOrganizationInput
+    conversations?: ConversationCreateNestedManyWithoutOrganizationInput
+    folders?: ConversationFolderCreateNestedManyWithoutOrganizationInput
+    messages?: MessageCreateNestedManyWithoutOrganizationInput
+    runs?: RunCreateNestedManyWithoutOrganizationInput
+    approvals?: ApprovalCreateNestedManyWithoutOrganizationInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutOrganizationInput
+    memories?: MemoryCreateNestedManyWithoutOrganizationInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutOrganizationInput
+    skills?: SkillCreateNestedManyWithoutOrganizationInput
+    artifacts?: ArtifactCreateNestedManyWithoutOrganizationInput
+    connections?: ConnectionCreateNestedManyWithoutOrganizationInput
+    credentials?: CredentialCreateNestedManyWithoutOrganizationInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
+    automations?: AutomationCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
+    usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
+    data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
+    service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutTool_permissionsInput = {
+    id?: string
+    name: string
+    slug: string
+    logo_file_id?: string | null
+    brand_color?: string | null
+    is_personal?: boolean
+    created_by_id?: string | null
+    stripe_customer_id?: string | null
+    deleted_at?: Date | string | null
+    purge_after?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: OrganizationSettingsUncheckedCreateNestedOneWithoutOrganizationInput
+    members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+    allowed_models?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutOrganizationInput
+    allowed_templates?: OrganizationTemplateUncheckedCreateNestedManyWithoutOrganizationInput
+    starter_skills?: OrganizationStarterSkillUncheckedCreateNestedManyWithoutOrganizationInput
+    bots?: BotUncheckedCreateNestedManyWithoutOrganizationInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: ConversationFolderUncheckedCreateNestedManyWithoutOrganizationInput
+    messages?: MessageUncheckedCreateNestedManyWithoutOrganizationInput
+    runs?: RunUncheckedCreateNestedManyWithoutOrganizationInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutOrganizationInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutOrganizationInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutOrganizationInput
+    skills?: SkillUncheckedCreateNestedManyWithoutOrganizationInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutOrganizationInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
+    service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutTool_permissionsInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutTool_permissionsInput, OrganizationUncheckedCreateWithoutTool_permissionsInput>
+  }
+
+  export type UserUpsertWithoutTool_permissionsInput = {
+    update: XOR<UserUpdateWithoutTool_permissionsInput, UserUncheckedUpdateWithoutTool_permissionsInput>
+    create: XOR<UserCreateWithoutTool_permissionsInput, UserUncheckedCreateWithoutTool_permissionsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutTool_permissionsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutTool_permissionsInput, UserUncheckedUpdateWithoutTool_permissionsInput>
+  }
+
+  export type UserUpdateWithoutTool_permissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatar?: FileUpdateOneWithoutUser_avatarNestedInput
+    settings?: UserSettingsUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    devices?: DeviceUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    messages?: MessageUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    runs?: RunUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
+    memories?: MemoryUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
+    automations?: AutomationUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutTool_permissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    devices?: DeviceUncheckedUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUncheckedUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUncheckedUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    runs?: RunUncheckedUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUncheckedUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUncheckedUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUncheckedUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUncheckedUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUncheckedUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUncheckedUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUncheckedUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+  }
+
+  export type OrganizationUpsertWithoutTool_permissionsInput = {
+    update: XOR<OrganizationUpdateWithoutTool_permissionsInput, OrganizationUncheckedUpdateWithoutTool_permissionsInput>
+    create: XOR<OrganizationCreateWithoutTool_permissionsInput, OrganizationUncheckedCreateWithoutTool_permissionsInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutTool_permissionsInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutTool_permissionsInput, OrganizationUncheckedUpdateWithoutTool_permissionsInput>
+  }
+
+  export type OrganizationUpdateWithoutTool_permissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    brand_color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_personal?: BoolFieldUpdateOperationsInput | boolean
+    stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purge_after?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    logo?: FileUpdateOneWithoutOrg_logoNestedInput
+    created_by?: UserUpdateOneWithoutOwned_organizationsNestedInput
+    settings?: OrganizationSettingsUpdateOneWithoutOrganizationNestedInput
+    members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    allowed_models?: OrganizationAllowedModelUpdateManyWithoutOrganizationNestedInput
+    allowed_templates?: OrganizationTemplateUpdateManyWithoutOrganizationNestedInput
+    starter_skills?: OrganizationStarterSkillUpdateManyWithoutOrganizationNestedInput
+    bots?: BotUpdateManyWithoutOrganizationNestedInput
+    conversations?: ConversationUpdateManyWithoutOrganizationNestedInput
+    folders?: ConversationFolderUpdateManyWithoutOrganizationNestedInput
+    messages?: MessageUpdateManyWithoutOrganizationNestedInput
+    runs?: RunUpdateManyWithoutOrganizationNestedInput
+    approvals?: ApprovalUpdateManyWithoutOrganizationNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutOrganizationNestedInput
+    memories?: MemoryUpdateManyWithoutOrganizationNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutOrganizationNestedInput
+    skills?: SkillUpdateManyWithoutOrganizationNestedInput
+    artifacts?: ArtifactUpdateManyWithoutOrganizationNestedInput
+    connections?: ConnectionUpdateManyWithoutOrganizationNestedInput
+    credentials?: CredentialUpdateManyWithoutOrganizationNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
+    automations?: AutomationUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
+    usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
+    data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
+    service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutTool_permissionsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    brand_color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_personal?: BoolFieldUpdateOperationsInput | boolean
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purge_after?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: OrganizationSettingsUncheckedUpdateOneWithoutOrganizationNestedInput
+    members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+    allowed_models?: OrganizationAllowedModelUncheckedUpdateManyWithoutOrganizationNestedInput
+    allowed_templates?: OrganizationTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
+    starter_skills?: OrganizationStarterSkillUncheckedUpdateManyWithoutOrganizationNestedInput
+    bots?: BotUncheckedUpdateManyWithoutOrganizationNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: ConversationFolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    runs?: RunUncheckedUpdateManyWithoutOrganizationNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutOrganizationNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutOrganizationNestedInput
+    skills?: SkillUncheckedUpdateManyWithoutOrganizationNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
+    service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FileCreateWithoutOrg_logoInput = {
@@ -169805,6 +172071,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -169870,6 +172137,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -171707,6 +173975,36 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type UserToolPermissionCreateWithoutOrganizationInput = {
+    id?: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutTool_permissionsInput
+  }
+
+  export type UserToolPermissionUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    user_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type UserToolPermissionCreateOrConnectWithoutOrganizationInput = {
+    where: UserToolPermissionWhereUniqueInput
+    create: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type UserToolPermissionCreateManyOrganizationInputEnvelope = {
+    data: UserToolPermissionCreateManyOrganizationInput | UserToolPermissionCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type SavedWidgetCreateWithoutOrganizationInput = {
     id?: string
     title: string
@@ -171866,6 +174164,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -171931,6 +174230,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -172746,6 +175046,22 @@ export namespace Prisma {
     data: XOR<UserServiceDefaultUpdateManyMutationInput, UserServiceDefaultUncheckedUpdateManyWithoutOrganizationInput>
   }
 
+  export type UserToolPermissionUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: UserToolPermissionWhereUniqueInput
+    update: XOR<UserToolPermissionUpdateWithoutOrganizationInput, UserToolPermissionUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<UserToolPermissionCreateWithoutOrganizationInput, UserToolPermissionUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type UserToolPermissionUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: UserToolPermissionWhereUniqueInput
+    data: XOR<UserToolPermissionUpdateWithoutOrganizationInput, UserToolPermissionUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type UserToolPermissionUpdateManyWithWhereWithoutOrganizationInput = {
+    where: UserToolPermissionScalarWhereInput
+    data: XOR<UserToolPermissionUpdateManyMutationInput, UserToolPermissionUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
   export type SavedWidgetUpsertWithWhereUniqueWithoutOrganizationInput = {
     where: SavedWidgetWhereUniqueInput
     update: XOR<SavedWidgetUpdateWithoutOrganizationInput, SavedWidgetUncheckedUpdateWithoutOrganizationInput>
@@ -172806,6 +175122,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -172853,6 +175170,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -172971,6 +175289,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -173018,6 +175337,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -173126,6 +175446,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -173173,6 +175494,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -173212,6 +175534,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -173277,6 +175600,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -173371,6 +175695,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -173418,6 +175743,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -173463,6 +175789,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -173528,6 +175855,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -173606,6 +175934,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -173653,6 +175982,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -173692,6 +176022,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -173757,6 +176088,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -173827,6 +176159,7 @@ export namespace Prisma {
     invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -173892,6 +176225,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -173986,6 +176320,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -174033,6 +176368,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -174078,6 +176414,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -174143,6 +176480,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -174219,6 +176557,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -174284,6 +176623,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -175312,6 +177652,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -175359,6 +177700,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -175477,6 +177819,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -175524,6 +177867,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -176252,6 +178596,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -176299,6 +178644,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -176413,6 +178759,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -176460,6 +178807,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -176564,6 +178912,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -176611,6 +178960,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -176650,6 +179000,7 @@ export namespace Prisma {
     invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -176715,6 +179066,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -178476,6 +180828,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -178523,6 +180876,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -178568,6 +180922,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -178633,6 +180988,7 @@ export namespace Prisma {
     invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -181721,6 +184077,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -181768,6 +184125,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -182042,6 +184400,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -182107,6 +184466,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -182254,6 +184614,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -182301,6 +184662,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -182593,6 +184955,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -182658,6 +185021,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -182908,6 +185272,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -182973,6 +185338,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -183105,6 +185471,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -183170,6 +185537,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -183247,6 +185615,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -183294,6 +185663,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -183491,6 +185861,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -183556,6 +185927,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -183708,6 +186080,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -183755,6 +186128,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -183964,6 +186338,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -184029,6 +186404,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -184171,6 +186547,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -184218,6 +186595,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -184258,6 +186636,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -184323,6 +186702,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -184454,6 +186834,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -184501,6 +186882,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -184547,6 +186929,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -184612,6 +186995,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -184705,6 +187089,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -184752,6 +187137,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -184949,6 +187335,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -185014,6 +187401,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -185827,6 +188215,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -185874,6 +188263,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -186083,6 +188473,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -186148,6 +188539,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -186448,6 +188840,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -186513,6 +188906,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -186841,6 +189235,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -186906,6 +189301,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -187177,6 +189573,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -187224,6 +189621,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -187323,6 +189721,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -187388,6 +189787,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -188193,6 +190593,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -188258,6 +190659,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -188717,6 +191119,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -188764,6 +191167,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -188875,6 +191279,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -188940,6 +191345,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -189577,6 +191983,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -189642,6 +192049,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -190270,6 +192678,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -190335,6 +192744,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -190501,6 +192911,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -190566,6 +192977,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -191112,6 +193524,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSaved_widgetsInput = {
@@ -191159,6 +193572,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSaved_widgetsInput = {
@@ -191198,6 +193612,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -191263,6 +193678,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -191495,6 +193911,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSaved_widgetsInput = {
@@ -191542,6 +193959,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutSaved_widgetsInput = {
@@ -191587,6 +194005,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -191652,6 +194071,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -191879,6 +194299,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -191926,6 +194347,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -192182,6 +194604,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -192247,6 +194670,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -193445,6 +195869,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -193492,6 +195917,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -193766,6 +196192,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -193831,6 +196258,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -195240,6 +197668,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -195287,6 +197716,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -195711,6 +198141,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -195776,6 +198207,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -195869,6 +198301,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -195916,6 +198349,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -196370,6 +198804,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -196435,6 +198870,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -196512,6 +198948,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -196559,6 +198996,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -196658,6 +199096,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -196723,6 +199162,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -197067,6 +199507,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -197114,6 +199555,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -197225,6 +199667,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -197290,6 +199733,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -197546,6 +199990,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -197593,6 +200038,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -197633,6 +200079,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -197698,6 +200145,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -198183,6 +200631,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -198230,6 +200679,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -198276,6 +200726,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -198341,6 +200792,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -198642,6 +201094,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -198707,6 +201160,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -198861,6 +201315,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -198926,6 +201381,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -199058,6 +201514,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -199123,6 +201580,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -199277,6 +201735,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -199342,6 +201801,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -199719,6 +202179,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -199766,6 +202227,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -199896,6 +202358,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -199943,6 +202406,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -200063,6 +202527,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -200110,6 +202575,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -200150,6 +202616,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -200215,6 +202682,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -200983,6 +203451,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -201030,6 +203499,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -201076,6 +203546,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -201141,6 +203612,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -201757,6 +204229,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -201822,6 +204295,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -202241,6 +204715,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -202306,6 +204781,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -202721,6 +205197,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -202786,6 +205263,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -202954,6 +205432,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -203019,6 +205498,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -203165,6 +205645,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -203230,6 +205711,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -203626,6 +206108,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -203691,6 +206174,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -204223,6 +206707,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -204288,6 +206773,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -204456,6 +206942,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -204521,6 +207008,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -204598,6 +207086,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -204645,6 +207134,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -204685,6 +207175,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -204750,6 +207241,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -205251,6 +207743,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -205298,6 +207791,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -205344,6 +207838,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -205409,6 +207904,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -206276,6 +208772,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -206323,6 +208820,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -206363,6 +208861,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -206428,6 +208927,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -206844,6 +209344,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -206891,6 +209392,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -206937,6 +209439,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -207002,6 +209505,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -207449,6 +209953,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -207514,6 +210019,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -207662,6 +210168,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -207727,6 +210234,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -207804,6 +210312,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -207851,6 +210360,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -207891,6 +210401,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -207956,6 +210467,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -208201,6 +210713,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -208248,6 +210761,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -208294,6 +210808,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -208359,6 +210874,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -208596,6 +211112,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -208643,6 +211160,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -208683,6 +211201,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -208748,6 +211267,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -209241,6 +211761,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -209306,6 +211827,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -209389,6 +211911,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -209436,6 +211959,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -209764,6 +212288,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -209811,6 +212336,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -209857,6 +212383,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -209922,6 +212449,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -210449,6 +212977,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -210514,6 +213043,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -210603,6 +213133,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -210650,6 +213181,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -210956,6 +213488,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -211003,6 +213536,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -211327,6 +213861,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -211374,6 +213909,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -211763,6 +214299,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -211828,6 +214365,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -212212,6 +214750,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -212277,6 +214816,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -213129,6 +215669,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -213176,6 +215717,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -213216,6 +215758,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -213281,6 +215824,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -213967,6 +216511,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -214014,6 +216559,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -214060,6 +216606,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -214125,6 +216672,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -216272,6 +218820,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -216319,6 +218868,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -216359,6 +218909,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -216424,6 +218975,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -216551,6 +219103,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -216598,6 +219151,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -216644,6 +219198,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -216709,6 +219264,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -216986,6 +219542,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -217033,6 +219590,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -217073,6 +219631,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -217138,6 +219697,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -217613,6 +220173,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -217660,6 +220221,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -217706,6 +220268,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -217771,6 +220334,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -218254,6 +220818,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -218301,6 +220866,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -218521,6 +221087,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -218568,6 +221135,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -218778,6 +221346,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -218825,6 +221394,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -218888,6 +221458,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -218935,6 +221506,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -218982,6 +221554,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219029,6 +221602,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219092,6 +221666,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -219139,6 +221714,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -219186,6 +221762,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219233,6 +221810,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219296,6 +221874,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -219343,6 +221922,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -219390,6 +221970,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219437,6 +222018,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -219477,6 +222059,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -219542,6 +222125,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -220005,6 +222589,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -220052,6 +222637,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -220098,6 +222684,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -220163,6 +222750,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -220634,6 +223222,7 @@ export namespace Prisma {
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
     activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
   }
 
@@ -220681,6 +223270,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
@@ -220721,6 +223311,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
@@ -220786,6 +223377,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
@@ -220956,6 +223548,7 @@ export namespace Prisma {
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -221003,6 +223596,7 @@ export namespace Prisma {
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -221049,6 +223643,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
@@ -221114,6 +223709,7 @@ export namespace Prisma {
     invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
@@ -221405,6 +224001,16 @@ export namespace Prisma {
     organization_id: string
     service_key: string
     connection_id: string
+    updated_at?: Date | string
+  }
+
+  export type UserToolPermissionCreateManyUserInput = {
+    id?: string
+    organization_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
     updated_at?: Date | string
   }
 
@@ -222236,6 +224842,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -222283,6 +224890,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
@@ -222615,6 +225223,36 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     service_key?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutTool_permissionsNestedInput
+  }
+
+  export type UserToolPermissionUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -225448,6 +228086,16 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type UserToolPermissionCreateManyOrganizationInput = {
+    id?: string
+    user_id: string
+    service_key: string
+    tool_slug: string
+    permission: $Enums.ToolPermission
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type SavedWidgetCreateManyOrganizationInput = {
     id?: string
     user_id: string
@@ -227303,6 +229951,36 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
     service_key?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutTool_permissionsNestedInput
+  }
+
+  export type UserToolPermissionUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type UserToolPermissionUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    tool_slug?: StringFieldUpdateOperationsInput | string
+    permission?: EnumToolPermissionFieldUpdateOperationsInput | $Enums.ToolPermission
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

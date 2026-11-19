@@ -436,6 +436,14 @@ enum ApprovalOverride {
   DONT_ASK
 }
 
+/// Per-tool permission a user sets for a connected service. AUTO_REVIEW (the default) follows the bot's approval level.
+enum ToolPermission {
+  ALWAYS_ALLOW
+  AUTO_REVIEW
+  NEEDS_APPROVAL
+  BLOCKED
+}
+
 enum KnowledgeScope {
   BOT
   ORGANIZATION
@@ -904,6 +912,7 @@ model User {
   invitations_accepted    Invitation[]              @relation("InvitationAcceptor")
   bots_created            Bot[]                     @relation("BotCreator")
   bot_connection_defaults UserServiceDefault[]
+  tool_permissions        UserToolPermission[]
   conversations_created   Conversation[]            @relation("ConversationCreator")
   conversation_folders    ConversationFolder[]
   participations          ConversationParticipant[]
@@ -1224,6 +1233,25 @@ model UserServiceDefault {
   @@map("user_service_defaults")
 }
 
+/// A user's permission for one tool of a connected service (e.g. NOTION_CREATE_PAGE). No row = AUTO_REVIEW.
+model UserToolPermission {
+  id              String         @id @default(uuid())
+  user_id         String
+  organization_id String
+  service_key     String
+  tool_slug       String
+  permission      ToolPermission
+  created_at      DateTime       @default(now())
+  updated_at      DateTime       @updatedAt
+
+  user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+
+  @@unique([user_id, organization_id, service_key, tool_slug], map: "user_tool_permissions_user_org_service_tool_key")
+  @@index([organization_id, user_id, service_key], map: "user_tool_permissions_org_user_service_idx")
+  @@map("user_tool_permissions")
+}
+
 // =====================================================================
 // ORGANISATIONS (§5, §13.4)
 // =====================================================================
@@ -1276,6 +1304,7 @@ model Organization {
   activity_logs     ActivityLog[]
   data_exports      DataExport[]
   service_defaults  UserServiceDefault[]
+  tool_permissions  UserToolPermission[]
   saved_widgets     SavedWidget[]
 
   @@index([created_by_id])

@@ -117,6 +117,8 @@ export const ApiRoutes = {
     one: (id: string) => `/connections/${id}`,
     complete: (id: string) => `/connections/${id}/complete`,
     reconnect: (id: string) => `/connections/${id}/reconnect`,
+    service: (slug: string) => `/connections/services/${slug}`,
+    service_permissions: (slug: string) => `/connections/services/${slug}/permissions`,
   },
   tool_servers: {
     root: "/tool-servers",

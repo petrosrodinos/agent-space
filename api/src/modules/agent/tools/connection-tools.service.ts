@@ -1,5 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { Connection } from 'generated/prisma';
+import { Connection, ToolPermission } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
@@ -51,6 +51,13 @@ export class ConnectionToolsService {
         return tools;
     }
 
+    /** The acting user's per-tool permissions for these services, keyed `service:TOOL_SLUG`. */
+    private async permissionsFor(ctx: ToolContext, services: string[]): Promise<Map<string, ToolPermission>> {
+        if (!ctx.actor || !services.length) return new Map();
+        const rows = await this.prisma.userToolPermission.findMany({ where: { user_id: ctx.actor.user_id, organization_id: ctx.organization_id, service_key: { in: services } } });
+        return new Map(rows.map((r) => [`${r.service_key}:${r.tool_slug}`, r.permission]));
+    }
+
     async tools(ctx: ToolContext): Promise<{ tools: ToolDef[]; summary: string[] }> {
         const conns = await this.connectionsFor(ctx);
         const out: ToolDef[] = [];
@@ -59,6 +66,9 @@ export class ConnectionToolsService {
         const composioConns = conns.filter((c) => c.kind === 'COMPOSIO' && c.composio_connected_account_id);
         const byService = new Map<string, typeof composioConns>();
         for (const c of composioConns) byService.set(c.service_key, [...(byService.get(c.service_key) ?? []), c]);
+
+        const services = [...byService.keys()].slice(0, MAX_TOOLKITS);
+        const permissions = await this.permissionsFor(ctx, services);
 
         for (const [service, list] of [...byService.entries()].slice(0, MAX_TOOLKITS)) {
             let tools: ComposioTool[] = [];
@@ -70,7 +80,11 @@ export class ConnectionToolsService {
             }
             const sorted = [...list].sort((a, b) => Number(b.is_default) - Number(a.is_default));
             summary.push(`${list[0].service_name}: ${sorted.map((c) => `"${c.label}"${c.account_identifier ? ` (${c.account_identifier})` : ''}${c.is_default ? ' [default]' : ''}`).join(', ')}`);
-            for (const t of tools) out.push(this.composioTool(t, sorted));
+            for (const t of tools) {
+                const permission = permissions.get(`${service}:${t.slug}`);
+                if (permission === 'BLOCKED') continue; // the user blocked it on the service page: never offered
+                out.push({ ...this.composioTool(t, sorted), tool_permission: permission });
+            }
         }
 
         const keyConns = conns.filter((c) => c.kind === 'API_KEY' && c.credential_id);

@@ -20,6 +20,7 @@ protocols:
     schemes: [agentspace]
 asar: true
 win:
+  icon: build/icon.png
   target: [nsis]
   artifactName: AgentSpace-Setup-${version}.${ext}
 nsis:
@@ -28,6 +29,7 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
 mac:
+  icon: build/icon-mac.png
   target: [dmg, zip]
   category: public.app-category.productivity
   hardenedRuntime: true

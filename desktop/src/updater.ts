@@ -39,11 +39,40 @@ const FIRST_CHECK_DELAY_MS = 10_000;
 const CHECK_INTERVAL_MS = 4 * 60 * 60 * 1000;
 /** Ignore wake-up / manual checks that come right after another one. */
 const MIN_CHECK_GAP_MS = 60_000;
+/** Waits before retrying a check that failed for a temporary reason (server error, network blip). */
+const RETRY_DELAYS_MS = [2_000, 6_000];
+
+/** electron-updater puts the HTTP status first in its message ("502 \"method: GET url: …"). */
+const httpStatus = (message: string): number | undefined => {
+    const m = /^(\d{3})\b/.exec(message.trim());
+    return m ? Number(m[1]) : undefined;
+};
+const NETWORK_ERROR = /ENOTFOUND|ECONNREFUSED|ECONNRESET|ETIMEDOUT|EAI_AGAIN|net::ERR_|socket hang up|timeout/i;
+
+const isTransient = (message: string) => {
+    const status = httpStatus(message);
+    return (status !== undefined && (status >= 500 || status === 429)) || NETWORK_ERROR.test(message);
+};
+
+/** A short message for the page instead of electron-updater's raw request/response dump. */
+function friendlyError(message: string): string {
+    const status = httpStatus(message);
+    if (status !== undefined && (status >= 500 || status === 429)) return 'The update server is temporarily unavailable. Try again in a few minutes.';
+    if (status === 404) return 'No update information was found on the server.';
+    if (status !== undefined) return `The update server returned an error (${status}).`;
+    if (NETWORK_ERROR.test(message)) return "Couldn't reach the update server. Check your internet connection.";
+    const firstLine = message.split('\n')[0].trim();
+    return firstLine.length > 160 ? `${firstLine.slice(0, 157)}…` : firstLine || 'Unknown error';
+}
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 let state: UpdateState = { status: UpdateStatus.idle };
 let getWindow: () => BrowserWindow | null = () => null;
 let lastCheckAt = 0;
 let inFlight: Promise<UpdateState> | null = null;
+/** True while a check (with its retries) runs; its own catch reports the final error. */
+let checkRunning = false;
 
 const isEnabled = () => app.isPackaged && existsSync(path.join(process.resourcesPath, 'app-update.yml'));
 
@@ -62,13 +91,27 @@ export function checkForUpdates(opts: { force?: boolean } = {}): Promise<UpdateS
     if (!opts.force && Date.now() - lastCheckAt < MIN_CHECK_GAP_MS) return Promise.resolve(state);
     lastCheckAt = Date.now();
     inFlight = (async () => {
+        checkRunning = true;
         try {
-            const r = await autoUpdater.checkForUpdates();
-            // The events below have already updated the state; this covers a check that returned nothing.
-            if (!r?.isUpdateAvailable && state.status === UpdateStatus.checking) setState({ status: UpdateStatus.none, checkedAt: Date.now() });
-        } catch (e) {
-            setState({ status: UpdateStatus.error, message: (e as Error).message, checkedAt: Date.now() });
+            for (let attempt = 0; ; attempt++) {
+                try {
+                    const r = await autoUpdater.checkForUpdates();
+                    // The events below have already updated the state; this covers a check that returned nothing.
+                    if (!r?.isUpdateAvailable && state.status === UpdateStatus.checking) setState({ status: UpdateStatus.none, checkedAt: Date.now() });
+                    break;
+                } catch (e) {
+                    const message = (e as Error)?.message ?? String(e);
+                    if (attempt < RETRY_DELAYS_MS.length && isTransient(message)) {
+                        console.warn(`[updates] check failed (${message.split('\n')[0]}), retrying`);
+                        await sleep(RETRY_DELAYS_MS[attempt]);
+                        continue;
+                    }
+                    setState({ status: UpdateStatus.error, message: friendlyError(message), checkedAt: Date.now() });
+                    break;
+                }
+            }
         } finally {
+            checkRunning = false;
             inFlight = null;
         }
         return state;
@@ -110,7 +153,9 @@ export function initUpdater(windowGetter: () => BrowserWindow | null) {
     autoUpdater.on('update-downloaded', (i) => setState({ status: UpdateStatus.downloaded, version: version(i), checkedAt: Date.now() }));
     autoUpdater.on('error', (e) => {
         // A failed background download should not hide an update that is already waiting.
-        if (state.status !== UpdateStatus.downloaded) setState({ ...state, status: UpdateStatus.error, message: e?.message ?? String(e) });
+        // Errors during a check are handled (retried, then reported) by checkForUpdates itself.
+        if (checkRunning) return;
+        if (state.status !== UpdateStatus.downloaded) setState({ ...state, status: UpdateStatus.error, message: friendlyError(e?.message ?? String(e)) });
     });
 
     setTimeout(() => void checkForUpdates({ force: true }), FIRST_CHECK_DELAY_MS);

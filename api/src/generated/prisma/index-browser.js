@@ -1015,6 +1015,7 @@ exports.Prisma.ConnectionScalarFieldEnum = {
   status_message: 'status_message',
   composio_connected_account_id: 'composio_connected_account_id',
   composio_auth_config_id: 'composio_auth_config_id',
+  composio_user_id: 'composio_user_id',
   credential_id: 'credential_id',
   tool_server_id: 'tool_server_id',
   last_synced_at: 'last_synced_at',

@@ -93,6 +93,9 @@ export class ConnectionsService {
 
     /** AUTO_REVIEW is the default, so it is stored as "no row". */
     async setToolPermissions(actor: Actor, slug: string, dto: SetToolPermissionsDto) {
+        // Permissions belong to a connected service: nothing to protect until the user has an account for it.
+        const connected = await this.prisma.connection.count({ where: { service_key: slug, ...this.access.usableConnectionsWhere(actor.organization_id, actor.user_id) } });
+        if (!connected) throw new BadRequestException('Connect this service before changing its tool permissions');
         const known = new Set((await this.allTools(slug)).map((t) => t.slug));
         const slugs = [...new Set(dto.tool_slugs)];
         const unknown = slugs.filter((t) => !known.has(t));
@@ -179,8 +182,9 @@ export class ConnectionsService {
             },
         });
         try {
-            const init = await this.composio.initiateConnection(authConfigId, this.composio.userId(actor.organization_id, shared ? 'org' : actor.user_id), this.callbackUrl(conn.id, dto.return_url));
-            await this.prisma.connection.update({ where: { id: conn.id }, data: { composio_connected_account_id: init.connected_account_id } });
+            const composioUserId = this.composio.userId(actor.organization_id, shared ? 'org' : actor.user_id);
+            const init = await this.composio.initiateConnection(authConfigId, composioUserId, this.callbackUrl(conn.id, dto.return_url));
+            await this.prisma.connection.update({ where: { id: conn.id }, data: { composio_connected_account_id: init.connected_account_id, composio_user_id: composioUserId } });
             if (!init.redirect_url) {
                 return this.complete(actor, conn.id);
             }
@@ -211,6 +215,7 @@ export class ConnectionsService {
                 status,
                 status_message: status === 'ACTIVE' ? null : acc.status === 'INITIATED' ? 'Waiting for sign-in' : `Sign-in ${acc.status.toLowerCase()}`,
                 account_identifier: acc.account_identifier ?? c.account_identifier,
+                composio_user_id: acc.user_id ?? c.composio_user_id,
                 last_synced_at: new Date(),
             },
         });
@@ -226,8 +231,9 @@ export class ConnectionsService {
         if (c.kind !== 'COMPOSIO') throw new BadRequestException('Replace the key on the Secrets page instead');
         const authConfigId = c.composio_auth_config_id ?? (await this.composio.ensureAuthConfig(c.service_key));
         const old = c.composio_connected_account_id;
-        const init = await this.composio.initiateConnection(authConfigId, this.composio.userId(actor.organization_id, c.visibility === 'SHARED' ? 'org' : (c.owner_id ?? actor.user_id)), this.callbackUrl(c.id, returnUrl));
-        await this.prisma.connection.update({ where: { id }, data: { composio_connected_account_id: init.connected_account_id, status: 'NEEDS_RECONNECTING', status_message: 'Waiting for sign-in' } });
+        const composioUserId = this.composio.userId(actor.organization_id, c.visibility === 'SHARED' ? 'org' : (c.owner_id ?? actor.user_id));
+        const init = await this.composio.initiateConnection(authConfigId, composioUserId, this.callbackUrl(c.id, returnUrl));
+        await this.prisma.connection.update({ where: { id }, data: { composio_connected_account_id: init.connected_account_id, composio_user_id: composioUserId, status: 'NEEDS_RECONNECTING', status_message: 'Waiting for sign-in' } });
         if (old && old !== init.connected_account_id) await this.composio.deleteConnectedAccount(old).catch(() => undefined);
         return { connection_id: id, redirect_url: init.redirect_url };
     }
@@ -298,7 +304,7 @@ export class ConnectionsService {
                     await this.prisma.connection.update({ where: { id: c.id }, data: { status, status_message: status === 'ACTIVE' ? null : 'Sign-in expired', last_synced_at: new Date() } });
                     if (status === 'NEEDS_RECONNECTING' && c.owner_id) await this.events.toUser(c.owner_id, UserEvents.CONNECTION_STATUS, { connection_id: c.id, status });
                 } else {
-                    await this.prisma.connection.update({ where: { id: c.id }, data: { last_synced_at: new Date() } });
+                    await this.prisma.connection.update({ where: { id: c.id }, data: { last_synced_at: new Date(), ...(acc.user_id && acc.user_id !== c.composio_user_id ? { composio_user_id: acc.user_id } : {}) } });
                 }
             } catch (e) {
                 this.logger.warn(`Status sync failed for ${c.id}: ${(e as Error).message}`);

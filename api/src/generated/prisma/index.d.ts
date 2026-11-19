@@ -85035,6 +85035,7 @@ export namespace Prisma {
     status_message: string | null
     composio_connected_account_id: string | null
     composio_auth_config_id: string | null
+    composio_user_id: string | null
     credential_id: string | null
     tool_server_id: string | null
     last_synced_at: Date | null
@@ -85059,6 +85060,7 @@ export namespace Prisma {
     status_message: string | null
     composio_connected_account_id: string | null
     composio_auth_config_id: string | null
+    composio_user_id: string | null
     credential_id: string | null
     tool_server_id: string | null
     last_synced_at: Date | null
@@ -85083,6 +85085,7 @@ export namespace Prisma {
     status_message: number
     composio_connected_account_id: number
     composio_auth_config_id: number
+    composio_user_id: number
     credential_id: number
     tool_server_id: number
     last_synced_at: number
@@ -85109,6 +85112,7 @@ export namespace Prisma {
     status_message?: true
     composio_connected_account_id?: true
     composio_auth_config_id?: true
+    composio_user_id?: true
     credential_id?: true
     tool_server_id?: true
     last_synced_at?: true
@@ -85133,6 +85137,7 @@ export namespace Prisma {
     status_message?: true
     composio_connected_account_id?: true
     composio_auth_config_id?: true
+    composio_user_id?: true
     credential_id?: true
     tool_server_id?: true
     last_synced_at?: true
@@ -85157,6 +85162,7 @@ export namespace Prisma {
     status_message?: true
     composio_connected_account_id?: true
     composio_auth_config_id?: true
+    composio_user_id?: true
     credential_id?: true
     tool_server_id?: true
     last_synced_at?: true
@@ -85254,6 +85260,7 @@ export namespace Prisma {
     status_message: string | null
     composio_connected_account_id: string | null
     composio_auth_config_id: string | null
+    composio_user_id: string | null
     credential_id: string | null
     tool_server_id: string | null
     last_synced_at: Date | null
@@ -85295,6 +85302,7 @@ export namespace Prisma {
     status_message?: boolean
     composio_connected_account_id?: boolean
     composio_auth_config_id?: boolean
+    composio_user_id?: boolean
     credential_id?: boolean
     tool_server_id?: boolean
     last_synced_at?: boolean
@@ -85334,6 +85342,7 @@ export namespace Prisma {
     status_message?: boolean
     composio_connected_account_id?: boolean
     composio_auth_config_id?: boolean
+    composio_user_id?: boolean
     credential_id?: boolean
     tool_server_id?: boolean
     last_synced_at?: boolean
@@ -85362,6 +85371,7 @@ export namespace Prisma {
     status_message?: boolean
     composio_connected_account_id?: boolean
     composio_auth_config_id?: boolean
+    composio_user_id?: boolean
     credential_id?: boolean
     tool_server_id?: boolean
     last_synced_at?: boolean
@@ -85390,6 +85400,7 @@ export namespace Prisma {
     status_message?: boolean
     composio_connected_account_id?: boolean
     composio_auth_config_id?: boolean
+    composio_user_id?: boolean
     credential_id?: boolean
     tool_server_id?: boolean
     last_synced_at?: boolean
@@ -85399,7 +85410,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type ConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_id" | "kind" | "service_key" | "service_name" | "label" | "account_identifier" | "visibility" | "restricted_to_bots" | "status" | "status_message" | "composio_connected_account_id" | "composio_auth_config_id" | "credential_id" | "tool_server_id" | "last_synced_at" | "last_used_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["connection"]>
+  export type ConnectionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_id" | "kind" | "service_key" | "service_name" | "label" | "account_identifier" | "visibility" | "restricted_to_bots" | "status" | "status_message" | "composio_connected_account_id" | "composio_auth_config_id" | "composio_user_id" | "credential_id" | "tool_server_id" | "last_synced_at" | "last_used_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["connection"]>
   export type ConnectionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | Connection$ownerArgs<ExtArgs>
@@ -85463,6 +85474,11 @@ export namespace Prisma {
       status_message: string | null
       composio_connected_account_id: string | null
       composio_auth_config_id: string | null
+      /**
+       * The Composio user the account was linked under. Tool calls must send exactly this — it is stored, never
+       * recomputed, because it depends on NODE_ENV and visibility at connect time.
+       */
+      composio_user_id: string | null
       credential_id: string | null
       tool_server_id: string | null
       last_synced_at: Date | null
@@ -85921,6 +85937,7 @@ export namespace Prisma {
     readonly status_message: FieldRef<"Connection", 'String'>
     readonly composio_connected_account_id: FieldRef<"Connection", 'String'>
     readonly composio_auth_config_id: FieldRef<"Connection", 'String'>
+    readonly composio_user_id: FieldRef<"Connection", 'String'>
     readonly credential_id: FieldRef<"Connection", 'String'>
     readonly tool_server_id: FieldRef<"Connection", 'String'>
     readonly last_synced_at: FieldRef<"Connection", 'DateTime'>
@@ -119698,6 +119715,7 @@ export namespace Prisma {
     status_message: 'status_message',
     composio_connected_account_id: 'composio_connected_account_id',
     composio_auth_config_id: 'composio_auth_config_id',
+    composio_user_id: 'composio_user_id',
     credential_id: 'credential_id',
     tool_server_id: 'tool_server_id',
     last_synced_at: 'last_synced_at',
@@ -128109,6 +128127,7 @@ export namespace Prisma {
     status_message?: StringNullableFilter<"Connection"> | string | null
     composio_connected_account_id?: StringNullableFilter<"Connection"> | string | null
     composio_auth_config_id?: StringNullableFilter<"Connection"> | string | null
+    composio_user_id?: StringNullableFilter<"Connection"> | string | null
     credential_id?: StringNullableFilter<"Connection"> | string | null
     tool_server_id?: StringNullableFilter<"Connection"> | string | null
     last_synced_at?: DateTimeNullableFilter<"Connection"> | Date | string | null
@@ -128147,6 +128166,7 @@ export namespace Prisma {
     status_message?: SortOrderInput | SortOrder
     composio_connected_account_id?: SortOrderInput | SortOrder
     composio_auth_config_id?: SortOrderInput | SortOrder
+    composio_user_id?: SortOrderInput | SortOrder
     credential_id?: SortOrderInput | SortOrder
     tool_server_id?: SortOrderInput | SortOrder
     last_synced_at?: SortOrderInput | SortOrder
@@ -128190,6 +128210,7 @@ export namespace Prisma {
     status?: EnumConnectionStatusFilter<"Connection"> | $Enums.ConnectionStatus
     status_message?: StringNullableFilter<"Connection"> | string | null
     composio_auth_config_id?: StringNullableFilter<"Connection"> | string | null
+    composio_user_id?: StringNullableFilter<"Connection"> | string | null
     last_synced_at?: DateTimeNullableFilter<"Connection"> | Date | string | null
     last_used_at?: DateTimeNullableFilter<"Connection"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"Connection"> | Date | string | null
@@ -128226,6 +128247,7 @@ export namespace Prisma {
     status_message?: SortOrderInput | SortOrder
     composio_connected_account_id?: SortOrderInput | SortOrder
     composio_auth_config_id?: SortOrderInput | SortOrder
+    composio_user_id?: SortOrderInput | SortOrder
     credential_id?: SortOrderInput | SortOrder
     tool_server_id?: SortOrderInput | SortOrder
     last_synced_at?: SortOrderInput | SortOrder
@@ -128256,6 +128278,7 @@ export namespace Prisma {
     status_message?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     composio_connected_account_id?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     composio_auth_config_id?: StringNullableWithAggregatesFilter<"Connection"> | string | null
+    composio_user_id?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     credential_id?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     tool_server_id?: StringNullableWithAggregatesFilter<"Connection"> | string | null
     last_synced_at?: DateTimeNullableWithAggregatesFilter<"Connection"> | Date | string | null
@@ -137515,6 +137538,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -137551,6 +137575,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -137583,6 +137608,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -137619,6 +137645,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -137653,6 +137680,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -137675,6 +137703,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -137697,6 +137726,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -146303,6 +146333,7 @@ export namespace Prisma {
     status_message?: SortOrder
     composio_connected_account_id?: SortOrder
     composio_auth_config_id?: SortOrder
+    composio_user_id?: SortOrder
     credential_id?: SortOrder
     tool_server_id?: SortOrder
     last_synced_at?: SortOrder
@@ -146327,6 +146358,7 @@ export namespace Prisma {
     status_message?: SortOrder
     composio_connected_account_id?: SortOrder
     composio_auth_config_id?: SortOrder
+    composio_user_id?: SortOrder
     credential_id?: SortOrder
     tool_server_id?: SortOrder
     last_synced_at?: SortOrder
@@ -146351,6 +146383,7 @@ export namespace Prisma {
     status_message?: SortOrder
     composio_connected_account_id?: SortOrder
     composio_auth_config_id?: SortOrder
+    composio_user_id?: SortOrder
     credential_id?: SortOrder
     tool_server_id?: SortOrder
     last_synced_at?: SortOrder
@@ -165297,6 +165330,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -165331,6 +165365,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -167289,6 +167324,7 @@ export namespace Prisma {
     status_message?: StringNullableFilter<"Connection"> | string | null
     composio_connected_account_id?: StringNullableFilter<"Connection"> | string | null
     composio_auth_config_id?: StringNullableFilter<"Connection"> | string | null
+    composio_user_id?: StringNullableFilter<"Connection"> | string | null
     credential_id?: StringNullableFilter<"Connection"> | string | null
     tool_server_id?: StringNullableFilter<"Connection"> | string | null
     last_synced_at?: DateTimeNullableFilter<"Connection"> | Date | string | null
@@ -171090,6 +171126,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -171125,6 +171162,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -171422,6 +171460,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -171457,6 +171496,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -173259,6 +173299,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -173293,6 +173334,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -182415,6 +182457,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -182450,6 +182493,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -182660,6 +182704,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -182695,6 +182740,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -197142,6 +197188,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -197177,6 +197224,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -197439,6 +197487,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -197474,6 +197523,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -208273,6 +208323,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -208308,6 +208359,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -208512,6 +208564,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -208547,6 +208600,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209136,6 +209190,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -209171,6 +209226,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
@@ -209726,6 +209782,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -209761,6 +209818,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -210580,6 +210638,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -210615,6 +210674,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
@@ -210999,6 +211059,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -211034,6 +211095,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -215186,6 +215248,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -215221,6 +215284,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -215489,6 +215553,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -215524,6 +215589,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217308,6 +217374,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -217343,6 +217410,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -217471,6 +217539,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217506,6 +217575,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217612,6 +217682,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -217647,6 +217718,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -217775,6 +217847,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217810,6 +217883,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -217916,6 +217990,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -217951,6 +218026,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -218079,6 +218155,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -218114,6 +218191,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -218220,6 +218298,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -218255,6 +218334,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -218383,6 +218463,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -218418,6 +218499,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -222334,6 +222416,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     last_synced_at?: Date | string | null
     last_used_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -222369,6 +222452,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -222971,6 +223055,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -223006,6 +223091,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -224344,6 +224430,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -226349,6 +226436,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -226383,6 +226471,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -226416,6 +226505,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -227858,6 +227948,7 @@ export namespace Prisma {
     status_message?: string | null
     composio_connected_account_id?: string | null
     composio_auth_config_id?: string | null
+    composio_user_id?: string | null
     credential_id?: string | null
     tool_server_id?: string | null
     last_synced_at?: Date | string | null
@@ -229171,6 +229262,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -229205,6 +229297,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -229238,6 +229331,7 @@ export namespace Prisma {
     status_message?: NullableStringFieldUpdateOperationsInput | string | null
     composio_connected_account_id?: NullableStringFieldUpdateOperationsInput | string | null
     composio_auth_config_id?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_user_id?: NullableStringFieldUpdateOperationsInput | string | null
     credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     tool_server_id?: NullableStringFieldUpdateOperationsInput | string | null
     last_synced_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

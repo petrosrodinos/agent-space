@@ -25,12 +25,37 @@ export interface ComposioTool {
     tags: string[];
 }
 
+/** Why a connected-service tool call failed — decides what the bot is told and whether the connection needs a new sign-in. */
+export const ToolFailureKinds = {
+    /** The sign-in expired, was revoked or the account is gone: the user must reconnect. */
+    NEEDS_RECONNECTING: 'NEEDS_RECONNECTING',
+    /** The service itself (Linear, Gmail…) rejected the request: bad input, missing access, not found… */
+    SERVICE_ERROR: 'SERVICE_ERROR',
+    /** Agent Space or Composio failed (configuration, outage). Nothing the user can fix. */
+    PLATFORM_ERROR: 'PLATFORM_ERROR',
+} as const;
+export type ToolFailureKind = (typeof ToolFailureKinds)[keyof typeof ToolFailureKinds];
+
+const NEEDS_RECONNECTING_PATTERN = /expired|revoked|invalid_grant|unauthori[sz]ed|not active|inactive|re-?auth|ConnectedAccountNotFound|\b401\b/i;
+
+/** Thrown by executeTool so callers can tell the user the right thing instead of relaying raw Composio errors. */
+export class ComposioToolError extends Error {
+    constructor(
+        readonly kind: ToolFailureKind,
+        readonly detail: string,
+    ) {
+        super(detail);
+    }
+}
+
 export interface ComposioConnectedAccount {
     id: string;
     status: string;
     toolkit: string;
     auth_config_id: string | null;
     account_identifier: string | null;
+    /** The Composio user the account is linked under — tool calls must send exactly this. */
+    user_id: string | null;
 }
 
 /**
@@ -47,7 +72,11 @@ export class ComposioService {
         return !!this.config.get('COMPOSIO_API_KEY');
     }
 
-    /** Composio user IDs are namespaced so a shared Composio project never mixes apps or environments. */
+    /**
+     * Composio user ID for a NEW sign-in, namespaced so a shared Composio project never mixes apps or environments.
+     * Never recompute it for an existing connection (NODE_ENV and visibility may differ by then): use the stored
+     * `connection.composio_user_id`.
+     */
     userId(organizationId: string, ownerKey: string) {
         return `agentspace:${this.config.get('NODE_ENV')}:${organizationId}:${ownerKey}`;
     }
@@ -150,6 +179,7 @@ export class ComposioService {
             toolkit: a.toolkit?.slug ?? a.toolkit_slug ?? '',
             auth_config_id: a.auth_config?.id ?? null,
             account_identifier: typeof identifier === 'string' ? identifier : null,
+            user_id: typeof a.user_id === 'string' ? a.user_id : null,
         };
     }
 
@@ -208,11 +238,27 @@ export class ComposioService {
         return { status: Number(res.status ?? 200), data: res.data ?? null, headers: (res.headers ?? {}) as Record<string, string> };
     }
 
+    /**
+     * Runs a tool with a connected account. Failures throw ComposioToolError, classified so the bot never relays
+     * Composio's internal wording (e.g. "user ID does not match") as if it were a problem with the user's account.
+     */
     async executeTool(toolSlug: string, connectedAccountId: string, userId: string, args: Record<string, unknown>) {
-        const res = await this.call<any>(`/tools/execute/${encodeURIComponent(toolSlug)}`, {
-            method: 'POST',
-            body: JSON.stringify({ connected_account_id: connectedAccountId, user_id: userId, arguments: args }),
-        });
-        return { successful: res.successful !== false && !res.error, data: res.data ?? null, error: res.error ?? null };
+        let res: any;
+        try {
+            res = await this.call<any>(`/tools/execute/${encodeURIComponent(toolSlug)}`, {
+                method: 'POST',
+                body: JSON.stringify({ connected_account_id: connectedAccountId, user_id: userId, arguments: args }),
+            });
+        } catch (e) {
+            // Composio refused the call itself: either the sign-in is unusable, or it's on our side.
+            const detail = (e as Error).message;
+            throw new ComposioToolError(NEEDS_RECONNECTING_PATTERN.test(detail) ? ToolFailureKinds.NEEDS_RECONNECTING : ToolFailureKinds.PLATFORM_ERROR, detail);
+        }
+        if (res.successful === false || res.error) {
+            // The call reached the service, which returned an error.
+            const detail = typeof res.error === 'string' ? res.error : JSON.stringify(res.error ?? res.data ?? 'Unknown error');
+            throw new ComposioToolError(NEEDS_RECONNECTING_PATTERN.test(detail) ? ToolFailureKinds.NEEDS_RECONNECTING : ToolFailureKinds.SERVICE_ERROR, detail);
+        }
+        return { data: res.data ?? null };
     }
 }

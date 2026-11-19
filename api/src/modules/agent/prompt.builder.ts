@@ -113,7 +113,7 @@ export class PromptBuilder {
         }
         s.push(
             ctx.connection_summary.length
-                ? `## Connected accounts you can use\n${ctx.connection_summary.map((c) => `- ${c}`).join('\n')}\nWhen several accounts exist for a service, use the default unless the user says otherwise; ask if it's unclear.`
+                ? `## Connected accounts you can use\n${ctx.connection_summary.map((c) => `- ${c}`).join('\n')}\nWhen several accounts exist for a service, use the default unless the user says otherwise; ask if it's unclear.\nA connected account can use any email or username; it doesn't have to match the user's Agent Space sign-in. Only suggest reconnecting when a tool result says the sign-in expired (reconnecting is done on the Connections page).`
                 : '## Connected accounts\nNone yet. If a task needs a service (Gmail, Calendar, HubSpot…), tell the user to connect it on the Connections page.',
         );
         if (ctx.computer_available) {

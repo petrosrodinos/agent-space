@@ -1,5 +1,5 @@
 import { useMemo, useState, type FC } from "react";
-import { ChevronRight, Search, Wrench, X } from "lucide-react";
+import { ChevronRight, Lock, Search, Wrench, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -30,10 +30,11 @@ const ToolGroupSection: FC<{
   group: ToolGroup;
   tools: ServiceTool[];
   forceOpen: boolean;
+  locked: boolean;
   selected: Set<string>;
   onToggle: (slugs: string[], on: boolean) => void;
   onChange: (slugs: string[], p: ToolPermission) => void;
-}> = ({ group, tools, forceOpen, selected, onToggle, onChange }) => {
+}> = ({ group, tools, forceOpen, locked, selected, onToggle, onChange }) => {
   const [open, setOpen] = useState(false);
   const label = getDropdownOptionLabel(ToolGroupOptions, group);
   const slugs = tools.map((t) => t.slug);
@@ -41,19 +42,19 @@ const ToolGroupSection: FC<{
   return (
     <Collapsible open={isOpen} onOpenChange={setOpen} className="border-b border-hairline last:border-b-0">
       <div className="flex items-center gap-2 px-3 py-2">
-        <Checkbox className="ml-1" checked={checkState(slugs, selected)} onCheckedChange={(v) => onToggle(slugs, v === true)} aria-label={`Select all ${label.toLowerCase()}`} />
+        <Checkbox className="ml-1" disabled={locked} checked={checkState(slugs, selected)} onCheckedChange={(v) => onToggle(slugs, v === true)} aria-label={`Select all ${label.toLowerCase()}`} />
         <CollapsibleTrigger className="flex min-h-[40px] min-w-0 flex-1 items-center gap-2 rounded-md px-1 text-left focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
           <ChevronRight className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", isOpen && "rotate-90")} aria-hidden />
           <span className="text-[15px] font-bold text-ink">{label}</span>
           <span className="text-[13px] text-muted-foreground">{tools.length}</span>
         </CollapsibleTrigger>
-        <ToolPermissionMenu value={sharedPermission(tools)} emphasis ariaLabel={`Permission for all ${label.toLowerCase()}`} onChange={(p) => onChange(slugs, p)} />
+        <ToolPermissionMenu value={sharedPermission(tools)} emphasis disabled={locked} ariaLabel={`Permission for all ${label.toLowerCase()}`} onChange={(p) => onChange(slugs, p)} />
       </div>
       <CollapsibleContent>
         <ul className="pb-1.5">
           {tools.map((t) => (
             <li key={t.slug} className={cn("flex items-center gap-3 py-1.5 pl-4 pr-3", selected.has(t.slug) && "bg-surface-sunken")}>
-              <Checkbox checked={selected.has(t.slug)} onCheckedChange={(v) => onToggle([t.slug], v === true)} aria-label={`Select ${t.name}`} />
+              <Checkbox disabled={locked} checked={selected.has(t.slug)} onCheckedChange={(v) => onToggle([t.slug], v === true)} aria-label={`Select ${t.name}`} />
               <div className="min-w-0 flex-1 pl-1">
                 <p className="truncate text-sm font-semibold text-ink">{t.name}</p>
                 {t.description && (
@@ -62,7 +63,7 @@ const ToolGroupSection: FC<{
                   </p>
                 )}
               </div>
-              <ToolPermissionMenu value={t.permission} ariaLabel={`Permission for ${t.name}`} onChange={(p) => onChange([t.slug], p)} />
+              <ToolPermissionMenu value={t.permission} disabled={locked} ariaLabel={`Permission for ${t.name}`} onChange={(p) => onChange([t.slug], p)} />
             </li>
           ))}
         </ul>
@@ -75,7 +76,14 @@ const ToolGroupSection: FC<{
  * Tool permissions for one service: filter by current permission, pick tools (one by one, per group or all shown)
  * and set a permission on all of them at once.
  */
-export const ToolPermissionsSection: FC<{ serviceSlug: string; serviceName: string; tools: ServiceTool[] }> = ({ serviceSlug, serviceName, tools }) => {
+export const ToolPermissionsSection: FC<{
+  serviceSlug: string;
+  serviceName: string;
+  tools: ServiceTool[];
+  /** No account for this service yet: tools are listed read-only until one is connected. */
+  locked: boolean;
+  onConnect?: () => void;
+}> = ({ serviceSlug, serviceName, tools, locked, onConnect }) => {
   const setPermissions = useSetToolPermissions(serviceSlug);
   const [search, setSearch] = useState("");
   const [chosenFilter, setFilter] = useState<ToolPermissionFilter>(ALL_FILTER);
@@ -169,20 +177,33 @@ export const ToolPermissionsSection: FC<{ serviceSlug: string; serviceName: stri
         })}
       </div>
 
+      {locked && (
+        <div className="mb-2 flex flex-col gap-2 rounded-lg border border-dashed border-hairline-strong px-4 py-3 text-sm text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+          <span className="inline-flex items-center gap-2">
+            <Lock className="h-4 w-4 shrink-0" aria-hidden /> Connect {serviceName} to change what bots may do with these tools.
+          </span>
+          {onConnect && (
+            <Button size="sm" onClick={onConnect}>
+              Connect
+            </Button>
+          )}
+        </div>
+      )}
+
       <div className="overflow-hidden rounded-lg border border-hairline bg-surface shadow-sticker">
         {!visible.length ? (
           <p className="px-4 py-4 text-sm text-muted-foreground">No tools match{query ? ` "${search}"` : " this filter"}.</p>
         ) : (
           <>
             <div className="flex items-center gap-2 border-b border-hairline bg-surface-sunken/50 px-3 py-2">
-              <Checkbox className="ml-1" checked={allShown} onCheckedChange={(v) => toggle(visibleSlugs, v === true)} aria-label="Select all shown tools" />
+              <Checkbox className="ml-1" disabled={locked} checked={allShown} onCheckedChange={(v) => toggle(visibleSlugs, v === true)} aria-label="Select all shown tools" />
               <span className="min-w-0 flex-1 pl-1 text-[13px] font-semibold text-muted-foreground">
                 {filter === ALL_FILTER && !query ? "All tools" : `${visible.length} shown`}
               </span>
-              <ToolPermissionMenu value={sharedPermission(visible)} emphasis ariaLabel="Permission for all shown tools" onChange={(p) => apply(visibleSlugs, p, { bulk: true })} />
+              <ToolPermissionMenu value={sharedPermission(visible)} emphasis disabled={locked} ariaLabel="Permission for all shown tools" onChange={(p) => apply(visibleSlugs, p, { bulk: true })} />
             </div>
             {grouped.map((g) => (
-              <ToolGroupSection key={g.group} group={g.group} tools={g.tools} forceOpen={!!query || filter !== ALL_FILTER} selected={selected} onToggle={toggle} onChange={(slugs, p) => apply(slugs, p)} />
+              <ToolGroupSection key={g.group} group={g.group} tools={g.tools} forceOpen={!!query || filter !== ALL_FILTER} locked={locked} selected={selected} onToggle={toggle} onChange={(slugs, p) => apply(slugs, p)} />
             ))}
           </>
         )}
@@ -191,7 +212,7 @@ export const ToolPermissionsSection: FC<{ serviceSlug: string; serviceName: stri
         These apply when bots act for you. Always allow skips your bots' ask-first rules for that tool; your organisation's required approvals still apply. Blocked tools are never offered to bots.
       </p>
 
-      {selectedSlugs.length > 0 && (
+      {!locked && selectedSlugs.length > 0 && (
         <div className="sticky bottom-[calc(12px+env(safe-area-inset-bottom))] z-20 mt-3 flex flex-col gap-2 rounded-lg border border-hairline-strong bg-surface p-3 shadow-pop sm:flex-row sm:items-center">
           <div className="flex items-center gap-2">
             <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => setSelected(new Set())} aria-label="Clear selection">

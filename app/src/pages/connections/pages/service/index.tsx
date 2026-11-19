@@ -180,7 +180,13 @@ const ServicePage: FC = () => {
           {!canConnect && <p className="mt-1.5 px-1 text-[13px] text-muted-foreground">Your organisation doesn't allow connecting {toolkit.name}.</p>}
         </section>
 
-        <ToolPermissionsSection serviceSlug={serviceSlug} serviceName={toolkit.name} tools={data.tools} />
+        <ToolPermissionsSection
+          serviceSlug={serviceSlug}
+          serviceName={toolkit.name}
+          tools={data.tools}
+          locked={connectionsPending || !accounts.length}
+          onConnect={canConnect ? () => setConnectOpen(true) : undefined}
+        />
 
         <section>
           <SectionTitle title="Information" />

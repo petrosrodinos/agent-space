@@ -2588,6 +2588,9 @@ model Connection {
   status_message                String?
   composio_connected_account_id String?          @unique
   composio_auth_config_id       String?
+  /// The Composio user the account was linked under. Tool calls must send exactly this — it is stored, never
+  /// recomputed, because it depends on NODE_ENV and visibility at connect time.
+  composio_user_id              String?
   credential_id                 String?          @unique
   tool_server_id                String?          @unique
   last_synced_at                DateTime?

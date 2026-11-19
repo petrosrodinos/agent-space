@@ -3,7 +3,7 @@ import { Connection, ToolPermission } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
-import { ComposioService, ComposioTool } from '@/integrations/composio/composio.service';
+import { ComposioService, ComposioTool, ComposioToolError, ToolFailureKinds } from '@/integrations/composio/composio.service';
 import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { AccessService } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
@@ -49,6 +49,32 @@ export class ConnectionToolsService {
         const tools = await this.composio.listTools(slug, 20);
         await this.redis.client.set(key, JSON.stringify(tools), 'EX', TOOLS_CACHE_SECONDS);
         return tools;
+    }
+
+    /**
+     * The Composio user the account was linked under. Stored at connect time; older rows are filled in once from
+     * Composio. Never rebuilt from NODE_ENV — a connection made locally (staging) is used by production workers too.
+     */
+    private async composioUserIdFor(c: Connection): Promise<string> {
+        if (c.composio_user_id) return c.composio_user_id;
+        const acc = await this.composio.getConnectedAccount(c.composio_connected_account_id!);
+        if (!acc.user_id) throw new Error(`${c.service_name}: the connected account has no Composio user. Reconnect it.`);
+        await this.prisma.connection.update({ where: { id: c.id }, data: { composio_user_id: acc.user_id } });
+        return acc.user_id;
+    }
+
+    /**
+     * What the bot is told when a connected-service call fails. Only a real sign-in problem asks the user to reconnect;
+     * platform failures say so plainly, so the bot never invents account advice from Composio's internal wording.
+     */
+    private async describeFailure(c: Connection, e: ComposioToolError): Promise<string> {
+        if (e.kind === ToolFailureKinds.NEEDS_RECONNECTING) {
+            await this.prisma.connection.update({ where: { id: c.id }, data: { status: 'NEEDS_RECONNECTING', status_message: 'Sign-in expired' } });
+            return `The "${c.label}" ${c.service_name} sign-in has expired or was revoked. Ask the user to reconnect it on the Connections page.`;
+        }
+        if (e.kind === ToolFailureKinds.SERVICE_ERROR) return `${c.service_name} returned an error: ${e.detail.slice(0, 500)}`;
+        this.logger.error(`Composio platform error on connection ${c.id} (${c.service_key}): ${e.detail}`);
+        return `Agent Space couldn't reach ${c.service_name} because of a problem on Agent Space's side. The user's "${c.label}" connection and account are fine, so don't suggest reconnecting or using a different account. Tell the user it failed on our side and that trying again later may work.`;
     }
 
     /** The acting user's per-tool permissions for these services, keyed `service:TOOL_SLUG`. */
@@ -126,18 +152,18 @@ export class ConnectionToolsService {
                 const c = pick(args);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { account, ...rest } = args ?? {};
-                const ownerKey = c.visibility === 'SHARED' ? 'org' : (c.owner_id ?? 'org');
-                const res = await this.composio.executeTool(t.slug, c.composio_connected_account_id!, this.composio.userId(ctx.organization_id, ownerKey), rest);
-                await this.prisma.connection.update({ where: { id: c.id }, data: { last_used_at: new Date() } });
-                await this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'connection.used', target_type: 'tool', target_id: t.slug, connection_id: c.id, run_id: ctx.run.id, metadata: { successful: res.successful } });
-                if (!res.successful) {
-                    const msg = typeof res.error === 'string' ? res.error : JSON.stringify(res.error);
-                    if (/expired|unauthor|invalid_grant|revoked|401/i.test(msg)) {
-                        await this.prisma.connection.update({ where: { id: c.id }, data: { status: 'NEEDS_RECONNECTING', status_message: 'Sign-in expired' } });
-                    }
-                    throw new Error(`${c.service_name} returned an error: ${msg.slice(0, 500)}`);
+                const log = (successful: boolean, failure?: string) =>
+                    this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'connection.used', target_type: 'tool', target_id: t.slug, connection_id: c.id, run_id: ctx.run.id, metadata: { successful, failure } });
+                try {
+                    const res = await this.composio.executeTool(t.slug, c.composio_connected_account_id!, await this.composioUserIdFor(c), rest);
+                    await this.prisma.connection.update({ where: { id: c.id }, data: { last_used_at: new Date() } });
+                    await log(true);
+                    return { output: res.data, connection_id: c.id };
+                } catch (e) {
+                    if (!(e instanceof ComposioToolError)) throw e;
+                    await log(false, e.kind);
+                    throw new Error(await this.describeFailure(c, e));
                 }
-                return { output: res.data, connection_id: c.id };
             },
         };
     }

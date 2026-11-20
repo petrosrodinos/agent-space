@@ -77,7 +77,8 @@ Main pages (left sidebar on desktop; on phones the grid button in Chats opens [T
     secrets: `# Secrets — [open]({{app}}/secrets)
 - API keys, tokens and website logins given to Agent Space. Stored encrypted, never shown again, and never seen by bots.
 - When a bot needs a key it shows a secure box in the chat — paste it there, never in a normal message.
-- Saved website logins let a bot's cloud computer sign in to sites without the bot seeing the password.`,
+- Saved website logins let a bot's cloud computer sign in to sites without the bot seeing the password.
+- A password manager (1Password Connect server: address and access token) can be added too; the bot's computer then signs in to any site whose login is stored there.`,
 
     tasks: `# Tasks — [open]({{app}}/tasks)
 - Long jobs (deep research, big documents, long computer work) run as tasks and keep going after the user leaves.
@@ -98,7 +99,7 @@ Main pages (left sidebar on desktop; on phones the grid button in Chats opens [T
     artifacts: `# Artifacts — [open]({{app}}/artifacts)
 - Apps, pages, dashboards, documents and decks bots built — each with its own link.
 - Ask a bot to build or change one ("make a sign-up page for the webinar"). Open an artifact to preview, share, or open it in a new tab.
-- Sharing can be private, organisation-wide or a public link (if the organisation allows). Deleted artifacts can be restored from Recently deleted for 30 days.`,
+- Sharing can be private, organisation-wide or a public link (if the organisation allows). Deleted artifacts can be restored from the Deleted tab; they are kept unless the owner turned on "Permanently delete my deleted artifacts after 30 days" in personal settings.`,
 
     knowledge: `# Knowledge
 - Company documents, web pages and notes bots can search and read.
@@ -123,7 +124,8 @@ Main pages (left sidebar on desktop; on phones the grid button in Chats opens [T
 - [Notifications]({{app}}/settings/notifications) — which events notify you and where; quiet hours.
 - [Memory & data]({{app}}/settings/memory) — what bots remember about you.
 - [Security]({{app}}/settings/security) — password, email and two-step sign-in. These can only be changed here, never by chat.
-- [Devices]({{app}}/settings/devices) — desktop and mobile apps, this device.`,
+- [Devices]({{app}}/settings/devices) — desktop and mobile apps, this device.
+- [Message from anywhere]({{app}}/settings/message-from-anywhere) — talk to a bot by email, Slack or WhatsApp: pick the bot, then email the personal address shown, or send the code shown from Slack / WhatsApp to link it. Answers come back there and the chat is kept in the app.`,
 
     organisation: `# Organisation settings (Owners and Admins)
 - [General]({{app}}/settings/organization) — name, logo, brand colour, company instructions for every bot, default language, invites, who can create bots and skills, data retention, file size.

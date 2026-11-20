@@ -2,8 +2,10 @@ import { z } from "zod";
 import { Visibilities } from "@/features/connections/interfaces/connections.interfaces";
 import { SecretKinds } from "@/features/conversations/interfaces/conversations.interfaces";
 
-/** What the Secrets page can add: an access key, or a website login the bot types on its cloud computer. */
-export const AddSecretKinds = { API_KEY: SecretKinds.API_KEY, WEBSITE_LOGIN: SecretKinds.WEBSITE_LOGIN } as const;
+/** What the Secrets page can add: an access key, a website login the bot types on its cloud computer, or a 1Password Connect server that supplies logins. */
+export const AddSecretKinds = { API_KEY: SecretKinds.API_KEY, WEBSITE_LOGIN: SecretKinds.WEBSITE_LOGIN, PASSWORD_MANAGER: SecretKinds.PASSWORD_MANAGER } as const;
+
+const SERVER_URL = /^https?:\/\/[^\s/]+(\/\S*)?$/i;
 
 const WEBSITE = /^(https?:\/\/)?([a-z0-9]([a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z]{2,63}(\/.*)?$/i;
 const TOTP = /^(otpauth:\/\/.+|[A-Za-z2-7\s=-]{16,})$/;
@@ -17,11 +19,17 @@ export const addSecretSchema = z
     website: z.string().trim().max(253),
     username: z.string().trim().max(320),
     totp_secret: z.string().trim().max(1000),
+    server_url: z.string().trim().max(500),
     visibility: z.enum(Visibilities),
   })
   .superRefine((v, ctx) => {
     if (v.kind === AddSecretKinds.API_KEY) {
       if (v.value.trim().length < 6) ctx.addIssue({ code: "custom", path: ["value"], message: "That looks too short" });
+      return;
+    }
+    if (v.kind === AddSecretKinds.PASSWORD_MANAGER) {
+      if (!SERVER_URL.test(v.server_url)) ctx.addIssue({ code: "custom", path: ["server_url"], message: "Enter the server address, e.g. https://op-connect.acme.com" });
+      if (v.value.trim().length < 20) ctx.addIssue({ code: "custom", path: ["value"], message: "Paste the Connect access token" });
       return;
     }
     if (!WEBSITE.test(v.website)) ctx.addIssue({ code: "custom", path: ["website"], message: "Enter the website, e.g. portal.acme.com" });

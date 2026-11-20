@@ -197,6 +197,7 @@ exports.Prisma.DeviceScalarFieldEnum = {
   is_online: 'is_online',
   last_seen_at: 'last_seen_at',
   allowed_folders: 'allowed_folders',
+  blocked_apps: 'blocked_apps',
   launch_at_startup: 'launch_at_startup',
   quick_ask_shortcut: 'quick_ask_shortcut',
   approve_from_lock_screen: 'approve_from_lock_screen',
@@ -291,6 +292,7 @@ exports.Prisma.UserSettingsScalarFieldEnum = {
   daily_email_digest: 'daily_email_digest',
   sounds_enabled: 'sounds_enabled',
   auto_delete_conversations: 'auto_delete_conversations',
+  purge_deleted_artifacts: 'purge_deleted_artifacts',
   created_at: 'created_at',
   updated_at: 'updated_at'
 };
@@ -394,6 +396,7 @@ exports.Prisma.OrganizationSettingsScalarFieldEnum = {
   artifact_embedding_enabled: 'artifact_embedding_enabled',
   artifact_design_default: 'artifact_design_default',
   voice_mode_enabled: 'voice_mode_enabled',
+  voice_visual_input: 'voice_visual_input',
   voice_mode_who: 'voice_mode_who',
   voice_max_session: 'voice_max_session',
   voice_approvals_enabled: 'voice_approvals_enabled',
@@ -424,6 +427,7 @@ exports.Prisma.OrganizationMemberScalarFieldEnum = {
   user_id: 'user_id',
   role: 'role',
   color_theme: 'color_theme',
+  meeting_assistant: 'meeting_assistant',
   joined_at: 'joined_at',
   updated_at: 'updated_at'
 };
@@ -693,6 +697,7 @@ exports.Prisma.MessageScalarFieldEnum = {
   status: 'status',
   content: 'content',
   parts: 'parts',
+  channel_meta: 'channel_meta',
   run_id: 'run_id',
   parent_message_id: 'parent_message_id',
   reply_to_message_id: 'reply_to_message_id',
@@ -804,7 +809,11 @@ exports.Prisma.RunStepScalarFieldEnum = {
   error: 'error',
   started_at: 'started_at',
   finished_at: 'finished_at',
-  duration_ms: 'duration_ms'
+  duration_ms: 'duration_ms',
+  undo: 'undo',
+  undo_until: 'undo_until',
+  undone_at: 'undone_at',
+  undone_by_id: 'undone_by_id'
 };
 
 exports.Prisma.ApprovalScalarFieldEnum = {
@@ -989,6 +998,14 @@ exports.Prisma.ArtifactRecordScalarFieldEnum = {
   deleted_at: 'deleted_at',
   created_at: 'created_at',
   updated_at: 'updated_at'
+};
+
+exports.Prisma.ArtifactDataGrantScalarFieldEnum = {
+  id: 'id',
+  artifact_id: 'artifact_id',
+  user_id: 'user_id',
+  service_key: 'service_key',
+  created_at: 'created_at'
 };
 
 exports.Prisma.ArtifactReportScalarFieldEnum = {
@@ -1231,6 +1248,7 @@ exports.Prisma.AutomationTriggerSubscriptionScalarFieldEnum = {
   automation_id: 'automation_id',
   connection_id: 'connection_id',
   trigger_key: 'trigger_key',
+  trigger_name: 'trigger_name',
   composio_trigger_id: 'composio_trigger_id',
   config: 'config',
   created_at: 'created_at'
@@ -1243,6 +1261,7 @@ exports.Prisma.AutomationRunScalarFieldEnum = {
   attempt: 'attempt',
   is_retry: 'is_retry',
   trigger_event_id: 'trigger_event_id',
+  trigger_event: 'trigger_event',
   scheduled_for: 'scheduled_for',
   started_at: 'started_at',
   finished_at: 'finished_at',
@@ -1402,6 +1421,23 @@ exports.Prisma.AppVersionPolicyScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.ChannelLinkScalarFieldEnum = {
+  id: 'id',
+  organization_id: 'organization_id',
+  user_id: 'user_id',
+  bot_id: 'bot_id',
+  channel: 'channel',
+  status: 'status',
+  external_id: 'external_id',
+  inbound_token: 'inbound_token',
+  link_code: 'link_code',
+  link_code_expires_at: 'link_code_expires_at',
+  conversation_id: 'conversation_id',
+  last_message_at: 'last_message_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1459,13 +1495,11 @@ exports.DocumentType = exports.$Enums.DocumentType = {
 exports.Platform = exports.$Enums.Platform = {
   WEB: 'WEB',
   DESKTOP: 'DESKTOP',
-  IOS: 'IOS',
   ANDROID: 'ANDROID'
 };
 
 exports.PushProvider = exports.$Enums.PushProvider = {
   WEBPUSH: 'WEBPUSH',
-  APNS: 'APNS',
   FCM: 'FCM'
 };
 
@@ -1475,6 +1509,7 @@ exports.DeviceToolKind = exports.$Enums.DeviceToolKind = {
   LOCAL_TOOL_SERVERS: 'LOCAL_TOOL_SERVERS',
   CLIPBOARD: 'CLIPBOARD',
   OPEN: 'OPEN',
+  CONTROL_COMPUTER: 'CONTROL_COMPUTER',
   CAMERA_SCANNER: 'CAMERA_SCANNER',
   CONTACTS: 'CONTACTS',
   SEND_VIA_APPS: 'SEND_VIA_APPS',
@@ -1926,7 +1961,10 @@ exports.MessageSource = exports.$Enums.MessageSource = {
   TEXT: 'TEXT',
   VOICE: 'VOICE',
   AUTOMATION: 'AUTOMATION',
-  BOT: 'BOT'
+  BOT: 'BOT',
+  EMAIL: 'EMAIL',
+  SLACK: 'SLACK',
+  WHATSAPP: 'WHATSAPP'
 };
 
 exports.MessageStatus = exports.$Enums.MessageStatus = {
@@ -2071,7 +2109,8 @@ exports.CredentialKind = exports.$Enums.CredentialKind = {
   MCP_OAUTH: 'MCP_OAUTH',
   MCP_TOKEN: 'MCP_TOKEN',
   API_KEY: 'API_KEY',
-  WEBSITE_LOGIN: 'WEBSITE_LOGIN'
+  WEBSITE_LOGIN: 'WEBSITE_LOGIN',
+  PASSWORD_MANAGER: 'PASSWORD_MANAGER'
 };
 
 exports.CredentialStatus = exports.$Enums.CredentialStatus = {
@@ -2253,6 +2292,17 @@ exports.ExportStatus = exports.$Enums.ExportStatus = {
   EXPIRED: 'EXPIRED'
 };
 
+exports.ExternalChannel = exports.$Enums.ExternalChannel = {
+  EMAIL: 'EMAIL',
+  SLACK: 'SLACK',
+  WHATSAPP: 'WHATSAPP'
+};
+
+exports.ChannelLinkStatus = exports.$Enums.ChannelLinkStatus = {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE'
+};
+
 exports.Prisma.ModelName = {
   User: 'User',
   AuthIdentity: 'AuthIdentity',
@@ -2309,6 +2359,7 @@ exports.Prisma.ModelName = {
   ArtifactShare: 'ArtifactShare',
   ArtifactComment: 'ArtifactComment',
   ArtifactRecord: 'ArtifactRecord',
+  ArtifactDataGrant: 'ArtifactDataGrant',
   ArtifactReport: 'ArtifactReport',
   Connection: 'Connection',
   ConnectionBotRestriction: 'ConnectionBotRestriction',
@@ -2336,7 +2387,8 @@ exports.Prisma.ModelName = {
   ActivityLog: 'ActivityLog',
   DataExport: 'DataExport',
   DevSecretBlob: 'DevSecretBlob',
-  AppVersionPolicy: 'AppVersionPolicy'
+  AppVersionPolicy: 'AppVersionPolicy',
+  ChannelLink: 'ChannelLink'
 };
 
 /**

@@ -1,12 +1,13 @@
 import { useState, type FC } from "react";
-import { Maximize2, Sparkles, Type } from "lucide-react";
+import { BookmarkPlus, Maximize2, Sparkles, Type } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { Markdown } from "@/components/ui/markdown";
 import { useInteract } from "@/features/conversations/hooks/use-conversations";
 import type { UiBlock } from "@/features/conversations/interfaces/conversations.interfaces";
 import { toast } from "@/hooks/use-toast";
-import { UiBlockView } from "./ui-blocks";
+import { useCreateWidget } from "@/features/widgets/hooks/use-widgets";
+import { UiBlockView } from "@/components/ui/ui-blocks";
 
 interface Props {
   messageId: string;
@@ -18,6 +19,8 @@ export const InteractiveReply: FC<Props> = ({ messageId, part }) => {
   const [asText, setAsText] = useState(false);
   const [full, setFull] = useState(false);
   const interact = useInteract();
+  const save = useCreateWidget();
+  const saveAsWidget = () => save.mutate({ message_id: messageId, ui_id: part.id });
   const onAction = (componentId: string, payload: Record<string, unknown>) =>
     interact.mutate({ id: messageId, component_id: componentId, payload }, { onSuccess: () => toast({ title: "Sent to the bot", duration: 1500 }) });
 
@@ -38,6 +41,9 @@ export const InteractiveReply: FC<Props> = ({ messageId, part }) => {
         <h3 className="min-w-0 flex-1 truncate text-[15px] font-bold text-ink">{part.title || "Interactive reply"}</h3>
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setAsText((v) => !v)} aria-label={asText ? "Show interactive version" : "Show as text"} title={asText ? "Interactive" : "Show as text"}>
           {asText ? <Sparkles /> : <Type />}
+        </Button>
+        <Button variant="ghost" size="icon" className="h-8 w-8" onClick={saveAsWidget} disabled={save.isPending} aria-label="Save as widget" title="Save as widget">
+          <BookmarkPlus />
         </Button>
         <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => setFull(true)} aria-label="Open full screen">
           <Maximize2 />

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Google Assistant App Actions and launcher shortcuts (§14.2): "Ask Sales Sam…", "Start voice mode with Sales Sam",
+  "Run my morning briefing". Every capability opens an agentspace://assistant/… deep link; the web app resolves the
+  bot / automation by name (app/src/platform/mobile-assistant.ts).
+-->
+<shortcuts xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <!-- "Hey Google, open approvals in Agent Space" -->
+    <capability android:name="actions.intent.OPEN_APP_FEATURE">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app">
+            <url-template android:value="agentspace://assistant/feature{?feature}" />
+            <parameter android:name="feature" android:key="feature" />
+        </intent>
+    </capability>
+
+    <!-- "Hey Google, ask Sales Sam in Agent Space what is on today" -->
+    <capability
+        android:name="custom.actions.intent.ASK_BOT"
+        app:queryPatterns="@array/assistant_ask_bot_queries">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app">
+            <url-template android:value="agentspace://assistant/ask{?bot,text}" />
+            <parameter android:name="bot" android:key="bot" android:mimeType="https://schema.org/Text" />
+            <parameter android:name="text" android:key="text" android:mimeType="https://schema.org/Text" />
+        </intent>
+    </capability>
+
+    <!-- "Hey Google, start voice mode with Sales Sam in Agent Space" -->
+    <capability
+        android:name="custom.actions.intent.VOICE_WITH_BOT"
+        app:queryPatterns="@array/assistant_voice_queries">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app">
+            <url-template android:value="agentspace://assistant/voice{?bot}" />
+            <parameter android:name="bot" android:key="bot" android:mimeType="https://schema.org/Text" />
+        </intent>
+    </capability>
+
+    <!-- "Hey Google, run my morning briefing in Agent Space" -->
+    <capability
+        android:name="custom.actions.intent.RUN_AUTOMATION"
+        app:queryPatterns="@array/assistant_run_automation_queries">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app">
+            <url-template android:value="agentspace://assistant/run{?automation}" />
+            <parameter android:name="automation" android:key="automation" android:mimeType="https://schema.org/Text" />
+        </intent>
+    </capability>
+
+    <!-- Long-press launcher shortcuts -->
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_message"
+        android:shortcutId="ask"
+        android:shortcutLongLabel="@string/shortcut_ask_long"
+        android:shortcutShortLabel="@string/shortcut_ask_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="agentspace://assistant/ask"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_mic"
+        android:shortcutId="voice"
+        android:shortcutLongLabel="@string/shortcut_voice_long"
+        android:shortcutShortLabel="@string/shortcut_voice_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="agentspace://assistant/voice"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app" />
+    </shortcut>
+    <shortcut
+        android:enabled="true"
+        android:icon="@drawable/ic_shortcut_approvals"
+        android:shortcutId="approvals"
+        android:shortcutLongLabel="@string/shortcut_approvals_long"
+        android:shortcutShortLabel="@string/shortcut_approvals_short">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:data="agentspace://approvals"
+            android:targetClass="com.agentspace.app.MainActivity"
+            android:targetPackage="com.agentspace.app" />
+    </shortcut>
+</shortcuts>

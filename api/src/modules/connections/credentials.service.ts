@@ -9,6 +9,7 @@ import { AccessService, isAdminRole } from '../access/access.service';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
 import { CredentialQuery, SecretInputKind, SecretInputKinds } from './dto/connection.dto';
+import { OnePasswordConnectService } from '@/integrations/password-managers/one-password-connect.service';
 
 const MIN_KEY_LENGTH = 6;
 
@@ -16,6 +17,7 @@ const KIND_OF_INPUT: Record<SecretInputKind, CredentialKind> = {
     [SecretInputKinds.API_KEY]: CredentialKind.API_KEY,
     [SecretInputKinds.MCP_TOKEN]: CredentialKind.MCP_TOKEN,
     [SecretInputKinds.WEBSITE_LOGIN]: CredentialKind.WEBSITE_LOGIN,
+    [SecretInputKinds.PASSWORD_MANAGER]: CredentialKind.PASSWORD_MANAGER,
 };
 
 export interface CreateCredentialInput {
@@ -26,6 +28,8 @@ export interface CreateCredentialInput {
     website?: string;
     username?: string;
     totp_secret?: string;
+    /** PASSWORD_MANAGER: the 1Password Connect server address. */
+    server_url?: string;
     visibility?: 'PRIVATE' | 'SHARED';
     bot_ids?: string[];
 }
@@ -54,6 +58,7 @@ export class CredentialsService {
         private readonly store: SecretStoreService,
         private readonly access: AccessService,
         private readonly activity: ActivityService,
+        private readonly onePassword: OnePasswordConnectService,
     ) { }
 
     private shape(c: Prisma.CredentialGetPayload<{ include: typeof CRED_INCLUDE }>, actor: Actor) {
@@ -121,6 +126,12 @@ export class CredentialsService {
 
     /** Validates the input and builds what goes to the secret store and the DB for each kind. Values never leave this method except into the store. */
     private prepare(input: CreateCredentialInput): { payload: SecretPayload; masked_hint: string; website_domain: string | null; service_name: string } {
+        if (input.kind === SecretInputKinds.PASSWORD_MANAGER) {
+            const base = this.onePassword.normalizeServerUrl(input.server_url ?? '');
+            const token = input.value.trim();
+            if (token.length < 20) throw new BadRequestException('Paste the Connect server access token');
+            return { payload: { api_key: token, base_url: base }, masked_hint: maskSecret(token), website_domain: null, service_name: '1Password' };
+        }
         if (input.kind === SecretInputKinds.WEBSITE_LOGIN) {
             const website = normalizeWebsiteDomain(input.website ?? '');
             if (!website) throw new BadRequestException('Enter the website this login is for, e.g. portal.acme.com');
@@ -152,6 +163,8 @@ export class CredentialsService {
 
         const id = newId();
         const prepared = this.prepare(input);
+        // §16: check the password manager answers before saving it.
+        if (input.kind === SecretInputKinds.PASSWORD_MANAGER) await this.onePassword.test(String(prepared.payload.base_url), String(prepared.payload.api_key));
         const ref = await this.store.create(id, { org_id: actor.organization_id, owner_type: shared ? 'org' : 'user', kind: input.kind }, prepared.payload);
         const serviceName = prepared.service_name;
         const cred = await this.prisma.$transaction(async (tx) => {
@@ -242,6 +255,13 @@ export class CredentialsService {
             const totp = login?.totp_secret === undefined ? current.totp_secret : login.totp_secret.trim() ? totpOrThrow(login.totp_secret) : undefined;
             payload = { username, password: value, ...(totp ? { totp_secret: totp } : {}) };
             maskedHint = maskUsername(username);
+        } else if (c.kind === CredentialKind.PASSWORD_MANAGER) {
+            // A new Connect token for the same server; checked before the old one is destroyed.
+            const current = await this.store.access(c.secret_resource_name);
+            const base = String(current.base_url ?? '');
+            await this.onePassword.test(base, value.trim());
+            payload = { api_key: value.trim(), base_url: base };
+            maskedHint = maskSecret(value);
         } else {
             if (value.trim().length < MIN_KEY_LENGTH) throw new BadRequestException('That key looks too short');
             payload = c.kind === CredentialKind.API_KEY ? { api_key: value.trim() } : { access_token: value.trim(), token_type: 'bearer' };

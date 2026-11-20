@@ -1,4 +1,5 @@
 import type { DesktopUpdateState } from "./types";
+import type { DeviceBridge } from "./device-bridge";
 
 /**
  * The typed bridge the Electron preload exposes as `window.agentspaceDesktop` (desktop/src/preload.ts mirrors this).
@@ -26,6 +27,8 @@ export interface DesktopBridge {
   getUpdateState(): Promise<DesktopUpdateState>;
   installUpdate(): Promise<boolean>;
   onUpdateState(cb: (state: DesktopUpdateState) => void): () => void;
+  /** Device tools (§14.3); absent in desktop builds older than this feature. */
+  readonly device?: DeviceBridge;
 }
 
 export const getDesktopBridge = (): DesktopBridge | null => (typeof window !== "undefined" ? ((window as unknown as { agentspaceDesktop?: DesktopBridge }).agentspaceDesktop ?? null) : null);

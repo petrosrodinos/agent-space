@@ -11,6 +11,7 @@ import { EventsService, UserEvents } from '@/core/realtime/events.service';
 import { MailService } from '@/integrations/mail/mail.service';
 import { MailTemplates } from '@/integrations/mail/mail.templates';
 import { DEFAULT_CHANNELS } from '@/modules/notifications/notifications.service';
+import { fcmMessage } from './fcm-message';
 
 /** Minutes from now until quiet hours end (user's time zone), or 0 when not in quiet hours. */
 function quietDelayMs(start?: string | null, end?: string | null, tz = 'UTC'): number {
@@ -86,7 +87,7 @@ export class NotificationsProcessor extends WorkerHost {
 
     /**
      * Web Push to every push-enabled device of the user (§12). Expired subscriptions (404/410) are removed.
-     * APNS/FCM devices (desktop/mobile apps) are handled by their own providers when those apps ship.
+     * FCM devices (desktop/mobile apps) are handled by their own providers when those apps ship.
      */
     private async push(deliveryId: string) {
         const d = await this.prisma.notificationDelivery.findUnique({ where: { id: deliveryId }, include: { notification: true } });
@@ -144,21 +145,15 @@ export class NotificationsProcessor extends WorkerHost {
     private fcmAuth?: GoogleAuth;
 
     /** Returns true when the token is no longer valid (the device should stop receiving pushes). */
-    private async sendFcm(token: string, n: { id: string; title: string; body: string | null; link_path: string | null; event: string; is_urgent: boolean }) {
+    private async sendFcm(token: string, n: { id: string; organization_id: string | null; title: string; body: string | null; link_path: string | null; event: string; is_urgent: boolean; data: unknown }) {
         const cfg = this.fcmConfig()!;
+        const message = fcmMessage(token, n);
         this.fcmAuth ??= new GoogleAuth({ credentials: cfg.credentials, scopes: ['https://www.googleapis.com/auth/firebase.messaging'] });
         const accessToken = await this.fcmAuth.getAccessToken();
         const res = await fetch(`https://fcm.googleapis.com/v1/projects/${cfg.projectId}/messages:send`, {
             method: 'POST',
             headers: { Authorization: `Bearer ${accessToken}`, 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                message: {
-                    token,
-                    notification: { title: n.title, body: n.body ?? '' },
-                    data: { id: n.id, url: n.link_path ?? '/', event: n.event },
-                    android: { priority: n.is_urgent ? 'HIGH' : 'NORMAL', notification: { tag: n.id } },
-                },
-            }),
+            body: JSON.stringify({ message }),
         });
         if (res.ok) return false;
         const text = await res.text();

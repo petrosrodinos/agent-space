@@ -1,15 +1,37 @@
 import { useMemo, useState, type FC } from "react";
-import { Download, Lock, Trash2 } from "lucide-react";
+import { Download, Lock, Paperclip, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { useArtifactRecords, useDeleteRecord } from "@/features/artifacts/hooks/use-artifacts";
-import type { Artifact } from "@/features/artifacts/interfaces/artifacts.interfaces";
-import { formatDateTime } from "@/lib/date";
+import type { Artifact, ArtifactFileRef } from "@/features/artifacts/interfaces/artifacts.interfaces";
+import { getUploadUrl } from "@/features/artifacts/services/artifacts.services";
+import { formatBytes, formatDateTime } from "@/lib/date";
+import { toast } from "@/hooks/use-toast";
 import { platform } from "@/platform";
 import { ALL_FILTER } from "@/config/constants/filters";
 
-const cell = (v: unknown) => (v === null || v === undefined ? "" : typeof v === "object" ? JSON.stringify(v) : String(v));
+const isFileRef = (v: unknown): v is ArtifactFileRef => !!v && typeof v === "object" && (v as ArtifactFileRef).type === "file" && typeof (v as ArtifactFileRef).id === "string";
+const cell = (v: unknown) => (v === null || v === undefined ? "" : isFileRef(v) ? v.filename : typeof v === "object" ? JSON.stringify(v) : String(v));
+
+/** Visitor uploads download through a short-lived signed link (owners and editors only). */
+const FileLink: FC<{ artifactId: string; file: { id: string; filename: string; size: number } }> = ({ artifactId, file }) => {
+  const open = async () => {
+    try {
+      const { url, filename } = await getUploadUrl(artifactId, file.id);
+      platform.files.download(url, filename);
+    } catch (e) {
+      toast({ title: "Could not download", description: (e as Error).message, variant: "error" });
+    }
+  };
+  return (
+    <button type="button" onClick={() => void open()} className="inline-flex max-w-full items-center gap-1 rounded-md text-left font-semibold text-primary underline-offset-2 hover:underline">
+      <Paperclip className="h-3.5 w-3.5 shrink-0" />
+      <span className="truncate">{file.filename}</span>
+      <span className="shrink-0 text-xs font-normal text-muted-foreground">{formatBytes(file.size)}</span>
+    </button>
+  );
+};
 
 /** Information the artifact stored — form responses, votes, tracker items (§7.5 Save information). Owners/Editors only. */
 export const DataPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
@@ -29,7 +51,7 @@ export const DataPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
   };
 
   if (isPending) return <Skeleton className="h-60 rounded-lg" />;
-  if (!data?.collections.length)
+  if (!data?.collections.length && !data?.files?.length)
     return <p className="px-1 py-6 text-center text-sm text-muted-foreground">Nothing stored yet. When visitors fill in a form, vote or add items, their entries appear here. Ask a bot to summarise them any time.</p>;
 
   return (
@@ -72,13 +94,26 @@ export const DataPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
                 .map(([k, v]) => (
                   <div key={k} className="contents">
                     <dt className="truncate font-semibold text-muted-foreground">{k}</dt>
-                    <dd className="break-words text-ink">{cell(v)}</dd>
+                    <dd className="break-words text-ink">{isFileRef(v) ? <FileLink artifactId={a.id} file={v} /> : cell(v)}</dd>
                   </div>
                 ))}
             </dl>
           </li>
         ))}
       </ul>
+      {!!data.files?.length && (
+        <section className="rounded-md border border-hairline p-3" aria-label="Uploaded files">
+          <h3 className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Uploaded files ({data.files.length})</h3>
+          <ul className="space-y-1.5 text-sm">
+            {data.files.map((f) => (
+              <li key={f.id} className="flex items-center gap-2">
+                <FileLink artifactId={a.id} file={f} />
+                <span className="ml-auto shrink-0 text-xs text-muted-foreground">{f.is_visitor ? "Visitor" : "Member"} · {formatDateTime(f.created_at)}</span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
     </div>
   );
 };

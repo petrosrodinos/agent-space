@@ -1,6 +1,6 @@
 import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
-import { AlarmClock, AppWindow, Bot, CheckCheck, KeyRound, ListChecks, MessageSquare, Plug, Settings, Sparkles } from "lucide-react";
+import { AlarmClock, AppWindow, Bot, CheckCheck, KeyRound, LayoutDashboard, ListChecks, MessageSquare, Plug, Settings, Sparkles } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import { BotAvatar } from "@/components/ui/bot-avatar";
 import { useConversations, useGlobalSearch, useOpenDirect } from "@/features/conversations/hooks/use-conversations";
@@ -30,6 +30,7 @@ export const CommandPalette: FC = () => {
     { label: "Approvals", path: Routes.approvals.root, icon: <CheckCheck /> },
     { label: "Bots", path: Routes.bots.root, icon: <Bot /> },
     { label: "Artifacts", path: Routes.artifacts.root, icon: <AppWindow /> },
+  { label: "Widgets", path: Routes.widgets.root, icon: <LayoutDashboard /> },
     { label: "Skills", path: Routes.skills.root, icon: <Sparkles /> },
     { label: "Connections", path: Routes.connections.root, icon: <Plug /> },
     { label: "Secrets", path: Routes.secrets, icon: <KeyRound /> },

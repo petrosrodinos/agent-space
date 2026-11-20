@@ -1,4 +1,4 @@
-import { AlarmClock, AppWindow, Bot, CheckCheck, KeyRound, ListChecks, Plug, Sparkles, type LucideIcon } from "lucide-react";
+import { AlarmClock, AppWindow, Bot, CheckCheck, KeyRound, LayoutDashboard, ListChecks, Plug, Sparkles, type LucideIcon } from "lucide-react";
 import { useApprovals } from "@/features/tasks/hooks/use-tasks";
 import { Routes } from "@/routes/routes";
 
@@ -11,6 +11,7 @@ export const WorkspaceLinkKeys = {
   APPROVALS: "approvals",
   BOTS: "bots",
   ARTIFACTS: "artifacts",
+  WIDGETS: "widgets",
   SKILLS: "skills",
   CONNECTIONS: "connections",
   SECRETS: "secrets",
@@ -42,6 +43,7 @@ export const useWorkspaceLinks = (): WorkspaceLink[] => {
     { key: WorkspaceLinkKeys.APPROVALS, to: Routes.approvals.root, label: "Approvals", description: "Actions waiting for your OK before they run", icon: CheckCheck, badge: approvals?.length, badgeTone: BadgeTones.ATTENTION },
     { key: WorkspaceLinkKeys.BOTS, to: Routes.bots.root, label: "Bots", description: "Create, edit and manage your assistants", icon: Bot },
     { key: WorkspaceLinkKeys.ARTIFACTS, to: Routes.artifacts.root, label: "Artifacts", description: "Apps, pages and files your bots have made", icon: AppWindow },
+    { key: WorkspaceLinkKeys.WIDGETS, to: Routes.widgets.root, label: "Widgets", description: "Saved interactive replies, refreshed when you open them", icon: LayoutDashboard },
     { key: WorkspaceLinkKeys.SKILLS, to: Routes.skills.root, label: "Skills", description: "Reusable know-how your bots can follow", icon: Sparkles },
     { key: WorkspaceLinkKeys.CONNECTIONS, to: Routes.connections.root, label: "Connections", description: "Apps and services your bots can use", icon: Plug },
     { key: WorkspaceLinkKeys.SECRETS, to: Routes.secrets, label: "Secrets", description: "API keys and passwords stored for your bots", icon: KeyRound },

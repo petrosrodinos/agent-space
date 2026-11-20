@@ -15,6 +15,8 @@ import { OpenRouterIntegrationModule } from './integrations/openrouter/openroute
 import { ComposioIntegrationModule } from './integrations/composio/composio.module';
 import { MailIntegrationModule } from './integrations/mail/mail.module';
 import { DaytonaModule } from './integrations/daytona/daytona.module';
+import { RendererModule } from './integrations/renderer/renderer.module';
+import { PasswordManagersModule } from './integrations/password-managers/password-managers.module';
 import { AccessModule } from './modules/access/access.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { AuthModule } from './modules/auth/auth.module';
@@ -47,6 +49,8 @@ const role = process.env.PROCESS_ROLE ?? 'all';
         SecretsIntegrationModule,
         StorageIntegrationModule,
         DaytonaModule,
+        RendererModule,
+        PasswordManagersModule,
         OpenRouterIntegrationModule,
         ComposioIntegrationModule,
         MailIntegrationModule,

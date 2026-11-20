@@ -103,7 +103,7 @@ export class CatalogService implements OnApplicationBootstrap {
         }
 
         // App version policy (§14.1)
-        for (const platform of ['WEB', 'DESKTOP', 'IOS', 'ANDROID'] as const) {
+        for (const platform of ['WEB', 'DESKTOP', 'ANDROID'] as const) {
             await this.prisma.appVersionPolicy.upsert({ where: { platform }, create: { platform, minimum_version: '1.0.0', latest_version: '1.0.0' }, update: {} });
         }
         this.logger.log(`Catalogue ready: ${MODEL_SEEDS.length} models, ${TEMPLATE_SEEDS.length} templates, ${STARTER_SKILLS.length} starter skills`);

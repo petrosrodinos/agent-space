@@ -36,6 +36,10 @@ const EnvSchema = z.object({
     COMPOSIO_API_KEY: z.string().optional(),
     COMPOSIO_CALLBACK_URL: z.string().optional(),
     DAYTONA_API_KEY: z.string().optional(),
+    /** Chrome/Chromium used to render artifacts for PDF, image, PowerPoint and Word export (§7.5). Defaults to Puppeteer's bundled browser. */
+    CHROME_PATH: z.string().optional(),
+    /** Signing secret of the Composio webhook subscription (§10.2 triggers); scripts/composio-webhook.mjs creates it. */
+    COMPOSIO_WEBHOOK_SECRET: z.string().optional(),
     BULL_BOARD_USER: z.string().optional(),
     BULL_BOARD_PASSWORD: z.string().optional(),
 });

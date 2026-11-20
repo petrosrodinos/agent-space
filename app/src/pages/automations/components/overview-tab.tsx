@@ -79,14 +79,28 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
           </div>
         </SettingsCard>
 
-        <SettingsCard title="When" description={a.schedule_description ? `${a.schedule_description} (${a.timezone})` : undefined}>
-          <div className="mt-3"><ScheduleEditor value={schedule} onChange={setSchedule} timezone={timezone} onTimezoneChange={setTimezone} idPrefix="edit-schedule" /></div>
-          <div className="mt-3 flex justify-end">
-            <Button disabled={!scheduleDirty || !isCronShape(cron)} loading={update.isPending} onClick={() => update.mutate({ id: a.id, cron_expression: cron, timezone })}>
-              Save schedule
-            </Button>
-          </div>
-        </SettingsCard>
+        {a.trigger ? (
+          <SettingsCard title="When" description="Runs each time this happens. Saving a schedule below switches it to a schedule instead.">
+            <p className="mt-2 text-sm text-ink">
+              <strong>{a.trigger.name ?? a.trigger.slug}</strong> <span className="text-muted-foreground">· {a.trigger.connection.label} ({a.trigger.connection.service_name})</span>
+            </p>
+            <div className="mt-3"><ScheduleEditor value={schedule} onChange={setSchedule} timezone={timezone} onTimezoneChange={setTimezone} idPrefix="edit-schedule" /></div>
+            <div className="mt-3 flex justify-end">
+              <Button variant="outline" disabled={!isCronShape(cron)} loading={update.isPending} onClick={() => update.mutate({ id: a.id, cron_expression: cron, timezone })}>
+                Switch to this schedule
+              </Button>
+            </div>
+          </SettingsCard>
+        ) : (
+          <SettingsCard title="When" description={a.schedule_description ? `${a.schedule_description} (${a.timezone})` : undefined}>
+            <div className="mt-3"><ScheduleEditor value={schedule} onChange={setSchedule} timezone={timezone} onTimezoneChange={setTimezone} idPrefix="edit-schedule" /></div>
+            <div className="mt-3 flex justify-end">
+              <Button disabled={!scheduleDirty || !isCronShape(cron)} loading={update.isPending} onClick={() => update.mutate({ id: a.id, cron_expression: cron, timezone })}>
+                Save schedule
+              </Button>
+            </div>
+          </SettingsCard>
+        )}
 
         <SettingsCard
           title="Pre-approved actions"

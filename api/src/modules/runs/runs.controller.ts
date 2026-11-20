@@ -10,6 +10,7 @@ import { PaginationQuerySchema } from '@/shared/utils/pagination/pagination.util
 import type { Actor } from '../bots/bots.service';
 import { RunsService } from './runs.service';
 import { TasksService } from './tasks.service';
+import { RunUndoService } from './run-undo.service';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
 
@@ -38,6 +39,7 @@ export class RunsController {
     constructor(
         private readonly runs: RunsService,
         private readonly tasks: TasksService,
+        private readonly undoer: RunUndoService,
     ) { }
 
     @Get('tasks')
@@ -60,6 +62,12 @@ export class RunsController {
     @Post('runs/:id/stop')
     stop(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.runs.stop(actor(m), id);
+    }
+
+    @Post('runs/:id/steps/:stepId/undo')
+    @ApiOperation({ summary: 'Undo a bot action in a connected service, when the service allows it (§16)' })
+    undo(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Param('stepId', ParseUUIDPipe) stepId: string) {
+        return this.undoer.undo(actor(m), id, stepId);
     }
 
     @Post('runs/:id/input')

@@ -3,6 +3,7 @@ import { ActionType, CredentialKind, CredentialStatus, Prisma } from 'generated/
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { ComposioService } from '@/integrations/composio/composio.service';
 import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
+import { OnePasswordConnectService } from '@/integrations/password-managers/one-password-connect.service';
 import { StorageService } from '@/integrations/storage/storage.service';
 import { randomToken, newId } from '@/shared/utils/security/crypto.utils';
 import { hostMatchesDomain, normalizeWebsiteDomain, totpCode } from '@/shared/utils/security/website-login.utils';
@@ -21,7 +22,7 @@ const SIGN_IN_FIELDS: string[] = Object.values(SignInFields);
 
 /** What a click or key press does on the website — the bot must say, so the approval engine can ask first (§9.3, §11). */
 const EFFECTS = ['none', 'submit_form', 'send_message', 'post_publicly', 'purchase', 'delete'] as const;
-const EFFECT_ACTION: Record<string, ActionType | null> = {
+export const EFFECT_ACTION: Record<string, ActionType | null> = {
     none: null,
     submit_form: 'EDIT_RECORDS',
     send_message: 'SEND_MESSAGE',
@@ -29,7 +30,7 @@ const EFFECT_ACTION: Record<string, ActionType | null> = {
     purchase: 'PURCHASE_PAYMENT',
     delete: 'DELETE_DATA',
 };
-const effectParam = {
+export const effectParam = {
     type: 'string',
     enum: EFFECTS,
     description:
@@ -53,6 +54,7 @@ export class ComputerToolsService {
         private readonly access: AccessService,
         private readonly activity: ActivityService,
         private readonly secrets: SecretStoreService,
+        private readonly onePassword: OnePasswordConnectService,
     ) { }
 
     async tools(ctx: ToolContext): Promise<ToolDef[]> {
@@ -83,16 +85,18 @@ export class ComputerToolsService {
         return { OR: [{ bots: { none: {} } }, { bots: { some: { bot_id: botId } } }] };
     }
 
-    /** Saved website logins this bot may type for the acting user (metadata only), for the system prompt. */
-    async websiteLogins(ctx: ToolContext): Promise<{ id: string; label: string; website: string }[]> {
+    /** Saved website logins and password managers this bot may use for the acting user (metadata only), for the system prompt. */
+    async websiteLogins(ctx: ToolContext): Promise<{ id: string; label: string; website: string | null; password_manager: boolean }[]> {
         if (!ctx.actor) return [];
         const rows = await this.prisma.credential.findMany({
-            where: { AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor.user_id), this.botMayUse(ctx.bot.id)], kind: CredentialKind.WEBSITE_LOGIN, status: CredentialStatus.ACTIVE },
-            select: { id: true, label: true, website_domain: true },
+            where: { AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor.user_id), this.botMayUse(ctx.bot.id)], kind: { in: [CredentialKind.WEBSITE_LOGIN, CredentialKind.PASSWORD_MANAGER] }, status: CredentialStatus.ACTIVE },
+            select: { id: true, label: true, website_domain: true, kind: true },
             orderBy: { created_at: 'asc' },
             take: 50,
         });
-        return rows.filter((r) => r.website_domain).map((r) => ({ id: r.id, label: r.label, website: r.website_domain! }));
+        return rows
+            .filter((r) => r.kind === CredentialKind.PASSWORD_MANAGER || r.website_domain)
+            .map((r) => ({ id: r.id, label: r.label, website: r.website_domain, password_manager: r.kind === CredentialKind.PASSWORD_MANAGER }));
     }
 
     /** Ends the run's computer session (minutes for usage) and refreshes the signed-in websites list. Never throws. */
@@ -249,7 +253,7 @@ export class ComputerToolsService {
                         properties: {
                             file_id: { type: 'string' },
                             url: { type: 'string' },
-                            connection_id: { type: 'string', description: 'Connected account to request through' },
+                            connection_id: { type: 'string', description: 'Connected account to request through: its label as listed in your connected accounts (e.g. "GitHub – Work"), or its id' },
                             endpoint: { type: 'string', description: 'API path or full URL for the connected service' },
                         },
                     },
@@ -286,7 +290,11 @@ export class ComputerToolsService {
                     sourceKind = 'PUBLIC_URL';
                     sourceLabel = `${url.origin}${url.pathname}`;
                 } else if (src.connection_id && src.endpoint) {
-                    const c = await this.prisma.connection.findFirst({ where: { id: String(src.connection_id), ...this.access.usableConnectionsWhere(ctx.organization_id, ctx.actor!.user_id, ctx.bot.id), kind: 'COMPOSIO', status: 'ACTIVE' } });
+                    // Bots know accounts by label; accept the label (or service name) as well as the id.
+                    const ref = String(src.connection_id).trim();
+                    const usable = await this.prisma.connection.findMany({ where: { ...this.access.usableConnectionsWhere(ctx.organization_id, ctx.actor!.user_id, ctx.bot.id), kind: 'COMPOSIO', status: 'ACTIVE' } });
+                    const q = ref.toLowerCase();
+                    const c = usable.find((x) => x.id === ref) ?? usable.find((x) => x.label.toLowerCase() === q) ?? usable.find((x) => x.service_name.toLowerCase() === q || x.service_key === q) ?? null;
                     if (!c?.composio_connected_account_id) throw new Error('That connected account is not available to you');
                     const res = await this.composio.proxy(c.composio_connected_account_id, { endpoint: String(src.endpoint), method: 'GET' });
                     if (res.status >= 400) throw new Error(`The service answered ${res.status}`);
@@ -482,16 +490,33 @@ export class ComputerToolsService {
 
     // ---------------- Saved website logins (§9.4) ----------------
 
-    /** The saved login the call names, if the acting user and this bot may use it and it belongs to the website given. */
+    /**
+     * The saved login (or password manager, §16) the call names, if the acting user and this bot may use it and it
+     * covers the website given. `domain` is where typing is allowed: the saved login's website, or for a password
+     * manager the website asked for (its stored item must cover that website, checked when the values are read).
+     */
     private async loginFor(ctx: ToolContext, a: Record<string, unknown>) {
         const c = await this.prisma.credential.findFirst({
-            where: { id: String(a.credential_id ?? ''), kind: CredentialKind.WEBSITE_LOGIN, AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor!.user_id), this.botMayUse(ctx.bot.id)] },
+            where: { id: String(a.credential_id ?? ''), kind: { in: [CredentialKind.WEBSITE_LOGIN, CredentialKind.PASSWORD_MANAGER] }, AND: [this.access.usableCredentialsWhere(ctx.organization_id, ctx.actor!.user_id), this.botMayUse(ctx.bot.id)] },
         });
-        if (!c?.website_domain) throw new Error('No saved login with that id is available to you. Use one from "Saved website logins", or ask the user to save one with request_secret (kind "website_login").');
+        const manager = c?.kind === CredentialKind.PASSWORD_MANAGER;
+        if (!c || (!manager && !c.website_domain)) throw new Error('No saved login with that id is available to you. Use one from "Saved website logins", or ask the user to save one with request_secret (kind "website_login").');
         if (c.status !== CredentialStatus.ACTIVE) throw new Error(`The saved login "${c.label}" is marked as not working. Ask the user to update it on the Secrets page, or to sign in themselves with computer_ask_user.`);
         const site = normalizeWebsiteDomain(String(a.website ?? ''));
-        if (!site || !hostMatchesDomain(site, c.website_domain)) throw new Error(`The saved login "${c.label}" is only for ${c.website_domain}.`);
-        return c;
+        if (!site) throw new Error('Give the website you are signing in to, e.g. "portal.acme.com".');
+        if (!manager && !hostMatchesDomain(site, c.website_domain!)) throw new Error(`The saved login "${c.label}" is only for ${c.website_domain}.`);
+        return { ...c, domain: manager ? site : c.website_domain!, password_manager: manager };
+    }
+
+    /** The username, password and two-step secret to type: from the saved login, or looked up in the password manager. */
+    private async loginValues(login: Awaited<ReturnType<ComputerToolsService['loginFor']>>): Promise<{ username: string | null; password: string | null; totp_secret: string | null; from: string | null }> {
+        const value = await this.secrets.access(login.secret_resource_name);
+        if (!login.password_manager) return { username: value.username ?? null, password: value.password ?? null, totp_secret: value.totp_secret ?? null, from: null };
+        const found = await this.onePassword.findLogin(String(value.base_url ?? ''), String(value.api_key ?? ''), login.domain).catch((e: Error) => {
+            throw new Error(`Could not read ${login.label}: ${e.message}. Ask the user to check the password manager on the Secrets page, or use computer_ask_user.`);
+        });
+        if (!found) throw new Error(`${login.label} has no login for ${login.domain}. Ask the user to add one there, or to sign in themselves with computer_ask_user.`);
+        return { ...found, from: found.item_title };
     }
 
     private signInMessage(r: SignInScriptResult, domain: string): string {
@@ -518,14 +543,14 @@ export class ComputerToolsService {
         return {
             name: 'computer_sign_in',
             description:
-                'Sign in to a website in your cloud computer\'s browser with a login the user saved (listed under "Saved website logins"). Open the site\'s sign-in page first with computer_open_url. ' +
+                'Sign in to a website in your cloud computer\'s browser with a login the user saved, or one from a connected password manager (both listed under "Saved website logins"). Open the site\'s sign-in page first with computer_open_url. ' +
                 'The username, password or two-step code are typed straight into the page for you (you never see them), and only when the open page is https on the login\'s own website or its subdomains. ' +
                 'Use "username_and_password" for a normal form; for sign-ins split over two pages use "username", then "password" on the next page. Use "two_step_code" when the site asks for an authenticator-app code and the login has one. ' +
                 'For codes sent by text or email, "prove you are human" checks, or when there is no saved login, use computer_ask_user.',
             parameters: obj(
                 {
-                    credential_id: { type: 'string', description: 'Id of the saved login' },
-                    website: { type: 'string', description: 'The saved login\'s website, e.g. "portal.acme.com"' },
+                    credential_id: { type: 'string', description: 'Id of the saved login or password manager' },
+                    website: { type: 'string', description: 'The website you are signing in to, e.g. "portal.acme.com" (for a saved login, its own website)' },
                     fields: { type: 'string', enum: SIGN_IN_FIELDS, description: 'What to type' },
                     submit: { type: 'boolean', description: 'Press Enter afterwards to submit. Default true.' },
                 },
@@ -538,7 +563,7 @@ export class ComputerToolsService {
             classify: (a) => (a.fields === SignInFields.USERNAME ? null : ActionType.ENTER_PASSWORD),
             preview: async (a, ctx) => {
                 const login = await this.loginFor(ctx, a);
-                const title = `Sign in to ${login.website_domain} as ${login.masked_hint ?? login.label}`;
+                const title = login.password_manager ? `Sign in to ${login.domain} with ${login.label}` : `Sign in to ${login.domain} as ${login.masked_hint ?? login.label}`;
                 let screenshot: string | null = null;
                 try {
                     const { sandbox } = await this.sandbox(ctx);
@@ -547,20 +572,22 @@ export class ComputerToolsService {
                 } catch {
                     screenshot = null;
                 }
-                return { title, action_type: ActionType.ENTER_PASSWORD, preview: { kind: 'computer', description: `${title} using the saved login "${login.label}"`, effect: 'sign_in', screenshot }, requires_tap: true };
+                const using = login.password_manager ? `the login stored in ${login.label}` : `the saved login "${login.label}"`;
+                return { title, action_type: ActionType.ENTER_PASSWORD, preview: { kind: 'computer', description: `${title} using ${using}`, effect: 'sign_in', screenshot }, requires_tap: true };
             },
             execute: async (a, ctx) => {
                 const fields = String(a.fields) as SignInField;
                 if (!SIGN_IN_FIELDS.includes(fields)) throw new Error(`fields must be one of: ${SIGN_IN_FIELDS.join(', ')}`);
                 const login = await this.loginFor(ctx, a);
-                const domain = login.website_domain!;
-                const value = await this.secrets.access(login.secret_resource_name);
+                const domain = login.domain;
+                const value = await this.loginValues(login);
                 const steps: SignInScriptInput['steps'] = SIGN_IN_STEPS[fields].map((kind) => ({
                     kind,
                     text: kind === 'username' ? (value.username ?? '') : kind === 'password' ? (value.password ?? '') : value.totp_secret ? totpCode(value.totp_secret) : '',
                 }));
                 const empty = steps.find((st) => !st.text);
-                if (empty) throw new Error(empty.kind === 'code' ? `The saved login "${login.label}" has no two-step secret. Ask the user to enter the code with computer_ask_user.` : `The saved login "${login.label}" has no ${empty.kind}. Ask the user to update it on the Secrets page.`);
+                const named = value.from ? `The login "${value.from}" in ${login.label}` : `The saved login "${login.label}"`;
+                if (empty) throw new Error(empty.kind === 'code' ? `${named} has no two-step secret. Ask the user to enter the code with computer_ask_user.` : `${named} has no ${empty.kind}. Ask the user to update it${value.from ? ` in ${login.label}` : ' on the Secrets page'}.`);
                 for (const st of steps) if (st.kind !== 'username') ctx.secrets_used.push(st.text);
 
                 const { sandbox, session } = await this.sandbox(ctx);
@@ -588,7 +615,7 @@ export class ComputerToolsService {
 
                 if (result.filled?.length) {
                     await this.prisma.credential.update({ where: { id: login.id }, data: { last_used_at: new Date(), last_used_bot_id: ctx.bot.id } });
-                    await this.prisma.credentialEvent.create({ data: { credential_id: login.id, type: 'USED', actor_bot_id: ctx.bot.id, actor_user_id: ctx.run.user_id, run_id: ctx.run.id, action: `Signed in on ${result.host ?? domain}`, metadata: { fields: result.filled, submitted: !!result.submitted } } });
+                    await this.prisma.credentialEvent.create({ data: { credential_id: login.id, type: 'USED', actor_bot_id: ctx.bot.id, actor_user_id: ctx.run.user_id, run_id: ctx.run.id, action: `Signed in on ${result.host ?? domain}`, metadata: { fields: result.filled, submitted: !!result.submitted, ...(value.from ? { item: value.from } : {}) } } });
                     await this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'secret.used', target_type: 'credential', target_id: login.id, run_id: ctx.run.id, metadata: { website: result.host ?? domain, fields: result.filled } });
                 }
                 if (!result.ok) throw new Error(this.signInMessage(result, domain));

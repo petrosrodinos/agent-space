@@ -48,6 +48,8 @@ export interface Automation {
   cron_expression: string | null;
   timezone: string | null;
   schedule_description: string | null;
+  /** Set when an event in a connected account starts it (§10.2). */
+  trigger: AutomationTriggerInfo | null;
   uses_cloud_computer: boolean;
   memory_plan: string | null;
   memory_size: number;
@@ -99,11 +101,56 @@ export interface PreApprovalInput {
   target: string;
 }
 
+/** §16 Meeting assistant: briefs before meetings and follow-up drafts after (two automations). */
+export interface MeetingAssistantStatus {
+  enabled: boolean;
+  config: { bot_id: string; calendar_connection_id: string; email_connection_id: string | null; briefs_automation_id: string | null; follow_ups_automation_id: string | null } | null;
+  briefs: { id: string; name: string; status: AutomationStatus; last_run_at: string | null; next_run_at: string | null } | null;
+  follow_ups: { id: string; name: string; status: AutomationStatus; last_run_at: string | null; next_run_at: string | null } | null;
+}
+
+export interface MeetingAssistantInput {
+  bot_id: string;
+  calendar_connection_id: string;
+  email_connection_id: string | null;
+  briefs: boolean;
+  follow_ups: boolean;
+}
+
+/** How an automation starts (§10.2): on a schedule, or when an event happens in a connected account. */
+export const AutomationStartKinds = { SCHEDULE: "schedule", EVENT: "event" } as const;
+export type AutomationStartKind = (typeof AutomationStartKinds)[keyof typeof AutomationStartKinds];
+
+/** An event a connected account can start an automation with (Composio trigger type). */
+export interface AutomationTriggerType {
+  slug: string;
+  name: string;
+  description: string;
+  /** JSON schema of the event's settings. */
+  config: { properties?: Record<string, { type?: string; title?: string; description?: string; default?: unknown }>; required?: string[] };
+}
+
+export interface AutomationTriggerInput {
+  connection_id: string;
+  trigger_slug: string;
+  config?: Record<string, unknown>;
+}
+
+export interface AutomationTriggerInfo {
+  slug: string;
+  name: string | null;
+  config: Record<string, unknown> | null;
+  connection: { id: string; label: string; service_name: string; service_key: string };
+}
+
 export interface AutomationInput {
   name: string;
   bot_id: string;
   instructions: string;
-  cron_expression: string;
+  /** A schedule, or… */
+  cron_expression?: string;
+  /** …an event that starts each run. */
+  trigger?: AutomationTriggerInput;
   timezone?: string;
   skill_id?: string | null;
   connection_ids?: string[];

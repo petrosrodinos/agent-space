@@ -6,6 +6,7 @@ import { ConversationsController, MessagesController } from './conversations.con
 import { RunsService } from '../runs/runs.service';
 import { TasksService } from '../runs/tasks.service';
 import { RunsController } from '../runs/runs.controller';
+import { RunUndoService } from '../runs/run-undo.service';
 import { ApprovalsService } from '../approvals/approvals.service';
 import { ApprovalsController } from '../approvals/approvals.controller';
 
@@ -13,7 +14,7 @@ import { ApprovalsController } from '../approvals/approvals.controller';
 @Global()
 @Module({
     controllers: [ConversationsController, MessagesController, RunsController, ApprovalsController],
-    providers: [ConversationsService, MessagesService, MessageEventsService, RunsService, TasksService, ApprovalsService],
+    providers: [ConversationsService, MessagesService, MessageEventsService, RunsService, TasksService, ApprovalsService, RunUndoService],
     exports: [ConversationsService, MessagesService, MessageEventsService, RunsService, ApprovalsService],
 })
 export class ConversationsModule { }

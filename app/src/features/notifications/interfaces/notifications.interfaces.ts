@@ -21,5 +21,5 @@ export interface NotificationPreference {
 }
 
 /** Push providers (§12, §14.2). */
-export const PushProviders = { WEBPUSH: "WEBPUSH", FCM: "FCM", APNS: "APNS" } as const;
+export const PushProviders = { WEBPUSH: "WEBPUSH", FCM: "FCM" } as const;
 export type PushProvider = (typeof PushProviders)[keyof typeof PushProviders];

@@ -25,7 +25,7 @@ export const SendWithKeys = { ENTER: "ENTER", CTRL_ENTER: "CTRL_ENTER" } as cons
 export type SendWithKey = (typeof SendWithKeys)[keyof typeof SendWithKeys];
 export const ActivityStepsDisplays = { COLLAPSED: "COLLAPSED", EXPANDED: "EXPANDED", HIDDEN: "HIDDEN" } as const;
 export type ActivityStepsDisplay = (typeof ActivityStepsDisplays)[keyof typeof ActivityStepsDisplays];
-export const Platforms = { WEB: "WEB", DESKTOP: "DESKTOP", IOS: "IOS", ANDROID: "ANDROID" } as const;
+export const Platforms = { WEB: "WEB", DESKTOP: "DESKTOP", ANDROID: "ANDROID" } as const;
 export type Platform = (typeof Platforms)[keyof typeof Platforms];
 
 export const ReplyLengths = { SHORT: "SHORT", BALANCED: "BALANCED", DETAILED: "DETAILED" } as const;
@@ -110,6 +110,7 @@ export interface UserSettings {
   connection_problem_alerts: boolean;
   secret_problem_alerts: boolean;
   auto_delete_conversations: "NEVER" | "DAYS_30" | "DAYS_90" | "YEAR_1";
+  purge_deleted_artifacts: boolean;
   [key: string]: unknown;
 }
 
@@ -125,7 +126,22 @@ export interface Device {
   platform: Platform;
   app_version: string | null;
   last_seen_at: string;
+  is_online?: boolean;
   created_at: string;
+}
+
+/** §14.3 Permissions: one switch per device and tool. */
+export const DeviceToolPermissions = { ASK_EACH_TIME: "ASK_EACH_TIME", ALWAYS_ALLOW: "ALWAYS_ALLOW", NEVER: "NEVER" } as const;
+export type DeviceToolPermission = (typeof DeviceToolPermissions)[keyof typeof DeviceToolPermissions];
+
+export interface DeviceToolSettings {
+  device_id: string;
+  platform: Platform;
+  is_online: boolean;
+  capabilities: string[];
+  allowed_folders: string[];
+  blocked_apps: string[];
+  permissions: Record<string, DeviceToolPermission>;
 }
 
 export interface SessionInfo {

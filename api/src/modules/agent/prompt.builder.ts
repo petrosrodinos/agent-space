@@ -24,7 +24,7 @@ export interface PromptContext {
     /** Whether this run got the cloud computer tools (bot, organisation and automation settings all allow it). */
     computer_available: boolean;
     /** Saved website logins this bot may use for the acting user — metadata only. */
-    website_logins: { id: string; label: string; website: string }[];
+    website_logins: { id: string; label: string; website: string | null; password_manager: boolean }[];
 }
 
 import { isExtractable, TEXT_MIME } from '@/shared/utils/files/text-extract.utils';
@@ -118,7 +118,7 @@ export class PromptBuilder {
         );
         if (ctx.computer_available) {
             const logins = ctx.website_logins.length
-                ? `- Saved website logins you may use (sign in with computer_sign_in on the site's sign-in page; you never see the password):\n${ctx.website_logins.map((l) => `  - ${l.website}: "${l.label}" (credential_id: ${l.id})`).join('\n')}\n`
+                ? `- Saved website logins you may use (sign in with computer_sign_in on the site's sign-in page; you never see the password):\n${ctx.website_logins.map((l) => (l.password_manager ? `  - Any website with a login stored in the password manager "${l.label}" (credential_id: ${l.id}; give the website you are on)` : `  - ${l.website}: "${l.label}" (credential_id: ${l.id})`)).join('\n')}\n`
                 : `- No website logins are saved for you. If a task needs one regularly, offer to save it with request_secret (kind "website_login") so future runs can sign in without help.\n`;
             s.push(
                 `## Your cloud computer\nYou have a private cloud computer (Linux desktop with a browser, Python and Node.js) that keeps its files and website sign-ins between tasks. Use computer_run for scripts and data work, and the browser tools (computer_open_url, computer_screenshot, computer_click, computer_type, computer_key, computer_scroll) for websites. The user can watch live.\n` +

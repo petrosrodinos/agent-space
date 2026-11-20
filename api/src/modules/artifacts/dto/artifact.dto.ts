@@ -10,6 +10,16 @@ export type ArtifactRoleName = (typeof ARTIFACT_ROLES)[number];
 
 export const MAX_ARTIFACT_HTML = 600_000;
 
+export class DataGrantDto {
+    @ApiProperty({ description: 'Connected service key, e.g. hubspot' }) @IsString() @Matches(/^[a-z0-9_-]{1,60}$/) service: string;
+}
+
+/** Download and export formats (§7.5). */
+export const ExportFormats = { HTML: 'html', PDF: 'pdf', PNG: 'png', PPTX: 'pptx', DOCX: 'docx' } as const;
+export type ExportFormat = (typeof ExportFormats)[keyof typeof ExportFormats];
+export const ExportQuerySchema = z.object({ format: z.enum(['html', 'pdf', 'png', 'pptx', 'docx']).optional().default('html') });
+export type ExportQuery = z.infer<typeof ExportQuerySchema>;
+
 export const ArtifactQuerySchema = z.object({
     tab: z.enum(['all', 'mine', 'shared', 'organization', 'deleted']).default('all'),
     search: z.string().trim().max(80).optional(),
@@ -54,6 +64,7 @@ export class PublicLinkDto {
     @ApiPropertyOptional() @IsOptional() @IsBoolean() allow_search_engines?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() allow_embedding?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() public_ai_enabled?: boolean;
+    @ApiPropertyOptional({ description: 'Let public visitors upload files (§7.5)' }) @IsOptional() @IsBoolean() public_uploads_enabled?: boolean;
 }
 
 export class TransferArtifactDto {

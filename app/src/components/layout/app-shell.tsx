@@ -17,6 +17,8 @@ import { ToastAction } from "@/components/ui/toast";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { NewChatDialog } from "./new-chat/new-chat-dialog";
 import { InstallAppSheet } from "./install-app";
+import { DeviceToolsHost } from "./device-tools-host";
+import { MobileDeviceHost } from "./mobile-device-host";
 import { ShortcutKeys } from "@/config/constants/browser.constants";
 
 const isOlder = (a: string, b: string) => {
@@ -116,6 +118,8 @@ const AppShell: FC = () => {
       <CommandPalette />
       <NewChatDialog />
       <InstallAppSheet />
+      <DeviceToolsHost />
+      <MobileDeviceHost />
     </div>
   );
 };

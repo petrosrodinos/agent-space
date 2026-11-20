@@ -58,6 +58,13 @@ export const EnforcedApprovalOptions = [
   { id: "SHARE_FILES", label: "Sharing files externally" },
 ] as const;
 
+/** Extra approvals that need fingerprint / face unlock on the phone (payments and website passwords always do). */
+export const BiometricApprovalScopeOptions = [
+  { id: "ALL_APPROVALS", label: "All approvals" },
+  { id: "EXTERNAL_EMAILS", label: "Emails to people outside the company" },
+  { id: "DELETING_DATA", label: "Deleting data" },
+] as const;
+
 export const UsageLimitScopeOptions = [
   { id: "ORGANIZATION", label: "Whole organisation" },
   { id: "MEMBER", label: "Per member" },

@@ -13,7 +13,7 @@ Agent Space is an AI co-worker platform for companies. People create their own A
 
 **One-line pitch:** Your team's AI co-workers — connected to your tools, working on their own computers, right inside your chats.
 
-Available on web, desktop (Windows, Mac) and mobile (iPhone, Android).
+Available on web, desktop (Windows, Mac) and mobile (Android).
 
 ---
 
@@ -69,7 +69,7 @@ The typical user is a **busy professional, not a developer**. They should never 
 These guide every product and design decision.
 
 1. **Do, don't just talk.** Every feature should help a bot finish real work. A reply that ends with "you could…" is a missed opportunity to act.
-2. **Ask a bot for anything.** Anything a user can do in settings, they can also do by asking a bot — create bots, assign skills, change settings, share artifacts. The only exceptions are security, billing and destructive organisation actions.
+2. **Ask a bot for anything.** Anything a user can do in settings, they can also do by asking a bot — create bots, assign skills, change settings, share artifacts. The only exceptions are security and destructive organisation actions.
 3. **Always visible, always interruptible.** Users can see what a bot is doing, why, and with which account — and can stop, approve, correct or take over at any moment.
 4. **Confirm before consequences.** Anything hard to undo, external or sensitive needs a clear, previewed approval. Everything else should just happen.
 5. **Private by default, easy to share.** New bots, skills and artifacts are private. Sharing is one clear step, with obvious roles.

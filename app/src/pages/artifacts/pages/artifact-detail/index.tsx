@@ -5,10 +5,13 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useArtifact, useDiscardDraft, useDuplicateArtifact, usePublishDraft, useUpdateArtifact } from "@/features/artifacts/hooks/use-artifacts";
 import type { ArtifactVersion } from "@/features/artifacts/interfaces/artifacts.interfaces";
-import { exportArtifact, getViewUrl } from "@/features/artifacts/services/artifacts.services";
+import { exportArtifact, exportArtifactFile, getViewUrl } from "@/features/artifacts/services/artifacts.services";
+import { exportFormatsFor } from "@/features/artifacts/utils/export-formats.utils";
+import { ArtifactExportFormats, type ArtifactExportFormat } from "@/features/artifacts/interfaces/artifacts.interfaces";
+import { ArtifactExportFormOptions } from "@/config/constants/dropdowns/artifacts/artifact-export-form.options";
 import { useMe } from "@/features/users/hooks/use-users";
 import { useOrganizationStore } from "@/stores/organization";
 import { ArtifactRoleOptions, ArtifactTypeOptions } from "@/config/constants/dropdowns/artifacts/artifact.options";
@@ -72,10 +75,19 @@ const ArtifactDetailPage: FC = () => {
       toast({ title: "Could not open", description: (e as Error).message, variant: "error" });
     }
   };
-  const download = async () => {
+  const download = async (format: ArtifactExportFormat) => {
     try {
-      const { filename, html } = await exportArtifact(a.id);
-      const url = URL.createObjectURL(new Blob([html], { type: "text/html" }));
+      let blob: Blob;
+      let filename: string;
+      if (format === ArtifactExportFormats.HTML) {
+        const r = await exportArtifact(a.id);
+        blob = new Blob([r.html], { type: "text/html" });
+        filename = r.filename;
+      } else {
+        toast({ title: `Preparing your ${getDropdownOptionLabel(ArtifactExportFormOptions, format)}…`, duration: 2500 });
+        ({ blob, filename } = await exportArtifactFile(a.id, format));
+      }
+      const url = URL.createObjectURL(blob);
       platform.files.download(url, filename);
       setTimeout(() => URL.revokeObjectURL(url), 10_000);
     } catch (e) {
@@ -138,9 +150,18 @@ const ArtifactDetailPage: FC = () => {
             <DropdownMenuItem onSelect={() => duplicate.mutate(a.id, { onSuccess: (copy) => navigate(Routes.artifacts.detail(copy.id)) })}>
               <Files /> Duplicate
             </DropdownMenuItem>
-            <DropdownMenuItem onSelect={download}>
-              <Download /> Download web page
-            </DropdownMenuItem>
+            <DropdownMenuSub>
+              <DropdownMenuSubTrigger>
+                <Download /> Download as
+              </DropdownMenuSubTrigger>
+              <DropdownMenuSubContent className="w-48">
+                {exportFormatsFor(a.type).map((f) => (
+                  <DropdownMenuItem key={f} onSelect={() => void download(f)}>
+                    {getDropdownOptionLabel(ArtifactExportFormOptions, f)}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuSubContent>
+            </DropdownMenuSub>
             {a.conversation && (
               <>
                 <DropdownMenuSeparator />

@@ -1,5 +1,7 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, StreamableFile, UseGuards } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { ArtifactExportService } from './artifact-export.service';
+import { ArtifactLiveDataService } from './artifact-live-data.service';
 import { JwtGuard } from '@/shared/guards/jwt.guard';
 import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
 import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
@@ -10,6 +12,9 @@ import {
     ArtifactQuery,
     ArtifactQuerySchema,
     CreateCommentDto,
+    DataGrantDto,
+    ExportQuery,
+    ExportQuerySchema,
     LabelVersionDto,
     PublicLinkDto,
     ResolveCommentDto,
@@ -26,7 +31,11 @@ const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_i
 @Controller('artifacts')
 @UseGuards(JwtGuard, OrgGuard)
 export class ArtifactsController {
-    constructor(private readonly artifacts: ArtifactsService) { }
+    constructor(
+        private readonly artifacts: ArtifactsService,
+        private readonly exporter: ArtifactExportService,
+        private readonly liveData: ArtifactLiveDataService,
+    ) { }
 
     @Get()
     list(@CurrentMembership() m: OrgMembership, @Query(new ZodValidationPipe(ArtifactQuerySchema)) q: ArtifactQuery) {
@@ -84,8 +93,11 @@ export class ArtifactsController {
     }
 
     @Get(':id/export')
-    export(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
-        return this.artifacts.exportHtml(actor(m), id);
+    @ApiOperation({ summary: 'Download the artifact: html (JSON with the self-contained page), pdf, png, pptx (slide decks) or docx (documents)' })
+    async export(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Query(new ZodValidationPipe(ExportQuerySchema)) q: ExportQuery) {
+        if (q.format === 'html') return this.artifacts.exportHtml(actor(m), id);
+        const file = await this.exporter.export(actor(m), id, q.format);
+        return new StreamableFile(file.data, { type: file.mime, disposition: `attachment; filename="${file.filename}"`, length: file.data.length });
     }
 
     // ---- versions ----
@@ -120,6 +132,30 @@ export class ArtifactsController {
     @Get(':id/records')
     records(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Query('collection') collection?: string) {
         return this.artifacts.records(actor(m), id, collection || undefined);
+    }
+
+    // ---- live data permissions (§7.5): each member allows an artifact per connected service ----
+
+    @Get(':id/data-grants')
+    dataGrants(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.liveData.grants(actor(m), id);
+    }
+
+    @Post(':id/data-grants')
+    @ApiOperation({ summary: 'Allow this artifact to read one of my connected services' })
+    grantData(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: DataGrantDto) {
+        return this.liveData.grant(actor(m), id, dto.service);
+    }
+
+    @Delete(':id/data-grants/:service')
+    revokeData(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Param('service') service: string) {
+        return this.liveData.revoke(actor(m), id, service);
+    }
+
+    @Get(':id/uploads/:fileId/url')
+    @ApiOperation({ summary: 'Signed download link for a file a visitor uploaded (owners and editors)' })
+    uploadUrl(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Param('fileId', ParseUUIDPipe) fileId: string) {
+        return this.artifacts.uploadUrl(actor(m), id, fileId);
     }
 
     @Delete(':id/records/:recordId')

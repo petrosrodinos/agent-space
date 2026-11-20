@@ -18,6 +18,8 @@ const BotsPage = lazy(() => import("@/pages/bots"));
 const NewBotPage = lazy(() => import("@/pages/bots/pages/new-bot"));
 const BotDetailPage = lazy(() => import("@/pages/bots/pages/bot-detail"));
 const SkillsPage = lazy(() => import("@/pages/skills"));
+const WidgetsPage = lazy(() => import("@/pages/widgets"));
+const WidgetDetailPage = lazy(() => import("@/pages/widgets/pages/widget-detail"));
 const SkillDetailPage = lazy(() => import("@/pages/skills/pages/skill-detail"));
 const ConnectionsPage = lazy(() => import("@/pages/connections"));
 const ConnectionCallbackPage = lazy(() => import("@/pages/connections/pages/callback"));
@@ -91,6 +93,8 @@ export default function AppRoutes() {
         <Route path={Routes.tasks.pattern} element={page(<TaskDetailPage />)} />
         <Route path={Routes.artifacts.root} element={page(<ArtifactsPage />)} />
         <Route path={Routes.artifacts.pattern} element={page(<ArtifactDetailPage />)} />
+        <Route path={Routes.widgets.root} element={page(<WidgetsPage />)} />
+        <Route path={Routes.widgets.pattern} element={page(<WidgetDetailPage />)} />
         <Route path={Routes.automations.root} element={page(<AutomationsPage />)} />
         <Route path={Routes.automations.pattern} element={page(<AutomationDetailPage />)} />
         <Route path={Routes.approvals.root} element={page(<ApprovalsPage />)} />

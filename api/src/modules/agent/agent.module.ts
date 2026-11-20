@@ -16,11 +16,13 @@ import { KnowledgeToolsService } from './tools/knowledge-tools.service';
 import { ComputersModule } from '../computers/computers.module';
 import { ComputerToolsService } from './tools/computer-tools.service';
 import { McpToolsService } from './tools/mcp-tools.service';
+import { DeviceToolsService } from './tools/device-tools.service';
+import { ChannelsModule } from '../channels/channels.module';
 
 /** The tool layer and run loop (used by the agent-runs worker). */
 @Module({
-    imports: [BotsModule, UsersModule, ConnectionsModule, SkillsModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule],
-    providers: [AgentRunnerService, PromptBuilder, BuiltinToolsService, ConnectionToolsService, AutomationToolsService, ArtifactToolsService, KnowledgeToolsService, ComputerToolsService, McpToolsService],
-    exports: [AgentRunnerService, PromptBuilder],
+    imports: [BotsModule, UsersModule, ConnectionsModule, SkillsModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule, ChannelsModule],
+    providers: [AgentRunnerService, PromptBuilder, BuiltinToolsService, ConnectionToolsService, AutomationToolsService, ArtifactToolsService, KnowledgeToolsService, ComputerToolsService, McpToolsService, DeviceToolsService],
+    exports: [AgentRunnerService, PromptBuilder, DeviceToolsService],
 })
 export class AgentModule { }

@@ -1,7 +1,7 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request } from "@/lib/request";
-import type { ColorTheme, Device, MeResponse, SessionInfo, UpdateProfileDto, User, UserSettings } from "../interfaces/users.interfaces";
+import type { ColorTheme, Device, DeviceToolPermission, DeviceToolSettings, MeResponse, SessionInfo, UpdateProfileDto, User, UserSettings } from "../interfaces/users.interfaces";
 import { Platforms } from "../interfaces/users.interfaces";
 
 export const getMe = () => request<MeResponse>(() => axiosInstance.get(ApiRoutes.me.root));
@@ -13,6 +13,8 @@ export const updateColorTheme = (color_theme: ColorTheme) =>
 export const deleteAccount =(password: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.me.delete_account, { password }));
 export const getDevices = () => request<Device[]>(() => axiosInstance.get(ApiRoutes.me.devices));
 export const renameDevice = (id: string, name: string) => request<{ ok: boolean }>(() => axiosInstance.patch(ApiRoutes.me.device(id), { name }));
+export const getDeviceTools = (id: string) => request<DeviceToolSettings>(() => axiosInstance.get(ApiRoutes.me.device_tools(id)));
+export const setDeviceToolPermission = (id: string, tool: string, permission: DeviceToolPermission) => request<DeviceToolSettings>(() => axiosInstance.patch(ApiRoutes.me.device_tool(id, tool), { permission }));
 export const signOutDevice = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.me.device(id)));
 export const getSessions = () => request<SessionInfo[]>(() => axiosInstance.get(ApiRoutes.auth.sessions));
 export const revokeSession = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.auth.session(id)));

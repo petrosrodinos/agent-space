@@ -13,6 +13,7 @@ export const Queues = {
     EXPORTS: 'exports',
     USAGE: 'usage',
     KNOWLEDGE: 'knowledge',
+    CHANNELS: 'channels',
 } as const;
 
 export const ALL_QUEUES = Object.values(Queues);
@@ -34,6 +35,7 @@ export const Jobs = {
     exports: { USER_DATA: 'user-data-export', ACTIVITY: 'activity-export' },
     usage: { FLUSH_COUNTERS: 'flush-counters', LIMIT_ALERTS: 'limit-alerts' },
     knowledge: { INDEX: 'index' },
+    channels: { INBOUND: 'inbound', REPLY: 'reply' },
 } as const;
 
 /** Run priorities: people waiting in a chat are served first (§14.4). */

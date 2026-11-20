@@ -5,9 +5,9 @@ export const OPEN_CORS_ENVS = ['local', 'staging'];
 
 /**
  * Origins of the packaged apps (§14.2): Electron serves the bundle at app://agentspace, Capacitor at
- * capacitor://localhost (iOS) and https://localhost (Android). They carry no cookies — sign-in uses bearer tokens.
+ * https://localhost (Android). They carry no cookies — sign-in uses bearer tokens.
  */
-export const APP_SHELL_ORIGINS = ['app://agentspace', 'capacitor://localhost', 'https://localhost'];
+export const APP_SHELL_ORIGINS = ['app://agentspace', 'https://localhost'];
 
 export function parseCorsUrls(value: unknown): string[] | undefined {
     if (typeof value !== 'string' || !value.trim()) {

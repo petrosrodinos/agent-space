@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState, type FC } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { VOICE_ON_OPEN_PARAM } from "@/platform/mobile-assistant";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, Pin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -77,6 +78,17 @@ const ConversationPage: FC = () => {
 
   const send = useSendMessage(conversationId);
   const voice = useVoiceSession(conversationId);
+  // Widgets, launcher shortcuts and "Start voice mode with …" open the chat with ?voice=1 (§14.2): start voice once, then drop the flag.
+  const [searchParams, setSearchParams] = useSearchParams();
+  const voiceOnOpen = searchParams.has(VOICE_ON_OPEN_PARAM);
+  const startVoiceRef = useRef(voice.start);
+  startVoiceRef.current = voice.start;
+  useEffect(() => {
+    const botId = conversation?.bots[0]?.id;
+    if (!voiceOnOpen || !botId || !me) return;
+    setSearchParams((p) => { p.delete(VOICE_ON_OPEN_PARAM); return p; }, { replace: true });
+    void startVoiceRef.current({ botId, inputMode: me.settings.voice_input_mode });
+  }, [voiceOnOpen, conversation, me, setSearchParams]);
   const stop = useStopRun();
   const retry = useRetryMessage();
   const react = useReact();

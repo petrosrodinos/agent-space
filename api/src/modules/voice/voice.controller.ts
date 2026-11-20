@@ -16,6 +16,14 @@ class StartVoiceDto {
     @ApiPropertyOptional({ enum: ['HANDS_FREE', 'PUSH_TO_TALK'] }) @IsOptional() @IsIn(['HANDS_FREE', 'PUSH_TO_TALK']) input_mode?: 'HANDS_FREE' | 'PUSH_TO_TALK';
 }
 
+class VoiceVisualDto {
+    @ApiPropertyOptional({ enum: ['camera', 'screen'], nullable: true }) @IsOptional() @IsIn(['camera', 'screen']) kind?: 'camera' | 'screen' | null;
+}
+
+class VoiceSnapshotDto {
+    @ApiProperty({ description: 'data:image/jpeg;base64,…' }) @IsString() @MinLength(30) @MaxLength(6_000_000) data_url: string;
+}
+
 class VoiceTextDto {
     @ApiProperty() @IsString() @MinLength(1) @MaxLength(8000) text: string;
 }
@@ -63,6 +71,17 @@ export class VoiceController {
     @Post('sessions/:id/text')
     text(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: VoiceTextDto) {
         return this.voice.text(actor(m), id, dto.text);
+    }
+
+    @Post('sessions/:id/visual')
+    visual(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: VoiceVisualDto) {
+        return this.voice.setVisual(actor(m), id, dto.kind ?? null);
+    }
+
+    @Post('sessions/:id/snapshot')
+    @Throttle({ default: { limit: 20, ttl: 60_000 } })
+    snapshot(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: VoiceSnapshotDto) {
+        return this.voice.snapshot(actor(m), id, dto.data_url);
     }
 
     @Delete('sessions/:id')

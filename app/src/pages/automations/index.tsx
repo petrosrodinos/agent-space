@@ -16,6 +16,7 @@ import { formatDateTime, timeAgo } from "@/lib/date";
 import { Routes } from "@/routes/routes";
 import { AutomationRunStatusPill, AutomationStatus } from "./components/automation-status";
 import { AutomationFormDialog } from "./components/automation-form-dialog";
+import { MeetingAssistantCard } from "./components/meeting-assistant-card";
 import { AutomationStatuses, AutomationRunStatuses } from "@/features/automations/interfaces/automations.interfaces";
 import { ALL_FILTER } from "@/config/constants/filters";
 
@@ -60,6 +61,7 @@ const AutomationsPage: FC = () => {
   return (
     <PageContainer>
       <PageHeader title="Automations" description="Jobs your bots do by themselves, on a schedule." actions={<Button onClick={() => setOpen(true)}><Plus /> New automation</Button>} />
+      <MeetingAssistantCard />
       <SegmentedControl ariaLabel="Filter automations" value={filter} options={AutomationStatusFilterOptions} onChange={setFilter} className="mb-5" />
       {isPending ? (
         <div className="space-y-2">{Array.from({ length: 4 }).map((_, i) => <Skeleton key={i} className="h-[84px] rounded-lg" />)}</div>

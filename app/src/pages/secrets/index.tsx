@@ -32,7 +32,7 @@ const SecretRow: FC<{ s: Credential; isAdmin: boolean; onAction: (a: Action, s: 
   <div className="flex flex-col gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker sm:flex-row sm:items-center">
     <div className="flex min-w-0 flex-1 items-start gap-3">
       <span className="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-md bg-surface-sunken">
-        {s.kind === CredentialKinds.WEBSITE_LOGIN ? <Globe className="h-5 w-5 text-muted-foreground" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
+        {s.kind === CredentialKinds.WEBSITE_LOGIN ? <Globe className="h-5 w-5 text-muted-foreground" /> : s.kind === CredentialKinds.PASSWORD_MANAGER ? <KeyRound className="h-5 w-5 text-muted-foreground" /> : <Lock className="h-5 w-5 text-muted-foreground" />}
       </span>
       <div className="min-w-0">
         <div className="flex flex-wrap items-center gap-1.5">

@@ -4,6 +4,7 @@ import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { Artifact, ArtifactRole, ArtifactShare, ArtifactType, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
+import { StorageService } from '@/integrations/storage/storage.service';
 import { EventsService } from '@/core/realtime/events.service';
 import { shortSuffix, slugify } from '@/shared/utils/security/crypto.utils';
 import { isAdminRole } from '../access/access.service';
@@ -55,6 +56,7 @@ export class ArtifactsService {
         private readonly notifications: NotificationsService,
         private readonly events: EventsService,
         private readonly messages: MessagesService,
+        private readonly storage: StorageService,
     ) { }
 
     // ------------------------------------------------------------------ access
@@ -139,7 +141,7 @@ export class ArtifactsService {
                     : q.tab === 'organization'
                         ? { organization_id: actor.organization_id, deleted_at: null, sharing_level: { in: ['ORGANIZATION', 'PUBLIC_LINK'] } }
                         : q.tab === 'deleted'
-                            ? { organization_id: actor.organization_id, owner_id: actor.user_id, deleted_at: { gt: new Date(Date.now() - RESTORE_WINDOW_MS) } }
+                            ? { organization_id: actor.organization_id, owner_id: actor.user_id, deleted_at: { not: null } }
                             : this.accessibleWhere(actor);
         const rows = await this.prisma.artifact.findMany({
             where: {
@@ -219,6 +221,7 @@ export class ArtifactsService {
                 allow_search_engines: artifact.allow_search_engines,
                 allow_embedding: artifact.allow_embedding,
                 public_ai_enabled: artifact.public_ai_enabled,
+                public_uploads_enabled: artifact.public_uploads_enabled,
             },
             review_before_publish: artifact.review_before_publish,
             current_version: current,
@@ -390,6 +393,7 @@ export class ArtifactsService {
             if (dto.allow_search_engines !== undefined) data.allow_search_engines = dto.allow_search_engines;
             if (dto.allow_embedding !== undefined) data.allow_embedding = dto.allow_embedding;
             if (dto.public_ai_enabled !== undefined) data.public_ai_enabled = dto.public_ai_enabled;
+            if (dto.public_uploads_enabled !== undefined) data.public_uploads_enabled = dto.public_uploads_enabled;
         }
         await this.prisma.artifact.update({ where: { id }, data });
         await this.activity.log({ organization_id: a.organization_id, actor_user_id: actor.user_id, action: dto.enabled ? 'artifact.public_link_on' : 'artifact.public_link_off', target_type: 'artifact', target_id: id });
@@ -488,16 +492,18 @@ export class ArtifactsService {
 
     async remove(actor: Actor, id: string) {
         const { artifact } = await this.require(actor, id, 'OWNER');
+        // §7.5: kept and restorable forever unless the owner turned on "Permanently delete my deleted artifacts after 30 days".
+        const settings = artifact.owner_id ? await this.prisma.userSettings.findUnique({ where: { user_id: artifact.owner_id }, select: { purge_deleted_artifacts: true } }) : null;
+        const restorableUntil = settings?.purge_deleted_artifacts ? new Date(Date.now() + RESTORE_WINDOW_MS) : null;
         await this.prisma.artifact.update({ where: { id }, data: { deleted_at: new Date() } });
-        await this.prisma.file.updateMany({ where: { artifact_id: id, deleted_at: null }, data: { deleted_at: new Date(), purge_after: new Date(Date.now() + RESTORE_WINDOW_MS) } });
+        await this.prisma.file.updateMany({ where: { artifact_id: id, deleted_at: null }, data: { deleted_at: new Date(), purge_after: restorableUntil } });
         await this.activity.log({ organization_id: artifact.organization_id, actor_user_id: actor.user_id, action: 'artifact.deleted', target_type: 'artifact', target_id: id });
-        return { ok: true, restorable_until: new Date(Date.now() + RESTORE_WINDOW_MS) };
+        return { ok: true, restorable_until: restorableUntil };
     }
 
     async restore(actor: Actor, id: string) {
         const { artifact } = await this.require(actor, id, 'OWNER', { includeDeleted: true });
         if (!artifact.deleted_at) return this.get(actor, id);
-        if (artifact.deleted_at.getTime() < Date.now() - RESTORE_WINDOW_MS) throw new BadRequestException('This artifact can no longer be restored');
         await this.prisma.artifact.update({ where: { id }, data: { deleted_at: null } });
         await this.prisma.file.updateMany({ where: { artifact_id: id }, data: { deleted_at: null, purge_after: null } });
         return this.get(actor, id);
@@ -515,10 +521,21 @@ export class ArtifactsService {
         const users = await this.prisma.user.findMany({ where: { id: { in: [...new Set(rows.map((r) => r.submitted_by_id).filter((x): x is string => !!x))] } }, select: { id: true, name: true, email: true } });
         const byId = new Map(users.map((u) => [u.id, u]));
         const collections = await this.prisma.artifactRecord.groupBy({ by: ['collection'], where: { artifact_id: id, deleted_at: null }, _count: { _all: true } });
+        const files = await this.prisma.file.findMany({ where: { artifact_id: id, is_public_upload: true, deleted_at: null }, orderBy: { created_at: 'desc' }, take: 500, select: { id: true, filename: true, mimetype: true, size: true, created_at: true, uploaded_by_id: true } });
         return {
             collections: collections.map((c) => ({ name: c.collection, count: c._count._all })),
+            files: files.map((f) => ({ id: f.id, filename: f.filename, mimetype: f.mimetype, size: Number(f.size), created_at: f.created_at, is_visitor: !f.uploaded_by_id })),
             records: rows.map((r) => ({ id: r.id, collection: r.collection, data: r.data, submitted_by: r.submitted_by_id ? (byId.get(r.submitted_by_id) ?? null) : null, is_visitor: !r.submitted_by_id, created_at: r.created_at })),
         };
+    }
+
+    /** Visitor uploads (§7.5) are only downloadable by the artifact's owner and editors. */
+    async uploadUrl(actor: Actor, id: string, fileId: string) {
+        await this.require(actor, id, 'EDITOR');
+        const f = await this.prisma.file.findFirst({ where: { id: fileId, artifact_id: id, is_public_upload: true, deleted_at: null } });
+        if (!f) throw new NotFoundException('File not found');
+        const signed = await this.storage.createDownloadUrl(f.bucket, f.object_path, f.filename, 'attachment');
+        return { ...signed, filename: f.filename, mimetype: f.mimetype };
     }
 
     async deleteRecord(actor: Actor, id: string, recordId: string) {

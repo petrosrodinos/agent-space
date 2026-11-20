@@ -39,6 +39,7 @@ export const CredentialKindOptions = [
   { id: "MCP_TOKEN", label: "Tool server token" },
   { id: "MCP_OAUTH", label: "Tool server sign-in" },
   { id: "WEBSITE_LOGIN", label: "Website login" },
+  { id: "PASSWORD_MANAGER", label: "Password manager" },
 ] as const;
 
 export const VisibilityOptions = [

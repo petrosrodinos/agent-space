@@ -52,5 +52,8 @@ export const QueryKeys = {
   USAGE: "usage",
   VOICES: "voices",
   VOICE_MODELS: "voice-models",
+  WIDGET: "widget",
+  WIDGETS: "widgets",
+  CHANNELS: "channels",
 } as const;
 export type QueryKey = (typeof QueryKeys)[keyof typeof QueryKeys];

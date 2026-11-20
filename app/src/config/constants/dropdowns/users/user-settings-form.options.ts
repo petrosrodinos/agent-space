@@ -82,7 +82,6 @@ export const ConversationRetentionOptions = [
 export const DevicePlatformOptions = [
   { id: "WEB", label: "Web" },
   { id: "DESKTOP", label: "Desktop" },
-  { id: "IOS", label: "iPhone" },
   { id: "ANDROID", label: "Android" },
 ] as const;
 

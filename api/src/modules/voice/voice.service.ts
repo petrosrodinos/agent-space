@@ -5,6 +5,8 @@ import { Prisma, VoiceSessionEndReason } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { ConversationEvents, EventsService, UserEvents } from '@/core/realtime/events.service';
 import { redactValues } from '@/shared/utils/security/secret-detection.utils';
+import { newId } from '@/shared/utils/security/crypto.utils';
+import { StorageService } from '@/integrations/storage/storage.service';
 import { AgentRunnerService } from '../agent/agent-runner.service';
 import { PromptBuilder } from '../agent/prompt.builder';
 import { decideApproval, TAP_ONLY } from '../agent/approval-policy';
@@ -132,7 +134,17 @@ interface Live {
     seq: number;
     /** Realtime events are handled strictly in order (deltas, message creation). */
     queue: Promise<void>;
+    /** §7.6 camera and screen sharing: allowed by the organisation, what is on now, and when the last picture arrived. */
+    visual_allowed: boolean;
+    visual: VisualKind | null;
+    last_picture_at: number;
 }
+
+export const VisualKinds = { CAMERA: 'camera', SCREEN: 'screen' } as const;
+export type VisualKind = (typeof VisualKinds)[keyof typeof VisualKinds];
+/** A spoken message is marked as "with a picture" when one arrived within this window. */
+const PICTURE_WINDOW_MS = 20_000;
+const MAX_SNAPSHOT_BYTES = 4 * 1024 * 1024;
 
 /**
  * Voice mode (§7.6). The browser talks to OpenAI Realtime over WebRTC; our API exchanges the SDP with the real key
@@ -156,6 +168,7 @@ export class VoiceService implements OnModuleDestroy {
         private readonly runs: RunsService,
         private readonly usage: UsageService,
         private readonly activity: ActivityService,
+        private readonly storage: StorageService,
     ) { }
 
     onModuleDestroy() {
@@ -244,7 +257,8 @@ export class VoiceService implements OnModuleDestroy {
         });
 
         const voiceModel = this.modelFor(orgSettings?.voice_model);
-        const live: Partial<Live> = { price: voiceModel.price, id: vs.id, bot_message: null, pending: new Map(), spoken_at: new Map(), announced_tasks: new Set(), usage: { input: 0, output: 0, cost: 0 }, seq: 0, queue: Promise.resolve() };
+        const visualAllowed = orgSettings?.voice_visual_input !== false;
+        const live: Partial<Live> = { visual_allowed: visualAllowed, visual: null, last_picture_at: 0, price: voiceModel.price, id: vs.id, bot_message: null, pending: new Map(), spoken_at: new Map(), announced_tasks: new Set(), usage: { input: 0, output: 0, cost: 0 }, seq: 0, queue: Promise.resolve() };
         const ctx: ToolContext = {
             run,
             bot,
@@ -293,6 +307,9 @@ export class VoiceService implements OnModuleDestroy {
             `- Never ask for or repeat secrets out loud. If one is needed call request_secret and ask them to paste it in the secure box on screen. If they start reading a key out loud, stop them politely.\n` +
             `- Only when they say "that's all", "goodbye" or "exit voice mode" in this voice session, say a short goodbye and call end_voice.\n` +
             `- Speak the user's language (English or Greek) and switch if they do.`,
+            visualAllowed
+                ? `## Camera and screen sharing\nThe user can turn on their camera or share their screen; you then get a still picture when they start speaking or tap "Show this". Describe and help with what you see. Never read out or repeat passwords, keys or card numbers that appear in a picture; if one is needed, call request_secret. A picture is never an approval: approvals still need a spoken or tapped answer. You can suggest turning on the camera or screen sharing, but only the user can turn them on.`
+                : '',
             deferApps
                 ? `## Connected app tools\nTools for connected apps and tool servers are not loaded directly. To use one, call ${VoiceGatewayTools.FIND} with what you want to do (e.g. "list Linear projects"), then call ${VoiceGatewayTools.USE} with the exact tool name and its arguments. Never say you lack access to a connected app before searching. Available tools:\n${appTools.map((t) => t.name).join(', ')}`
                 : '',
@@ -370,7 +387,7 @@ export class VoiceService implements OnModuleDestroy {
         ws.on('close', () => void this.close(vs.id, 'CONNECTION_LOST'));
         ws.on('error', (e) => this.logger.warn(`Voice sideband error: ${e.message}`));
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'voice.started', target_type: 'conversation', target_id: conversation.id, run_id: run.id, metadata: { bot_id: bot.id, voice, model: voiceModel.id } });
-        return { id: vs.id, sdp: answer, bot_id: bot.id, voice, input_mode: inputMode, max_minutes: maxMs / 60_000 };
+        return { id: vs.id, sdp: answer, bot_id: bot.id, voice, input_mode: inputMode, max_minutes: maxMs / 60_000, visual_input_allowed: visualAllowed };
     }
 
     // ---------------- Voice-only tools ----------------
@@ -460,6 +477,16 @@ export class VoiceService implements OnModuleDestroy {
                 live.last_activity = Date.now();
                 await this.onToolCall(live, String(e.call_id), String(e.name), String(e.arguments ?? '{}'));
                 break;
+            case 'conversation.item.added':
+            case 'conversation.item.created': {
+                const content = Array.isArray(e.item?.content) ? (e.item.content as { type?: string }[]) : [];
+                if (e.item?.role === 'user' && content.some((c) => c.type === 'input_image')) {
+                    // Second check of the organisation setting (§7.6): pictures in a session where it's off are removed.
+                    if (!live.visual_allowed) this.send(live, { type: 'conversation.item.delete', item_id: e.item.id });
+                    else live.last_picture_at = Date.now();
+                }
+                break;
+            }
             case 'response.done': {
                 const u = e.response?.usage;
                 if (u) this.addUsage(live, u);
@@ -479,7 +506,7 @@ export class VoiceService implements OnModuleDestroy {
         const inD = u.input_token_details ?? {};
         const outD = u.output_token_details ?? {};
         const cost =
-            ((inD.audio_tokens ?? 0) * live.price.audio_in + (inD.text_tokens ?? 0) * live.price.text_in + (inD.cached_tokens ?? 0) * live.price.cached + (outD.audio_tokens ?? 0) * live.price.audio_out + (outD.text_tokens ?? 0) * live.price.text_out) / 1_000_000;
+            ((inD.audio_tokens ?? 0) * live.price.audio_in + ((inD.text_tokens ?? 0) + (inD.image_tokens ?? 0)) * live.price.text_in + (inD.cached_tokens ?? 0) * live.price.cached + (outD.audio_tokens ?? 0) * live.price.audio_out + (outD.text_tokens ?? 0) * live.price.text_out) / 1_000_000;
         live.usage.input += u.input_tokens ?? 0;
         live.usage.output += u.output_tokens ?? 0;
         live.usage.cost += cost;
@@ -521,7 +548,7 @@ export class VoiceService implements OnModuleDestroy {
         // Approval engine — same rules as text chat (§11); app-management changes always confirm.
         if (def.name !== 'resolve_approval') {
             const action = def.confirm ? 'OTHER' : await def.classify?.(args, live.ctx);
-            const decision = def.confirm ? { required: true } : decideApproval(action ?? null, live.ctx.bot, live.ctx.org_settings, { toolPermission: def.tool_permission });
+            const decision = def.confirm || def.always_approve?.(args) ? { required: true } : decideApproval(action ?? null, live.ctx.bot, live.ctx.org_settings, { toolPermission: def.tool_permission });
             if (decision.required) {
                 const preview = def.preview ? await def.preview(args, live.ctx).catch(() => ({ title: def.title(args, live.ctx), action_type: action ?? 'OTHER', preview: { kind: 'tool', input: args } })) : { title: def.title(args, live.ctx), action_type: action ?? 'OTHER', preview: { kind: 'tool', input: args } };
                 const actionType = (preview as { action_type?: string }).action_type ?? action ?? 'OTHER';
@@ -651,10 +678,53 @@ export class VoiceService implements OnModuleDestroy {
 
     private async saveUserMessage(live: Live, text: string, createdAt?: Date) {
         const msg = await this.prisma.message.create({
-            data: { organization_id: live.org_id, conversation_id: live.conversation_id, author_type: 'USER', author_user_id: live.user_id, source: 'VOICE', status: 'COMPLETED', content: text, parts: [{ type: 'text', text }], ...(createdAt ? { created_at: createdAt } : {}) },
+            data: {
+                organization_id: live.org_id,
+                conversation_id: live.conversation_id,
+                author_type: 'USER',
+                author_user_id: live.user_id,
+                source: 'VOICE',
+                status: 'COMPLETED',
+                content: text,
+                // Spoken with a picture (§7.6): the chat shows a small camera or screen icon on it.
+                parts: [{ type: 'text', text }, ...(live.visual && Date.now() - live.last_picture_at < PICTURE_WINDOW_MS ? [{ type: 'visual', kind: live.visual }] : [])],
+                ...(createdAt ? { created_at: createdAt } : {}),
+            },
         });
         await this.messageEvents.created(msg.id);
         await this.touchConversation(live);
+    }
+
+    /** The voice bar tells the server whether the camera or screen sharing is on, to label spoken messages. */
+    setVisual(actor: Actor, id: string, kind: VisualKind | null) {
+        const live = this.requireOwn(actor, id);
+        if (kind && !live.visual_allowed) throw new ForbiddenException('Camera and screen sharing are turned off for this organisation');
+        live.visual = kind;
+        return { ok: true, visual: kind };
+    }
+
+    /** Snapshot (§7.6): posts the current picture into the chat as an image, kept like any other attachment. */
+    async snapshot(actor: Actor, id: string, dataUrl: string) {
+        const live = this.requireOwn(actor, id);
+        if (!live.visual_allowed) throw new ForbiddenException('Camera and screen sharing are turned off for this organisation');
+        const m = /^data:(image\/(?:jpeg|png|webp));base64,([A-Za-z0-9+/=]+)$/.exec(dataUrl);
+        if (!m) throw new BadRequestException('Send a JPEG, PNG or WebP picture');
+        const data = Buffer.from(m[2], 'base64');
+        if (!data.length || data.length > MAX_SNAPSHOT_BYTES) throw new BadRequestException('The picture is too large');
+        const ext = m[1] === 'image/png' ? 'png' : m[1] === 'image/webp' ? 'webp' : 'jpg';
+        const label = live.visual === VisualKinds.SCREEN ? 'Screen snapshot' : 'Camera snapshot';
+        const fileId = newId();
+        const path = `orgs/${live.org_id}/chat/${fileId}`;
+        await this.storage.write('FILES', path, data, m[1]);
+        await this.prisma.file.create({
+            data: { id: fileId, organization_id: live.org_id, uploaded_by_id: live.user_id, bucket: 'FILES', area: 'CHAT', object_path: path, filename: `${label.toLowerCase().replace(' ', '-')}-${new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-')}.${ext}`, mimetype: m[1], size: BigInt(data.length), status: 'READY', conversation_id: live.conversation_id },
+        });
+        const msg = await this.prisma.message.create({
+            data: { organization_id: live.org_id, conversation_id: live.conversation_id, author_type: 'USER', author_user_id: live.user_id, source: 'VOICE', status: 'COMPLETED', content: label, parts: [{ type: 'text', text: label }, { type: 'visual', kind: live.visual ?? VisualKinds.CAMERA }], files: { create: [{ file_id: fileId }] } },
+        });
+        await this.messageEvents.created(msg.id);
+        await this.touchConversation(live);
+        return { ok: true, message_id: msg.id, file_id: fileId };
     }
 
     private async ensureBotMessage(live: Live) {

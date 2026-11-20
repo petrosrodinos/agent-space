@@ -55,6 +55,11 @@ export class RedisService implements OnModuleDestroy {
         const conn = new Redis({ ...this.options, reconnectOnError: () => true });
         conn.on('error', (e) => this.logger.error(`Redis (dup) error: ${e.message}`));
         this.extra.push(conn);
+        // Short-lived blocking readers (device replies) disconnect after use; don't keep them around.
+        conn.once('end', () => {
+            const i = this.extra.indexOf(conn);
+            if (i >= 0) this.extra.splice(i, 1);
+        });
         return conn;
     }
 

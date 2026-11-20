@@ -5,7 +5,7 @@ import { realtime } from "@/features/realtime/services/realtime.services";
 import { toast } from "@/hooks/use-toast";
 import { endVoiceSession, getVoiceModels, getVoices, sendVoiceText, startVoiceSession } from "../services/voice.services";
 import { QueryKeys } from "@/config/constants/query-keys";
-import { VoicePhases, RealtimeAudioEvents, RealtimeItemTypes, REALTIME_DATA_CHANNEL, type VoicePhase, SDP_ANSWER } from "../interfaces/voice.interfaces";
+import { VoicePhases, RealtimeAudioEvents, RealtimeItemTypes, RealtimeContentTypes, REALTIME_DATA_CHANNEL, REALTIME_ITEM_CREATE, type VoicePhase, SDP_ANSWER } from "../interfaces/voice.interfaces";
 import { RtcConnectionStates, DataChannelStates } from "@/config/constants/browser.constants";
 import { VoiceInputModes, type VoiceInputMode } from "@/features/users/interfaces/users.interfaces";
 import { UserEventTypes } from "@/features/realtime/interfaces/realtime.interfaces";
@@ -37,6 +37,21 @@ export function useVoiceSession(conversationId: string) {
   const dropTimer = useRef<number | null>(null);
   /** Tool calls the server is still running (call ids), so the bar shows "Working…" instead of "Listening". */
   const toolCalls = useRef<Set<string>>(new Set());
+  const [visualAllowed, setVisualAllowed] = useState(false);
+  /** §7.6: while the camera or screen sharing is on, gives a still picture (JPEG data URL) to send to the bot. */
+  const pictureSource = useRef<(() => Promise<string | null>) | null>(null);
+
+  /** Grabs a still from the camera or shared screen and adds it to the conversation (never stored by us). */
+  const sendPicture = useCallback(async (respond = false) => {
+    const grab = pictureSource.current;
+    const channel = dc.current;
+    if (!grab || channel?.readyState !== DataChannelStates.OPEN) return false;
+    const url = await grab().catch(() => null);
+    if (!url) return false;
+    channel.send(JSON.stringify({ type: REALTIME_ITEM_CREATE, item: { type: RealtimeItemTypes.MESSAGE, role: "user", content: [{ type: RealtimeContentTypes.INPUT_IMAGE, image_url: url }] } }));
+    if (respond) channel.send(JSON.stringify({ type: RealtimeAudioEvents.RESPONSE_CREATE }));
+    return true;
+  }, []);
 
   const cleanup = useCallback(() => {
     if (dropTimer.current) window.clearTimeout(dropTimer.current);
@@ -151,7 +166,11 @@ export function useVoiceSession(conversationId: string) {
           try {
             const ev = JSON.parse(m.data as string) as { type: string; call_id?: string; item?: { type?: string; call_id?: string } };
             const idle = () => (toolCalls.current.size ? VoicePhases.WORKING : VoicePhases.LISTENING);
-            if (ev.type === RealtimeAudioEvents.SPEECH_STARTED) setPhase(VoicePhases.USER_SPEAKING);
+            if (ev.type === RealtimeAudioEvents.SPEECH_STARTED) {
+              setPhase(VoicePhases.USER_SPEAKING);
+              // One picture per spoken turn, sent as they start so it arrives with what they say (§7.6).
+              void sendPicture();
+            }
             else if (ev.type === RealtimeAudioEvents.SPEECH_STOPPED || ev.type === RealtimeAudioEvents.INPUT_COMMITTED) setPhase(VoicePhases.THINKING);
             else if (ev.type === RealtimeAudioEvents.OUTPUT_STARTED) setPhase(VoicePhases.BOT_SPEAKING);
             else if (ev.type === RealtimeAudioEvents.OUTPUT_STOPPED || ev.type === RealtimeAudioEvents.OUTPUT_CLEARED) setPhase(idle());
@@ -192,18 +211,21 @@ export function useVoiceSession(conversationId: string) {
         setSessionId(started.id);
         setBotId(started.bot_id);
         setMode(started.input_mode);
+        setVisualAllowed(!!started.visual_input_allowed);
         await conn.setRemoteDescription({ type: SDP_ANSWER, sdp: started.sdp });
       } catch (e) {
         cleanup();
         toast({ title: "Could not start voice mode", description: (e as Error).message, variant: "error" });
       }
     },
-    [cleanup, conversationId, stop],
+    [cleanup, conversationId, stop, sendPicture],
   );
 
   const send = (event: Record<string, unknown>) => {
     if (dc.current?.readyState === DataChannelStates.OPEN) dc.current.send(JSON.stringify(event));
   };
+
+
 
   return {
     active: !!sessionId || phase === VoicePhases.CONNECTING,
@@ -227,9 +249,17 @@ export function useVoiceSession(conversationId: string) {
       send({ type: RealtimeAudioEvents.OUTPUT_CLEAR });
       setPhase(VoicePhases.LISTENING);
     },
+    visualAllowed,
+    /** Set while the camera or screen sharing is on (null when off). */
+    setPictureSource: (fn: (() => Promise<string | null>) | null) => {
+      pictureSource.current = fn;
+    },
+    /** "Show this": send the current picture now and let the bot answer. */
+    showThis: () => sendPicture(true),
     pushStart: () => {
       const t = mic.current?.getAudioTracks()[0];
       if (!t) return;
+      void sendPicture();
       send({ type: RealtimeAudioEvents.RESPONSE_CANCEL });
       send({ type: RealtimeAudioEvents.OUTPUT_CLEAR });
       send({ type: RealtimeAudioEvents.INPUT_CLEAR });

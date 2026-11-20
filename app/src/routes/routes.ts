@@ -45,6 +45,7 @@ export const Routes = {
   tools: "/tools",
   tasks: { root: "/tasks", detail: (id: string) => `/tasks/${id}`, pattern: "/tasks/:taskId" },
   artifacts: { root: "/artifacts", detail: (id: string) => `/artifacts/${id}`, pattern: "/artifacts/:artifactId" },
+  widgets: { root: "/widgets", detail: (id: string) => `/widgets/${id}`, pattern: "/widgets/:widgetId" },
   automations: { root: "/automations", detail: (id: string) => `/automations/${id}`, pattern: "/automations/:automationId" },
   approvals: { root: "/approvals", detail: (id: string) => `/approvals/${id}`, pattern: "/approvals/:approvalId" },
   settings: {
@@ -56,6 +57,7 @@ export const Routes = {
     memory: "/settings/memory",
     security: "/settings/security",
     devices: "/settings/devices",
+    channels: "/settings/message-from-anywhere",
     organization: "/settings/organization",
     members: "/settings/members",
     ai_models: "/settings/ai-models",

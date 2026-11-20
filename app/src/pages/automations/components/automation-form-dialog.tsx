@@ -20,7 +20,11 @@ import { Routes } from "@/routes/routes";
 import { automationSchema, type AutomationFormValues } from "../validation-schemas/automation.schema";
 import { DEFAULT_SCHEDULE, toCron } from "../utils/schedule.utils";
 import { ScheduleEditor } from "./schedule-editor";
-import { ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
+import { TriggerPicker } from "./trigger-picker";
+import { SegmentedControl } from "@/components/ui/segmented-control";
+import { AutomationStartKindOptions } from "@/config/constants/dropdowns/automations/automation-form.options";
+import { AutomationStartKinds } from "@/features/automations/interfaces/automations.interfaces";
+import { ConnectionKinds, ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
 import { DEFAULT_TIMEZONE } from "@/config/constants/browser.constants";
 
 /**
@@ -34,7 +38,7 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
   const create = useCreateAutomation();
   const navigate = useNavigate();
   const tz = me?.user.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || DEFAULT_TIMEZONE;
-  const defaults: AutomationFormValues = { name: "", bot_id: "", instructions: "", schedule: DEFAULT_SCHEDULE, timezone: tz, connection_ids: [], email_results: false, memory_plan: "" };
+  const defaults: AutomationFormValues = { name: "", bot_id: "", instructions: "", starts: AutomationStartKinds.SCHEDULE, schedule: DEFAULT_SCHEDULE, timezone: tz, trigger_connection_id: "", trigger_slug: "", trigger_config: {}, connection_ids: [], email_results: false, memory_plan: "" };
   const form = useForm<AutomationFormValues>({ resolver: zodResolver(automationSchema), defaultValues: defaults });
   const { requestClose, dialogProps } = useUnsavedChangesGuard({ isDirty: form.formState.isDirty, disabled: create.isPending, onClose: () => { form.reset(defaults); onClose(); } });
 
@@ -43,6 +47,9 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
   }, [open, tz, form]);
 
   const active = (connections ?? []).filter((c) => c.status === ConnectionStatuses.ACTIVE);
+  // Only accounts connected through their sign-in can be watched for events.
+  const watchable = active.filter((c) => c.kind === ConnectionKinds.COMPOSIO);
+  const starts = form.watch("starts");
 
   const submit = (v: AutomationFormValues) =>
     create.mutate(
@@ -50,7 +57,9 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
         name: v.name,
         bot_id: v.bot_id,
         instructions: v.instructions,
-        cron_expression: toCron(v.schedule),
+        ...(v.starts === AutomationStartKinds.EVENT
+          ? { trigger: { connection_id: v.trigger_connection_id, trigger_slug: v.trigger_slug, config: Object.fromEntries(Object.entries(v.trigger_config).filter(([, val]) => val.trim() !== "").map(([k, val]) => [k, /^-?\d+(\.\d+)?$/.test(val.trim()) ? Number(val) : val.trim()])) } }
+          : { cron_expression: toCron(v.schedule) }),
         timezone: v.timezone,
         connection_ids: v.connection_ids,
         email_results: v.email_results,
@@ -65,7 +74,7 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
         <DialogContent className="max-h-[90dvh] overflow-y-auto sm:max-w-xl">
           <DialogHeader>
             <DialogTitle>New automation</DialogTitle>
-            <DialogDescription>A job a bot does by itself on a schedule. Tip: you can also just ask a bot, e.g. "every Friday at 4pm, send me a sales summary".</DialogDescription>
+            <DialogDescription>A job a bot does by itself, on a schedule or when something happens in a connected app. Tip: you can also just ask a bot, e.g. "every Friday at 4pm, send me a sales summary".</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form id="new-automation" className="space-y-4" onSubmit={form.handleSubmit(submit)}>
@@ -95,6 +104,21 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
               )} />
               <div className="space-y-1.5">
                 <p className="text-sm font-bold text-ink">When</p>
+                <SegmentedControl ariaLabel="How it starts" value={starts} options={AutomationStartKindOptions} onChange={(v) => form.setValue("starts", v, { shouldDirty: true })} className="mb-2" />
+                {starts === AutomationStartKinds.EVENT ? (
+                  <TriggerPicker
+                    connections={watchable}
+                    connectionId={form.watch("trigger_connection_id")}
+                    slug={form.watch("trigger_slug")}
+                    config={form.watch("trigger_config")}
+                    errors={{ connection: form.formState.errors.trigger_connection_id?.message, slug: form.formState.errors.trigger_slug?.message }}
+                    onChange={(c) => {
+                      if (c.connectionId !== undefined) form.setValue("trigger_connection_id", c.connectionId, { shouldDirty: true });
+                      if (c.slug !== undefined) form.setValue("trigger_slug", c.slug, { shouldDirty: true });
+                      if (c.config !== undefined) form.setValue("trigger_config", c.config, { shouldDirty: true });
+                    }}
+                  />
+                ) : (
                 <ScheduleEditor
                   idPrefix="new-automation"
                   value={form.watch("schedule")}
@@ -102,7 +126,8 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
                   timezone={form.watch("timezone")}
                   onTimezoneChange={(t) => form.setValue("timezone", t, { shouldDirty: true })}
                 />
-                {form.formState.errors.schedule && <p className="text-sm font-semibold text-error">{form.formState.errors.schedule.cron?.message ?? form.formState.errors.schedule.time?.message}</p>}
+                )}
+                {starts === AutomationStartKinds.SCHEDULE && form.formState.errors.schedule && <p className="text-sm font-semibold text-error">{form.formState.errors.schedule.cron?.message ?? form.formState.errors.schedule.time?.message}</p>}
               </div>
               <FormField control={form.control} name="connection_ids" render={({ field }) => (
                 <FormItem>

@@ -1,6 +1,9 @@
 import { useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { Check, ChevronDown, Loader2, X, Clock, Square } from "lucide-react";
+import { Check, ChevronDown, Loader2, X, Clock, Square, Undo2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import { useUndoStep } from "@/features/tasks/hooks/use-tasks";
 import { MessagePartTypes, ToolPartStatuses, type MessagePart } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ActivityStepsDisplays, type ActivityStepsDisplay } from "@/features/users/interfaces/users.interfaces";
 import { toolIcon } from "@/config/constants/tool-icons";
@@ -29,7 +32,11 @@ const StepIcon: FC<{ status: ToolPart["status"] }> = ({ status }) =>
  */
 export const ActivitySteps: FC<{ steps: ToolPart[]; mode: ActivityStepsDisplay; working: boolean; runId?: string | null }> = ({ steps, mode, working, runId }) => {
   const [open, setOpen] = useState(mode === ActivityStepsDisplays.EXPANDED);
+  const [confirm, setConfirm] = useState<ToolPart | null>(null);
+  const undo = useUndoStep();
   if (mode === ActivityStepsDisplays.HIDDEN || !steps.length) return null;
+  // §16 Undo: shown while the window is open, even when the steps are collapsed.
+  const undoable = runId && !working ? steps.filter((s) => s.undo && !s.undone && new Date(s.undo.until).getTime() > Date.now()) : [];
   const expanded = open || working;
   const total = steps.reduce((s, x) => s + (x.duration_ms ?? 0), 0);
   const failed = steps.filter((s) => s.status === ToolPartStatuses.ERROR).length;
@@ -53,7 +60,8 @@ export const ActivitySteps: FC<{ steps: ToolPart[]; mode: ActivityStepsDisplay; 
             <li key={s.call_id} className="inline-flex max-w-full animate-pop-in items-center gap-2 rounded-full bg-surface-sunken px-3 py-1.5 text-[13px] text-muted-foreground">
               <StepIcon status={s.status} />
               <ToolIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
-              <span className="truncate">{s.title}</span>
+              <span className={cn("truncate", s.undone && "line-through")}>{s.title}</span>
+              {s.undone && <span className="shrink-0 font-semibold">· undone</span>}
               {s.status === ToolPartStatuses.ERROR && s.error && <span className="truncate text-error">— {s.error}</span>}
             </li>
             );
@@ -67,6 +75,25 @@ export const ActivitySteps: FC<{ steps: ToolPart[]; mode: ActivityStepsDisplay; 
           )}
         </ul>
       )}
+      {!!undoable.length && (
+        <div className="mt-1.5 flex flex-wrap gap-1.5">
+          {undoable.map((s) => (
+            <Button key={s.step_id} type="button" variant="outline" size="sm" className="h-8 rounded-full" onClick={() => setConfirm(s)} disabled={undo.isPending}>
+              <Undo2 /> Undo: {s.undo!.label}
+            </Button>
+          ))}
+        </div>
+      )}
+      <ConfirmationDialog
+        isOpen={!!confirm}
+        onClose={() => setConfirm(null)}
+        title={`${confirm?.undo?.label ?? "Undo"}?`}
+        description={`This reverses "${confirm?.title ?? ""}" in the connected service. It can't be redone.`}
+        confirmText="Undo"
+        variant="destructive"
+        isLoading={undo.isPending}
+        onConfirm={() => confirm && runId && undo.mutate({ runId, stepId: confirm.step_id }, { onSettled: () => setConfirm(null) })}
+      />
     </div>
   );
 };

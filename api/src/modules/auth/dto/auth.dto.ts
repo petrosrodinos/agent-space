@@ -23,7 +23,7 @@ export class RefreshDto {
 }
 
 export class DeviceInfoDto {
-    @ApiPropertyOptional({ enum: ['WEB', 'DESKTOP', 'IOS', 'ANDROID'] }) @IsOptional() @IsIn(['WEB', 'DESKTOP', 'IOS', 'ANDROID']) platform?: 'WEB' | 'DESKTOP' | 'IOS' | 'ANDROID';
+    @ApiPropertyOptional({ enum: ['WEB', 'DESKTOP', 'ANDROID'] }) @IsOptional() @IsIn(['WEB', 'DESKTOP', 'ANDROID']) platform?: 'WEB' | 'DESKTOP' | 'ANDROID';
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(32) app_version?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(80) device_name?: string;
 }

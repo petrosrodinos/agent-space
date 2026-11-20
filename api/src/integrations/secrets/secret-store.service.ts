@@ -6,6 +6,8 @@ import { PrismaService } from '@/core/databases/prisma/prisma.service';
 
 export interface SecretPayload {
     api_key?: string;
+    /** Password manager (§16): the 1Password Connect server address the token belongs to. */
+    base_url?: string;
     access_token?: string;
     refresh_token?: string;
     expires_at?: string;
@@ -23,7 +25,7 @@ export interface SecretPayload {
 export interface SecretLabels {
     org_id: string;
     owner_type: 'user' | 'org';
-    kind: 'mcp_oauth' | 'mcp_token' | 'api_key' | 'website_login';
+    kind: 'mcp_oauth' | 'mcp_token' | 'api_key' | 'website_login' | 'password_manager';
 }
 
 export interface StoredSecretRef {

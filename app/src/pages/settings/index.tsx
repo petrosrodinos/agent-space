@@ -1,6 +1,6 @@
 import { useEffect, type FC, type ReactNode } from "react";
 import { NavLink, useNavigate, useParams } from "react-router-dom";
-import { Activity, BarChart3, Bell, Brain, Building2, Cpu, Download, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
+import { Activity, BarChart3, Bell, Brain, Building2, Cpu, Download, Inbox, LogOut, MessageSquareText, Monitor, Palette, ShieldAlert, ShieldCheck, UserRound, Users, type LucideIcon } from "lucide-react";
 import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { ListGroup, ListRow, ListRowTones } from "@/components/ui/list-group";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -14,6 +14,7 @@ import { KnowledgePanel } from "@/components/layout/knowledge-panel";
 import { AppearanceSection, DevicesSection, MemorySection, NotificationsSection, ProfileSection, RepliesSection, SecuritySection } from "./components/personal-sections";
 import { ActivitySection, AiModelsSection, DangerSection, MembersSection, OrganizationSection, SafetySection, UsageSection } from "./components/org-sections";
 import { OrgRoles } from "@/features/users/interfaces/users.interfaces";
+import { MessageAnywhereCard } from "./components/message-anywhere-card";
 
 const SettingsSections = {
   PROFILE: "profile",
@@ -23,6 +24,7 @@ const SettingsSections = {
   MEMORY: "memory",
   SECURITY: "security",
   DEVICES: "devices",
+  CHANNELS: "message-from-anywhere",
   ORGANIZATION: "organization",
   MEMBERS: "members",
   KNOWLEDGE: "knowledge",
@@ -43,6 +45,7 @@ const PERSONAL: Section[] = [
   { id: SettingsSections.MEMORY, path: Routes.settings.memory, label: "Memory & knowledge", icon: Brain },
   { id: SettingsSections.SECURITY, path: Routes.settings.security, label: "Security", icon: ShieldCheck },
   { id: SettingsSections.DEVICES, path: Routes.settings.devices, label: "Devices", icon: Monitor },
+  { id: SettingsSections.CHANNELS, path: Routes.settings.channels, label: "Message from anywhere", icon: Inbox },
 ];
 
 const ORGANISATION: Section[] = [
@@ -135,6 +138,9 @@ const SettingsPage: FC = () => {
         break;
       case SettingsSections.DEVICES:
         body = <DevicesSection />;
+        break;
+      case SettingsSections.CHANNELS:
+        body = <MessageAnywhereCard />;
         break;
       case SettingsSections.ORGANIZATION:
         body = <OrganizationSection />;

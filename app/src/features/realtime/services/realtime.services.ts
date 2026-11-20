@@ -3,7 +3,7 @@ import { environments } from "@/config/environments";
 import { refreshSession } from "@/config/api/axios";
 import { getAuthStoreState } from "@/stores/auth";
 import { platform } from "@/platform";
-import { SocketEvents, StreamKinds, RealtimeStreams } from "@/features/realtime/interfaces/realtime.interfaces";
+import { SocketEvents, StreamKinds, RealtimeStreams, type DeviceCall, type DeviceHello } from "@/features/realtime/interfaces/realtime.interfaces";
 
 export interface StreamEvent<T = any> {
   stream: string;
@@ -28,7 +28,11 @@ class RealtimeClient {
   private resyncListeners = new Set<ResyncListener>();
   private statusListeners = new Set<(connected: boolean) => void>();
   private disposeLifecycle: (() => void) | null = null;
+  private deviceListeners = new Set<(call: DeviceCall) => void>();
+  private deviceReadyListeners = new Set<(deviceId: string) => void>();
   connected = false;
+  /** Set when this app is a registered device (desktop/mobile app), from the server's "ready" event. */
+  deviceId: string | null = null;
 
   connect() {
     if (this.socket) return;
@@ -40,10 +44,13 @@ class RealtimeClient {
       reconnectionDelayMax: 8000,
     });
     this.socket = socket;
-    socket.on(SocketEvents.READY, () => {
+    socket.on(SocketEvents.READY, (info?: { device_id?: string | null }) => {
       this.setConnected(true);
       this.subscribeAll();
+      this.deviceId = info?.device_id ?? null;
+      if (this.deviceId) this.deviceReadyListeners.forEach((l) => l(this.deviceId!));
     });
+    socket.on(SocketEvents.DEVICE_CALL, (call: DeviceCall) => this.deviceListeners.forEach((l) => l(call)));
     socket.on(SocketEvents.DISCONNECT, () => this.setConnected(false));
     socket.on(SocketEvents.AUTH_ERROR, async () => {
       const token = await refreshSession();
@@ -113,6 +120,30 @@ class RealtimeClient {
     return () => {
       this.resyncListeners.delete(l);
     };
+  }
+
+  /** Device tools (§14.3): fires on every (re)connect of a registered device; the host then sends its hello. */
+  onDeviceReady(l: (deviceId: string) => void) {
+    this.deviceReadyListeners.add(l);
+    if (this.deviceId && this.connected) l(this.deviceId);
+    return () => {
+      this.deviceReadyListeners.delete(l);
+    };
+  }
+
+  onDeviceCall(l: (call: DeviceCall) => void) {
+    this.deviceListeners.add(l);
+    return () => {
+      this.deviceListeners.delete(l);
+    };
+  }
+
+  sendDeviceHello(hello: DeviceHello) {
+    this.socket?.emit(SocketEvents.DEVICE_HELLO, hello);
+  }
+
+  sendDeviceResult(result: { request_id: string; ok: boolean; data?: unknown; error?: string }) {
+    this.socket?.emit(SocketEvents.DEVICE_RESULT, result);
   }
 
   onStatus(l: (connected: boolean) => void) {

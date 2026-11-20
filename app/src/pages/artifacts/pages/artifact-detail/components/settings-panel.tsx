@@ -9,7 +9,7 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { useMembers } from "@/features/organizations/hooks/use-organizations";
-import { useDeleteArtifact, useTransferArtifact, useUpdateArtifact } from "@/features/artifacts/hooks/use-artifacts";
+import { useArtifactDataGrants, useDeleteArtifact, useRevokeArtifactData, useTransferArtifact, useUpdateArtifact } from "@/features/artifacts/hooks/use-artifacts";
 import type { Artifact, ArtifactType } from "@/features/artifacts/interfaces/artifacts.interfaces";
 import { ArtifactTypeOptions } from "@/config/constants/dropdowns/artifacts/artifact.options";
 import { Routes } from "@/routes/routes";
@@ -17,6 +17,27 @@ import { ArtifactRoles } from "@/features/artifacts/interfaces/artifacts.interfa
 
 const ConfirmActions = { DELETE: "delete", TRANSFER: "transfer" } as const;
 type ConfirmAction = (typeof ConfirmActions)[keyof typeof ConfirmActions];
+
+/** Connected services this viewer allowed the artifact to read live (§7.5). Only the viewer's own permissions. */
+const LiveDataAccess: FC<{ artifactId: string }> = ({ artifactId }) => {
+  const { data } = useArtifactDataGrants(artifactId);
+  const revoke = useRevokeArtifactData();
+  if (!data?.length) return null;
+  return (
+    <section className="space-y-2" aria-label="Live data access">
+      <h3 className="text-sm font-bold text-ink">Live data access</h3>
+      <p className="text-xs text-muted-foreground">This artifact can read these accounts of yours. Others who open it use their own.</p>
+      <ul className="space-y-1.5">
+        {data.map((g) => (
+          <li key={g.service} className="flex items-center justify-between gap-3 rounded-md border border-hairline px-3 py-2 text-sm">
+            <span className="font-semibold text-ink">{g.service_name}</span>
+            <Button variant="outline" size="sm" loading={revoke.isPending} onClick={() => revoke.mutate({ id: artifactId, service: g.service })}>Remove</Button>
+          </li>
+        ))}
+      </ul>
+    </section>
+  );
+};
 
 /** Title, type, link, "Review before publishing", ownership and deletion (§7.5). */
 export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
@@ -46,6 +67,7 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
 
   return (
     <div className="space-y-6">
+      <LiveDataAccess artifactId={a.id} />
       <form
         className="space-y-3"
         onSubmit={(e) => {
@@ -143,7 +165,7 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
         isOpen={confirm === ConfirmActions.DELETE}
         onClose={() => setConfirm(null)}
         title={`Delete “${a.title}”?`}
-        description="Its link stops working right away. You can restore it from Recently deleted for 30 days."
+        description="Its link stops working right away. You can restore it from the Deleted tab on the Artifacts page."
         confirmText="Delete"
         variant="destructive"
         isLoading={del.isPending}

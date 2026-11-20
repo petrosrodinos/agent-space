@@ -26,9 +26,10 @@ import { CredentialKinds, Visibilities } from "@/features/connections/interfaces
 const ADD_KIND_OPTIONS = [
   { id: AddSecretKinds.API_KEY, label: "Access key" },
   { id: AddSecretKinds.WEBSITE_LOGIN, label: "Website login" },
+  { id: AddSecretKinds.PASSWORD_MANAGER, label: "Password manager" },
 ] as const;
 
-const ADD_DEFAULTS: AddSecretFormValues = { kind: AddSecretKinds.API_KEY, label: "", service_name: "", value: "", website: "", username: "", totp_secret: "", visibility: Visibilities.PRIVATE };
+const ADD_DEFAULTS: AddSecretFormValues = { kind: AddSecretKinds.API_KEY, label: "", service_name: "", value: "", website: "", username: "", totp_secret: "", server_url: "", visibility: Visibilities.PRIVATE };
 
 export const AddSecretDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () => void }> = ({ open, isAdmin, onClose }) => {
   const create = useCreateCredential();
@@ -36,11 +37,14 @@ export const AddSecretDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () 
   const { requestClose, dialogProps } = useUnsavedChangesGuard({ isDirty: form.formState.isDirty, disabled: create.isPending, onClose: () => { form.reset(ADD_DEFAULTS); onClose(); } });
   const kind = form.watch("kind");
   const isLogin = kind === AddSecretKinds.WEBSITE_LOGIN;
+  const isManager = kind === AddSecretKinds.PASSWORD_MANAGER;
   const submit = (v: AddSecretFormValues) =>
     create.mutate(
       v.kind === AddSecretKinds.WEBSITE_LOGIN
         ? { label: v.label, service_name: v.service_name || undefined, kind: v.kind, value: v.value, website: v.website, username: v.username, totp_secret: v.totp_secret || undefined, visibility: v.visibility }
-        : { label: v.label, service_name: v.service_name || undefined, kind: v.kind, value: v.value, visibility: v.visibility },
+        : v.kind === AddSecretKinds.PASSWORD_MANAGER
+          ? { label: v.label, kind: v.kind, value: v.value, server_url: v.server_url, visibility: v.visibility }
+          : { label: v.label, service_name: v.service_name || undefined, kind: v.kind, value: v.value, visibility: v.visibility },
       { onSuccess: () => { form.reset(ADD_DEFAULTS); onClose(); } },
     );
   return (
@@ -52,19 +56,26 @@ export const AddSecretDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () 
             <DialogDescription>
               {isLogin
                 ? "Your bot can sign in to this website on its cloud computer. The password is stored encrypted and only typed into this website — the bot never sees it."
-                : "Stored encrypted. It's never shown again and bots never see it — they only use it through tools."}
+                : isManager
+                  ? "Connect your 1Password Connect server. When a bot signs in to a website, the login for that website is looked up and typed in — the bot never sees it."
+                  : "Stored encrypted. It's never shown again and bots never see it — they only use it through tools."}
             </DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form id="add-secret" className="space-y-4" autoComplete="off" onSubmit={form.handleSubmit(submit)}>
               <FormField control={form.control} name="kind" render={({ field }) => <FormItem><FormLabel>Type</FormLabel><SegmentedControl ariaLabel="Type of secret" value={field.value} options={ADD_KIND_OPTIONS} onChange={field.onChange} /></FormItem>} />
-              <FormField control={form.control} name="label" render={({ field }) => <FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder={isLogin ? "Supplier portal" : "Mailchimp – Marketing"} {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormField control={form.control} name="label" render={({ field }) => <FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder={isLogin ? "Supplier portal" : isManager ? "Company 1Password" : "Mailchimp – Marketing"} {...field} /></FormControl><FormMessage /></FormItem>} />
               {isLogin ? (
                 <>
                   <FormField control={form.control} name="website" render={({ field }) => <FormItem><FormLabel>Website</FormLabel><FormControl><Input placeholder="portal.acme.com" inputMode="url" spellCheck={false} {...field} /></FormControl><FormDescription>Only typed on this site and its subdomains, over https.</FormDescription><FormMessage /></FormItem>} />
                   <FormField control={form.control} name="username" render={({ field }) => <FormItem><FormLabel>Username or email</FormLabel><FormControl><Input autoComplete="off" spellCheck={false} data-1p-ignore {...field} /></FormControl><FormMessage /></FormItem>} />
                   <FormField control={form.control} name="value" render={({ field }) => <FormItem><FormLabel>Password</FormLabel><FormControl><SecretField autoComplete="new-password" data-1p-ignore {...field} /></FormControl><FormMessage /></FormItem>} />
                   <FormField control={form.control} name="totp_secret" render={({ field }) => <FormItem><FormLabel>Authenticator setup key (optional)</FormLabel><FormControl><SecretField placeholder="JBSW Y3DP EHPK 3PXP… or otpauth://" {...field} /></FormControl><FormDescription>Lets the bot enter two-step codes from an authenticator app. Codes sent by text or email still need you.</FormDescription><FormMessage /></FormItem>} />
+                </>
+              ) : isManager ? (
+                <>
+                  <FormField control={form.control} name="server_url" render={({ field }) => <FormItem><FormLabel>Connect server address</FormLabel><FormControl><Input placeholder="https://op-connect.acme.com" inputMode="url" spellCheck={false} {...field} /></FormControl><FormDescription>Your self-hosted 1Password Connect server. It's checked before saving.</FormDescription><FormMessage /></FormItem>} />
+                  <FormField control={form.control} name="value" render={({ field }) => <FormItem><FormLabel>Access token</FormLabel><FormControl><SecretField placeholder="Paste the Connect access token" {...field} /></FormControl><FormDescription>Give it read access only to the vaults bots may sign in with.</FormDescription><FormMessage /></FormItem>} />
                 </>
               ) : (
                 <>

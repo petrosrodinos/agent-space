@@ -1,5 +1,5 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
-import { Bot, Conversation, Prisma } from 'generated/prisma';
+import { Bot, Conversation, MessageSource, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { ConversationEvents, EventsService, UserEvents } from '@/core/realtime/events.service';
 import { maskSecretsInText } from '@/shared/utils/security/secret-detection.utils';
@@ -93,7 +93,8 @@ export class MessagesService {
         });
     }
 
-    async send(actor: Actor, conversationId: string, dto: SendMessageDto) {
+    /** `extra` is for server-side senders: messages that came from email, Slack or WhatsApp (§16). */
+    async send(actor: Actor, conversationId: string, dto: SendMessageDto, extra?: { source?: MessageSource; channel_meta?: Prisma.InputJsonValue }) {
         const me = await this.access.requireParticipant(conversationId, actor.user_id);
         const conv = me.conversation;
         if (conv.organization_id !== actor.organization_id) throw new NotFoundException('Conversation not found');
@@ -128,7 +129,8 @@ export class MessagesService {
                     conversation_id: conversationId,
                     author_type: 'USER',
                     author_user_id: actor.user_id,
-                    source: dto.source ?? 'TEXT',
+                    source: extra?.source ?? dto.source ?? 'TEXT',
+                    channel_meta: extra?.channel_meta,
                     content: text,
                     parts: [{ type: 'text', text }, ...(dto.client_id ? [{ type: 'client-ref', client_id: dto.client_id }] : [])] as Prisma.InputJsonValue,
                     parent_message_id: dto.parent_message_id,

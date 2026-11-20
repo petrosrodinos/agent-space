@@ -35,7 +35,7 @@ export const useUpdateNotificationPreference = () => {
 export const usePushNotifications = () => {
   const qc = useQueryClient();
   const supported = platform.notifications.push.supported();
-  // Web Push needs the server's VAPID key; the native apps use FCM/APNs device tokens instead.
+  // Web Push needs the server's VAPID key; the native apps use FCM device tokens instead.
   const isWeb = platform.is("web");
   const config = useQuery({ queryKey: [QueryKeys.PUSH_CONFIG], queryFn: getPushConfig, staleTime: Infinity, enabled: supported && isWeb });
   const current = useQuery({ queryKey: [QueryKeys.PUSH_SUBSCRIPTION], queryFn: () => platform.notifications.push.current(), enabled: supported });

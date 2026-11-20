@@ -49,13 +49,11 @@ enum DocumentType {
 enum Platform {
   WEB
   DESKTOP
-  IOS
   ANDROID
 }
 
 enum PushProvider {
   WEBPUSH
-  APNS
   FCM
 }
 
@@ -65,6 +63,7 @@ enum DeviceToolKind {
   LOCAL_TOOL_SERVERS
   CLIPBOARD
   OPEN
+  CONTROL_COMPUTER
   CAMERA_SCANNER
   CONTACTS
   SEND_VIA_APPS
@@ -501,6 +500,21 @@ enum MessageSource {
   VOICE
   AUTOMATION
   BOT
+  EMAIL
+  SLACK
+  WHATSAPP
+}
+
+/// Outside places members can talk to their bots from (§16 Message from anywhere).
+enum ExternalChannel {
+  EMAIL
+  SLACK
+  WHATSAPP
+}
+
+enum ChannelLinkStatus {
+  PENDING
+  ACTIVE
 }
 
 enum MessageStatus {
@@ -657,6 +671,8 @@ enum CredentialKind {
   API_KEY
   /// Username + password (+ optional two-step secret) the bot types into one website on its cloud computer (§9.4).
   WEBSITE_LOGIN
+  /// §16 Password manager connection (1Password Connect): server address + access token; logins are looked up per website at sign-in time.
+  PASSWORD_MANAGER
 }
 
 enum CredentialStatus {
@@ -926,6 +942,7 @@ model User {
   pinned_messages         Message[]                 @relation("MessagePinnedBy")
   reactions               MessageReaction[]
   saved_widgets           SavedWidget[]
+  artifact_data_grants    ArtifactDataGrant[]
   runs                    Run[]                     @relation("RunUser")
   approvals_resolved      Approval[]                @relation("ApprovalResolver")
   voice_sessions          VoiceSession[]
@@ -951,6 +968,8 @@ model User {
   data_exports            DataExport[]
   knowledge_items         KnowledgeItem[]
   knowledge_links         KnowledgeLink[]
+
+  channel_links ChannelLink[]
 
   @@index([email])
   @@index([phone])
@@ -1040,6 +1059,8 @@ model Device {
   last_seen_at             DateTime      @default(now())
   // Desktop-only (§13.2 Devices)
   allowed_folders          String[]      @default([])
+  /// Extra apps bots may never control on this computer (§14.3), on top of the built-in blocked list.
+  blocked_apps             String[]      @default([])
   launch_at_startup        Boolean       @default(true)
   quick_ask_shortcut       String?
   // Mobile-only
@@ -1195,6 +1216,8 @@ model UserSettings {
 
   // Privacy and data
   auto_delete_conversations ConversationRetention @default(NEVER)
+  /// §7.5 — off: deleted artifacts stay restorable forever; on: removed for good 30 days after deletion.
+  purge_deleted_artifacts   Boolean               @default(false)
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
@@ -1313,6 +1336,8 @@ model Organization {
   tool_permissions  UserToolPermission[]
   saved_widgets     SavedWidget[]
 
+  channel_links ChannelLink[]
+
   @@index([created_by_id])
   @@index([deleted_at])
   @@map("organizations")
@@ -1356,7 +1381,7 @@ model OrganizationSettings {
 
   // Device tools
   device_tools_enabled       Boolean                  @default(true)
-  allowed_device_tools       DeviceToolKind[]         @default([LOCAL_FILES, SCREEN, LOCAL_TOOL_SERVERS, CLIPBOARD, OPEN, CAMERA_SCANNER, CONTACTS, SEND_VIA_APPS, DEVICE_CALENDAR, LOCATION])
+  allowed_device_tools       DeviceToolKind[]         @default([LOCAL_FILES, SCREEN, LOCAL_TOOL_SERVERS, CLIPBOARD, OPEN, CONTROL_COMPUTER, CAMERA_SCANNER, CONTACTS, SEND_VIA_APPS, DEVICE_CALENDAR, LOCATION])
   members_local_tool_servers Boolean                  @default(true)
   automations_desktop_tools  Boolean                  @default(true)
   biometric_approval_scopes  BiometricApprovalScope[] @default([])
@@ -1372,9 +1397,9 @@ model OrganizationSettings {
   blocked_websites             String[]   @default([])
 
   // Approvals and safety
-  min_approval_level       MinApprovalLevel @default(NONE)
-  enforced_approvals       ActionType[]     @default([EXTERNAL_EMAIL, PURCHASE_PAYMENT])
-  bots_consulting_enabled  Boolean          @default(true)
+  min_approval_level       MinApprovalLevel      @default(NONE)
+  enforced_approvals       ActionType[]          @default([EXTERNAL_EMAIL, PURCHASE_PAYMENT])
+  bots_consulting_enabled  Boolean               @default(true)
   approval_timeout_minutes Int? // null = keep waiting
   approval_timeout_action  ApprovalTimeoutAction @default(CANCEL) // enforced / tap-only actions are always cancelled
 
@@ -1395,6 +1420,8 @@ model OrganizationSettings {
 
   // Voice mode
   voice_mode_enabled      Boolean            @default(true)
+  /// §7.6 — camera and screen sharing in voice mode.
+  voice_visual_input      Boolean            @default(true)
   voice_mode_who          WhoCan             @default(EVERYONE)
   voice_max_session       VoiceSessionLength @default(MIN_30)
   voice_approvals_enabled Boolean            @default(true)
@@ -1435,14 +1462,16 @@ model OrganizationSettings {
 }
 
 model OrganizationMember {
-  id              String           @id @default(uuid())
-  organization_id String
-  user_id         String
-  role            OrganizationRole @default(MEMBER)
+  id                String           @id @default(uuid())
+  organization_id   String
+  user_id           String
+  role              OrganizationRole @default(MEMBER)
   /// This member's colour theme inside this organisation (each org can look different per user).
-  color_theme     ColorTheme       @default(NEUTRAL)
-  joined_at       DateTime         @default(now())
-  updated_at      DateTime         @updatedAt
+  color_theme       ColorTheme       @default(NEUTRAL)
+  /// §16 Meeting assistant set-up: { bot_id, calendar_connection_id, email_connection_id, briefs_automation_id, follow_ups_automation_id }.
+  meeting_assistant Json?
+  joined_at         DateTime         @default(now())
+  updated_at        DateTime         @updatedAt
 
   organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   user         User         @relation(fields: [user_id], references: [id], onDelete: Cascade)
@@ -1692,6 +1721,8 @@ model Bot {
   credential_last_used      Credential[]               @relation("CredentialLastUsedBot")
   artifact_comment_mentions ArtifactComment[]          @relation("ArtifactCommentBotMention")
 
+  channel_links ChannelLink[]
+
   @@index([organization_id, visibility])
   @@index([created_by_id])
   @@index([template_id])
@@ -1773,13 +1804,13 @@ model BotSkill {
 
 /// §6.2 Knowledge and §13.4 organisation knowledge library. Files, links or text.
 model KnowledgeItem {
-  id              String         @id @default(uuid())
+  id              String          @id @default(uuid())
   organization_id String
   scope           KnowledgeScope
   bot_id          String?
   kind            KnowledgeKind
   title           String
-  file_id         String?        @unique
+  file_id         String?         @unique
   url             String?
   content         String?
   status          KnowledgeStatus @default(PROCESSING)
@@ -1788,8 +1819,8 @@ model KnowledgeItem {
   added_by_id     String?
   indexed_at      DateTime?
   deleted_at      DateTime?
-  created_at      DateTime       @default(now())
-  updated_at      DateTime       @updatedAt
+  created_at      DateTime        @default(now())
+  updated_at      DateTime        @updatedAt
 
   organization Organization     @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   bot          Bot?             @relation(fields: [bot_id], references: [id], onDelete: Cascade)
@@ -1917,6 +1948,8 @@ model Conversation {
   automations_source  Automation[]              @relation("AutomationSourceConversation")
   saved_widgets       SavedWidget[]
 
+  channel_links ChannelLink[]
+
   @@index([organization_id, type])
   @@index([lead_bot_id])
   @@index([created_by_id])
@@ -1966,6 +1999,8 @@ model Message {
   content                String?
   /// Vercel AI SDK message parts: text, tool-invocation, interactive (json-render spec / mini-app), approval, secret-input, file…
   parts                  Json?
+  /// Messages that came from email, Slack or WhatsApp: where to send the reply (thread, subject, sender).
+  channel_meta           Json?
   run_id                 String?
   parent_message_id      String? // thread reply
   reply_to_message_id    String? // quoted message ("reply to" a specific message)
@@ -2197,6 +2232,11 @@ model RunStep {
   started_at       DateTime      @default(now())
   finished_at      DateTime?
   duration_ms      Int?
+  /// §16 Undo: how to reverse this step in the connected service ({ tool, args, label, connection_id }); never shown to the model.
+  undo             Json?
+  undo_until       DateTime?
+  undone_at        DateTime?
+  undone_by_id     String?
 
   run        Run         @relation(fields: [run_id], references: [id], onDelete: Cascade)
   connection Connection? @relation(fields: [connection_id], references: [id], onDelete: SetNull)
@@ -2440,21 +2480,22 @@ model Artifact {
   created_at             DateTime             @default(now())
   updated_at             DateTime             @updatedAt
 
-  organization    Organization      @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  owner           User?             @relation("ArtifactOwner", fields: [owner_id], references: [id], onDelete: SetNull)
-  conversation    Conversation?     @relation(fields: [conversation_id], references: [id], onDelete: SetNull)
-  message         Message?          @relation(fields: [message_id], references: [id], onDelete: SetNull)
-  duplicated_from Artifact?         @relation("ArtifactDuplicate", fields: [duplicated_from_id], references: [id], onDelete: SetNull)
-  duplicates      Artifact[]        @relation("ArtifactDuplicate")
-  current_version ArtifactVersion?  @relation("ArtifactCurrentVersion", fields: [current_version_id], references: [id], onDelete: SetNull)
-  draft_version   ArtifactVersion?  @relation("ArtifactDraftVersion", fields: [draft_version_id], references: [id], onDelete: SetNull)
-  versions        ArtifactVersion[] @relation("ArtifactVersions")
+  organization    Organization        @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner           User?               @relation("ArtifactOwner", fields: [owner_id], references: [id], onDelete: SetNull)
+  conversation    Conversation?       @relation(fields: [conversation_id], references: [id], onDelete: SetNull)
+  message         Message?            @relation(fields: [message_id], references: [id], onDelete: SetNull)
+  duplicated_from Artifact?           @relation("ArtifactDuplicate", fields: [duplicated_from_id], references: [id], onDelete: SetNull)
+  duplicates      Artifact[]          @relation("ArtifactDuplicate")
+  current_version ArtifactVersion?    @relation("ArtifactCurrentVersion", fields: [current_version_id], references: [id], onDelete: SetNull)
+  draft_version   ArtifactVersion?    @relation("ArtifactDraftVersion", fields: [draft_version_id], references: [id], onDelete: SetNull)
+  versions        ArtifactVersion[]   @relation("ArtifactVersions")
   shares          ArtifactShare[]
   comments        ArtifactComment[]
   records         ArtifactRecord[]
   reports         ArtifactReport[]
   files           File[]
   usage_records   UsageRecord[]
+  data_grants     ArtifactDataGrant[]
 
   @@unique([organization_id, slug])
   @@index([organization_id, sharing_level])
@@ -2556,6 +2597,22 @@ model ArtifactRecord {
   @@index([artifact_id, collection])
   @@index([submitted_by_id])
   @@map("artifact_records")
+}
+
+/// §7.5 "Show live data": a member allowed this artifact to read one connected service with their own access.
+model ArtifactDataGrant {
+  id          String   @id @default(uuid())
+  artifact_id String
+  user_id     String
+  service_key String // Composio toolkit slug, e.g. "hubspot"
+  created_at  DateTime @default(now())
+
+  artifact Artifact @relation(fields: [artifact_id], references: [id], onDelete: Cascade)
+  user     User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+
+  @@unique([artifact_id, user_id, service_key])
+  @@index([user_id])
+  @@map("artifact_data_grants")
 }
 
 model ArtifactReport {
@@ -3012,6 +3069,7 @@ model AutomationTriggerSubscription {
   automation_id       String
   connection_id       String
   trigger_key         String // e.g. "HUBSPOT_NEW_DEAL"
+  trigger_name        String? // "New deal", shown on the automation
   composio_trigger_id String?  @unique
   config              Json?
   created_at          DateTime @default(now())
@@ -3032,6 +3090,8 @@ model AutomationRun {
   attempt          Int                 @default(1)
   is_retry         Boolean             @default(false)
   trigger_event_id String?
+  /// §10.2: the event that started this run (trimmed), shown to the bot and in the run history.
+  trigger_event    Json?
   scheduled_for    DateTime?
   started_at       DateTime?
   finished_at      DateTime?
@@ -3303,4 +3363,38 @@ model AppVersionPolicy {
   updated_at      DateTime @updatedAt
 
   @@map("app_version_policies")
+}
+
+/// A member's link between an outside channel and one bot (§16 Message from anywhere). Email works from the member's
+/// own address to their personal inbound address; Slack and WhatsApp are linked by sending the one-time code.
+model ChannelLink {
+  id                   String            @id @default(uuid())
+  organization_id      String
+  user_id              String
+  bot_id               String
+  channel              ExternalChannel
+  status               ChannelLinkStatus @default(PENDING)
+  /// Slack "<team>:<user>", WhatsApp phone number in E.164 digits; null for email (the member's account email is used).
+  external_id          String?
+  /// Email: the local part of the member's personal inbound address. Random, unguessable.
+  inbound_token        String?           @unique
+  /// One-time code the member sends from Slack / WhatsApp to finish linking.
+  link_code            String?           @unique
+  link_code_expires_at DateTime?
+  /// The direct conversation the channel's messages go to (created on first message).
+  conversation_id      String?
+  last_message_at      DateTime?
+  created_at           DateTime          @default(now())
+  updated_at           DateTime          @updatedAt
+
+  organization Organization  @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  user         User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  bot          Bot           @relation(fields: [bot_id], references: [id], onDelete: Cascade)
+  conversation Conversation? @relation(fields: [conversation_id], references: [id], onDelete: SetNull)
+
+  @@unique([organization_id, user_id, channel])
+  @@unique([channel, external_id])
+  @@index([bot_id])
+  @@index([user_id])
+  @@map("channel_links")
 }

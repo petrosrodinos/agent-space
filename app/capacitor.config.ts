@@ -12,15 +12,13 @@ const config: CapacitorConfig = {
   webDir: "dist",
   server: {
     androidScheme: "https",
-    iosScheme: "capacitor",
     ...(devServer ? { url: devServer, cleartext: devServer.startsWith("http://") } : {}),
   },
   android: { allowMixedContent: false },
-  ios: { contentInset: "automatic", limitsNavigationsToAppBoundDomains: false },
   plugins: {
     PushNotifications: { presentationOptions: ["badge", "sound", "alert"] },
-    LocalNotifications: { iconColor: "#0A0A0A" },
-  },
+    // Monochrome status-bar icon (android/app/src/main/res/drawable/ic_stat_agentspace.xml).
+    LocalNotifications: { smallIcon: "ic_stat_agentspace", iconColor: "#0A0A0A" },  },
 };
 
 export default config;

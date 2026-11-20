@@ -1,5 +1,7 @@
 export const ArtifactTypes = { WEB_APP: "WEB_APP", DASHBOARD: "DASHBOARD", PAGE: "PAGE", DOCUMENT: "DOCUMENT", PRESENTATION: "PRESENTATION", DIAGRAM: "DIAGRAM", FORM: "FORM", TOOL: "TOOL", GAME: "GAME", OTHER: "OTHER" } as const;
 export type ArtifactType = (typeof ArtifactTypes)[keyof typeof ArtifactTypes];
+export const ArtifactExportFormats = { HTML: "html", PDF: "pdf", PNG: "png", PPTX: "pptx", DOCX: "docx" } as const;
+export type ArtifactExportFormat = (typeof ArtifactExportFormats)[keyof typeof ArtifactExportFormats];
 export const ArtifactRoles = { OWNER: "OWNER", EDITOR: "EDITOR", COMMENTER: "COMMENTER", VIEWER: "VIEWER" } as const;
 export type ArtifactRole = (typeof ArtifactRoles)[keyof typeof ArtifactRoles];
 export const ArtifactSharingLevels = { PRIVATE: "PRIVATE", SPECIFIC_MEMBERS: "SPECIFIC_MEMBERS", ORGANIZATION: "ORGANIZATION", PUBLIC_LINK: "PUBLIC_LINK" } as const;
@@ -56,7 +58,7 @@ export interface Artifact {
   sharing_level: ArtifactSharing;
   organization_role: Exclude<ArtifactRole, "OWNER">;
   shares: { user: PersonBrief; role: Exclude<ArtifactRole, "OWNER"> }[];
-  public_link: { enabled: boolean; has_password: boolean; expires_at: string | null; allow_search_engines: boolean; allow_embedding: boolean; public_ai_enabled: boolean };
+  public_link: { enabled: boolean; has_password: boolean; expires_at: string | null; allow_search_engines: boolean; allow_embedding: boolean; public_ai_enabled: boolean; public_uploads_enabled: boolean };
   review_before_publish: boolean;
   current_version: ArtifactVersionBrief | null;
   draft_version: ArtifactVersionBrief | null;
@@ -90,8 +92,34 @@ export interface ArtifactVersion {
   is_draft: boolean;
 }
 
+/** A member allowed this artifact to read one of their connected services (§7.5 Show live data). */
+export interface ArtifactDataGrant {
+  service: string;
+  service_name: string;
+  created_at: string;
+}
+
+/** A visitor upload saved in a record by `agentspace.upload` (§7.5). */
+export interface ArtifactFileRef {
+  type: "file";
+  id: string;
+  filename: string;
+  mimetype: string;
+  size: number;
+}
+
+export interface ArtifactUpload {
+  id: string;
+  filename: string;
+  mimetype: string;
+  size: number;
+  created_at: string;
+  is_visitor: boolean;
+}
+
 export interface ArtifactRecords {
   collections: { name: string; count: number }[];
+  files: ArtifactUpload[];
   records: { id: string; collection: string; data: Record<string, unknown>; submitted_by: PersonBrief | null; is_visitor: boolean; created_at: string }[];
 }
 
@@ -123,6 +151,7 @@ export interface PublicLinkDto {
   allow_search_engines?: boolean;
   allow_embedding?: boolean;
   public_ai_enabled?: boolean;
+  public_uploads_enabled?: boolean;
 }
 
 export interface UpdateArtifactDto {

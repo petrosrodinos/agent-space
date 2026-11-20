@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Google Assistant query patterns (res/xml/shortcuts.xml). $name = a capability parameter. -->
+    <string-array name="assistant_ask_bot_queries">
+        <item>ask $bot</item>
+        <item>ask $bot $text</item>
+        <item>ask $bot about $text</item>
+        <item>talk to $bot</item>
+    </string-array>
+    <string-array name="assistant_voice_queries">
+        <item>start voice mode with $bot</item>
+        <item>voice chat with $bot</item>
+        <item>talk to $bot out loud</item>
+    </string-array>
+    <string-array name="assistant_run_automation_queries">
+        <item>run my $automation</item>
+        <item>run the $automation automation</item>
+        <item>start my $automation</item>
+    </string-array>
+
+    <string name="shortcut_ask_short">Ask</string>
+    <string name="shortcut_ask_long">Ask a bot</string>
+    <string name="shortcut_voice_short">Voice</string>
+    <string name="shortcut_voice_long">Start voice mode</string>
+    <string name="shortcut_approvals_short">Approvals</string>
+    <string name="shortcut_approvals_long">Approvals waiting</string>
+
+    <string name="widget_quick_ask_name">Ask a bot</string>
+    <string name="widget_quick_ask_label">Ask a bot</string>
+    <string name="widget_quick_ask_description">Start a new chat with one tap</string>
+    <string name="widget_voice_name">Voice mode</string>
+    <string name="widget_voice_label">Talk to a bot</string>
+    <string name="widget_voice_description">Start voice mode with one tap</string>
+    <string name="widget_approvals_name">Approvals</string>
+    <string name="widget_approvals_description">How many approvals are waiting for you</string>
+    <string name="widget_approvals_one">approval waiting</string>
+    <string name="widget_approvals_many">approvals waiting</string>
+    <string name="widget_approvals_signed_out">Sign in to see approvals</string>
+    <string name="widget_count_unknown">–</string>
+</resources>

@@ -12,7 +12,7 @@ Agent Space is a personal and team AI assistant platform for companies. Users cr
 
 Bots live in conversations, much like a messaging app. A user can talk to one bot directly, or set up a group where several bots (for example a Sales bot and a Marketing bot) and several colleagues work together. Bots can see what other bots know and ask each other for help.
 
-Agent Space is available on the web, as a desktop app (Windows and Mac) and as a mobile app (iPhone and Android), with the same experience everywhere.
+Agent Space is available on the web, as a desktop app (Windows and Mac) and as a mobile app (Android), with the same experience everywhere.
 
 ---
 
@@ -47,7 +47,7 @@ Agent Space is available on the web, as a desktop app (Windows and Mac) and as a
 | **Marketing manager** | A bot that drafts content, checks competitors' websites, schedules posts and reports results. |
 | **Operations / Admin** | Automates repetitive work: copying data between tools, filling forms, generating documents. |
 | **Team lead** | Shared bots and shared accounts for the team, with control over who can do what. |
-| **Organisation owner / IT** | Manages members, roles, billing, shared connections and audit history. |
+| **Organisation owner / IT** | Manages members, roles, shared connections and audit history. |
 
 ---
 
@@ -55,7 +55,7 @@ Agent Space is available on the web, as a desktop app (Windows and Mac) and as a
 
 | Term | Meaning |
 |---|---|
-| **Organisation** | A company or team workspace. Holds members, bots, conversations, connections and billing. |
+| **Organisation** | A company or team workspace. Holds members, bots, conversations and connections. |
 | **Member** | A person who belongs to an organisation, with a role: Owner, Admin or Member. |
 | **Bot** | An AI assistant with its own name, emoji, colour, instructions (personality and job), tools and memory. |
 | **Conversation** | A chat. Can be one person with one bot, several people with one bot, or a group with several bots and people. |
@@ -106,7 +106,6 @@ Three fixed roles. The app shows the role name next to each member but does **no
 | Create artifacts and share them with members or publicly | ✅ | ✅ | ✅ (public links if allowed by the organisation) |
 | See all organisation and public artifacts; switch off any public link | ✅ | ✅ | ❌ |
 | View organisation activity history | ✅ | ✅ | ❌ |
-| Billing and plan | ✅ | ❌ | ❌ |
 | Transfer ownership / delete organisation | ✅ | ❌ | ❌ |
 
 - An organisation always has at least one Owner. The last Owner can't leave without handing over ownership.
@@ -177,7 +176,7 @@ Users can change almost anything just by asking any bot, for example:
 
 The bot shows a short summary of the change and asks for confirmation before applying it.
 
-**Not changeable through chat** (for safety, these require the settings screens): password, sign-in methods, two-step verification, email address, phone number, personal identity details, payment details, organisation security settings, billing and plan, transferring ownership, deleting the account or organisation. See §13.5.
+**Not changeable through chat** (for safety, these require the settings screens): password, email address, phone number, personal identity details, payment details, organisation security settings, transferring ownership, deleting the account or organisation. See §13.5.
 
 ### 6.7 Skills
 A **skill** is a reusable, step-by-step way of doing a specific job, which any bot it's given to can follow. Skills capture "how we do things here" so bots do them the same way every time.
@@ -328,7 +327,7 @@ Artifacts are complete, standalone creations a bot builds for the user — full 
 **Creating and editing**
 - Users ask any bot ("Build a landing page for our Q4 webinar with a sign-up form"). The bot builds the artifact and shows it in the side panel with a live preview as it's being made.
 - Artifacts are fully designed: layout, colours, fonts, images and icons, working in light and dark mode and on phones, tablets and desktops. By default they use the organisation's brand colour and logo.
-- Users change an artifact by asking ("make the header blue", "add a pricing section") or by editing text directly in the preview.
+- Users change an artifact by asking ("make the header blue", "add a pricing section").
 - Any member with access can **duplicate** an artifact to make their own copy and change it freely.
 - An artifact can be created from an interactive reply ("turn this chart into a shareable dashboard").
 
@@ -354,7 +353,7 @@ Within the organisation, each person or the whole organisation is given a role o
 | Role | Can do |
 |---|---|
 | **Owner** | Everything, including sharing, deleting and transferring ownership. One per artifact. |
-| **Editor** | View, use, comment, edit (directly or via a bot), publish new versions, restore old versions |
+| **Editor** | View, use, comment, edit (by asking a bot), publish new versions, restore old versions |
 | **Commenter** | View, use and comment |
 | **Viewer** | View and use |
 
@@ -369,7 +368,7 @@ Within the organisation, each person or the whole organisation is given a role o
 - The link always shows the latest published version.
 - **Version history** lets editors preview any earlier version, compare two versions side by side, give a version a name (e.g. "Sent to client") and **restore** an earlier version. Restoring creates a new version, so nothing is ever lost.
 - By default, changes go live as soon as they're published. Owners can turn on **"Review before publishing"**, so edits are saved as a draft and only go live when an editor clicks Publish.
-- If two people edit at the same time, both see each other's changes and nothing is overwritten.
+- If two people change an artifact at the same time, each change is saved as its own version, so nothing is lost.
 - Stored information (form responses, etc.) is kept across versions.
 
 **Comments and activity**
@@ -385,7 +384,7 @@ Within the organisation, each person or the whole organisation is given a role o
 - Owners and Admins can see every artifact shared with the organisation or publicly, and can switch off any public link.
 - Each artifact runs in its own isolated space on a separate web address. It can't access the Agent Space app, the viewer's account or other artifacts.
 - Public artifacts can be reported for abuse; reported artifacts are reviewed and can be taken down.
-- Deleting an artifact stops its link working and removes its versions and stored information after 30 days (restorable until then).
+- Deleting an artifact stops its link working straight away. By default its versions and stored information are kept, and the owner can restore it at any time. If the owner turns on **Permanently delete my deleted artifacts after 30 days** (personal setting, §13.2, **Off** by default), they are removed for good 30 days after deletion and can be restored until then.
 
 **How it's built (for the development team):** artifacts are React apps using shadcn/ui and the organisation's theme, built and versioned by the platform and served from a separate, isolated domain, each at its own permanent URL.
 
@@ -420,6 +419,20 @@ Voice mode is not a separate, simpler assistant. It is the **same bot in the sam
 - The user can approve by saying "yes"/"send it"/"go ahead", reject by saying "no"/"cancel", ask for changes by voice ("make it shorter"), or tap Approve / Edit / Reject.
 - **Payments/purchases and entering passwords on websites always need a tap** on the approval card, never voice alone, because speech can be overheard or misheard.
 - If the user's screen is off (e.g. phone in pocket) and an action needs a tap, the bot says so and the approval waits in the chat and notifications as usual.
+
+**Showing the bot what you see (camera and screen sharing)**
+- In voice mode the voice bar has two more buttons, **Camera** and **Share screen**, so the user can show the bot what they're looking at while talking ("what's wrong with this wiring?", "walk me through this spreadsheet").
+- **Camera:** web, desktop app and mobile app. On mobile the user can switch between the front and back camera.
+- **Share screen:** web (desktop browsers) and the desktop app. The user picks a whole screen or one window. Not available on mobile.
+- Only one can be on at a time; turning one on turns the other off.
+- **The user always turns them on.** The bot can suggest it ("Can you show me the error? Tap Share screen"), but it can never start the camera or screen sharing itself.
+- While sharing, the voice bar shows a small live preview with a red "Live" dot. Sharing stops when the user taps the button again, when voice mode turns off for any reason, or (camera only) when the mobile app goes to the background; the voice conversation carries on.
+- **What the bot sees:** still pictures, not continuous video. The app sends the bot one picture each time the user starts speaking (so it arrives together with what they say), and one when the user taps **Show this** on the preview.
+- **Snapshot:** a **Snapshot** button on the preview posts the current picture into the chat as an image, so it's kept like any other attachment (§7.7).
+- **Nothing else is kept:** like audio, the pictures the bot sees are not stored. Spoken messages that came with a picture show a small camera or screen icon.
+- **Secrets on screen:** the bot never reads out or repeats passwords, keys or card numbers it sees. If it needs one, it asks the user to use the secure secret box (§8.8).
+- A picture never counts as approving anything; approvals work as described above.
+- Pictures count toward voice usage (§11) in the same "Voice" line. Organisations can turn camera and screen sharing off (§13.4).
 
 **How it appears in the conversation**
 - What the user says and what the bot says are saved as **normal chat messages**, written out as text, with a small 🎙 icon showing they were spoken. Tool steps, interactive replies, artifacts and approvals appear in place, exactly as in a typed chat.
@@ -460,6 +473,13 @@ Voice mode is not a separate, simpler assistant. It is the **same bot in the sam
 - **Long tasks:** a built-in `start_task` tool hands the request to the normal task runner (an `agent-runs` job, §14.4) with the bot's chosen model. When a task finishes during a voice session, the server sends it into the session as a system event so the bot can announce it.
 - Turn detection uses the Realtime API's semantic voice activity detection. Push-to-talk turns off automatic turn detection and commits the audio when the button is released.
 - Session limits (silence timeout, maximum length, reconnect window) and usage metering (audio minutes and tokens per session) are enforced server-side.
+- **Camera and screen sharing:**
+  - Captured on the client through `platform.media`: `getUserMedia` for the camera, `getDisplayMedia` for screen sharing on web, and Electron `desktopCapturer` through the preload bridge on desktop.
+  - The client grabs a still frame, scales it to at most 1024 px on the longest side and encodes it as JPEG (quality 0.7). It sends the frame into the Realtime session as an `input_image` conversation item over the WebRTC data channel when the user starts speaking (`input_audio_buffer.speech_started`, or the push-to-talk press) and when the user taps **Show this** (followed by `response.create`). In the desktop app the shared screen comes from the device bridge's picker and stills (`screenSources` / `captureSource`) instead of `getDisplayMedia`. Frames never pass through our API and are not stored.
+  - **Snapshot** uploads the current frame as a normal chat attachment (§7.7) on the user's spoken message.
+  - The voice-session endpoint returns `visualInputAllowed` from the organisation setting; the client hides both buttons when it is false. As a second check, the sideband connection deletes any image item (`conversation.item.delete`) in a session where it isn't allowed.
+  - Image tokens reported by the Realtime API are metered with the session's audio usage.
+  - The voice instructions add: don't read out or repeat secrets visible in pictures, and never treat a picture as approval.
 
 
 ### 7.7 Files and storage
@@ -511,7 +531,7 @@ Every file in Agent Space is kept in **Google Cloud Storage**: files users uploa
 - **Artifacts:** published versions are stored as immutable objects per version. The isolated artifact domain (§7.5) serves them through a server that checks the artifact's sharing settings, never from a public bucket.
 - **Deletion and retention:**
   - Deleting a record soft-deletes its files.
-  - A daily job (`storage.purge-deleted` and `storage.apply-retention`, §14.4) permanently deletes objects 30 days after soft deletion, and deletes objects past the organisation's retention period (conversations, cloud computer files and replays).
+  - A daily job (`storage.purge-deleted` and `storage.apply-retention`, §14.4) permanently deletes objects 30 days after soft deletion (for a deleted artifact, only when its owner has turned on the 30-day setting, §7.5), and deletes objects past the organisation's retention period (conversations, cloud computer files and replays).
   - Deleting an organisation deletes its whole `orgs/<orgId>/` prefix in every bucket after the 30-day window, through a delayed job in the `storage` queue.
 - **Limits and usage:** the per-file size limit is checked when the upload URL is created and again on confirmation. A nightly job (`storage.aggregate-usage`, §14.4) adds up storage per member, bot and organisation from the database for the usage overview.
 
@@ -1013,6 +1033,7 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Export my data | Download my conversations, files and memories |
 | Delete my conversation history | All, or older than a chosen date |
 | Auto-delete my conversations after | **Never**, 30 days, 90 days, 1 year (cannot be longer than the organisation's limit) |
+| Permanently delete my deleted artifacts after 30 days | **Off** (§7.5) |
 
 **Devices** (desktop and mobile apps)
 | Setting | Options |
@@ -1021,6 +1042,8 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Device tools | Per device and per tool: **Ask each time**, Always allow, Never (§14.3) |
 | Allowed folders (desktop) | Folders bots may use on this computer (**none**) |
 | Local tool servers (desktop) | Add, edit or remove tool servers that run on this computer (**none**) |
+| Control my computer (desktop) | **Never**, Ask each time (§14.3) |
+| Apps bots can't use (desktop) | Agent Space, password managers, system settings and security prompts, and terminal apps (**always**), plus any apps the user adds |
 | Launch at start-up (desktop) | **On** |
 | Quick-ask shortcut (desktop) | **Ctrl/Cmd+Shift+Space**, or a chosen shortcut |
 | Places for place-based automations (mobile) | Saved places, e.g. Office, Home (up to 20) |
@@ -1030,8 +1053,6 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Setting | Options |
 |---|---|
 | Email, password | Change |
-| Sign-in methods | Email, Google, Microsoft, Apple |
-| Two-step verification | **Off** (On if the organisation requires it) |
 | Active sessions and devices | View and sign out |
 | Delete account | With confirmation |
 
@@ -1160,10 +1181,10 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Setting | Options |
 |---|---|
 | Device tools | **On** (§14.3) |
-| Allowed device tools | **All**, or choose: local files, look at my screen, local tool servers, clipboard, open, camera and scanner, contacts, send via phone apps, device calendar, location |
+| Allowed device tools | **All**, or choose: local files, look at my screen, local tool servers, clipboard, open, control my computer, camera and scanner, contacts, send via phone apps, device calendar, location |
 | Members may add local tool servers | **On** |
-| Automations may use desktop tools | **On** |
-| Require Face ID / fingerprint for approvals on mobile | Payments and website passwords (**always**), plus optionally: all approvals, emails outside the company, deleting data |
+| Automations may use desktop tools | **On** (never includes control my computer) |
+| Require fingerprint / face unlock for approvals on mobile | Payments and website passwords (**always**), plus optionally: all approvals, emails outside the company, deleting data |
 
 **Cloud computers**
 | Setting | Options |
@@ -1209,6 +1230,7 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 |---|---|
 | Voice mode | **On** (uses OpenAI's real-time voice service; see §7.6) |
 | Who can use it | **Everyone**, Owners and Admins only |
+| Camera and screen sharing in voice mode | **On** (§7.6) |
 | Maximum voice session length | 15 min, **30 min**, 60 min |
 | Approve actions by voice | **On** (payments and passwords always need a tap); Off means every approval needs a tap |
 | Keep spoken messages as text | **On** |
@@ -1242,22 +1264,17 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 **Security**
 | Setting | Options |
 |---|---|
-| Require two-step verification | **Off** |
-| Allowed sign-in methods | **All**, or a chosen subset (e.g. company Google/Microsoft only) |
 | Sign out inactive sessions after | **30 days**, 7 days, 1 day |
 
 **Activity history**
 - View, search and filter all bot actions and admin changes; export to a file.
-
-**Billing and plan** (Owners only)
-- Plan, payment method, invoices, usage-based charges.
 
 **Danger zone** (Owners only)
 - Transfer ownership, delete organisation.
 
 ### 13.5 Changing settings by chat
 - Any personal setting (except Security) and any bot setting the user is allowed to change can be changed by asking a bot (§6.6).
-- Owners and Admins can also change organisation settings by chat, **except** Security, Billing and plan, and Danger zone, which require the settings screens.
+- Owners and Admins can also change organisation settings by chat, **except** Security and Danger zone, which require the settings screens.
 - Every change requested in chat is shown as a summary and needs confirmation before it's applied.
 
 ---
@@ -1267,8 +1284,8 @@ If a bot setting has **"Lock style"** turned on (e.g. a Support bot that must al
 | Platform | Notes |
 |---|---|
 | **Web** | Full experience in any modern browser. |
-| **Desktop (Windows, Mac)** | Same as web, plus: launch at start-up, system notifications, a global shortcut to open a quick-ask window (by text or in voice mode), quick-ask with selected text or a screenshot, drag-and-drop files from the computer, and desktop device tools such as local files, "look at my screen" and local tool servers (§14.2, §14.3). |
-| **Mobile (iPhone, Android)** | Full chat, approvals (including from the lock screen, with Face ID / fingerprint for sensitive ones), notifications, voice input, voice mode that keeps working with the screen locked, camera, photo upload and document scanner, share-to-bot from other apps, Siri / Google Assistant shortcuts, widgets, live progress of long tasks, live view of the cloud computer (view and basic control), and mobile device tools such as contacts, device calendar and location (§14.2, §14.3). |
+| **Desktop (Windows, Mac)** | Same as web, plus: launch at start-up, system notifications, a global shortcut to open a quick-ask window (by text or in voice mode), quick-ask with selected text or a screenshot, drag-and-drop files from the computer, and desktop device tools such as local files, "look at my screen", local tool servers and control my computer (§14.2, §14.3). |
+| **Mobile (Android)** | Full chat, approvals (including from the lock screen, with fingerprint / face unlock for sensitive ones), notifications, voice input, voice mode that keeps working with the screen locked (with camera sharing), camera, photo upload and document scanner, share-to-bot from other apps, Google Assistant shortcuts, widgets, live progress of long tasks, live view of the cloud computer (view and basic control), and mobile device tools such as contacts, device calendar and location (§14.2, §14.3). |
 
 **Design principles**
 - Feels like a modern messaging app: conversation list on the left, chat in the centre, optional side panel on the right (cloud computer, files, task details).
@@ -1302,7 +1319,7 @@ Agent Space is **one app**: the same React code runs on the web, inside the desk
     | `appInfo` (platform, app version, device ID) | Browser |
     | `lifecycle` (foreground/background, online/offline) | Page Visibility and online/offline events |
 
-  - Feature code asks `platform.is('web' | 'desktop' | 'ios' | 'android')` and `platform.supports('<capability>')`. It never assumes a feature exists. Interface elements for unsupported features are hidden, not broken.
+  - Feature code asks `platform.is('web' | 'desktop' | 'android')` and `platform.supports('<capability>')`. It never assumes a feature exists. Interface elements for unsupported features are hidden, not broken.
 - **Automated checks:**
   - ESLint rules (`no-restricted-imports`, `no-restricted-globals`, `no-restricted-properties`) block, outside `app/src/platform/`:
     - direct imports of `@capacitor/*` and `electron`
@@ -1313,11 +1330,11 @@ Agent Space is **one app**: the same React code runs on the web, inside the desk
   - Every API call uses an absolute address from configuration. Nothing relies on the app and the API sharing an origin.
   - Sign-in uses short-lived Bearer access tokens plus refresh tokens kept through `platform.storage`. Cookies are not the only sign-in method.
   - The API's allowed-origins list (CORS) is configurable per environment, so the mobile and desktop app origins can be added later without code changes.
-- **Sign-in and connection redirects.** Sign-in with Google, Microsoft or Apple, Composio connections (§8.1) and custom tool server sign-ins (§8.4) all take a **return address** parameter and finish on an app route (`/auth/callback`, `/connections/callback`). This lets the mobile and desktop apps later run them in the system browser and return through a deep link.
+- **Connection redirects.** Users sign in to Agent Space with email and password only. Composio connections (§8.1) and custom tool server sign-ins (§8.4) take a **return address** parameter and finish on an app route (`/connections/callback`). This lets the mobile and desktop apps later run them in the system browser and return through a deep link.
 - **Every screen has its own address.** Every conversation, bot, artifact, skill, automation, approval and setting has a stable path (e.g. `/c/<conversationId>`, `/approvals/<id>`). Notifications and emails link to these paths, and later the desktop and mobile apps will open them from deep links.
 - **Devices are recorded from the start.**
-  - The API keeps a `devices` table: user, platform (`web`/`desktop`/`ios`/`android`), app version, push token and provider (`webpush` now; `apns`/`fcm` later), supported capabilities and last seen.
-  - Notifications (§12) are sent per device through a provider interface, so APNs and FCM can be added later as new providers.
+  - The API keeps a `devices` table: user, platform (`web`/`desktop`/`android`), app version, push token and provider (`webpush` now; `fcm` later), supported capabilities and last seen.
+  - Notifications (§12) are sent per device through a provider interface, so FCM can be added later as a new provider.
 - **Version check.** The API publishes the minimum supported app version per platform. The app checks it on start-up and asks the user to update if it's too old. This applies to web too: "Reload to update".
 - **Tools know where they run.** Every tool in the tool layer has a `runs_on` field. In the first release this is always `server`. The value `device` is reserved, so tools running on the user's own computer or phone can be added later without changing the tool layer.
 - **Mobile-ready layout and input:**
@@ -1327,7 +1344,7 @@ Agent Space is **one app**: the same React code runs on the web, inside the desk
   - The message box and voice bar stay visible above the on-screen keyboard.
   - Long lists (conversations, messages) are virtualised.
 - **Unreliable connections.** Real-time connections (chat streaming, live activity, voice mode) reconnect automatically and resume where they stopped when the app comes back to the foreground or online, through `platform.lifecycle`.
-- **Testing.** End-to-end tests run at desktop (1280 px) and phone (390 px) sizes, in Chromium and WebKit, the browser engine used on iPhone.
+- **Testing.** End-to-end tests run at desktop (1280 px) and phone (390 px) sizes, in Chromium and WebKit (the engine behind Safari).
 
 
 ### 14.2 Desktop and mobile apps
@@ -1337,22 +1354,21 @@ Agent Space is **one app**: the same React code runs on the web, inside the desk
   - quick-ask with the selected text or a screenshot
   - drag-and-drop of files
   - deep links that open Agent Space links in the app
-  - automatic updates
   - the desktop device tools (§14.3)
-- **Mobile (iPhone, Android):** the Agent Space app from the App Store and Google Play. It adds:
+- **Mobile (Android):** the Agent Space app from Google Play. It adds:
   - push notifications, including **approving from the lock screen**
-  - Face ID / fingerprint for sensitive approvals
+  - fingerprint / face unlock for sensitive approvals
   - camera and a document scanner
   - share-to-bot from other apps
   - voice mode that keeps working with the screen locked (§7.6)
-  - Siri and Google Assistant shortcuts, home-screen widgets, and live progress of long tasks on the lock screen
+  - Google Assistant shortcuts, home-screen widgets, and live progress of long tasks in an ongoing notification
   - the mobile device tools (§14.3)
 - The apps look and work the same as the web app, and everything a user does in one shows up in the others straight away.
 
 **How it's built (for the development team):**
-- **Packaging:** the same `app/` build (§14.1) is packaged with **Capacitor** for iPhone and Android and with **Electron** for Windows and Mac. Expo/React Native and Tauri are not used. React Native would need a second codebase; Tauri makes local tool servers and screen capture harder.
+- **Packaging:** the same `app/` build (§14.1) is packaged with **Capacitor** for Android and with **Electron** for Windows and Mac. Expo/React Native and Tauri are not used. React Native would need a second codebase; Tauri makes local tool servers and screen capture harder.
 - **Capacitor (mobile):**
-  - **Bundled code:** the app's code is bundled inside the app, never loaded from the website. This avoids App Store rejection for being a "wrapped website". Web-code-only fixes may be shipped as over-the-air updates, as Apple's and Google's rules allow for code that doesn't change the app's purpose. Anything touching native code goes through a store release.
+  - **Bundled code:** the app's code is bundled inside the app, never loaded from the website. This avoids Google Play rejection for being a "wrapped website". Web-code-only fixes may be shipped as over-the-air updates, as Google Play's rules allow for code that doesn't change the app's purpose. Anything touching native code goes through a store release.
   - **Platform implementations:** native versions of the platform capabilities (§14.1) use Capacitor plugins:
 
     | Capability | Plugin |
@@ -1362,28 +1378,26 @@ Agent Space is **one app**: the same React code runs on the web, inside the desk
     | Location | `@capacitor/geolocation` |
     | Sharing | `@capacitor/share` |
     | Clipboard | `@capacitor/clipboard` |
-    | Sign-in tokens | Secure storage in iOS Keychain / Android Keystore |
+    | Sign-in tokens | Secure storage in the Android Keystore |
     | Contacts | `@capacitor-community/contacts` |
     | Biometrics | A biometrics plugin |
-    | Receiving shares | A share-receiving plugin with an iOS Share Extension and an Android intent filter |
-    | Document scanner | An ML Kit / VisionKit document-scanner plugin |
-    | Calendar and reminders | A calendar plugin (EventKit / CalendarContract) |
+    | Receiving shares | A share-receiving plugin with an Android intent filter |
+    | Document scanner | An ML Kit document-scanner plugin |
+    | Calendar and reminders | A calendar plugin (CalendarContract) |
     | Place-based triggers | A background-geolocation plugin |
 
   - **Community plugins:** each is pinned to a version and reviewed before adoption. If one is unmaintained or can't support a feature, that capability is built as our own native plugin behind the same interface.
-  - **Native voice plugin:** `@agentspace/voice` (Swift and Kotlin) implements `platform.voice` on mobile. On iPhone the built-in browser view stops audio when the app is in the background, so the plugin runs the OpenAI Realtime WebRTC connection natively instead:
-    - iOS: `AVAudioSession` play-and-record with the `audio` background mode.
-    - Android: a foreground service of type microphone + media playback.
+  - **Native voice plugin:** `@agentspace/voice` (Kotlin) implements `platform.voice` on mobile. The built-in browser view doesn't keep the microphone and audio running when the app is in the background, so the plugin runs the OpenAI Realtime WebRTC connection natively instead:
+    - It runs as a foreground service of type microphone + media playback.
     - The plugin passes events (speaking state, transcripts, connection state) to the web interface.
     - Server-side control of the session (§7.6) is unchanged.
-  - **Native extras:** Siri App Intents and Android App Actions, home-screen widgets, and Live Activities / ongoing notifications are small native targets in Swift and Kotlin. They talk to the API using the app's stored sign-in.
-  - **Push providers:** APNs for iPhone and FCM for Android are added as push providers (§14.1). Lock-screen Approve / Reject actions require the device to be unlocked. Approvals that need biometrics (§11) open the app.
+  - **Native extras:** Android App Actions, home-screen widgets and ongoing progress notifications are small native targets in Kotlin. They talk to the API using the app's stored sign-in.
+  - **Push provider:** FCM is added as a push provider (§14.1). Lock-screen Approve / Reject actions require the device to be unlocked. Approvals that need biometrics (§11) open the app.
 - **Electron (desktop):**
   - **Security:** `contextIsolation` on, `sandbox` on, `nodeIntegration` off. The web app reaches native features only through a typed preload bridge that implements the platform interfaces (§14.1).
   - **Main process:** local file access, screen capture, local tool server processes and the global shortcut run there, never in the page.
-  - **Updates and signing:** automatic updates through `electron-updater`. Builds are code-signed (Apple notarisation on Mac, a signed installer on Windows).
-- **Deep links:** the `agentspace://` scheme plus universal links / Android App Links on the web domain open the matching path (§14.1). Sign-in and connection flows on mobile and desktop run in the system browser and return through these links.
-- **Release process:** CI builds the web bundle once and packages it for the web, Capacitor (iOS, Android) and Electron (Mac, Windows). The minimum supported version per platform (§14.1) is raised whenever the API drops support for an old app.
+- **Deep links:** the `agentspace://` scheme plus Android App Links on the web domain open the matching path (§14.1). Sign-in and connection flows on mobile and desktop run in the system browser and return through these links.
+- **Release process:** CI builds the web bundle once and packages it for the web, Capacitor (Android) and Electron (Mac, Windows). The minimum supported version per platform (§14.1) is raised whenever the API drops support for an old app.
 
 ### 14.3 Device tools
 Device tools let a bot use things that only exist on the user's own computer or phone: local files, the screen, phone contacts, location and so on. Everything else (email, calendar, CRM, browsing, scripts) already works through connections (§8) and the cloud computer (§9), so device tools cover only what the cloud can't reach.
@@ -1392,10 +1406,26 @@ Device tools let a bot use things that only exist on the user's own computer or 
 | Tool | What the bot can do |
 |---|---|
 | **Local files** | List, search, read, create, move and rename files, **only inside folders the user has allowed** (e.g. Documents/Reports, Downloads). Nothing outside them is visible. Deleting or overwriting a file needs approval. |
-| **Look at my screen** | Take a picture of a window or area the user picks, **only when asked** ("what's this error?"). Each time, the user sees a picker and can cancel. Also used for screen sharing in voice mode. |
+| **Look at my screen** | Take a picture of a window or area the user picks, **only when asked** ("what's this error?"). Each time, the user sees a picker and can cancel. (Screen sharing in voice mode is separate; see §7.6.) |
 | **Local tool servers** | Run tool servers (MCP) that exist only on the user's computer or company network, e.g. an internal system behind the company VPN or a local database. They're added in the desktop app, are private to that computer, and appear next to the other tools labelled "on Petros's MacBook". |
 | **Clipboard** | Put results on the clipboard ("copy the table"). Reading the clipboard is only done when the user asks. |
 | **Open** | Open files, links and apps on the computer ("open the report", "open the deal in HubSpot"). |
+| **Control my computer** | Use the apps on the computer like a person, clicking, typing and scrolling, to finish a task the user asked for (e.g. "fill in this expense claim in our old finance app"). **Off until the user turns it on**, and needs the user's OK every time (see below). |
+
+**Control my computer**
+- **Off by default:** this tool's switch starts at **Never** and has no "Always allow". The user turns it on in Settings → Devices on that computer, which explains what it does. On Mac, the app then asks for the Accessibility and Screen Recording permissions.
+- **Permission every time:** when a bot wants to use it, a card appears **on that computer**: "Sales Sam wants to control this computer to: fill in the expense claim in FinanceApp". It has a screen picker and the buttons **Allow** and **Don't allow**. Because the card only appears on the computer itself, someone has to be at it, even if the request came from a chat on the phone.
+- **How long it lasts:** permission ends when the task finishes, when the user stops it, or after 30 minutes, whichever comes first. After that the bot has to ask again.
+- **One screen only:** the bot sees and acts only on the screen picked in the card.
+- **While the bot is working:**
+  - A coloured border goes around the screen, with a small bar at the top: "Sales Sam is using your computer", with **Pause** and **Stop**.
+  - **Taking over:** as soon as the user moves the mouse or types, the bot pauses and the bar shows "You have control" with **Hand back**.
+  - **Stop shortcut:** **Ctrl/Cmd+Alt+Shift+S** stops the bot straight away from anywhere.
+- **Apps the bot can't use:** Agent Space itself, password managers, system settings and security prompts (e.g. Windows administrator prompts, macOS password dialogs), and terminal apps. Users can add more apps in Settings → Devices. If one of these apps is in front, the bot stops acting and asks the user to switch away from it.
+- **Passwords and payment details:** the bot never types passwords or card numbers. When a sign-in or payment needs them, it pauses and asks the user to type them. Nothing is recorded while the user has control.
+- **Approvals:** the same rules as on the cloud computer (§9.3, §11). Sending, submitting, buying and deleting need approval first.
+- **Never in automations:** this tool is only used in a conversation the user started and is present for. Automations can't use it.
+- **Record:** each action appears in the activity feed with a small screenshot, and a replay is kept like the cloud computer's replay (§9.2). It follows the organisation's data retention settings, and the parts where the user had control are left out.
 
 **Mobile tools**
 | Tool | What the bot can do |
@@ -1403,12 +1433,12 @@ Device tools let a bot use things that only exist on the user's own computer or 
 | **Camera and document scanner** | Ask the user to take a photo or scan a document (receipts, business cards, contracts, whiteboards). The text is recognised so the bot can read it. The user always takes the picture; the bot can't use the camera by itself. |
 | **Contacts** | Search the phone's contacts for a name, number or email ("text Anna I'm late"). It can't read the whole address book at once. |
 | **Send via phone apps** | Prepare a text message, WhatsApp message, email or phone call and open it in that app with everything filled in. **The user taps Send**; the bot can't send through these apps by itself. |
-| **Device calendar and reminders** | Read and add events and reminders in calendars on the phone (including iCloud and work calendars not connected in §8). Adding or changing events follows the usual approval rules. |
+| **Device calendar and reminders** | Read and add events and reminders in calendars on the phone (including personal and work calendars synced to the phone but not connected in §8). Adding or changing events follows the usual approval rules. |
 | **Location** | Get the current location once, when asked ("cafés near me"). Also used for **place-based automations** (§10.2), e.g. "when I arrive at the office, brief me on today". |
 
 **Mobile features that aren't bot tools**
-- Approve from the lock screen, with Face ID / fingerprint for sensitive approvals: payments, entering passwords on websites, and anything the organisation adds (§13.4).
-- **Siri / Google Assistant:** "Ask Sales Sam…", "Start voice mode with Sales Sam", "Run my morning briefing".
+- Approve from the lock screen, with fingerprint / face unlock for sensitive approvals: payments, entering passwords on websites, and anything the organisation adds (§13.4).
+- **Google Assistant:** "Ask Sales Sam…", "Start voice mode with Sales Sam", "Run my morning briefing".
 - **Home-screen widgets:** quick-ask, voice mode, and the number of approvals waiting.
 - **Live progress of long tasks** on the lock screen ("Researching… 12 of 30 done").
 
@@ -1419,13 +1449,13 @@ Device tools let a bot use things that only exist on the user's own computer or 
   1. The operating system's own permission prompt.
   2. An Agent Space switch per device and per tool.
   3. Organisation settings that can turn device tools off (§13.4).
-- **Each tool switch** has three options: **Ask each time** (default), **Always allow** and **Never**. With "Ask each time", the bot shows a card on that device: "Sales Sam wants to search your Contacts on this iPhone — Allow once / Always allow / Don't allow".
+- **Each tool switch** has three options: **Ask each time** (default), **Always allow** and **Never**. Control my computer is the exception, as described above. With "Ask each time", the bot shows a card on that device: "Sales Sam wants to search your Contacts on this phone — Allow once / Always allow / Don't allow".
 - **Desktop folders and local tool servers** are only available once the user has added them. There are no defaults.
 - **Logging:** every use of a device tool appears in the activity feed (§7.3) and the activity history (§11), showing which device and which tool.
 - **Online only:** device tools work only while that device is online with Agent Space signed in. The bot sees them as available only then, e.g. "Petros's MacBook (online)".
 - **Several devices online:** the bot uses the device the user is currently using, or asks if it's unclear.
 - **In automations:**
-  - Automations may use desktop tools. If the computer is offline when a run needs it, the run waits up to 1 hour and then fails with a notification (§10.5).
+  - Automations may use desktop tools, except control my computer. If the computer is offline when a run needs it, the run waits up to 1 hour and then fails with a notification (§10.5).
   - Mobile device tools are not used in automations, apart from location for place-based triggers.
 
 **How it's built (for the development team):**
@@ -1437,7 +1467,15 @@ Device tools let a bot use things that only exist on the user's own computer or 
 - **Results:** device results pass through the same redaction, logging and approval checks as server tools. Files or images over 1 MB are uploaded to file storage (§7.7) and returned as file IDs.
 - **Permission storage:** switches are saved per device in the `devices` table (§14.1) and synced, so the server knows which tools to offer. The device enforces them again locally before running anything.
 - **Local tool servers:** started by the Electron main process from a command and arguments the user enters, connected over stdio, and their tools listed to the server marked `runs_on: device`. They stop when the app quits.
-- **Place-based triggers:** use the operating system's geofencing (up to 20 places per user, the iPhone limit). The device reports "arrived" / "left" events to the API, which starts the automation.
+- **Control my computer:**
+  - A device tool `computer_control` (`runs_on: device`, platforms `desktop`) with the same actions as the cloud computer's computer tool: screenshot, click, double-click, type, key, scroll, move and drag.
+  - It runs in the Electron main process. Screenshots come from `desktopCapturer` for the chosen display, scaled to at most 1280 px wide, and coordinates are mapped back to the real screen. Input is sent with `@nut-tree-fork/nut-js`.
+  - The grant (conversation, task ID, display, expiry) is held in the main process and checked on every call. Calls without a valid grant fail.
+  - Before each action the main process reads the frontmost app (`get-windows`) and refuses the action if that app is on the blocked list.
+  - A global input hook (`uiohook-napi`) detects real mouse and keyboard input, ignoring events the tool generated itself, and pauses the tool. The stop shortcut is registered with `globalShortcut`.
+  - The border and the status bar are always-on-top, click-through windows excluded from screenshots.
+  - The tool is never offered to automation runs. Screenshots for the activity feed and replay are uploaded to file storage (§7.7).
+- **Place-based triggers:** use the operating system's geofencing (up to 20 places per user). The device reports "arrived" / "left" events to the API, which starts the automation.
 
 ### 14.4 Background work, queues and Redis (for the development team)
 
@@ -1533,7 +1571,7 @@ Bots keep working after the user leaves, automations run while nobody is watchin
 **Caching, locks and limits in Redis**
 - **Locks:** the locks above use a single Redis key set with `SET NX PX` and a random token, released only by the holder (checked in a Lua script).
 - **Rate limits:** API request rate limiting (per user and per IP for sign-in, public artifact and webhook endpoints) uses the NestJS throttler with Redis storage, so the limits apply across instances.
-- **Usage counters (§11, §13.4):** every model call, cloud computer minute and voice minute increments counters per organisation, member and bot for the current month (`as:<env>:usage:<orgId>:<yyyymm>:…`). Limit checks before and during runs read these counters. `usage.flush-counters` writes them to the database every minute; the database is the record used for billing and the usage overview.
+- **Usage counters (§11, §13.4):** every model call, cloud computer minute and voice minute increments counters per organisation, member and bot for the current month (`as:<env>:usage:<orgId>:<yyyymm>:…`). Limit checks before and during runs read these counters. `usage.flush-counters` writes them to the database every minute; the database is the record used for the usage overview.
 - **Caches** (via the existing `AppCacheModule` with the Redis store), each with a TTL: the OpenRouter model list (1 hour), tool lists of custom tool servers (10 minutes, cleared when the server is edited), Composio connection status (5 minutes), and the effective settings for a user and bot (§13.1; 5 minutes, cleared on any settings change). Decrypted secrets are never cached in Redis (§8.7).
 
 **Operations**
@@ -1566,16 +1604,12 @@ These go beyond the original idea and are recommended for the roadmap:
 - **Bot templates gallery** inside the organisation, so teams can share proven bots.
 - **Meeting assistant** — prepares briefs before meetings and drafts follow-ups after.
 - **Knowledge library** — upload company documents once; all permitted bots can use them.
-- **Scheduled reports** delivered to a conversation, email or Slack.
 - **Built-in slash commands** (`/summarise`, `/remind`, `/watch`) shown in the same `/` menu as skills.
-- **Control my own computer** — let a bot use the apps on the user's own desktop, like the cloud computer (off by default; Owners and Admins can block it).
 - **Local terminal commands** on desktop for developers, behind a "Developer mode" switch, with approval for every command.
-- **Message from anywhere** — talk to bots through email, Slack or WhatsApp in addition to the app.
+- **Message from anywhere** — talk to bots through email, Slack or WhatsApp in addition to the app. Each member links a channel to one of their bots in Settings → Message from anywhere: email works from the member's own address to a personal address; Slack and WhatsApp are linked by sending a one-time code from that account. Messages go into the member's chat with that bot, and the answer is sent back to the same place (with a link to the app for anything that only shows there, and for approvals).
 - **Undo** for actions where the connected service allows it.
-- **Password manager connection** (e.g. 1Password, Bitwarden) — the bot's computer fills in a website password straight from the user's password manager, still without the bot ever seeing it.
+- **Password manager connection** (1Password, through the organisation's 1Password Connect server) — the bot's computer fills in a website password straight from the password manager, still without the bot ever seeing it.
 - **More bot templates**, starting with Recruiting and Finance.
-- **More languages** beyond English and Greek.
-- **Camera and screen sharing in voice mode** — show the bot what you're looking at while talking to it.
 
 ---
 
@@ -1606,12 +1640,13 @@ These go beyond the original idea and are recommended for the roadmap:
 - Artifacts with links, sharing permissions, public links, version history and comments
 - Skills: create, edit, delete and assign in the app or by chat; `/` mentions; starter library; versions and sharing
 - Voice mode (§7.6) on web and desktop
-- Desktop app (Electron) with quick-ask with selection, deep links, auto-update and desktop device tools: local files, look at my screen, local tool servers, clipboard, open (§14.2, §14.3)
+- Desktop app (Electron) with quick-ask with selection, deep links and desktop device tools: local files, look at my screen, local tool servers, clipboard, open (§14.2, §14.3)
 
 **Phase 3 — Automation and mobile**
 - Scheduled and triggered automations, with pre-approved actions, automation memory, run history and automatic pausing on failure (§10)
-- Mobile apps (Capacitor) for iPhone and Android: push with lock-screen approvals, Face ID / fingerprint, camera and document scanner, share-to-bot, native voice plugin for voice mode with the screen locked, Siri / Google Assistant shortcuts, widgets, live task progress, and mobile device tools: contacts, send via phone apps, device calendar and reminders, location and place-based automations (§14.2, §14.3)
-- Activity history, usage limits, billing
+- Mobile app (Capacitor) for Android: push with lock-screen approvals, fingerprint / face unlock, camera and document scanner, share-to-bot, native voice plugin for voice mode with the screen locked, Google Assistant shortcuts, widgets, live task progress, and mobile device tools: contacts, send via phone apps, device calendar and reminders, location and place-based automations (§14.2, §14.3)
+- Control my computer on desktop (§14.3), and camera and screen sharing in voice mode (§7.6)
+- Usage limits
 - Selected suggested enhancements from §16
 
 ---
@@ -1630,7 +1665,7 @@ These go beyond the original idea and are recommended for the roadmap:
 
 ---
 
-## 19. Implementation Status (18 November 2026)
+## 19. Implementation Status (20 November 2026)
 
 This section records what the code does today against this specification. Setup, environment variables and run commands are in `docs/RUNNING.md`. "Tested" means it was tried end to end against the staging services (staging database, OpenRouter, Composio, Daytona, OpenAI, Google Cloud) in Chrome. "Built" means the code is in place but was not tried end to end.
 
@@ -1652,8 +1687,24 @@ This section records what the code does today against this specification. Setup,
 | Secrets | §8.7–8.9 | Google Cloud Secret Manager, secret box in chat, warning when a secret is typed into a message, Secrets page, and managing secrets by chat |
 | Cloud computer | §9.1–9.3 | One Daytona sandbox per bot with turn on, pause and reset, and auto-stop when idle. The live view goes through an API proxy, which hides Daytona's warning page and blocks input for people who are only watching. Includes take control and hand back, commands, file read/write, the files panel, screenshots the bot can see, browser clicking, typing and scrolling, a session replay, and minute-based usage |
 | Automations | §10.2–10.5 | Scheduled automations created in the app or by chat, with Run now, run history, pre-approved actions, automation memory, retries and automatic pausing after repeated failures. Pre-approved actions are built but were not tried end to end |
+| Activity history | §11, §13.4 | Organisation-wide activity history for Owners and Admins, in Settings → Activity (`/settings/activity`) and the `GET /activity` API |
+| Artifact download and export | §7.5 | "Download as" offers PDF, image (PNG) and the self-contained web page for every artifact, PowerPoint for slide decks and Word for documents. The API opens the live page in headless Chrome (`RendererService`, Puppeteer; `CHROME_PATH` optional) with a short-lived view token: PDF from print layout, PNG full page, decks by stepping through slides with the right arrow (one image per slide, also used for deck PDFs), Word from the rendered content |
+| Artifact live data | §7.5 | `window.agentspace.live("HUBSPOT_LIST_DEALS", params)` runs a read-only connected-service action with the viewer's own connection (members only, never public links; anything that sends, changes or deletes is refused; 60 calls a minute). The first time, the app (not the page) asks "Let … read your Gmail data?"; the answer is saved per member, artifact and service and can be removed in the artifact's Settings. Tested in Chrome with a real Gmail account |
+| Artifact visitor uploads | §7.5, §7.7 | `window.agentspace.upload(file)` posts the file (multipart, no CORS preflight) to `/ax/:id/files`; the page saves the returned reference in a record. Up to 10 MB; PDF, images, Office, text, CSV or ZIP (scripts, HTML and programs refused); 500 per artifact. Members can always upload; public visitors only while "File uploads from visitors" is on in Share. Files are stored with the artifact and only owners and editors download them from the Data tab (signed links) |
+| Desktop device tools | §14.3 | Local files (allowed folders only; delete and overwrite always ask for approval), look at my screen (picker in the app), local tool servers (MCP over stdio, env values encrypted on the computer), clipboard, open, and control my computer. The desktop app announces itself on the real-time connection (`device:hello`), calls go out on a Redis channel to whichever API instance holds its socket and come back on a reply list (30 s, 2 min when waiting for the user, up to 1 hour for an offline computer in automations). Settings → Devices → This computer has the per-tool switches (Ask each time / Always allow / Never; control has no Always allow), allowed folders, local tool servers and blocked apps. Tested in the real desktop app on Windows: the bot listed and read files after "Allow once", used a local tool server tool, saw a window picked in the screen picker, and took a control-my-computer screenshot after "Allow" (border and bar shown, then removed when the run ended) |
+| Camera and screen sharing in voice mode | §7.6 | Camera and Share screen buttons in the voice bar (camera on web, desktop and Android with front/back switch; screen on desktop browsers and the desktop app), a live preview with Show this and Snapshot, and a small camera/screen icon on spoken messages that came with a picture. The organisation switch hides the buttons and the sideband deletes any picture in a session where it's off. Tested in Chrome with a fake camera: the bot described the camera picture and the snapshot was posted in the chat as an image |
+| Saved widgets | §7.4 | "Save as widget" on any interactive reply. The Widgets page lists them; opening one shows the last version and asks the bot again for fresh data with read-only tools (anything needing approval is skipped), then rebuilds it. Rename, change what the bot is asked, refresh, open the source conversation, delete |
+| Deleted artifacts | §7.5, §13.2 | Kept and restorable from the Deleted tab by default. The personal setting "Permanently delete my deleted artifacts after 30 days" (off by default) makes the daily `storage.purge-deleted` job remove them and their files 30 days after deletion |
+| Automation triggers from connected services | §10.2 | "When something happens" in the automation form (and `create_automation` with a trigger, after `list_automation_triggers`): pick the connected account, the event (Composio trigger types, e.g. a new Gmail message or a Slack channel message) and its settings. Composio watches the event and calls `POST /api/webhooks/composio`; deliveries are checked with the Standard Webhooks signature (`COMPOSIO_WEBHOOK_SECRET`), replays are ignored, and the matching automation runs with the event as its input (kept on the run, also for the retry). Pausing disables the watch, resuming re-enables it, deleting removes it. Tested with a real Gmail trigger created and removed at Composio and a signed event: the run started and the bot reported the sender and subject |
+| Cloud computer: files from connected services | §9.5 | `copy_to_computer` from a chat file, a link or a connected account (through the Composio proxy, named by its label; the sign-in never reaches the computer), with optional unpacking, and `copy_from_computer`. Tested: a bot copied a Gmail API response through the connected account onto the computer and read it there |
+| Meeting assistant | §16 | A card on the Automations page sets it up with a bot, a calendar (Google Calendar or Outlook) and optionally an email account. It creates two automations the member owns: "Meeting briefs" (hourly at :45, briefs meetings starting in the next hour: attendees, recent emails with them, other connected data, purpose and agenda) and "Meeting follow-ups" (hourly at :05, saves a follow-up email to the attendees as a draft, never sends). Each remembers which meetings it handled; turning it off deletes both. Tested with the real Google Calendar: a meeting added 30 minutes ahead was briefed on "Run now" and remembered |
+| Undo | §16 | When a bot's action created something a connected service can take back (calendar events, drafts, labels, Linear/Jira/Asana/Todoist/Trello items, Slack messages, reactions and reminders, Notion pages, Drive files and folders, HubSpot contacts, GitHub issues closed), its step shows **Undo** for 24 hours. Only the person the bot acted for can use it, once; the inverse call goes through the same account, and the message shows the step as undone. Sent emails can't be undone and get no button. Tested with a real Google Calendar event: created by a bot, deleted with Undo, a second Undo refused |
+| Password manager connection | §16, §9.4 | Secrets → Add → Password manager connects a 1Password Connect server (address and access token, checked before saving; replacing the token checks it again and keeps the address). The bot sees it under "Saved website logins" as "any website with a login stored in …" and calls `computer_sign_in` with it and the website it is on: the API reads the Connect server at that moment, picks the login item whose website covers the open site (never a parent or look-alike domain), and the username, password and authenticator code are typed by the sign-in helper exactly as for a saved login. Nothing is cached or shown to the bot, the approval says which manager is used, and the secret's history records the website and item. Tested with a mock Connect server: the bot signed in to `the-internet.herokuapp.com` on its cloud computer and reported the secure-area message |
+| Message from anywhere | §16 | Settings → Message from anywhere turns on email, Slack and WhatsApp per member, each with its bot. Email: a personal address on `INBOUND_EMAIL_DOMAIN` (Resend inbound; only mail from the member's own account address that passed SPF/DKIM/DMARC is accepted; quoted earlier mail is dropped; the answer is a reply from the same address). Slack and WhatsApp: a 6-digit code valid 15 minutes, sent from the account to link it (one Slack / WhatsApp account links to one member); unlinked senders get a how-to-link hint. Messages go into the member's direct chat with the bot (shown with a mail / Slack / WhatsApp mark) and the answer goes back to the same place; anything that only shows in the app, approvals and questions come with a link. Webhooks are signature-checked (Svix, Slack signing, Meta), stale or repeated deliveries are ignored, and each link is limited to 60 messages an hour. Tested with signed webhooks and mock provider APIs: real bot answers came back by email (threaded reply), in the Slack thread and on WhatsApp; another sender's email, bad signatures and a turned-off address were ignored, and the Settings card turned "Linked" by itself when the code arrived |
+| Fingerprint / face unlock for approvals | §11, §13.4 | Payments and website passwords always need it on the Android app; Approvals & safety adds "all approvals", "emails outside the company" or "deleting data". Approvals carry `requires_biometric`; approving one in the Android app asks for fingerprint, face or screen lock first. The approval push is data-only so the phone draws Approve / Reject itself, and leaves the buttons off when unlock is needed. Rule, setting and push format tested through the API; the phone side has not been run on a device |
+| Cloud computer: browsing and website sign-ins | §9.1, §9.4 | The sandbox now reaches public websites. Tested: the bot opened `the-internet.herokuapp.com`, signed in with `computer_sign_in` after the approval, and read the page after signing in |
 | Usage limits | §13.4 | Limits for the organisation, each member and each bot, with spending bars and alerts at 80% and 100%. Checked through the API; the alerts were not triggered in a real session |
-| Notifications | §12 | In-app notifications and web push (VAPID, service worker, a per-device switch in Settings → Notifications) |
+| Notifications | §12 | In-app notifications and web push (VAPID, service worker, a per-device switch in Settings → Notifications). Tested in Chrome with notifications allowed: turning push on created a browser subscription, and a finished task's push was shown by the service worker while Agent Space was not on screen (when it is on screen, non-urgent pushes are left to the in-app notifications) |
 | Settings | §13 | Personal, bot and organisation settings, including voice and cloud computer settings |
 | Background work | §14.4 | BullMQ queues, bot runs outside the request, Redis Streams events across API instances, locks, rate limits, usage counters, Bull Board |
 | Responsive web app | §14.1 | Checked at phone width (390 px): no sideways scrolling on the pages added this round |
@@ -1662,48 +1713,29 @@ This section records what the code does today against this specification. Setup,
 
 | Area | Spec | Status and what is missing |
 |---|---|---|
-| Cloud computer: browsing websites | §9.1 | Chromium starts and opens pages, but the current Daytona account tier only lets sandboxes reach a few essential hosts (PyPI, npm, GitHub). Other sites are reset. Needs a Daytona tier with full internet access; no code change |
-| Cloud computer: website sign-ins | §9.4 | The signed-in websites list and signing out are built. It reads the browser's cookies. Not tested, because of the network limit above |
-| Cloud computer: files from connected services | §9.5 | `copy_to_computer` (from a chat file, a link or a connected account through the Composio proxy, with optional unpacking) and `copy_from_computer` are built. Only copying chat files was tested |
-| Web push in the browser | §12 | The server side and the push config were tested. Turning it on needs the browser's permission prompt, which automation can't click |
-| Desktop app (Electron) | §14.2 | `desktop/` builds, and the unpacked Windows app loads the app. Includes the secure bridge, `agentspace://` deep links, native notifications, open at start-up, a quick-ask shortcut and file pick/download. Code signing, notarisation and the auto-update feed are not configured |
-| Mobile apps (Capacitor) | §14.2 | Android and iOS projects are generated, with plugins, deep links, a share-target declaration and secure token storage. Neither has been built in Android Studio or Xcode. Android push works through FCM once `FCM_PROJECT_ID` and `FCM_CREDENTIALS_JSON_BASE64` are set |
+| Cloud computer: signed-in websites list | §9.4 | The list of websites the computer is signed in to (read from the browser's cookies) and signing out of one are built but were not tried end to end |
+| Desktop app (Electron) | §14.2 | `desktop/` builds, and the unpacked Windows app loads the app. Includes the secure bridge, `agentspace://` deep links, native notifications, open at start-up, a quick-ask shortcut and file pick/download |
+| Mobile app (Capacitor) | §14.2, §14.3 | Android only. Everything below is built and the app compiles (`gradlew assembleDebug` produces the APK), but it has not been run on a phone: voice mode in a native foreground service (keeps going with the screen locked, End button in the notification), lock-screen Approve / Reject, fingerprint / face unlock before approving, home-screen widgets (quick ask, voice, approvals count), ongoing task-progress notifications (latest step, then "Finished"), Google Assistant and launcher shortcuts ("Ask …", "Start voice mode with …", "Run my …", open a feature; a chat opened with `?voice=1` starts voice mode), share to a bot, the document scanner, App Links (`/.well-known/assetlinks.json` from `ANDROID_CERT_SHA256`), icons, splash and the store listing text. Mobile device tools: scan with the phone (text read on the phone), search contacts, send via phone apps (the user taps Send), device calendar and reminders, and location; the server side was tested with a simulated phone connection. Push works through FCM once `FCM_PROJECT_ID` and `FCM_CREDENTIALS_JSON_BASE64` are set |
+| Control my computer: input | §14.3 | Clicks, typing, keys, scrolling and drags (nut-js), pausing when the user moves the mouse or types (uiohook), the stop shortcut and the blocked-app check are built and their logic is unit-tested, but no real mouse or keyboard input was sent in testing. Nothing was tested on a Mac (Accessibility and Screen Recording prompts, coordinates) or in a packaged installer |
 | Direct browser uploads to GCS | §7.7 | Need a CORS rule on the bucket for the app's origin. The staging service account can't read bucket settings, so this wasn't checked |
 
 ### 19.3 Not built yet
 
-- **Automations (§10.2):** triggers from events in connected services, and place-based triggers. Only scheduled automations work.
-- **Device tools (§14.3):**
-  - Desktop: local files, look at my screen, local tool servers, clipboard and open.
-  - Mobile: contacts, sending through phone apps, the device calendar and reminders, location.
-- **Mobile extras (§14.2):**
-  - iPhone push delivery: iOS tokens are stored, but there is no APNs sender.
-  - Native voice plugin, so voice mode keeps working with the screen locked.
-  - Siri / Google Assistant shortcuts, widgets and Live Activities.
-  - Face ID / fingerprint for sensitive approvals, and Approve/Reject from the lock screen.
-  - Document scanner, the iOS Share Extension, and handling shared content in the app.
-  - Universal links / App Links, app icons and splash screens, and store listings.
-- **Artifacts (§7.5):**
-  - Live data from connected accounts.
-  - Visitor file uploads.
-  - Editing text directly in the preview, and seeing who else is editing.
-  - PDF, PPTX and DOCX export (HTML download only).
-  - The 30-day purge of deleted artifacts.
-- **Saved widgets (§7.4):** the database table exists, but there is no screen for it.
-- **Billing (§17 Phase 3):** no plans, checkout or invoices. The Stripe integration from the starter is not wired to anything.
-- **Camera and screen sharing in voice mode (§16).**
-- **Suggested enhancements (§16):** none are built except the knowledge library. Not built: templates gallery, meeting assistant, scheduled reports outside the app, built-in slash commands, control my own computer, developer terminal, messaging from email/Slack/WhatsApp, undo, password manager connection, more templates and languages.
+- **Automations (§10.2):** place-based triggers (postponed by the product owner; kept in the specification).
 
 ### 19.4 Skipped on purpose (product owner decision, 18 November 2026)
 
-- Google, Microsoft and Apple sign-in, and two-factor authentication (§5, §13.2).
 - Data export (§13.2, §13.4).
+- From §16: the bot templates gallery, built-in slash commands, local terminal commands (developer mode) and more bot templates (they stay in the specification).
+- Building and running the mobile app in Android Studio on a device.
 - Applying the app-language setting to the interface. The setting is stored, but the interface stays in English (§13.2).
 
 ### 19.5 What needs action outside the code
 
-- **Daytona:** move to a tier with full internet access so the cloud computer can browse any site.
+- **Composio webhook:** run `node scripts/composio-webhook.mjs --create` (in `api/`, with the production `COMPOSIO_API_KEY` and `PUBLIC_API_URL`) once the API is deployed, and set the printed `COMPOSIO_WEBHOOK_SECRET`. Until then, automation triggers are created but their events can't reach the API.
 - **Google Cloud Storage:** add a CORS rule on the bucket for the app's origin(s): `PUT` and `POST`, headers `Content-Type` and `x-goog-resumable`.
-- **Firebase:** set `FCM_PROJECT_ID`, `FCM_CREDENTIALS_JSON_BASE64` and `android/app/google-services.json` for Android push. iPhone push also needs an APNs key and a sender.
-- **Signing:** Windows and Mac code-signing certificates and Apple notarisation for the desktop app. Apple and Google developer accounts for the mobile apps.
+- **Firebase:** set `FCM_PROJECT_ID`, `FCM_CREDENTIALS_JSON_BASE64` and `android/app/google-services.json` for Android push.
+- **Google Play:** a developer account for the mobile app, the release signing key, and its SHA-256 fingerprint in `ANDROID_CERT_SHA256` on the API; set `APP_LINKS_HOST` to the web app's domain in the Android build.
+- **Message from anywhere:** each channel appears in Settings once its provider is set up (details in `docs/RUNNING.md`): a Resend receiving domain and `email.received` webhook (`INBOUND_EMAIL_DOMAIN`, `RESEND_INBOUND_WEBHOOK_SECRET`); a Slack app with direct messages and the `message.im` event (`SLACK_SIGNING_SECRET`, `SLACK_BOT_TOKEN`); a WhatsApp Cloud API number and webhook (`WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, `WHATSAPP_DISPLAY_NUMBER`).
+- **Password manager:** organisations that want it run a 1Password Connect server reachable over https.
 - **Production keys:** VAPID keys for web push (generated for staging), and `OPENAI_API_KEY` and `DAYTONA_API_KEY` for production.

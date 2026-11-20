@@ -5,7 +5,7 @@ export const ConnectionKinds = { COMPOSIO: "COMPOSIO", API_KEY: "API_KEY", MCP: 
 export type ConnectionKind = (typeof ConnectionKinds)[keyof typeof ConnectionKinds];
 export const Visibilities = { PRIVATE: "PRIVATE", SHARED: "SHARED" } as const;
 export type Visibility = (typeof Visibilities)[keyof typeof Visibilities];
-export const CredentialKinds = { API_KEY: "API_KEY", MCP_TOKEN: "MCP_TOKEN", MCP_OAUTH: "MCP_OAUTH", WEBSITE_LOGIN: "WEBSITE_LOGIN" } as const;
+export const CredentialKinds = { API_KEY: "API_KEY", MCP_TOKEN: "MCP_TOKEN", MCP_OAUTH: "MCP_OAUTH", WEBSITE_LOGIN: "WEBSITE_LOGIN", PASSWORD_MANAGER: "PASSWORD_MANAGER" } as const;
 export type CredentialKind = (typeof CredentialKinds)[keyof typeof CredentialKinds];
 export const ConnectionStatuses = { ACTIVE: "ACTIVE", NEEDS_RECONNECTING: "NEEDS_RECONNECTING", ERROR: "ERROR" } as const;
 export type ConnectionStatus = (typeof ConnectionStatuses)[keyof typeof ConnectionStatuses];
@@ -108,6 +108,8 @@ export interface CreateCredentialDto {
   value: string;
   website?: string;
   username?: string;
+  /** PASSWORD_MANAGER: the 1Password Connect server address. */
+  server_url?: string;
   totp_secret?: string;
   visibility?: Visibility;
   bot_ids?: string[];

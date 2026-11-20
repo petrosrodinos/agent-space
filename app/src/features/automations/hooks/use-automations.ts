@@ -3,7 +3,7 @@ import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import type { AutomationStatus, AutomationUpdate } from "../interfaces/automations.interfaces";
 import {
-  confirmPreApprovals, createAutomation, deleteAutomation, duplicateAutomation, getAutomation, getAutomationMemory, getAutomationRuns, getAutomations, pauseAutomation,
+  confirmPreApprovals, createAutomation, deleteAutomation, duplicateAutomation, getAutomation, getAutomationMemory, getAutomationRuns, getAutomations, getAutomationTriggers, getMeetingAssistant, setMeetingAssistant, disableMeetingAssistant, pauseAutomation,
   removePreApproval, resetAutomationMemory, resumeAutomation, runAutomationNow, setAutomationMemory, updateAutomation,
 } from "../services/automations.services";
 import { QueryKeys } from "@/config/constants/query-keys";
@@ -39,6 +39,16 @@ function useAutomationMutation<TArgs, TResult>(fn: (args: TArgs) => Promise<TRes
   });
 }
 
+export const useMeetingAssistant = () => {
+  const ready = useOrgReady();
+  return useQuery({ queryKey: [QueryKeys.AUTOMATIONS, "meeting-assistant"], queryFn: getMeetingAssistant, enabled: ready });
+};
+export const useSetMeetingAssistant = () => useAutomationMutation(setMeetingAssistant, "Meeting assistant saved", "Could not save the meeting assistant");
+export const useDisableMeetingAssistant = () => useAutomationMutation(disableMeetingAssistant, "Meeting assistant turned off", "Could not turn it off");
+
+/** Events a connected account can start an automation with (§10.2). */
+export const useAutomationTriggers = (connectionId: string | null) =>
+  useQuery({ queryKey: [QueryKeys.AUTOMATIONS, "triggers", connectionId], queryFn: () => getAutomationTriggers(connectionId!), enabled: !!connectionId, staleTime: 5 * 60_000 });
 export const useCreateAutomation = () => useAutomationMutation(createAutomation, "Automation saved", "Could not save the automation");
 export const useUpdateAutomation = () => useAutomationMutation(({ id, ...dto }: { id: string } & AutomationUpdate) => updateAutomation(id, dto), "Automation saved", "Could not save", (a) => a.id);
 export const useDeleteAutomation = () => useAutomationMutation(deleteAutomation, "Automation deleted", "Could not delete");

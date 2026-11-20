@@ -18,6 +18,7 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { ACTIVE_RUN_STATUSES, RunsService } from '../runs/runs.service';
 import { UsageService } from '../usage/usage.service';
 import { cronError, describeCron, frequencyError, nextRun } from './automation-schedule.utils';
+import { AutomationTriggersService, TriggerChoice, TriggerEvent } from './automation-triggers.service';
 import { AutomationListQuery, AutomationRunsQuery, CreateAutomationDto, PreApprovalDto, UpdateAutomationDto } from './dto/automation.dto';
 
 export const MEMORY_MAX_BYTES = 1024 * 1024;
@@ -36,6 +37,7 @@ const AUTOMATION_INCLUDE = {
     pre_approvals: { include: { connection: { select: { id: true, label: true, service_name: true } } }, orderBy: { created_at: 'asc' } },
     result_destinations: { include: { connection: { select: { id: true, label: true, service_name: true } } } },
     results_conversation: { select: { id: true, name: true, type: true } },
+    trigger_subscriptions: { select: { id: true, trigger_key: true, trigger_name: true, config: true, connection: { select: { id: true, label: true, service_name: true, service_key: true } } } },
 } satisfies Prisma.AutomationInclude;
 
 type AutomationWithRelations = Prisma.AutomationGetPayload<{ include: typeof AUTOMATION_INCLUDE }>;
@@ -86,6 +88,7 @@ export class AutomationsService {
         private readonly notifications: NotificationsService,
         private readonly mail: MailService,
         @InjectQueue(Queues.AUTOMATIONS) private readonly queue: Queue,
+        private readonly triggers: AutomationTriggersService,
     ) { }
 
     // =====================================================================
@@ -98,7 +101,8 @@ export class AutomationsService {
         return toJsonSafe({
             ...rest,
             connections: a.connections.map((c) => c.connection),
-            schedule_description: a.cron_expression ? describeCron(a.cron_expression) : null,
+            schedule_description: a.cron_expression ? describeCron(a.cron_expression) : a.trigger_subscriptions[0] ? `When: ${a.trigger_subscriptions[0].trigger_name ?? a.trigger_subscriptions[0].trigger_key} (${a.trigger_subscriptions[0].connection.label})` : null,
+            trigger: a.trigger_subscriptions[0] ? { slug: a.trigger_subscriptions[0].trigger_key, name: a.trigger_subscriptions[0].trigger_name, config: a.trigger_subscriptions[0].config, connection: a.trigger_subscriptions[0].connection } : null,
             memory_size: memory_notes ? Buffer.byteLength(JSON.stringify(memory_notes)) : 0,
             ...extra,
         });
@@ -251,11 +255,14 @@ export class AutomationsService {
         if (dto.uses_cloud_computer && s && !s.automations_cloud_computer) throw new ForbiddenException('Your organisation does not allow automations to use the cloud computer');
         await this.access.requireUsableBot(actor.organization_id, actor.user_id, dto.bot_id);
         const tz = dto.timezone || (await this.defaultTimezone(actor));
-        await this.validateSchedule(actor.organization_id, dto.cron_expression, tz);
+        if (!dto.trigger && !dto.cron_expression) throw new BadRequestException('Choose a schedule or an event that starts it');
+        const trigger = dto.trigger ? await this.triggers.validate(actor, dto.trigger) : null;
+        if (!trigger) await this.validateSchedule(actor.organization_id, dto.cron_expression!, tz);
         if (dto.skill_id && !(await this.prisma.skill.count({ where: { id: dto.skill_id, ...this.access.usableSkillsWhere(actor.organization_id, actor.user_id) } }))) throw new BadRequestException('Skill not found');
-        const connectionIds = await this.validateConnections(actor, dto.bot_id, [...(dto.connection_ids ?? []), ...(dto.results_connection_id ? [dto.results_connection_id] : [])]);
+        const connectionIds = await this.validateConnections(actor, dto.bot_id, [...(dto.connection_ids ?? []), ...(dto.results_connection_id ? [dto.results_connection_id] : []), ...(trigger ? [trigger.connection.id] : [])]);
         const preApprovals = await this.validatePreApprovals(actor, dto.pre_approvals ?? [], connectionIds);
         const resultsConversationId = await this.resultsConversation(actor, dto.bot_id, dto.results_conversation_id);
+        const cron = trigger ? null : dto.cron_expression!.trim();
 
         const a = await this.prisma.automation.create({
             data: {
@@ -265,23 +272,33 @@ export class AutomationsService {
                 name: dto.name.trim(),
                 instructions: dto.instructions.trim(),
                 skill_id: dto.skill_id ?? null,
-                trigger_kind: 'SCHEDULE',
-                cron_expression: dto.cron_expression.trim(),
+                trigger_kind: trigger ? 'COMPOSIO_TRIGGER' : 'SCHEDULE',
+                cron_expression: cron,
                 timezone: tz,
                 uses_cloud_computer: !!dto.uses_cloud_computer,
                 memory_plan: dto.memory_plan ?? null,
                 source_conversation_id: dto.source_conversation_id ?? null,
                 results_conversation_id: resultsConversationId,
-                next_run_at: nextRun(dto.cron_expression, tz),
+                next_run_at: cron ? nextRun(cron, tz) : null,
                 pre_approvals_confirmed_at: new Date(),
+                ...(trigger ? { trigger_subscriptions: { create: [{ connection_id: trigger.connection.id, trigger_key: trigger.type.slug, trigger_name: trigger.type.name, config: (dto.trigger!.config ?? {}) as Prisma.InputJsonValue }] } } : {}),
                 connections: { create: connectionIds.map((connection_id) => ({ connection_id })) },
                 pre_approvals: { create: preApprovals.map((p) => ({ action_type: p.action_type, connection_id: p.connection_id ?? null, target: p.target.trim() })) },
                 result_destinations: { create: this.destinationsData(actor, dto, resultsConversationId, connectionIds) },
             },
             include: AUTOMATION_INCLUDE,
         });
+        if (trigger) {
+            try {
+                await this.triggers.subscribe(a.id);
+            } catch (e) {
+                // Without the watch the automation would never run: don't keep it.
+                await this.prisma.automation.delete({ where: { id: a.id } }).catch(() => undefined);
+                throw new BadRequestException(`Couldn't start watching ${trigger.connection.service_name}: ${(e as Error).message}`);
+            }
+        }
         await this.syncScheduler(a.id);
-        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'automation.created', target_type: 'automation', target_id: a.id, metadata: { name: a.name, schedule: a.cron_expression, pre_approvals: preApprovals.length } });
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'automation.created', target_type: 'automation', target_id: a.id, metadata: { name: a.name, schedule: a.cron_expression, trigger: trigger?.type.slug, pre_approvals: preApprovals.length } });
         await this.changed(actor.user_id, a.id);
         return this.shape(a);
     }
@@ -290,9 +307,11 @@ export class AutomationsService {
         const a = await this.requireOwned(actor, id);
         const botId = dto.bot_id ?? a.bot_id;
         if (dto.bot_id && dto.bot_id !== a.bot_id) await this.access.requireUsableBot(actor.organization_id, actor.user_id, dto.bot_id);
-        const cron = dto.cron_expression ?? a.cron_expression ?? '';
+        const newTrigger = dto.trigger ? await this.triggers.validate(actor, dto.trigger) : null;
+        const switchingToSchedule = !newTrigger && dto.cron_expression !== undefined && a.trigger_kind !== 'SCHEDULE';
+        const cron = newTrigger ? '' : (dto.cron_expression ?? a.cron_expression ?? '');
         const tz = dto.timezone ?? a.timezone ?? 'UTC';
-        if (dto.cron_expression !== undefined || dto.timezone !== undefined) await this.validateSchedule(actor.organization_id, cron, tz);
+        if (!newTrigger && (dto.cron_expression !== undefined || (dto.timezone !== undefined && a.cron_expression))) await this.validateSchedule(actor.organization_id, cron, tz);
         if (dto.uses_cloud_computer) {
             const s = await this.orgSettings(actor.organization_id);
             if (s && !s.automations_cloud_computer) throw new ForbiddenException('Your organisation does not allow automations to use the cloud computer');
@@ -300,7 +319,10 @@ export class AutomationsService {
         if (dto.skill_id && !(await this.prisma.skill.count({ where: { id: dto.skill_id, ...this.access.usableSkillsWhere(actor.organization_id, actor.user_id) } }))) throw new BadRequestException('Skill not found');
 
         const currentConnIds = a.connections.map((c) => c.connection_id);
-        const connectionIds = dto.connection_ids !== undefined || dto.results_connection_id ? await this.validateConnections(actor, botId, [...(dto.connection_ids ?? currentConnIds), ...(dto.results_connection_id ? [dto.results_connection_id] : [])]) : currentConnIds;
+        const connectionIds =
+            dto.connection_ids !== undefined || dto.results_connection_id || newTrigger
+                ? await this.validateConnections(actor, botId, [...(dto.connection_ids ?? currentConnIds), ...(dto.results_connection_id ? [dto.results_connection_id] : []), ...(newTrigger && !(dto.connection_ids ?? currentConnIds).includes(newTrigger.connection.id) ? [newTrigger.connection.id] : [])])
+                : currentConnIds;
         const preApprovals = dto.pre_approvals ? await this.validatePreApprovals(actor, dto.pre_approvals, connectionIds) : null;
 
         const destinationsTouched = ['email_results', 'results_email', 'results_connection_id', 'results_target', 'results_conversation_id'].some((k) => (dto as Record<string, unknown>)[k] !== undefined);
@@ -317,7 +339,7 @@ export class AutomationsService {
                 data: {
                     ...(dto.name !== undefined ? { name: dto.name.trim() } : {}),
                     ...(dto.instructions !== undefined ? { instructions: dto.instructions.trim() } : {}),
-                    ...(dto.cron_expression !== undefined ? { cron_expression: dto.cron_expression.trim() } : {}),
+                    ...(newTrigger ? { trigger_kind: 'COMPOSIO_TRIGGER' as const, cron_expression: null } : dto.cron_expression !== undefined ? { trigger_kind: 'SCHEDULE' as const, cron_expression: dto.cron_expression.trim() } : {}),
                     ...(dto.timezone !== undefined ? { timezone: dto.timezone } : {}),
                     ...(dto.bot_id !== undefined ? { bot_id: dto.bot_id } : {}),
                     ...(dto.skill_id !== undefined ? { skill_id: dto.skill_id } : {}),
@@ -328,7 +350,7 @@ export class AutomationsService {
                     ...(preApprovals ? { pre_approvals_confirmed_at: new Date() } : needsReconfirm ? { pre_approvals_confirmed_at: null } : {}),
                 },
             });
-            if (dto.connection_ids !== undefined || dto.results_connection_id) {
+            if (dto.connection_ids !== undefined || dto.results_connection_id || newTrigger) {
                 await tx.automationConnection.deleteMany({ where: { automation_id: id } });
                 await tx.automationConnection.createMany({ data: connectionIds.map((connection_id) => ({ automation_id: id, connection_id })) });
                 // Pre-approvals for removed connections no longer apply.
@@ -351,6 +373,13 @@ export class AutomationsService {
                 for (const d of this.destinationsData(actor, merged, resultsConversationId!, connectionIds)) await tx.automationResultDestination.create({ data: { ...d, automation: { connect: { id } } } });
             }
         });
+        if (newTrigger || switchingToSchedule) {
+            await this.triggers.unsubscribe(id);
+            if (newTrigger) {
+                await this.prisma.automationTriggerSubscription.create({ data: { automation_id: id, connection_id: newTrigger.connection.id, trigger_key: newTrigger.type.slug, trigger_name: newTrigger.type.name, config: (dto.trigger!.config ?? {}) as Prisma.InputJsonValue } });
+                if (a.status === 'ACTIVE') await this.triggers.subscribe(id);
+            }
+        }
         await this.syncScheduler(id);
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'automation.updated', target_type: 'automation', target_id: id, metadata: { fields: Object.keys(dto), pre_approvals_need_confirmation: needsReconfirm } });
         await this.changed(actor.user_id, id);
@@ -377,6 +406,7 @@ export class AutomationsService {
         await this.requireOwned(actor, id);
         await this.prisma.automation.update({ where: { id }, data: { status: 'PAUSED', status_reason: null, next_run_at: null } });
         await this.syncScheduler(id);
+        await this.triggers.disable(id);
         await this.changed(actor.user_id, id);
         return this.get(actor, id);
     }
@@ -393,6 +423,9 @@ export class AutomationsService {
         if (broken.length) throw new BadRequestException(`Reconnect ${broken.map((c) => `"${c.connection.label}"`).join(', ')} on the Connections page first.`);
         const limit = await this.usage.limitReached(actor.organization_id, actor.user_id, a.bot_id);
         if (limit) throw new BadRequestException(limit);
+        if (a.trigger_kind === 'COMPOSIO_TRIGGER') await this.triggers.subscribe(id).catch((e) => {
+            throw new BadRequestException(`Couldn't start watching for the event again: ${(e as Error).message}`);
+        });
         await this.prisma.automation.update({ where: { id }, data: { status: 'ACTIVE', status_reason: null, consecutive_failures: 0, next_run_at: a.cron_expression ? nextRun(a.cron_expression, a.timezone ?? 'UTC') : null } });
         await this.syncScheduler(id);
         await this.changed(actor.user_id, id);
@@ -429,6 +462,8 @@ export class AutomationsService {
                 connections: { create: a.connections.map((c) => ({ connection_id: c.connection_id })) },
                 pre_approvals: { create: a.pre_approvals.map((p) => ({ action_type: p.action_type, connection_id: p.connection_id, target: p.target })) },
                 result_destinations: { create: a.result_destinations.map((d) => ({ kind: d.kind, conversation_id: d.conversation_id, email: d.email, connection_id: d.connection_id, target: d.target })) },
+                // The copy watches the same event once it's resumed (a new watch is created then).
+                trigger_subscriptions: { create: a.trigger_subscriptions.map((t) => ({ connection_id: t.connection.id, trigger_key: t.trigger_key, trigger_name: t.trigger_name, config: (t.config ?? {}) as Prisma.InputJsonValue })) },
             },
             include: AUTOMATION_INCLUDE,
         });
@@ -441,6 +476,7 @@ export class AutomationsService {
         await this.requireOwned(actor, id);
         await this.prisma.automation.update({ where: { id }, data: { deleted_at: new Date(), status: 'PAUSED', next_run_at: null } });
         await this.syncScheduler(id);
+        await this.triggers.unsubscribe(id);
         // Automation memory files are deleted with it (§10.4).
         await this.prisma.file.updateMany({ where: { automation_id: id, deleted_at: null }, data: { deleted_at: new Date(), purge_after: new Date(Date.now() + 30 * 86400_000) } });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'automation.deleted', target_type: 'automation', target_id: id });
@@ -538,7 +574,16 @@ export class AutomationsService {
      * `tick` (and `retry`): checks status, access and usage limits, refuses a run while another is active (recorded as
      * skipped), then queues the run on `agent-runs` (§10.6).
      */
-    async tick(automationId: string, opts: { manual?: boolean; retry_of?: string; scheduled_for?: Date | null } = {}): Promise<{ status: 'started'; automation_run_id: string; run_id: string } | { status: 'skipped' | 'ignored'; reason: string }> {
+    /** A watched event happened (§10.2): start the automation with the event as its input. Called by the webhook. */
+    async onTriggerEvent(event: TriggerEvent) {
+        const sub = await this.triggers.findSubscription(event.trigger_id);
+        if (!sub) return { status: 'ignored' as const, reason: 'Unknown trigger' };
+        const result = await this.tick(sub.automation_id, { trigger_event: this.triggers.trimEvent(event), trigger_label: `${sub.trigger_name ?? sub.trigger_key} (${sub.connection.label})` });
+        this.logger.log(`Trigger ${sub.trigger_key} → automation ${sub.automation_id}: ${result.status}`);
+        return result;
+    }
+
+    async tick(automationId: string, opts: { manual?: boolean; retry_of?: string; scheduled_for?: Date | null; trigger_event?: TriggerEvent; trigger_label?: string } = {}): Promise<{ status: 'started'; automation_run_id: string; run_id: string } | { status: 'skipped' | 'ignored'; reason: string }> {
         const lock = await this.redis.acquireLock(RedisKeys.automationLock(automationId), 30_000);
         if (!lock) return { status: 'ignored', reason: 'Another start of this automation is in progress' };
         try {
@@ -601,8 +646,12 @@ export class AutomationsService {
             }
 
             const retryOf = opts.retry_of ? await this.prisma.automationRun.findUnique({ where: { id: opts.retry_of } }) : null;
-            const ar = await this.prisma.automationRun.create({ data: { automation_id: a.id, status: 'QUEUED', scheduled_for: scheduledFor, is_retry: !!retryOf, attempt: retryOf ? retryOf.attempt + 1 : 1 } });
-            await this.conversations.systemMessage(conversationId!, a.organization_id, `${opts.manual ? 'Running now' : retryOf ? 'Retrying' : 'Scheduled run'}: ${a.name}`);
+            // A retry keeps the event that started the original run.
+            const event = opts.trigger_event ?? ((retryOf?.trigger_event ?? undefined) as unknown as TriggerEvent | undefined);
+            const ar = await this.prisma.automationRun.create({
+                data: { automation_id: a.id, status: 'QUEUED', scheduled_for: scheduledFor, is_retry: !!retryOf, attempt: retryOf ? retryOf.attempt + 1 : 1, ...(event ? { trigger_event_id: event.event_id, trigger_event: event as unknown as Prisma.InputJsonValue } : {}) },
+            });
+            await this.conversations.systemMessage(conversationId!, a.organization_id, `${opts.manual ? 'Running now' : retryOf ? 'Retrying' : opts.trigger_event ? `Started by ${opts.trigger_label ?? 'an event'}` : 'Scheduled run'}: ${a.name}`);
             const run = await this.runs.start({ organization_id: a.organization_id, conversation_id: conversationId, bot_id: a.bot_id, user_id: a.owner_id, type: 'AUTOMATION_RUN', skill_id: a.skill_id, title: a.name, automation_run_id: ar.id });
             await this.prisma.automation.update({ where: { id: a.id }, data: { last_run_at: new Date(), run_count: { increment: 1 } } });
             await this.changed(a.owner_id, a.id);
@@ -716,7 +765,9 @@ export class AutomationsService {
         ]
             .filter(Boolean)
             .join('\n\n');
-        const user = `${a.skill ? `/${a.skill.slug} ` : ''}Run the automation "${a.name}" now.\n\nInstructions:\n${a.instructions}`;
+        const event = ar.trigger_event as unknown as TriggerEvent | null;
+        const eventText = event ? `\n\nThis run was started by an event${event.trigger_slug ? ` (${event.trigger_slug})` : ''} at ${event.received_at}. Event data:\n${JSON.stringify(event.data).slice(0, 9000)}` : '';
+        const user = `${a.skill ? `/${a.skill.slug} ` : ''}Run the automation "${a.name}" now.\n\nInstructions:\n${a.instructions}${eventText}`;
         return { system, user, automation_id: a.id };
     }
 }

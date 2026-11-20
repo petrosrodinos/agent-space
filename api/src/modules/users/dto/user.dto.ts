@@ -72,6 +72,7 @@ export class UpdateUserSettingsDto {
     @ApiPropertyOptional() @IsOptional() @IsBoolean() daily_email_digest?: boolean;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() sounds_enabled?: boolean;
     @ApiPropertyOptional({ enum: ConversationRetention }) @IsOptional() @IsEnum(ConversationRetention) auto_delete_conversations?: ConversationRetention;
+    @ApiPropertyOptional({ description: 'Permanently delete my deleted artifacts after 30 days (§7.5)' }) @IsOptional() @IsBoolean() purge_deleted_artifacts?: boolean;
 }
 
 /** Colour theme for the selected organisation (stored per user per organisation). */

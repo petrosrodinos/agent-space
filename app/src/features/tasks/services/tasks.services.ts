@@ -7,6 +7,8 @@ import { type ApprovalDecision, type RunType } from "../interfaces/tasks.interfa
 
 export const getTasks = (params: { status?: string; bot_id?: string; type?: RunType; page?: number; limit?: number }) => request<Paginated<Task>>(() => axiosInstance.get(ApiRoutes.tasks.root, { params }));
 export const getTask = (id: string) => request<TaskDetail>(() => axiosInstance.get(ApiRoutes.tasks.one(id)));
+/** §16 Undo: reverse a bot's action in a connected service. */
+export const undoStep = ({ runId, stepId }: { runId: string; stepId: string }) => request<{ ok: boolean; label: string }>(() => axiosInstance.post(ApiRoutes.tasks.undo_step(runId, stepId)));
 export const startTask = (dto: { bot_id: string; prompt: string }) => request<{ conversation_id: string; runs: { id: string }[] }>(() => axiosInstance.post(ApiRoutes.tasks.root, dto));
 export const provideRunInput = (runId: string, dto: { request_id: string; result: Record<string, unknown> }) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.runs.input(runId), dto));
 export const getApprovals = (status: ApprovalFilter = ApprovalFilters.PENDING) => request<Approval[]>(() => axiosInstance.get(ApiRoutes.approvals.root, { params: { status } }));

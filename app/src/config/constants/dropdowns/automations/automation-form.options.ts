@@ -1,9 +1,14 @@
-import { AutomationStatuses, AutomationTabs, ScheduleKinds, type AutomationTab, type ScheduleKind } from "@/features/automations/interfaces/automations.interfaces";
+import { AutomationStartKinds, AutomationStatuses, AutomationTabs, ScheduleKinds, type AutomationTab, type ScheduleKind } from "@/features/automations/interfaces/automations.interfaces";
 import { ALL_FILTER } from "@/config/constants/filters";
 export const AutomationStatusOptions = [
   { id: AutomationStatuses.ACTIVE, label: "Active" },
   { id: AutomationStatuses.PAUSED, label: "Paused" },
   { id: AutomationStatuses.NEEDS_ATTENTION, label: "Needs attention" },
+] as const;
+
+export const AutomationStartKindOptions = [
+  { id: AutomationStartKinds.SCHEDULE, label: "On a schedule" },
+  { id: AutomationStartKinds.EVENT, label: "When something happens" },
 ] as const;
 
 export const AutomationStatusFilterOptions = [{ id: ALL_FILTER, label: "All" }, ...AutomationStatusOptions] as const;

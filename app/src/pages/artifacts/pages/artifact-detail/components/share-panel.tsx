@@ -225,6 +225,7 @@ export const SharePanel: FC<{ artifact: Artifact; isAdmin: boolean }> = ({ artif
                   ["allow_search_engines", "Allow search engines", "Let Google and others list this page"],
                   ["allow_embedding", "Allow embedding", "Let other websites show it in a frame"],
                   ["public_ai_enabled", "AI features for visitors", "Counts toward your usage"],
+                  ["public_uploads_enabled", "File uploads from visitors", "Files appear in the Data tab, up to 10 MB each"],
                 ] as const
               ).map(([key, label, hint]) => (
                 <div key={key} className="flex items-center justify-between gap-3">

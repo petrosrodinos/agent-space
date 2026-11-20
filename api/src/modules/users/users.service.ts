@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import * as bcrypt from 'bcrypt';
-import { ColorTheme, Platform, Prisma } from 'generated/prisma';
+import { ColorTheme, DeviceToolKind, DeviceToolPermission, Platform, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import type { OrgMembership } from '@/shared/guards/org.guard';
 import { toPublicUser } from '../auth/auth.service';
@@ -82,6 +82,23 @@ export class UsersService {
         });
     }
 
+    /** §14.3 Permissions: the switches for one of my devices (defaults: ask each time; control my computer off). */
+    async deviceTools(userId: string, id: string) {
+        const d = await this.prisma.device.findFirst({ where: { id, user_id: userId }, include: { tool_permissions: true } });
+        if (!d) throw new NotFoundException('Device not found');
+        const kinds: DeviceToolKind[] = d.platform === 'DESKTOP' ? ['LOCAL_FILES', 'SCREEN', 'LOCAL_TOOL_SERVERS', 'CLIPBOARD', 'OPEN', 'CONTROL_COMPUTER'] : ['CAMERA_SCANNER', 'CONTACTS', 'SEND_VIA_APPS', 'DEVICE_CALENDAR', 'LOCATION'];
+        const permissions = Object.fromEntries(kinds.map((k) => [k, d.tool_permissions.find((p) => p.tool === k)?.permission ?? (k === 'CONTROL_COMPUTER' ? 'NEVER' : 'ASK_EACH_TIME')]));
+        return { device_id: d.id, platform: d.platform, is_online: d.is_online, capabilities: d.capabilities, allowed_folders: d.allowed_folders, blocked_apps: d.blocked_apps, permissions };
+    }
+
+    async setDeviceTool(userId: string, id: string, tool: DeviceToolKind, permission: DeviceToolPermission) {
+        const d = await this.prisma.device.findFirst({ where: { id, user_id: userId } });
+        if (!d) throw new NotFoundException('Device not found');
+        if (tool === 'CONTROL_COMPUTER' && permission === 'ALWAYS_ALLOW') throw new BadRequestException('Control my computer always asks first');
+        await this.prisma.deviceToolSetting.upsert({ where: { device_id_tool: { device_id: id, tool } }, create: { device_id: id, tool, permission }, update: { permission } });
+        return this.deviceTools(userId, id);
+    }
+
     async renameDevice(userId: string, id: string, name: string) {
         const res = await this.prisma.device.updateMany({ where: { id, user_id: userId }, data: { name: name.slice(0, 80) } });
         if (!res.count) throw new NotFoundException('Device not found');
@@ -95,13 +112,13 @@ export class UsersService {
 
     /** Stores (or clears) this device's Web Push subscription. The same browser subscription is never kept on two devices. */
     /**
-     * Stores (or clears) this device's push registration: a Web Push subscription, or an FCM/APNs token from the
+     * Stores (or clears) this device's push registration: a Web Push subscription, or an FCM token from the
      * mobile apps. The same subscription/token is never kept on two devices.
      */
     async setPushSubscription(
         userId: string,
         sessionId: string,
-        sub: { provider?: 'WEBPUSH' | 'FCM' | 'APNS'; endpoint?: string; keys?: { p256dh: string; auth: string }; token?: string } | null,
+        sub: { provider?: 'WEBPUSH' | 'FCM'; endpoint?: string; keys?: { p256dh: string; auth: string }; token?: string } | null,
     ) {
         const session = await this.prisma.session.findUnique({ where: { id: sessionId } });
         if (!session?.device_id) throw new NotFoundException('This device is not registered — sign in again');

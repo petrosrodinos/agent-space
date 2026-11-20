@@ -140,7 +140,7 @@ const ArtifactsPage: FC = () => {
           title={tab === ArtifactTabs.DELETED ? "Nothing deleted recently" : search || type !== ALL_FILTER ? "No matches" : "Nothing built yet"}
           description={
             tab === ArtifactTabs.DELETED
-              ? "Deleted artifacts can be restored here for 30 days."
+              ? "Deleted artifacts can be restored here. They are kept unless you turn on permanent deletion after 30 days in Settings → Privacy."
               : "Ask any bot to build something — “Make a landing page for our Q4 webinar with a sign-up form” — and it shows up here."
           }
           stickers={[

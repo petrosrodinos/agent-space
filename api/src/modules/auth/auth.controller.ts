@@ -22,7 +22,7 @@ export class AuthController {
     /** The desktop and mobile apps identify themselves with X-Client-Platform / X-App-Version (§14.1). */
     private meta(req: Request, device?: DeviceInfoDto): RequestMeta {
         const header = String(req.headers['x-client-platform'] || '').toUpperCase();
-        const platform = (['WEB', 'DESKTOP', 'IOS', 'ANDROID'] as const).find((p) => p === header);
+        const platform = (['WEB', 'DESKTOP', 'ANDROID'] as const).find((p) => p === header);
         const version = typeof req.headers['x-app-version'] === 'string' ? req.headers['x-app-version'].slice(0, 32) : undefined;
         return {
             ip: (req.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() || req.ip,

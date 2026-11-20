@@ -79,6 +79,8 @@ export interface Approval {
   preview: Record<string, unknown>;
   status: ApprovalStatus;
   requires_tap: boolean;
+  /** Fingerprint / face unlock needed to approve on the phone (§13.4). */
+  requires_biometric: boolean;
   is_urgent: boolean;
   timeout_at: string | null;
   resolved_at: string | null;

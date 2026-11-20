@@ -289,6 +289,11 @@ export type ArtifactComment = $Result.DefaultSelection<Prisma.$ArtifactCommentPa
  */
 export type ArtifactRecord = $Result.DefaultSelection<Prisma.$ArtifactRecordPayload>
 /**
+ * Model ArtifactDataGrant
+ * §7.5 "Show live data": a member allowed this artifact to read one connected service with their own access.
+ */
+export type ArtifactDataGrant = $Result.DefaultSelection<Prisma.$ArtifactDataGrantPayload>
+/**
  * Model ArtifactReport
  * 
  */
@@ -429,6 +434,12 @@ export type DevSecretBlob = $Result.DefaultSelection<Prisma.$DevSecretBlobPayloa
  * §14.1 — minimum supported app version per platform.
  */
 export type AppVersionPolicy = $Result.DefaultSelection<Prisma.$AppVersionPolicyPayload>
+/**
+ * Model ChannelLink
+ * A member's link between an outside channel and one bot (§16 Message from anywhere). Email works from the member's
+ * own address to their personal inbound address; Slack and WhatsApp are linked by sending the one-time code.
+ */
+export type ChannelLink = $Result.DefaultSelection<Prisma.$ChannelLinkPayload>
 
 /**
  * Enums
@@ -471,7 +482,6 @@ export type DocumentType = (typeof DocumentType)[keyof typeof DocumentType]
 export const Platform: {
   WEB: 'WEB',
   DESKTOP: 'DESKTOP',
-  IOS: 'IOS',
   ANDROID: 'ANDROID'
 };
 
@@ -480,7 +490,6 @@ export type Platform = (typeof Platform)[keyof typeof Platform]
 
 export const PushProvider: {
   WEBPUSH: 'WEBPUSH',
-  APNS: 'APNS',
   FCM: 'FCM'
 };
 
@@ -493,6 +502,7 @@ export const DeviceToolKind: {
   LOCAL_TOOL_SERVERS: 'LOCAL_TOOL_SERVERS',
   CLIPBOARD: 'CLIPBOARD',
   OPEN: 'OPEN',
+  CONTROL_COMPUTER: 'CONTROL_COMPUTER',
   CAMERA_SCANNER: 'CAMERA_SCANNER',
   CONTACTS: 'CONTACTS',
   SEND_VIA_APPS: 'SEND_VIA_APPS',
@@ -1109,10 +1119,30 @@ export const MessageSource: {
   TEXT: 'TEXT',
   VOICE: 'VOICE',
   AUTOMATION: 'AUTOMATION',
-  BOT: 'BOT'
+  BOT: 'BOT',
+  EMAIL: 'EMAIL',
+  SLACK: 'SLACK',
+  WHATSAPP: 'WHATSAPP'
 };
 
 export type MessageSource = (typeof MessageSource)[keyof typeof MessageSource]
+
+
+export const ExternalChannel: {
+  EMAIL: 'EMAIL',
+  SLACK: 'SLACK',
+  WHATSAPP: 'WHATSAPP'
+};
+
+export type ExternalChannel = (typeof ExternalChannel)[keyof typeof ExternalChannel]
+
+
+export const ChannelLinkStatus: {
+  PENDING: 'PENDING',
+  ACTIVE: 'ACTIVE'
+};
+
+export type ChannelLinkStatus = (typeof ChannelLinkStatus)[keyof typeof ChannelLinkStatus]
 
 
 export const MessageStatus: {
@@ -1313,7 +1343,8 @@ export const CredentialKind: {
   MCP_OAUTH: 'MCP_OAUTH',
   MCP_TOKEN: 'MCP_TOKEN',
   API_KEY: 'API_KEY',
-  WEBSITE_LOGIN: 'WEBSITE_LOGIN'
+  WEBSITE_LOGIN: 'WEBSITE_LOGIN',
+  PASSWORD_MANAGER: 'PASSWORD_MANAGER'
 };
 
 export type CredentialKind = (typeof CredentialKind)[keyof typeof CredentialKind]
@@ -1905,6 +1936,14 @@ export const MessageAuthorType: typeof $Enums.MessageAuthorType
 export type MessageSource = $Enums.MessageSource
 
 export const MessageSource: typeof $Enums.MessageSource
+
+export type ExternalChannel = $Enums.ExternalChannel
+
+export const ExternalChannel: typeof $Enums.ExternalChannel
+
+export type ChannelLinkStatus = $Enums.ChannelLinkStatus
+
+export const ChannelLinkStatus: typeof $Enums.ChannelLinkStatus
 
 export type MessageStatus = $Enums.MessageStatus
 
@@ -2762,6 +2801,16 @@ export class PrismaClient<
   get artifactRecord(): Prisma.ArtifactRecordDelegate<ExtArgs, ClientOptions>;
 
   /**
+   * `prisma.artifactDataGrant`: Exposes CRUD operations for the **ArtifactDataGrant** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ArtifactDataGrants
+    * const artifactDataGrants = await prisma.artifactDataGrant.findMany()
+    * ```
+    */
+  get artifactDataGrant(): Prisma.ArtifactDataGrantDelegate<ExtArgs, ClientOptions>;
+
+  /**
    * `prisma.artifactReport`: Exposes CRUD operations for the **ArtifactReport** model.
     * Example usage:
     * ```ts
@@ -3040,6 +3089,16 @@ export class PrismaClient<
     * ```
     */
   get appVersionPolicy(): Prisma.AppVersionPolicyDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.channelLink`: Exposes CRUD operations for the **ChannelLink** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ChannelLinks
+    * const channelLinks = await prisma.channelLink.findMany()
+    * ```
+    */
+  get channelLink(): Prisma.ChannelLinkDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -3542,6 +3601,7 @@ export namespace Prisma {
     ArtifactShare: 'ArtifactShare',
     ArtifactComment: 'ArtifactComment',
     ArtifactRecord: 'ArtifactRecord',
+    ArtifactDataGrant: 'ArtifactDataGrant',
     ArtifactReport: 'ArtifactReport',
     Connection: 'Connection',
     ConnectionBotRestriction: 'ConnectionBotRestriction',
@@ -3569,7 +3629,8 @@ export namespace Prisma {
     ActivityLog: 'ActivityLog',
     DataExport: 'DataExport',
     DevSecretBlob: 'DevSecretBlob',
-    AppVersionPolicy: 'AppVersionPolicy'
+    AppVersionPolicy: 'AppVersionPolicy',
+    ChannelLink: 'ChannelLink'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -3585,7 +3646,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -7659,6 +7720,80 @@ export namespace Prisma {
           }
         }
       }
+      ArtifactDataGrant: {
+        payload: Prisma.$ArtifactDataGrantPayload<ExtArgs>
+        fields: Prisma.ArtifactDataGrantFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ArtifactDataGrantFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ArtifactDataGrantFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          findFirst: {
+            args: Prisma.ArtifactDataGrantFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ArtifactDataGrantFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          findMany: {
+            args: Prisma.ArtifactDataGrantFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>[]
+          }
+          create: {
+            args: Prisma.ArtifactDataGrantCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          createMany: {
+            args: Prisma.ArtifactDataGrantCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ArtifactDataGrantCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>[]
+          }
+          delete: {
+            args: Prisma.ArtifactDataGrantDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          update: {
+            args: Prisma.ArtifactDataGrantUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          deleteMany: {
+            args: Prisma.ArtifactDataGrantDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ArtifactDataGrantUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ArtifactDataGrantUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>[]
+          }
+          upsert: {
+            args: Prisma.ArtifactDataGrantUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ArtifactDataGrantPayload>
+          }
+          aggregate: {
+            args: Prisma.ArtifactDataGrantAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateArtifactDataGrant>
+          }
+          groupBy: {
+            args: Prisma.ArtifactDataGrantGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ArtifactDataGrantGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ArtifactDataGrantCountArgs<ExtArgs>
+            result: $Utils.Optional<ArtifactDataGrantCountAggregateOutputType> | number
+          }
+        }
+      }
       ArtifactReport: {
         payload: Prisma.$ArtifactReportPayload<ExtArgs>
         fields: Prisma.ArtifactReportFieldRefs
@@ -9731,6 +9866,80 @@ export namespace Prisma {
           }
         }
       }
+      ChannelLink: {
+        payload: Prisma.$ChannelLinkPayload<ExtArgs>
+        fields: Prisma.ChannelLinkFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ChannelLinkFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ChannelLinkFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          findFirst: {
+            args: Prisma.ChannelLinkFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ChannelLinkFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          findMany: {
+            args: Prisma.ChannelLinkFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>[]
+          }
+          create: {
+            args: Prisma.ChannelLinkCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          createMany: {
+            args: Prisma.ChannelLinkCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ChannelLinkCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>[]
+          }
+          delete: {
+            args: Prisma.ChannelLinkDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          update: {
+            args: Prisma.ChannelLinkUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          deleteMany: {
+            args: Prisma.ChannelLinkDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ChannelLinkUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ChannelLinkUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>[]
+          }
+          upsert: {
+            args: Prisma.ChannelLinkUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ChannelLinkPayload>
+          }
+          aggregate: {
+            args: Prisma.ChannelLinkAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateChannelLink>
+          }
+          groupBy: {
+            args: Prisma.ChannelLinkGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ChannelLinkGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ChannelLinkCountArgs<ExtArgs>
+            result: $Utils.Optional<ChannelLinkCountAggregateOutputType> | number
+          }
+        }
+      }
     }
   } & {
     other: {
@@ -9909,6 +10118,7 @@ export namespace Prisma {
     artifactShare?: ArtifactShareOmit
     artifactComment?: ArtifactCommentOmit
     artifactRecord?: ArtifactRecordOmit
+    artifactDataGrant?: ArtifactDataGrantOmit
     artifactReport?: ArtifactReportOmit
     connection?: ConnectionOmit
     connectionBotRestriction?: ConnectionBotRestrictionOmit
@@ -9937,6 +10147,7 @@ export namespace Prisma {
     dataExport?: DataExportOmit
     devSecretBlob?: DevSecretBlobOmit
     appVersionPolicy?: AppVersionPolicyOmit
+    channelLink?: ChannelLinkOmit
   }
 
   /* Types for Logging */
@@ -10037,6 +10248,7 @@ export namespace Prisma {
     pinned_messages: number
     reactions: number
     saved_widgets: number
+    artifact_data_grants: number
     runs: number
     approvals_resolved: number
     voice_sessions: number
@@ -10062,6 +10274,7 @@ export namespace Prisma {
     data_exports: number
     knowledge_items: number
     knowledge_links: number
+    channel_links: number
   }
 
   export type UserCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10085,6 +10298,7 @@ export namespace Prisma {
     pinned_messages?: boolean | UserCountOutputTypeCountPinned_messagesArgs
     reactions?: boolean | UserCountOutputTypeCountReactionsArgs
     saved_widgets?: boolean | UserCountOutputTypeCountSaved_widgetsArgs
+    artifact_data_grants?: boolean | UserCountOutputTypeCountArtifact_data_grantsArgs
     runs?: boolean | UserCountOutputTypeCountRunsArgs
     approvals_resolved?: boolean | UserCountOutputTypeCountApprovals_resolvedArgs
     voice_sessions?: boolean | UserCountOutputTypeCountVoice_sessionsArgs
@@ -10110,6 +10324,7 @@ export namespace Prisma {
     data_exports?: boolean | UserCountOutputTypeCountData_exportsArgs
     knowledge_items?: boolean | UserCountOutputTypeCountKnowledge_itemsArgs
     knowledge_links?: boolean | UserCountOutputTypeCountKnowledge_linksArgs
+    channel_links?: boolean | UserCountOutputTypeCountChannel_linksArgs
   }
 
   // Custom InputTypes
@@ -10261,6 +10476,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountSaved_widgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavedWidgetWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountArtifact_data_grantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtifactDataGrantWhereInput
   }
 
   /**
@@ -10438,6 +10660,13 @@ export namespace Prisma {
     where?: KnowledgeLinkWhereInput
   }
 
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountChannel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelLinkWhereInput
+  }
+
 
   /**
    * Count Type DeviceCountOutputType
@@ -10583,6 +10812,7 @@ export namespace Prisma {
     service_defaults: number
     tool_permissions: number
     saved_widgets: number
+    channel_links: number
   }
 
   export type OrganizationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -10618,6 +10848,7 @@ export namespace Prisma {
     service_defaults?: boolean | OrganizationCountOutputTypeCountService_defaultsArgs
     tool_permissions?: boolean | OrganizationCountOutputTypeCountTool_permissionsArgs
     saved_widgets?: boolean | OrganizationCountOutputTypeCountSaved_widgetsArgs
+    channel_links?: boolean | OrganizationCountOutputTypeCountChannel_linksArgs
   }
 
   // Custom InputTypes
@@ -10855,6 +11086,13 @@ export namespace Prisma {
     where?: SavedWidgetWhereInput
   }
 
+  /**
+   * OrganizationCountOutputType without action
+   */
+  export type OrganizationCountOutputTypeCountChannel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelLinkWhereInput
+  }
+
 
   /**
    * Count Type AiModelCountOutputType
@@ -11018,6 +11256,7 @@ export namespace Prisma {
     connection_restrictions: number
     credential_last_used: number
     artifact_comment_mentions: number
+    channel_links: number
   }
 
   export type BotCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11044,6 +11283,7 @@ export namespace Prisma {
     connection_restrictions?: boolean | BotCountOutputTypeCountConnection_restrictionsArgs
     credential_last_used?: boolean | BotCountOutputTypeCountCredential_last_usedArgs
     artifact_comment_mentions?: boolean | BotCountOutputTypeCountArtifact_comment_mentionsArgs
+    channel_links?: boolean | BotCountOutputTypeCountChannel_linksArgs
   }
 
   // Custom InputTypes
@@ -11218,6 +11458,13 @@ export namespace Prisma {
     where?: ArtifactCommentWhereInput
   }
 
+  /**
+   * BotCountOutputType without action
+   */
+  export type BotCountOutputTypeCountChannel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelLinkWhereInput
+  }
+
 
   /**
    * Count Type KnowledgeItemCountOutputType
@@ -11306,6 +11553,7 @@ export namespace Prisma {
     automations_results: number
     automations_source: number
     saved_widgets: number
+    channel_links: number
   }
 
   export type ConversationCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11320,6 +11568,7 @@ export namespace Prisma {
     automations_results?: boolean | ConversationCountOutputTypeCountAutomations_resultsArgs
     automations_source?: boolean | ConversationCountOutputTypeCountAutomations_sourceArgs
     saved_widgets?: boolean | ConversationCountOutputTypeCountSaved_widgetsArgs
+    channel_links?: boolean | ConversationCountOutputTypeCountChannel_linksArgs
   }
 
   // Custom InputTypes
@@ -11408,6 +11657,13 @@ export namespace Prisma {
    */
   export type ConversationCountOutputTypeCountSaved_widgetsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: SavedWidgetWhereInput
+  }
+
+  /**
+   * ConversationCountOutputType without action
+   */
+  export type ConversationCountOutputTypeCountChannel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelLinkWhereInput
   }
 
 
@@ -11800,6 +12056,7 @@ export namespace Prisma {
     reports: number
     files: number
     usage_records: number
+    data_grants: number
   }
 
   export type ArtifactCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11811,6 +12068,7 @@ export namespace Prisma {
     reports?: boolean | ArtifactCountOutputTypeCountReportsArgs
     files?: boolean | ArtifactCountOutputTypeCountFilesArgs
     usage_records?: boolean | ArtifactCountOutputTypeCountUsage_recordsArgs
+    data_grants?: boolean | ArtifactCountOutputTypeCountData_grantsArgs
   }
 
   // Custom InputTypes
@@ -11878,6 +12136,13 @@ export namespace Prisma {
    */
   export type ArtifactCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: UsageRecordWhereInput
+  }
+
+  /**
+   * ArtifactCountOutputType without action
+   */
+  export type ArtifactCountOutputTypeCountData_grantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtifactDataGrantWhereInput
   }
 
 
@@ -12621,6 +12886,7 @@ export namespace Prisma {
     pinned_messages?: boolean | User$pinned_messagesArgs<ExtArgs>
     reactions?: boolean | User$reactionsArgs<ExtArgs>
     saved_widgets?: boolean | User$saved_widgetsArgs<ExtArgs>
+    artifact_data_grants?: boolean | User$artifact_data_grantsArgs<ExtArgs>
     runs?: boolean | User$runsArgs<ExtArgs>
     approvals_resolved?: boolean | User$approvals_resolvedArgs<ExtArgs>
     voice_sessions?: boolean | User$voice_sessionsArgs<ExtArgs>
@@ -12646,6 +12912,7 @@ export namespace Prisma {
     data_exports?: boolean | User$data_exportsArgs<ExtArgs>
     knowledge_items?: boolean | User$knowledge_itemsArgs<ExtArgs>
     knowledge_links?: boolean | User$knowledge_linksArgs<ExtArgs>
+    channel_links?: boolean | User$channel_linksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["user"]>
 
@@ -12738,6 +13005,7 @@ export namespace Prisma {
     pinned_messages?: boolean | User$pinned_messagesArgs<ExtArgs>
     reactions?: boolean | User$reactionsArgs<ExtArgs>
     saved_widgets?: boolean | User$saved_widgetsArgs<ExtArgs>
+    artifact_data_grants?: boolean | User$artifact_data_grantsArgs<ExtArgs>
     runs?: boolean | User$runsArgs<ExtArgs>
     approvals_resolved?: boolean | User$approvals_resolvedArgs<ExtArgs>
     voice_sessions?: boolean | User$voice_sessionsArgs<ExtArgs>
@@ -12763,6 +13031,7 @@ export namespace Prisma {
     data_exports?: boolean | User$data_exportsArgs<ExtArgs>
     knowledge_items?: boolean | User$knowledge_itemsArgs<ExtArgs>
     knowledge_links?: boolean | User$knowledge_linksArgs<ExtArgs>
+    channel_links?: boolean | User$channel_linksArgs<ExtArgs>
     _count?: boolean | UserCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type UserIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -12797,6 +13066,7 @@ export namespace Prisma {
       pinned_messages: Prisma.$MessagePayload<ExtArgs>[]
       reactions: Prisma.$MessageReactionPayload<ExtArgs>[]
       saved_widgets: Prisma.$SavedWidgetPayload<ExtArgs>[]
+      artifact_data_grants: Prisma.$ArtifactDataGrantPayload<ExtArgs>[]
       runs: Prisma.$RunPayload<ExtArgs>[]
       approvals_resolved: Prisma.$ApprovalPayload<ExtArgs>[]
       voice_sessions: Prisma.$VoiceSessionPayload<ExtArgs>[]
@@ -12822,6 +13092,7 @@ export namespace Prisma {
       data_exports: Prisma.$DataExportPayload<ExtArgs>[]
       knowledge_items: Prisma.$KnowledgeItemPayload<ExtArgs>[]
       knowledge_links: Prisma.$KnowledgeLinkPayload<ExtArgs>[]
+      channel_links: Prisma.$ChannelLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -13258,6 +13529,7 @@ export namespace Prisma {
     pinned_messages<T extends User$pinned_messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$pinned_messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reactions<T extends User$reactionsArgs<ExtArgs> = {}>(args?: Subset<T, User$reactionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessageReactionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     saved_widgets<T extends User$saved_widgetsArgs<ExtArgs> = {}>(args?: Subset<T, User$saved_widgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedWidgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    artifact_data_grants<T extends User$artifact_data_grantsArgs<ExtArgs> = {}>(args?: Subset<T, User$artifact_data_grantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     runs<T extends User$runsArgs<ExtArgs> = {}>(args?: Subset<T, User$runsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     approvals_resolved<T extends User$approvals_resolvedArgs<ExtArgs> = {}>(args?: Subset<T, User$approvals_resolvedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     voice_sessions<T extends User$voice_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$voice_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoiceSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -13283,6 +13555,7 @@ export namespace Prisma {
     data_exports<T extends User$data_exportsArgs<ExtArgs> = {}>(args?: Subset<T, User$data_exportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataExportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     knowledge_items<T extends User$knowledge_itemsArgs<ExtArgs> = {}>(args?: Subset<T, User$knowledge_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     knowledge_links<T extends User$knowledge_linksArgs<ExtArgs> = {}>(args?: Subset<T, User$knowledge_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    channel_links<T extends User$channel_linksArgs<ExtArgs> = {}>(args?: Subset<T, User$channel_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -14249,6 +14522,30 @@ export namespace Prisma {
   }
 
   /**
+   * User.artifact_data_grants
+   */
+  export type User$artifact_data_grantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    where?: ArtifactDataGrantWhereInput
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtifactDataGrantScalarFieldEnum | ArtifactDataGrantScalarFieldEnum[]
+  }
+
+  /**
    * User.runs
    */
   export type User$runsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -14846,6 +15143,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: KnowledgeLinkScalarFieldEnum | KnowledgeLinkScalarFieldEnum[]
+  }
+
+  /**
+   * User.channel_links
+   */
+  export type User$channel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    where?: ChannelLinkWhereInput
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    cursor?: ChannelLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
   }
 
   /**
@@ -19329,6 +19650,7 @@ export namespace Prisma {
     is_online: number
     last_seen_at: number
     allowed_folders: number
+    blocked_apps: number
     launch_at_startup: number
     quick_ask_shortcut: number
     approve_from_lock_screen: number
@@ -19384,6 +19706,7 @@ export namespace Prisma {
     is_online?: true
     last_seen_at?: true
     allowed_folders?: true
+    blocked_apps?: true
     launch_at_startup?: true
     quick_ask_shortcut?: true
     approve_from_lock_screen?: true
@@ -19476,6 +19799,7 @@ export namespace Prisma {
     is_online: boolean
     last_seen_at: Date
     allowed_folders: string[]
+    blocked_apps: string[]
     launch_at_startup: boolean
     quick_ask_shortcut: string | null
     approve_from_lock_screen: boolean
@@ -19512,6 +19836,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: boolean
     allowed_folders?: boolean
+    blocked_apps?: boolean
     launch_at_startup?: boolean
     quick_ask_shortcut?: boolean
     approve_from_lock_screen?: boolean
@@ -19539,6 +19864,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: boolean
     allowed_folders?: boolean
+    blocked_apps?: boolean
     launch_at_startup?: boolean
     quick_ask_shortcut?: boolean
     approve_from_lock_screen?: boolean
@@ -19559,6 +19885,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: boolean
     allowed_folders?: boolean
+    blocked_apps?: boolean
     launch_at_startup?: boolean
     quick_ask_shortcut?: boolean
     approve_from_lock_screen?: boolean
@@ -19579,6 +19906,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: boolean
     allowed_folders?: boolean
+    blocked_apps?: boolean
     launch_at_startup?: boolean
     quick_ask_shortcut?: boolean
     approve_from_lock_screen?: boolean
@@ -19586,7 +19914,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type DeviceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "name" | "platform" | "app_version" | "push_provider" | "push_token" | "capabilities" | "is_online" | "last_seen_at" | "allowed_folders" | "launch_at_startup" | "quick_ask_shortcut" | "approve_from_lock_screen" | "created_at" | "updated_at", ExtArgs["result"]["device"]>
+  export type DeviceOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "name" | "platform" | "app_version" | "push_provider" | "push_token" | "capabilities" | "is_online" | "last_seen_at" | "allowed_folders" | "blocked_apps" | "launch_at_startup" | "quick_ask_shortcut" | "approve_from_lock_screen" | "created_at" | "updated_at", ExtArgs["result"]["device"]>
   export type DeviceInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     sessions?: boolean | Device$sessionsArgs<ExtArgs>
@@ -19627,6 +19955,10 @@ export namespace Prisma {
       is_online: boolean
       last_seen_at: Date
       allowed_folders: string[]
+      /**
+       * Extra apps bots may never control on this computer (§14.3), on top of the built-in blocked list.
+       */
+      blocked_apps: string[]
       launch_at_startup: boolean
       quick_ask_shortcut: string | null
       approve_from_lock_screen: boolean
@@ -20073,6 +20405,7 @@ export namespace Prisma {
     readonly is_online: FieldRef<"Device", 'Boolean'>
     readonly last_seen_at: FieldRef<"Device", 'DateTime'>
     readonly allowed_folders: FieldRef<"Device", 'String[]'>
+    readonly blocked_apps: FieldRef<"Device", 'String[]'>
     readonly launch_at_startup: FieldRef<"Device", 'Boolean'>
     readonly quick_ask_shortcut: FieldRef<"Device", 'String'>
     readonly approve_from_lock_screen: FieldRef<"Device", 'Boolean'>
@@ -24051,6 +24384,7 @@ export namespace Prisma {
     daily_email_digest: boolean | null
     sounds_enabled: boolean | null
     auto_delete_conversations: $Enums.ConversationRetention | null
+    purge_deleted_artifacts: boolean | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -24111,6 +24445,7 @@ export namespace Prisma {
     daily_email_digest: boolean | null
     sounds_enabled: boolean | null
     auto_delete_conversations: $Enums.ConversationRetention | null
+    purge_deleted_artifacts: boolean | null
     created_at: Date | null
     updated_at: Date | null
   }
@@ -24171,6 +24506,7 @@ export namespace Prisma {
     daily_email_digest: number
     sounds_enabled: number
     auto_delete_conversations: number
+    purge_deleted_artifacts: number
     created_at: number
     updated_at: number
     _all: number
@@ -24233,6 +24569,7 @@ export namespace Prisma {
     daily_email_digest?: true
     sounds_enabled?: true
     auto_delete_conversations?: true
+    purge_deleted_artifacts?: true
     created_at?: true
     updated_at?: true
   }
@@ -24293,6 +24630,7 @@ export namespace Prisma {
     daily_email_digest?: true
     sounds_enabled?: true
     auto_delete_conversations?: true
+    purge_deleted_artifacts?: true
     created_at?: true
     updated_at?: true
   }
@@ -24353,6 +24691,7 @@ export namespace Prisma {
     daily_email_digest?: true
     sounds_enabled?: true
     auto_delete_conversations?: true
+    purge_deleted_artifacts?: true
     created_at?: true
     updated_at?: true
     _all?: true
@@ -24486,6 +24825,7 @@ export namespace Prisma {
     daily_email_digest: boolean
     sounds_enabled: boolean
     auto_delete_conversations: $Enums.ConversationRetention
+    purge_deleted_artifacts: boolean
     created_at: Date
     updated_at: Date
     _count: UserSettingsCountAggregateOutputType | null
@@ -24563,6 +24903,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: boolean
+    purge_deleted_artifacts?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -24625,6 +24966,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: boolean
+    purge_deleted_artifacts?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -24687,6 +25029,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: boolean
+    purge_deleted_artifacts?: boolean
     created_at?: boolean
     updated_at?: boolean
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -24749,11 +25092,12 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: boolean
+    purge_deleted_artifacts?: boolean
     created_at?: boolean
     updated_at?: boolean
   }
 
-  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "theme" | "text_size" | "layout_density" | "app_language" | "reply_language" | "time_format" | "currency" | "units" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "show_sources" | "suggested_follow_ups" | "clarifying_questions" | "proactive_suggestions" | "suggest_skills" | "activity_steps_display" | "interactive_replies" | "artifact_default_sharing" | "artifact_open_mode" | "artifact_notify_changes" | "default_bot_id" | "send_with" | "group_reply_mode" | "show_typing_indicators" | "read_aloud" | "voice_override" | "speaking_speed" | "auto_send_voice_note" | "voice_input_mode" | "keep_spoken_messages" | "memory_enabled" | "use_past_conversations" | "default_approval_level" | "approval_timeout" | "approval_channel" | "auto_open_live_view" | "notify_take_control" | "keep_replays" | "connection_problem_alerts" | "secret_problem_alerts" | "notify_task_finished" | "task_check_in" | "automation_results_to" | "daily_briefing_enabled" | "daily_briefing_time" | "quiet_hours_enabled" | "quiet_hours_start" | "quiet_hours_end" | "daily_email_digest" | "sounds_enabled" | "auto_delete_conversations" | "created_at" | "updated_at", ExtArgs["result"]["userSettings"]>
+  export type UserSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "user_id" | "theme" | "text_size" | "layout_density" | "app_language" | "reply_language" | "time_format" | "currency" | "units" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "show_sources" | "suggested_follow_ups" | "clarifying_questions" | "proactive_suggestions" | "suggest_skills" | "activity_steps_display" | "interactive_replies" | "artifact_default_sharing" | "artifact_open_mode" | "artifact_notify_changes" | "default_bot_id" | "send_with" | "group_reply_mode" | "show_typing_indicators" | "read_aloud" | "voice_override" | "speaking_speed" | "auto_send_voice_note" | "voice_input_mode" | "keep_spoken_messages" | "memory_enabled" | "use_past_conversations" | "default_approval_level" | "approval_timeout" | "approval_channel" | "auto_open_live_view" | "notify_take_control" | "keep_replays" | "connection_problem_alerts" | "secret_problem_alerts" | "notify_task_finished" | "task_check_in" | "automation_results_to" | "daily_briefing_enabled" | "daily_briefing_time" | "quiet_hours_enabled" | "quiet_hours_start" | "quiet_hours_end" | "daily_email_digest" | "sounds_enabled" | "auto_delete_conversations" | "purge_deleted_artifacts" | "created_at" | "updated_at", ExtArgs["result"]["userSettings"]>
   export type UserSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     user?: boolean | UserDefaultArgs<ExtArgs>
     default_bot?: boolean | UserSettings$default_botArgs<ExtArgs>
@@ -24829,6 +25173,10 @@ export namespace Prisma {
       daily_email_digest: boolean
       sounds_enabled: boolean
       auto_delete_conversations: $Enums.ConversationRetention
+      /**
+       * §7.5 — off: deleted artifacts stay restorable forever; on: removed for good 30 days after deletion.
+       */
+      purge_deleted_artifacts: boolean
       created_at: Date
       updated_at: Date
     }, ExtArgs["result"]["userSettings"]>
@@ -25311,6 +25659,7 @@ export namespace Prisma {
     readonly daily_email_digest: FieldRef<"UserSettings", 'Boolean'>
     readonly sounds_enabled: FieldRef<"UserSettings", 'Boolean'>
     readonly auto_delete_conversations: FieldRef<"UserSettings", 'ConversationRetention'>
+    readonly purge_deleted_artifacts: FieldRef<"UserSettings", 'Boolean'>
     readonly created_at: FieldRef<"UserSettings", 'DateTime'>
     readonly updated_at: FieldRef<"UserSettings", 'DateTime'>
   }
@@ -29281,6 +29630,7 @@ export namespace Prisma {
     service_defaults?: boolean | Organization$service_defaultsArgs<ExtArgs>
     tool_permissions?: boolean | Organization$tool_permissionsArgs<ExtArgs>
     saved_widgets?: boolean | Organization$saved_widgetsArgs<ExtArgs>
+    channel_links?: boolean | Organization$channel_linksArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["organization"]>
 
@@ -29371,6 +29721,7 @@ export namespace Prisma {
     service_defaults?: boolean | Organization$service_defaultsArgs<ExtArgs>
     tool_permissions?: boolean | Organization$tool_permissionsArgs<ExtArgs>
     saved_widgets?: boolean | Organization$saved_widgetsArgs<ExtArgs>
+    channel_links?: boolean | Organization$channel_linksArgs<ExtArgs>
     _count?: boolean | OrganizationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -29421,6 +29772,7 @@ export namespace Prisma {
       service_defaults: Prisma.$UserServiceDefaultPayload<ExtArgs>[]
       tool_permissions: Prisma.$UserToolPermissionPayload<ExtArgs>[]
       saved_widgets: Prisma.$SavedWidgetPayload<ExtArgs>[]
+      channel_links: Prisma.$ChannelLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -29865,6 +30217,7 @@ export namespace Prisma {
     service_defaults<T extends Organization$service_defaultsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$service_defaultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserServiceDefaultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tool_permissions<T extends Organization$tool_permissionsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$tool_permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     saved_widgets<T extends Organization$saved_widgetsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$saved_widgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedWidgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    channel_links<T extends Organization$channel_linksArgs<ExtArgs> = {}>(args?: Subset<T, Organization$channel_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -31151,6 +31504,30 @@ export namespace Prisma {
   }
 
   /**
+   * Organization.channel_links
+   */
+  export type Organization$channel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    where?: ChannelLinkWhereInput
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    cursor?: ChannelLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
+  }
+
+  /**
    * Organization without action
    */
   export type OrganizationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -31246,6 +31623,7 @@ export namespace Prisma {
     artifact_embedding_enabled: boolean | null
     artifact_design_default: $Enums.ArtifactDesignDefault | null
     voice_mode_enabled: boolean | null
+    voice_visual_input: boolean | null
     voice_mode_who: $Enums.WhoCan | null
     voice_max_session: $Enums.VoiceSessionLength | null
     voice_approvals_enabled: boolean | null
@@ -31317,6 +31695,7 @@ export namespace Prisma {
     artifact_embedding_enabled: boolean | null
     artifact_design_default: $Enums.ArtifactDesignDefault | null
     voice_mode_enabled: boolean | null
+    voice_visual_input: boolean | null
     voice_mode_who: $Enums.WhoCan | null
     voice_max_session: $Enums.VoiceSessionLength | null
     voice_approvals_enabled: boolean | null
@@ -31394,6 +31773,7 @@ export namespace Prisma {
     artifact_embedding_enabled: number
     artifact_design_default: number
     voice_mode_enabled: number
+    voice_visual_input: number
     voice_mode_who: number
     voice_max_session: number
     voice_approvals_enabled: number
@@ -31485,6 +31865,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: true
     artifact_design_default?: true
     voice_mode_enabled?: true
+    voice_visual_input?: true
     voice_mode_who?: true
     voice_max_session?: true
     voice_approvals_enabled?: true
@@ -31556,6 +31937,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: true
     artifact_design_default?: true
     voice_mode_enabled?: true
+    voice_visual_input?: true
     voice_mode_who?: true
     voice_max_session?: true
     voice_approvals_enabled?: true
@@ -31633,6 +32015,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: true
     artifact_design_default?: true
     voice_mode_enabled?: true
+    voice_visual_input?: true
     voice_mode_who?: true
     voice_max_session?: true
     voice_approvals_enabled?: true
@@ -31799,6 +32182,7 @@ export namespace Prisma {
     artifact_embedding_enabled: boolean
     artifact_design_default: $Enums.ArtifactDesignDefault
     voice_mode_enabled: boolean
+    voice_visual_input: boolean
     voice_mode_who: $Enums.WhoCan
     voice_max_session: $Enums.VoiceSessionLength
     voice_approvals_enabled: boolean
@@ -31897,6 +32281,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: boolean
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: boolean
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
@@ -31978,6 +32363,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: boolean
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: boolean
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
@@ -32059,6 +32445,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: boolean
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: boolean
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
@@ -32140,6 +32527,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: boolean
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: boolean
     voice_max_session?: boolean
     voice_approvals_enabled?: boolean
@@ -32164,7 +32552,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type OrganizationSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "default_language" | "default_timezone" | "default_working_hours" | "invite_links_enabled" | "default_invite_role" | "auto_join_domain" | "invitation_expiry" | "company_instructions" | "who_can_create_bots" | "max_bots_per_member" | "default_model_id" | "model_policy" | "model_auto_fallback" | "model_compare_enabled" | "service_policy" | "service_list" | "members_private_tool_servers" | "members_api_key_connections" | "builtin_web_search" | "builtin_image_generation" | "builtin_document_creation" | "interactive_replies_mode" | "device_tools_enabled" | "allowed_device_tools" | "members_local_tool_servers" | "automations_desktop_tools" | "biometric_approval_scopes" | "cloud_computers_enabled" | "cloud_computers_who" | "computer_idle_pause" | "computer_max_session" | "computer_storage_limit_bytes" | "members_take_control" | "record_replays" | "blocked_websites" | "min_approval_level" | "enforced_approvals" | "bots_consulting_enabled" | "approval_timeout_minutes" | "approval_timeout_action" | "who_can_create_skills" | "starter_skills_enabled" | "skill_import_enabled" | "artifacts_enabled" | "public_link_policy" | "public_link_require_password" | "public_link_max_lifetime" | "public_artifact_ai_enabled" | "public_artifact_uploads" | "artifact_embedding_enabled" | "artifact_design_default" | "voice_mode_enabled" | "voice_mode_who" | "voice_max_session" | "voice_approvals_enabled" | "voice_keep_transcripts" | "voice_model" | "automations_enabled" | "max_automations_per_member" | "automations_cloud_computer" | "automation_pre_approvals" | "max_schedule_frequency" | "usage_alert_thresholds" | "limit_reached_action" | "conversation_retention" | "computer_retention" | "max_file_size" | "members_may_export" | "temporary_chats_allowed" | "require_two_factor" | "allowed_sign_in_methods" | "session_inactivity" | "created_at" | "updated_at", ExtArgs["result"]["organizationSettings"]>
+  export type OrganizationSettingsOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "default_language" | "default_timezone" | "default_working_hours" | "invite_links_enabled" | "default_invite_role" | "auto_join_domain" | "invitation_expiry" | "company_instructions" | "who_can_create_bots" | "max_bots_per_member" | "default_model_id" | "model_policy" | "model_auto_fallback" | "model_compare_enabled" | "service_policy" | "service_list" | "members_private_tool_servers" | "members_api_key_connections" | "builtin_web_search" | "builtin_image_generation" | "builtin_document_creation" | "interactive_replies_mode" | "device_tools_enabled" | "allowed_device_tools" | "members_local_tool_servers" | "automations_desktop_tools" | "biometric_approval_scopes" | "cloud_computers_enabled" | "cloud_computers_who" | "computer_idle_pause" | "computer_max_session" | "computer_storage_limit_bytes" | "members_take_control" | "record_replays" | "blocked_websites" | "min_approval_level" | "enforced_approvals" | "bots_consulting_enabled" | "approval_timeout_minutes" | "approval_timeout_action" | "who_can_create_skills" | "starter_skills_enabled" | "skill_import_enabled" | "artifacts_enabled" | "public_link_policy" | "public_link_require_password" | "public_link_max_lifetime" | "public_artifact_ai_enabled" | "public_artifact_uploads" | "artifact_embedding_enabled" | "artifact_design_default" | "voice_mode_enabled" | "voice_visual_input" | "voice_mode_who" | "voice_max_session" | "voice_approvals_enabled" | "voice_keep_transcripts" | "voice_model" | "automations_enabled" | "max_automations_per_member" | "automations_cloud_computer" | "automation_pre_approvals" | "max_schedule_frequency" | "usage_alert_thresholds" | "limit_reached_action" | "conversation_retention" | "computer_retention" | "max_file_size" | "members_may_export" | "temporary_chats_allowed" | "require_two_factor" | "allowed_sign_in_methods" | "session_inactivity" | "created_at" | "updated_at", ExtArgs["result"]["organizationSettings"]>
   export type OrganizationSettingsInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     default_model?: boolean | OrganizationSettings$default_modelArgs<ExtArgs>
@@ -32239,6 +32627,10 @@ export namespace Prisma {
       artifact_embedding_enabled: boolean
       artifact_design_default: $Enums.ArtifactDesignDefault
       voice_mode_enabled: boolean
+      /**
+       * §7.6 — camera and screen sharing in voice mode.
+       */
+      voice_visual_input: boolean
       voice_mode_who: $Enums.WhoCan
       voice_max_session: $Enums.VoiceSessionLength
       voice_approvals_enabled: boolean
@@ -32740,6 +33132,7 @@ export namespace Prisma {
     readonly artifact_embedding_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly artifact_design_default: FieldRef<"OrganizationSettings", 'ArtifactDesignDefault'>
     readonly voice_mode_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
+    readonly voice_visual_input: FieldRef<"OrganizationSettings", 'Boolean'>
     readonly voice_mode_who: FieldRef<"OrganizationSettings", 'WhoCan'>
     readonly voice_max_session: FieldRef<"OrganizationSettings", 'VoiceSessionLength'>
     readonly voice_approvals_enabled: FieldRef<"OrganizationSettings", 'Boolean'>
@@ -33236,6 +33629,7 @@ export namespace Prisma {
     user_id: number
     role: number
     color_theme: number
+    meeting_assistant: number
     joined_at: number
     updated_at: number
     _all: number
@@ -33268,6 +33662,7 @@ export namespace Prisma {
     user_id?: true
     role?: true
     color_theme?: true
+    meeting_assistant?: true
     joined_at?: true
     updated_at?: true
     _all?: true
@@ -33351,6 +33746,7 @@ export namespace Prisma {
     user_id: string
     role: $Enums.OrganizationRole
     color_theme: $Enums.ColorTheme
+    meeting_assistant: JsonValue | null
     joined_at: Date
     updated_at: Date
     _count: OrganizationMemberCountAggregateOutputType | null
@@ -33378,6 +33774,7 @@ export namespace Prisma {
     user_id?: boolean
     role?: boolean
     color_theme?: boolean
+    meeting_assistant?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33390,6 +33787,7 @@ export namespace Prisma {
     user_id?: boolean
     role?: boolean
     color_theme?: boolean
+    meeting_assistant?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33402,6 +33800,7 @@ export namespace Prisma {
     user_id?: boolean
     role?: boolean
     color_theme?: boolean
+    meeting_assistant?: boolean
     joined_at?: boolean
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
@@ -33414,11 +33813,12 @@ export namespace Prisma {
     user_id?: boolean
     role?: boolean
     color_theme?: boolean
+    meeting_assistant?: boolean
     joined_at?: boolean
     updated_at?: boolean
   }
 
-  export type OrganizationMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "role" | "color_theme" | "joined_at" | "updated_at", ExtArgs["result"]["organizationMember"]>
+  export type OrganizationMemberOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "role" | "color_theme" | "meeting_assistant" | "joined_at" | "updated_at", ExtArgs["result"]["organizationMember"]>
   export type OrganizationMemberInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     user?: boolean | UserDefaultArgs<ExtArgs>
@@ -33447,6 +33847,10 @@ export namespace Prisma {
        * This member's colour theme inside this organisation (each org can look different per user).
        */
       color_theme: $Enums.ColorTheme
+      /**
+       * §16 Meeting assistant set-up: { bot_id, calendar_connection_id, email_connection_id, briefs_automation_id, follow_ups_automation_id }.
+       */
+      meeting_assistant: Prisma.JsonValue | null
       joined_at: Date
       updated_at: Date
     }, ExtArgs["result"]["organizationMember"]>
@@ -33879,6 +34283,7 @@ export namespace Prisma {
     readonly user_id: FieldRef<"OrganizationMember", 'String'>
     readonly role: FieldRef<"OrganizationMember", 'OrganizationRole'>
     readonly color_theme: FieldRef<"OrganizationMember", 'ColorTheme'>
+    readonly meeting_assistant: FieldRef<"OrganizationMember", 'Json'>
     readonly joined_at: FieldRef<"OrganizationMember", 'DateTime'>
     readonly updated_at: FieldRef<"OrganizationMember", 'DateTime'>
   }
@@ -42051,6 +42456,7 @@ export namespace Prisma {
     connection_restrictions?: boolean | Bot$connection_restrictionsArgs<ExtArgs>
     credential_last_used?: boolean | Bot$credential_last_usedArgs<ExtArgs>
     artifact_comment_mentions?: boolean | Bot$artifact_comment_mentionsArgs<ExtArgs>
+    channel_links?: boolean | Bot$channel_linksArgs<ExtArgs>
     _count?: boolean | BotCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["bot"]>
 
@@ -42257,6 +42663,7 @@ export namespace Prisma {
     connection_restrictions?: boolean | Bot$connection_restrictionsArgs<ExtArgs>
     credential_last_used?: boolean | Bot$credential_last_usedArgs<ExtArgs>
     artifact_comment_mentions?: boolean | Bot$artifact_comment_mentionsArgs<ExtArgs>
+    channel_links?: boolean | Bot$channel_linksArgs<ExtArgs>
     _count?: boolean | BotCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type BotIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -42309,6 +42716,7 @@ export namespace Prisma {
       connection_restrictions: Prisma.$ConnectionBotRestrictionPayload<ExtArgs>[]
       credential_last_used: Prisma.$CredentialPayload<ExtArgs>[]
       artifact_comment_mentions: Prisma.$ArtifactCommentPayload<ExtArgs>[]
+      channel_links: Prisma.$ChannelLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -42788,6 +43196,7 @@ export namespace Prisma {
     connection_restrictions<T extends Bot$connection_restrictionsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$connection_restrictionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConnectionBotRestrictionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     credential_last_used<T extends Bot$credential_last_usedArgs<ExtArgs> = {}>(args?: Subset<T, Bot$credential_last_usedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     artifact_comment_mentions<T extends Bot$artifact_comment_mentionsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$artifact_comment_mentionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactCommentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    channel_links<T extends Bot$channel_linksArgs<ExtArgs> = {}>(args?: Subset<T, Bot$channel_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -43931,6 +44340,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ArtifactCommentScalarFieldEnum | ArtifactCommentScalarFieldEnum[]
+  }
+
+  /**
+   * Bot.channel_links
+   */
+  export type Bot$channel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    where?: ChannelLinkWhereInput
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    cursor?: ChannelLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
   }
 
   /**
@@ -55465,6 +55898,7 @@ export namespace Prisma {
     automations_results?: boolean | Conversation$automations_resultsArgs<ExtArgs>
     automations_source?: boolean | Conversation$automations_sourceArgs<ExtArgs>
     saved_widgets?: boolean | Conversation$saved_widgetsArgs<ExtArgs>
+    channel_links?: boolean | Conversation$channel_linksArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -55541,6 +55975,7 @@ export namespace Prisma {
     automations_results?: boolean | Conversation$automations_resultsArgs<ExtArgs>
     automations_source?: boolean | Conversation$automations_sourceArgs<ExtArgs>
     saved_widgets?: boolean | Conversation$saved_widgetsArgs<ExtArgs>
+    channel_links?: boolean | Conversation$channel_linksArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -55571,6 +56006,7 @@ export namespace Prisma {
       automations_results: Prisma.$AutomationPayload<ExtArgs>[]
       automations_source: Prisma.$AutomationPayload<ExtArgs>[]
       saved_widgets: Prisma.$SavedWidgetPayload<ExtArgs>[]
+      channel_links: Prisma.$ChannelLinkPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -55995,6 +56431,7 @@ export namespace Prisma {
     automations_results<T extends Conversation$automations_resultsArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$automations_resultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     automations_source<T extends Conversation$automations_sourceArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$automations_sourceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     saved_widgets<T extends Conversation$saved_widgetsArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$saved_widgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedWidgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    channel_links<T extends Conversation$channel_linksArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$channel_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -56738,6 +57175,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: SavedWidgetScalarFieldEnum | SavedWidgetScalarFieldEnum[]
+  }
+
+  /**
+   * Conversation.channel_links
+   */
+  export type Conversation$channel_linksArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    where?: ChannelLinkWhereInput
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    cursor?: ChannelLinkWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
   }
 
   /**
@@ -58111,6 +58572,7 @@ export namespace Prisma {
     status: number
     content: number
     parts: number
+    channel_meta: number
     run_id: number
     parent_message_id: number
     reply_to_message_id: number
@@ -58200,6 +58662,7 @@ export namespace Prisma {
     status?: true
     content?: true
     parts?: true
+    channel_meta?: true
     run_id?: true
     parent_message_id?: true
     reply_to_message_id?: true
@@ -58314,6 +58777,7 @@ export namespace Prisma {
     status: $Enums.MessageStatus
     content: string | null
     parts: JsonValue | null
+    channel_meta: JsonValue | null
     run_id: string | null
     parent_message_id: string | null
     reply_to_message_id: string | null
@@ -58360,6 +58824,7 @@ export namespace Prisma {
     status?: boolean
     content?: boolean
     parts?: boolean
+    channel_meta?: boolean
     run_id?: boolean
     parent_message_id?: boolean
     reply_to_message_id?: boolean
@@ -58408,6 +58873,7 @@ export namespace Prisma {
     status?: boolean
     content?: boolean
     parts?: boolean
+    channel_meta?: boolean
     run_id?: boolean
     parent_message_id?: boolean
     reply_to_message_id?: boolean
@@ -58444,6 +58910,7 @@ export namespace Prisma {
     status?: boolean
     content?: boolean
     parts?: boolean
+    channel_meta?: boolean
     run_id?: boolean
     parent_message_id?: boolean
     reply_to_message_id?: boolean
@@ -58480,6 +58947,7 @@ export namespace Prisma {
     status?: boolean
     content?: boolean
     parts?: boolean
+    channel_meta?: boolean
     run_id?: boolean
     parent_message_id?: boolean
     reply_to_message_id?: boolean
@@ -58496,7 +58964,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "conversation_id" | "author_type" | "author_user_id" | "author_bot_id" | "source" | "status" | "content" | "parts" | "run_id" | "parent_message_id" | "reply_to_message_id" | "branch_from_message_id" | "branch_index" | "model_id" | "is_pinned" | "pinned_by_id" | "pinned_at" | "edited_at" | "secret_masked" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["message"]>
+  export type MessageOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "conversation_id" | "author_type" | "author_user_id" | "author_bot_id" | "source" | "status" | "content" | "parts" | "channel_meta" | "run_id" | "parent_message_id" | "reply_to_message_id" | "branch_from_message_id" | "branch_index" | "model_id" | "is_pinned" | "pinned_by_id" | "pinned_at" | "edited_at" | "secret_masked" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["message"]>
   export type MessageInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -58584,6 +59052,10 @@ export namespace Prisma {
        * Vercel AI SDK message parts: text, tool-invocation, interactive (json-render spec / mini-app), approval, secret-input, file…
        */
       parts: Prisma.JsonValue | null
+      /**
+       * Messages that came from email, Slack or WhatsApp: where to send the reply (thread, subject, sender).
+       */
+      channel_meta: Prisma.JsonValue | null
       run_id: string | null
       parent_message_id: string | null
       reply_to_message_id: string | null
@@ -59051,6 +59523,7 @@ export namespace Prisma {
     readonly status: FieldRef<"Message", 'MessageStatus'>
     readonly content: FieldRef<"Message", 'String'>
     readonly parts: FieldRef<"Message", 'Json'>
+    readonly channel_meta: FieldRef<"Message", 'Json'>
     readonly run_id: FieldRef<"Message", 'String'>
     readonly parent_message_id: FieldRef<"Message", 'String'>
     readonly reply_to_message_id: FieldRef<"Message", 'String'>
@@ -67384,6 +67857,9 @@ export namespace Prisma {
     started_at: Date | null
     finished_at: Date | null
     duration_ms: number | null
+    undo_until: Date | null
+    undone_at: Date | null
+    undone_by_id: string | null
   }
 
   export type RunStepMaxAggregateOutputType = {
@@ -67403,6 +67879,9 @@ export namespace Prisma {
     started_at: Date | null
     finished_at: Date | null
     duration_ms: number | null
+    undo_until: Date | null
+    undone_at: Date | null
+    undone_by_id: string | null
   }
 
   export type RunStepCountAggregateOutputType = {
@@ -67424,6 +67903,10 @@ export namespace Prisma {
     started_at: number
     finished_at: number
     duration_ms: number
+    undo: number
+    undo_until: number
+    undone_at: number
+    undone_by_id: number
     _all: number
   }
 
@@ -67455,6 +67938,9 @@ export namespace Prisma {
     started_at?: true
     finished_at?: true
     duration_ms?: true
+    undo_until?: true
+    undone_at?: true
+    undone_by_id?: true
   }
 
   export type RunStepMaxAggregateInputType = {
@@ -67474,6 +67960,9 @@ export namespace Prisma {
     started_at?: true
     finished_at?: true
     duration_ms?: true
+    undo_until?: true
+    undone_at?: true
+    undone_by_id?: true
   }
 
   export type RunStepCountAggregateInputType = {
@@ -67495,6 +67984,10 @@ export namespace Prisma {
     started_at?: true
     finished_at?: true
     duration_ms?: true
+    undo?: true
+    undo_until?: true
+    undone_at?: true
+    undone_by_id?: true
     _all?: true
   }
 
@@ -67603,6 +68096,10 @@ export namespace Prisma {
     started_at: Date
     finished_at: Date | null
     duration_ms: number | null
+    undo: JsonValue | null
+    undo_until: Date | null
+    undone_at: Date | null
+    undone_by_id: string | null
     _count: RunStepCountAggregateOutputType | null
     _avg: RunStepAvgAggregateOutputType | null
     _sum: RunStepSumAggregateOutputType | null
@@ -67643,6 +68140,10 @@ export namespace Prisma {
     started_at?: boolean
     finished_at?: boolean
     duration_ms?: boolean
+    undo?: boolean
+    undo_until?: boolean
+    undone_at?: boolean
+    undone_by_id?: boolean
     run?: boolean | RunDefaultArgs<ExtArgs>
     connection?: boolean | RunStep$connectionArgs<ExtArgs>
     device?: boolean | RunStep$deviceArgs<ExtArgs>
@@ -67668,6 +68169,10 @@ export namespace Prisma {
     started_at?: boolean
     finished_at?: boolean
     duration_ms?: boolean
+    undo?: boolean
+    undo_until?: boolean
+    undone_at?: boolean
+    undone_by_id?: boolean
     run?: boolean | RunDefaultArgs<ExtArgs>
     connection?: boolean | RunStep$connectionArgs<ExtArgs>
     device?: boolean | RunStep$deviceArgs<ExtArgs>
@@ -67693,6 +68198,10 @@ export namespace Prisma {
     started_at?: boolean
     finished_at?: boolean
     duration_ms?: boolean
+    undo?: boolean
+    undo_until?: boolean
+    undone_at?: boolean
+    undone_by_id?: boolean
     run?: boolean | RunDefaultArgs<ExtArgs>
     connection?: boolean | RunStep$connectionArgs<ExtArgs>
     device?: boolean | RunStep$deviceArgs<ExtArgs>
@@ -67718,9 +68227,13 @@ export namespace Prisma {
     started_at?: boolean
     finished_at?: boolean
     duration_ms?: boolean
+    undo?: boolean
+    undo_until?: boolean
+    undone_at?: boolean
+    undone_by_id?: boolean
   }
 
-  export type RunStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "run_id" | "sequence" | "type" | "status" | "title" | "tool_name" | "runs_on" | "connection_id" | "device_id" | "skill_id" | "consulted_bot_id" | "input" | "output" | "error" | "started_at" | "finished_at" | "duration_ms", ExtArgs["result"]["runStep"]>
+  export type RunStepOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "run_id" | "sequence" | "type" | "status" | "title" | "tool_name" | "runs_on" | "connection_id" | "device_id" | "skill_id" | "consulted_bot_id" | "input" | "output" | "error" | "started_at" | "finished_at" | "duration_ms" | "undo" | "undo_until" | "undone_at" | "undone_by_id", ExtArgs["result"]["runStep"]>
   export type RunStepInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     run?: boolean | RunDefaultArgs<ExtArgs>
     connection?: boolean | RunStep$connectionArgs<ExtArgs>
@@ -67770,6 +68283,13 @@ export namespace Prisma {
       started_at: Date
       finished_at: Date | null
       duration_ms: number | null
+      /**
+       * §16 Undo: how to reverse this step in the connected service ({ tool, args, label, connection_id }); never shown to the model.
+       */
+      undo: Prisma.JsonValue | null
+      undo_until: Date | null
+      undone_at: Date | null
+      undone_by_id: string | null
     }, ExtArgs["result"]["runStep"]>
     composites: {}
   }
@@ -68215,6 +68735,10 @@ export namespace Prisma {
     readonly started_at: FieldRef<"RunStep", 'DateTime'>
     readonly finished_at: FieldRef<"RunStep", 'DateTime'>
     readonly duration_ms: FieldRef<"RunStep", 'Int'>
+    readonly undo: FieldRef<"RunStep", 'Json'>
+    readonly undo_until: FieldRef<"RunStep", 'DateTime'>
+    readonly undone_at: FieldRef<"RunStep", 'DateTime'>
+    readonly undone_by_id: FieldRef<"RunStep", 'String'>
   }
     
 
@@ -77776,6 +78300,7 @@ export namespace Prisma {
     reports?: boolean | Artifact$reportsArgs<ExtArgs>
     files?: boolean | Artifact$filesArgs<ExtArgs>
     usage_records?: boolean | Artifact$usage_recordsArgs<ExtArgs>
+    data_grants?: boolean | Artifact$data_grantsArgs<ExtArgs>
     _count?: boolean | ArtifactCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["artifact"]>
 
@@ -77903,6 +78428,7 @@ export namespace Prisma {
     reports?: boolean | Artifact$reportsArgs<ExtArgs>
     files?: boolean | Artifact$filesArgs<ExtArgs>
     usage_records?: boolean | Artifact$usage_recordsArgs<ExtArgs>
+    data_grants?: boolean | Artifact$data_grantsArgs<ExtArgs>
     _count?: boolean | ArtifactCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ArtifactIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -77942,6 +78468,7 @@ export namespace Prisma {
       reports: Prisma.$ArtifactReportPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
       usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      data_grants: Prisma.$ArtifactDataGrantPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -78381,6 +78908,7 @@ export namespace Prisma {
     reports<T extends Artifact$reportsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Artifact$filesArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usage_records<T extends Artifact$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    data_grants<T extends Artifact$data_grantsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$data_grantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -79142,6 +79670,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+  }
+
+  /**
+   * Artifact.data_grants
+   */
+  export type Artifact$data_grantsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    where?: ArtifactDataGrantWhereInput
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ArtifactDataGrantScalarFieldEnum | ArtifactDataGrantScalarFieldEnum[]
   }
 
   /**
@@ -83916,6 +84468,1077 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ArtifactRecordInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ArtifactDataGrant
+   */
+
+  export type AggregateArtifactDataGrant = {
+    _count: ArtifactDataGrantCountAggregateOutputType | null
+    _min: ArtifactDataGrantMinAggregateOutputType | null
+    _max: ArtifactDataGrantMaxAggregateOutputType | null
+  }
+
+  export type ArtifactDataGrantMinAggregateOutputType = {
+    id: string | null
+    artifact_id: string | null
+    user_id: string | null
+    service_key: string | null
+    created_at: Date | null
+  }
+
+  export type ArtifactDataGrantMaxAggregateOutputType = {
+    id: string | null
+    artifact_id: string | null
+    user_id: string | null
+    service_key: string | null
+    created_at: Date | null
+  }
+
+  export type ArtifactDataGrantCountAggregateOutputType = {
+    id: number
+    artifact_id: number
+    user_id: number
+    service_key: number
+    created_at: number
+    _all: number
+  }
+
+
+  export type ArtifactDataGrantMinAggregateInputType = {
+    id?: true
+    artifact_id?: true
+    user_id?: true
+    service_key?: true
+    created_at?: true
+  }
+
+  export type ArtifactDataGrantMaxAggregateInputType = {
+    id?: true
+    artifact_id?: true
+    user_id?: true
+    service_key?: true
+    created_at?: true
+  }
+
+  export type ArtifactDataGrantCountAggregateInputType = {
+    id?: true
+    artifact_id?: true
+    user_id?: true
+    service_key?: true
+    created_at?: true
+    _all?: true
+  }
+
+  export type ArtifactDataGrantAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtifactDataGrant to aggregate.
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtifactDataGrants to fetch.
+     */
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtifactDataGrants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtifactDataGrants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ArtifactDataGrants
+    **/
+    _count?: true | ArtifactDataGrantCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ArtifactDataGrantMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ArtifactDataGrantMaxAggregateInputType
+  }
+
+  export type GetArtifactDataGrantAggregateType<T extends ArtifactDataGrantAggregateArgs> = {
+        [P in keyof T & keyof AggregateArtifactDataGrant]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateArtifactDataGrant[P]>
+      : GetScalarType<T[P], AggregateArtifactDataGrant[P]>
+  }
+
+
+
+
+  export type ArtifactDataGrantGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ArtifactDataGrantWhereInput
+    orderBy?: ArtifactDataGrantOrderByWithAggregationInput | ArtifactDataGrantOrderByWithAggregationInput[]
+    by: ArtifactDataGrantScalarFieldEnum[] | ArtifactDataGrantScalarFieldEnum
+    having?: ArtifactDataGrantScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ArtifactDataGrantCountAggregateInputType | true
+    _min?: ArtifactDataGrantMinAggregateInputType
+    _max?: ArtifactDataGrantMaxAggregateInputType
+  }
+
+  export type ArtifactDataGrantGroupByOutputType = {
+    id: string
+    artifact_id: string
+    user_id: string
+    service_key: string
+    created_at: Date
+    _count: ArtifactDataGrantCountAggregateOutputType | null
+    _min: ArtifactDataGrantMinAggregateOutputType | null
+    _max: ArtifactDataGrantMaxAggregateOutputType | null
+  }
+
+  type GetArtifactDataGrantGroupByPayload<T extends ArtifactDataGrantGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ArtifactDataGrantGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ArtifactDataGrantGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ArtifactDataGrantGroupByOutputType[P]>
+            : GetScalarType<T[P], ArtifactDataGrantGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ArtifactDataGrantSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artifact_id?: boolean
+    user_id?: boolean
+    service_key?: boolean
+    created_at?: boolean
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artifactDataGrant"]>
+
+  export type ArtifactDataGrantSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artifact_id?: boolean
+    user_id?: boolean
+    service_key?: boolean
+    created_at?: boolean
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artifactDataGrant"]>
+
+  export type ArtifactDataGrantSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    artifact_id?: boolean
+    user_id?: boolean
+    service_key?: boolean
+    created_at?: boolean
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }, ExtArgs["result"]["artifactDataGrant"]>
+
+  export type ArtifactDataGrantSelectScalar = {
+    id?: boolean
+    artifact_id?: boolean
+    user_id?: boolean
+    service_key?: boolean
+    created_at?: boolean
+  }
+
+  export type ArtifactDataGrantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "artifact_id" | "user_id" | "service_key" | "created_at", ExtArgs["result"]["artifactDataGrant"]>
+  export type ArtifactDataGrantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ArtifactDataGrantIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+  export type ArtifactDataGrantIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    artifact?: boolean | ArtifactDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+  }
+
+  export type $ArtifactDataGrantPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ArtifactDataGrant"
+    objects: {
+      artifact: Prisma.$ArtifactPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      artifact_id: string
+      user_id: string
+      service_key: string
+      created_at: Date
+    }, ExtArgs["result"]["artifactDataGrant"]>
+    composites: {}
+  }
+
+  type ArtifactDataGrantGetPayload<S extends boolean | null | undefined | ArtifactDataGrantDefaultArgs> = $Result.GetResult<Prisma.$ArtifactDataGrantPayload, S>
+
+  type ArtifactDataGrantCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ArtifactDataGrantFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ArtifactDataGrantCountAggregateInputType | true
+    }
+
+  export interface ArtifactDataGrantDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ArtifactDataGrant'], meta: { name: 'ArtifactDataGrant' } }
+    /**
+     * Find zero or one ArtifactDataGrant that matches the filter.
+     * @param {ArtifactDataGrantFindUniqueArgs} args - Arguments to find a ArtifactDataGrant
+     * @example
+     * // Get one ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ArtifactDataGrantFindUniqueArgs>(args: SelectSubset<T, ArtifactDataGrantFindUniqueArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ArtifactDataGrant that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ArtifactDataGrantFindUniqueOrThrowArgs} args - Arguments to find a ArtifactDataGrant
+     * @example
+     * // Get one ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ArtifactDataGrantFindUniqueOrThrowArgs>(args: SelectSubset<T, ArtifactDataGrantFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtifactDataGrant that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantFindFirstArgs} args - Arguments to find a ArtifactDataGrant
+     * @example
+     * // Get one ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ArtifactDataGrantFindFirstArgs>(args?: SelectSubset<T, ArtifactDataGrantFindFirstArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ArtifactDataGrant that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantFindFirstOrThrowArgs} args - Arguments to find a ArtifactDataGrant
+     * @example
+     * // Get one ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ArtifactDataGrantFindFirstOrThrowArgs>(args?: SelectSubset<T, ArtifactDataGrantFindFirstOrThrowArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ArtifactDataGrants that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ArtifactDataGrants
+     * const artifactDataGrants = await prisma.artifactDataGrant.findMany()
+     * 
+     * // Get first 10 ArtifactDataGrants
+     * const artifactDataGrants = await prisma.artifactDataGrant.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const artifactDataGrantWithIdOnly = await prisma.artifactDataGrant.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ArtifactDataGrantFindManyArgs>(args?: SelectSubset<T, ArtifactDataGrantFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ArtifactDataGrant.
+     * @param {ArtifactDataGrantCreateArgs} args - Arguments to create a ArtifactDataGrant.
+     * @example
+     * // Create one ArtifactDataGrant
+     * const ArtifactDataGrant = await prisma.artifactDataGrant.create({
+     *   data: {
+     *     // ... data to create a ArtifactDataGrant
+     *   }
+     * })
+     * 
+     */
+    create<T extends ArtifactDataGrantCreateArgs>(args: SelectSubset<T, ArtifactDataGrantCreateArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ArtifactDataGrants.
+     * @param {ArtifactDataGrantCreateManyArgs} args - Arguments to create many ArtifactDataGrants.
+     * @example
+     * // Create many ArtifactDataGrants
+     * const artifactDataGrant = await prisma.artifactDataGrant.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ArtifactDataGrantCreateManyArgs>(args?: SelectSubset<T, ArtifactDataGrantCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ArtifactDataGrants and returns the data saved in the database.
+     * @param {ArtifactDataGrantCreateManyAndReturnArgs} args - Arguments to create many ArtifactDataGrants.
+     * @example
+     * // Create many ArtifactDataGrants
+     * const artifactDataGrant = await prisma.artifactDataGrant.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ArtifactDataGrants and only return the `id`
+     * const artifactDataGrantWithIdOnly = await prisma.artifactDataGrant.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ArtifactDataGrantCreateManyAndReturnArgs>(args?: SelectSubset<T, ArtifactDataGrantCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ArtifactDataGrant.
+     * @param {ArtifactDataGrantDeleteArgs} args - Arguments to delete one ArtifactDataGrant.
+     * @example
+     * // Delete one ArtifactDataGrant
+     * const ArtifactDataGrant = await prisma.artifactDataGrant.delete({
+     *   where: {
+     *     // ... filter to delete one ArtifactDataGrant
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ArtifactDataGrantDeleteArgs>(args: SelectSubset<T, ArtifactDataGrantDeleteArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ArtifactDataGrant.
+     * @param {ArtifactDataGrantUpdateArgs} args - Arguments to update one ArtifactDataGrant.
+     * @example
+     * // Update one ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ArtifactDataGrantUpdateArgs>(args: SelectSubset<T, ArtifactDataGrantUpdateArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ArtifactDataGrants.
+     * @param {ArtifactDataGrantDeleteManyArgs} args - Arguments to filter ArtifactDataGrants to delete.
+     * @example
+     * // Delete a few ArtifactDataGrants
+     * const { count } = await prisma.artifactDataGrant.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ArtifactDataGrantDeleteManyArgs>(args?: SelectSubset<T, ArtifactDataGrantDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtifactDataGrants.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ArtifactDataGrants
+     * const artifactDataGrant = await prisma.artifactDataGrant.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ArtifactDataGrantUpdateManyArgs>(args: SelectSubset<T, ArtifactDataGrantUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ArtifactDataGrants and returns the data updated in the database.
+     * @param {ArtifactDataGrantUpdateManyAndReturnArgs} args - Arguments to update many ArtifactDataGrants.
+     * @example
+     * // Update many ArtifactDataGrants
+     * const artifactDataGrant = await prisma.artifactDataGrant.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ArtifactDataGrants and only return the `id`
+     * const artifactDataGrantWithIdOnly = await prisma.artifactDataGrant.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ArtifactDataGrantUpdateManyAndReturnArgs>(args: SelectSubset<T, ArtifactDataGrantUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ArtifactDataGrant.
+     * @param {ArtifactDataGrantUpsertArgs} args - Arguments to update or create a ArtifactDataGrant.
+     * @example
+     * // Update or create a ArtifactDataGrant
+     * const artifactDataGrant = await prisma.artifactDataGrant.upsert({
+     *   create: {
+     *     // ... data to create a ArtifactDataGrant
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ArtifactDataGrant we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ArtifactDataGrantUpsertArgs>(args: SelectSubset<T, ArtifactDataGrantUpsertArgs<ExtArgs>>): Prisma__ArtifactDataGrantClient<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ArtifactDataGrants.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantCountArgs} args - Arguments to filter ArtifactDataGrants to count.
+     * @example
+     * // Count the number of ArtifactDataGrants
+     * const count = await prisma.artifactDataGrant.count({
+     *   where: {
+     *     // ... the filter for the ArtifactDataGrants we want to count
+     *   }
+     * })
+    **/
+    count<T extends ArtifactDataGrantCountArgs>(
+      args?: Subset<T, ArtifactDataGrantCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ArtifactDataGrantCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ArtifactDataGrant.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ArtifactDataGrantAggregateArgs>(args: Subset<T, ArtifactDataGrantAggregateArgs>): Prisma.PrismaPromise<GetArtifactDataGrantAggregateType<T>>
+
+    /**
+     * Group by ArtifactDataGrant.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ArtifactDataGrantGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ArtifactDataGrantGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ArtifactDataGrantGroupByArgs['orderBy'] }
+        : { orderBy?: ArtifactDataGrantGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ArtifactDataGrantGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetArtifactDataGrantGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ArtifactDataGrant model
+   */
+  readonly fields: ArtifactDataGrantFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ArtifactDataGrant.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ArtifactDataGrantClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    artifact<T extends ArtifactDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ArtifactDefaultArgs<ExtArgs>>): Prisma__ArtifactClient<$Result.GetResult<Prisma.$ArtifactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ArtifactDataGrant model
+   */
+  interface ArtifactDataGrantFieldRefs {
+    readonly id: FieldRef<"ArtifactDataGrant", 'String'>
+    readonly artifact_id: FieldRef<"ArtifactDataGrant", 'String'>
+    readonly user_id: FieldRef<"ArtifactDataGrant", 'String'>
+    readonly service_key: FieldRef<"ArtifactDataGrant", 'String'>
+    readonly created_at: FieldRef<"ArtifactDataGrant", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ArtifactDataGrant findUnique
+   */
+  export type ArtifactDataGrantFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtifactDataGrant to fetch.
+     */
+    where: ArtifactDataGrantWhereUniqueInput
+  }
+
+  /**
+   * ArtifactDataGrant findUniqueOrThrow
+   */
+  export type ArtifactDataGrantFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtifactDataGrant to fetch.
+     */
+    where: ArtifactDataGrantWhereUniqueInput
+  }
+
+  /**
+   * ArtifactDataGrant findFirst
+   */
+  export type ArtifactDataGrantFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtifactDataGrant to fetch.
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtifactDataGrants to fetch.
+     */
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtifactDataGrants.
+     */
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtifactDataGrants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtifactDataGrants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtifactDataGrants.
+     */
+    distinct?: ArtifactDataGrantScalarFieldEnum | ArtifactDataGrantScalarFieldEnum[]
+  }
+
+  /**
+   * ArtifactDataGrant findFirstOrThrow
+   */
+  export type ArtifactDataGrantFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtifactDataGrant to fetch.
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtifactDataGrants to fetch.
+     */
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ArtifactDataGrants.
+     */
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtifactDataGrants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtifactDataGrants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtifactDataGrants.
+     */
+    distinct?: ArtifactDataGrantScalarFieldEnum | ArtifactDataGrantScalarFieldEnum[]
+  }
+
+  /**
+   * ArtifactDataGrant findMany
+   */
+  export type ArtifactDataGrantFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter, which ArtifactDataGrants to fetch.
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ArtifactDataGrants to fetch.
+     */
+    orderBy?: ArtifactDataGrantOrderByWithRelationInput | ArtifactDataGrantOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ArtifactDataGrants.
+     */
+    cursor?: ArtifactDataGrantWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ArtifactDataGrants from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ArtifactDataGrants.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ArtifactDataGrants.
+     */
+    distinct?: ArtifactDataGrantScalarFieldEnum | ArtifactDataGrantScalarFieldEnum[]
+  }
+
+  /**
+   * ArtifactDataGrant create
+   */
+  export type ArtifactDataGrantCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ArtifactDataGrant.
+     */
+    data: XOR<ArtifactDataGrantCreateInput, ArtifactDataGrantUncheckedCreateInput>
+  }
+
+  /**
+   * ArtifactDataGrant createMany
+   */
+  export type ArtifactDataGrantCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ArtifactDataGrants.
+     */
+    data: ArtifactDataGrantCreateManyInput | ArtifactDataGrantCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ArtifactDataGrant createManyAndReturn
+   */
+  export type ArtifactDataGrantCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * The data used to create many ArtifactDataGrants.
+     */
+    data: ArtifactDataGrantCreateManyInput | ArtifactDataGrantCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtifactDataGrant update
+   */
+  export type ArtifactDataGrantUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ArtifactDataGrant.
+     */
+    data: XOR<ArtifactDataGrantUpdateInput, ArtifactDataGrantUncheckedUpdateInput>
+    /**
+     * Choose, which ArtifactDataGrant to update.
+     */
+    where: ArtifactDataGrantWhereUniqueInput
+  }
+
+  /**
+   * ArtifactDataGrant updateMany
+   */
+  export type ArtifactDataGrantUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ArtifactDataGrants.
+     */
+    data: XOR<ArtifactDataGrantUpdateManyMutationInput, ArtifactDataGrantUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtifactDataGrants to update
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * Limit how many ArtifactDataGrants to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtifactDataGrant updateManyAndReturn
+   */
+  export type ArtifactDataGrantUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * The data used to update ArtifactDataGrants.
+     */
+    data: XOR<ArtifactDataGrantUpdateManyMutationInput, ArtifactDataGrantUncheckedUpdateManyInput>
+    /**
+     * Filter which ArtifactDataGrants to update
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * Limit how many ArtifactDataGrants to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ArtifactDataGrant upsert
+   */
+  export type ArtifactDataGrantUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ArtifactDataGrant to update in case it exists.
+     */
+    where: ArtifactDataGrantWhereUniqueInput
+    /**
+     * In case the ArtifactDataGrant found by the `where` argument doesn't exist, create a new ArtifactDataGrant with this data.
+     */
+    create: XOR<ArtifactDataGrantCreateInput, ArtifactDataGrantUncheckedCreateInput>
+    /**
+     * In case the ArtifactDataGrant was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ArtifactDataGrantUpdateInput, ArtifactDataGrantUncheckedUpdateInput>
+  }
+
+  /**
+   * ArtifactDataGrant delete
+   */
+  export type ArtifactDataGrantDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
+    /**
+     * Filter which ArtifactDataGrant to delete.
+     */
+    where: ArtifactDataGrantWhereUniqueInput
+  }
+
+  /**
+   * ArtifactDataGrant deleteMany
+   */
+  export type ArtifactDataGrantDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ArtifactDataGrants to delete
+     */
+    where?: ArtifactDataGrantWhereInput
+    /**
+     * Limit how many ArtifactDataGrants to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ArtifactDataGrant without action
+   */
+  export type ArtifactDataGrantDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ArtifactDataGrant
+     */
+    select?: ArtifactDataGrantSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ArtifactDataGrant
+     */
+    omit?: ArtifactDataGrantOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ArtifactDataGrantInclude<ExtArgs> | null
   }
 
 
@@ -103324,6 +104947,7 @@ export namespace Prisma {
     automation_id: string | null
     connection_id: string | null
     trigger_key: string | null
+    trigger_name: string | null
     composio_trigger_id: string | null
     created_at: Date | null
   }
@@ -103333,6 +104957,7 @@ export namespace Prisma {
     automation_id: string | null
     connection_id: string | null
     trigger_key: string | null
+    trigger_name: string | null
     composio_trigger_id: string | null
     created_at: Date | null
   }
@@ -103342,6 +104967,7 @@ export namespace Prisma {
     automation_id: number
     connection_id: number
     trigger_key: number
+    trigger_name: number
     composio_trigger_id: number
     config: number
     created_at: number
@@ -103354,6 +104980,7 @@ export namespace Prisma {
     automation_id?: true
     connection_id?: true
     trigger_key?: true
+    trigger_name?: true
     composio_trigger_id?: true
     created_at?: true
   }
@@ -103363,6 +104990,7 @@ export namespace Prisma {
     automation_id?: true
     connection_id?: true
     trigger_key?: true
+    trigger_name?: true
     composio_trigger_id?: true
     created_at?: true
   }
@@ -103372,6 +105000,7 @@ export namespace Prisma {
     automation_id?: true
     connection_id?: true
     trigger_key?: true
+    trigger_name?: true
     composio_trigger_id?: true
     config?: true
     created_at?: true
@@ -103455,6 +105084,7 @@ export namespace Prisma {
     automation_id: string
     connection_id: string
     trigger_key: string
+    trigger_name: string | null
     composio_trigger_id: string | null
     config: JsonValue | null
     created_at: Date
@@ -103482,6 +105112,7 @@ export namespace Prisma {
     automation_id?: boolean
     connection_id?: boolean
     trigger_key?: boolean
+    trigger_name?: boolean
     composio_trigger_id?: boolean
     config?: boolean
     created_at?: boolean
@@ -103494,6 +105125,7 @@ export namespace Prisma {
     automation_id?: boolean
     connection_id?: boolean
     trigger_key?: boolean
+    trigger_name?: boolean
     composio_trigger_id?: boolean
     config?: boolean
     created_at?: boolean
@@ -103506,6 +105138,7 @@ export namespace Prisma {
     automation_id?: boolean
     connection_id?: boolean
     trigger_key?: boolean
+    trigger_name?: boolean
     composio_trigger_id?: boolean
     config?: boolean
     created_at?: boolean
@@ -103518,12 +105151,13 @@ export namespace Prisma {
     automation_id?: boolean
     connection_id?: boolean
     trigger_key?: boolean
+    trigger_name?: boolean
     composio_trigger_id?: boolean
     config?: boolean
     created_at?: boolean
   }
 
-  export type AutomationTriggerSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "automation_id" | "connection_id" | "trigger_key" | "composio_trigger_id" | "config" | "created_at", ExtArgs["result"]["automationTriggerSubscription"]>
+  export type AutomationTriggerSubscriptionOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "automation_id" | "connection_id" | "trigger_key" | "trigger_name" | "composio_trigger_id" | "config" | "created_at", ExtArgs["result"]["automationTriggerSubscription"]>
   export type AutomationTriggerSubscriptionInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     automation?: boolean | AutomationDefaultArgs<ExtArgs>
     connection?: boolean | ConnectionDefaultArgs<ExtArgs>
@@ -103548,6 +105182,7 @@ export namespace Prisma {
       automation_id: string
       connection_id: string
       trigger_key: string
+      trigger_name: string | null
       composio_trigger_id: string | null
       config: Prisma.JsonValue | null
       created_at: Date
@@ -103980,6 +105615,7 @@ export namespace Prisma {
     readonly automation_id: FieldRef<"AutomationTriggerSubscription", 'String'>
     readonly connection_id: FieldRef<"AutomationTriggerSubscription", 'String'>
     readonly trigger_key: FieldRef<"AutomationTriggerSubscription", 'String'>
+    readonly trigger_name: FieldRef<"AutomationTriggerSubscription", 'String'>
     readonly composio_trigger_id: FieldRef<"AutomationTriggerSubscription", 'String'>
     readonly config: FieldRef<"AutomationTriggerSubscription", 'Json'>
     readonly created_at: FieldRef<"AutomationTriggerSubscription", 'DateTime'>
@@ -104463,6 +106099,7 @@ export namespace Prisma {
     attempt: number
     is_retry: number
     trigger_event_id: number
+    trigger_event: number
     scheduled_for: number
     started_at: number
     finished_at: number
@@ -104523,6 +106160,7 @@ export namespace Prisma {
     attempt?: true
     is_retry?: true
     trigger_event_id?: true
+    trigger_event?: true
     scheduled_for?: true
     started_at?: true
     finished_at?: true
@@ -104626,6 +106264,7 @@ export namespace Prisma {
     attempt: number
     is_retry: boolean
     trigger_event_id: string | null
+    trigger_event: JsonValue | null
     scheduled_for: Date | null
     started_at: Date | null
     finished_at: Date | null
@@ -104661,6 +106300,7 @@ export namespace Prisma {
     attempt?: boolean
     is_retry?: boolean
     trigger_event_id?: boolean
+    trigger_event?: boolean
     scheduled_for?: boolean
     started_at?: boolean
     finished_at?: boolean
@@ -104679,6 +106319,7 @@ export namespace Prisma {
     attempt?: boolean
     is_retry?: boolean
     trigger_event_id?: boolean
+    trigger_event?: boolean
     scheduled_for?: boolean
     started_at?: boolean
     finished_at?: boolean
@@ -104696,6 +106337,7 @@ export namespace Prisma {
     attempt?: boolean
     is_retry?: boolean
     trigger_event_id?: boolean
+    trigger_event?: boolean
     scheduled_for?: boolean
     started_at?: boolean
     finished_at?: boolean
@@ -104713,6 +106355,7 @@ export namespace Prisma {
     attempt?: boolean
     is_retry?: boolean
     trigger_event_id?: boolean
+    trigger_event?: boolean
     scheduled_for?: boolean
     started_at?: boolean
     finished_at?: boolean
@@ -104722,7 +106365,7 @@ export namespace Prisma {
     created_at?: boolean
   }
 
-  export type AutomationRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "automation_id" | "status" | "attempt" | "is_retry" | "trigger_event_id" | "scheduled_for" | "started_at" | "finished_at" | "duration_ms" | "result_summary" | "error" | "created_at", ExtArgs["result"]["automationRun"]>
+  export type AutomationRunOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "automation_id" | "status" | "attempt" | "is_retry" | "trigger_event_id" | "trigger_event" | "scheduled_for" | "started_at" | "finished_at" | "duration_ms" | "result_summary" | "error" | "created_at", ExtArgs["result"]["automationRun"]>
   export type AutomationRunInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     automation?: boolean | AutomationDefaultArgs<ExtArgs>
     run?: boolean | AutomationRun$runArgs<ExtArgs>
@@ -104747,6 +106390,10 @@ export namespace Prisma {
       attempt: number
       is_retry: boolean
       trigger_event_id: string | null
+      /**
+       * §10.2: the event that started this run (trimmed), shown to the bot and in the run history.
+       */
+      trigger_event: Prisma.JsonValue | null
       scheduled_for: Date | null
       started_at: Date | null
       finished_at: Date | null
@@ -105185,6 +106832,7 @@ export namespace Prisma {
     readonly attempt: FieldRef<"AutomationRun", 'Int'>
     readonly is_retry: FieldRef<"AutomationRun", 'Boolean'>
     readonly trigger_event_id: FieldRef<"AutomationRun", 'String'>
+    readonly trigger_event: FieldRef<"AutomationRun", 'Json'>
     readonly scheduled_for: FieldRef<"AutomationRun", 'DateTime'>
     readonly started_at: FieldRef<"AutomationRun", 'DateTime'>
     readonly finished_at: FieldRef<"AutomationRun", 'DateTime'>
@@ -118677,6 +120325,1241 @@ export namespace Prisma {
 
 
   /**
+   * Model ChannelLink
+   */
+
+  export type AggregateChannelLink = {
+    _count: ChannelLinkCountAggregateOutputType | null
+    _min: ChannelLinkMinAggregateOutputType | null
+    _max: ChannelLinkMaxAggregateOutputType | null
+  }
+
+  export type ChannelLinkMinAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    user_id: string | null
+    bot_id: string | null
+    channel: $Enums.ExternalChannel | null
+    status: $Enums.ChannelLinkStatus | null
+    external_id: string | null
+    inbound_token: string | null
+    link_code: string | null
+    link_code_expires_at: Date | null
+    conversation_id: string | null
+    last_message_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ChannelLinkMaxAggregateOutputType = {
+    id: string | null
+    organization_id: string | null
+    user_id: string | null
+    bot_id: string | null
+    channel: $Enums.ExternalChannel | null
+    status: $Enums.ChannelLinkStatus | null
+    external_id: string | null
+    inbound_token: string | null
+    link_code: string | null
+    link_code_expires_at: Date | null
+    conversation_id: string | null
+    last_message_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ChannelLinkCountAggregateOutputType = {
+    id: number
+    organization_id: number
+    user_id: number
+    bot_id: number
+    channel: number
+    status: number
+    external_id: number
+    inbound_token: number
+    link_code: number
+    link_code_expires_at: number
+    conversation_id: number
+    last_message_at: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type ChannelLinkMinAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    bot_id?: true
+    channel?: true
+    status?: true
+    external_id?: true
+    inbound_token?: true
+    link_code?: true
+    link_code_expires_at?: true
+    conversation_id?: true
+    last_message_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ChannelLinkMaxAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    bot_id?: true
+    channel?: true
+    status?: true
+    external_id?: true
+    inbound_token?: true
+    link_code?: true
+    link_code_expires_at?: true
+    conversation_id?: true
+    last_message_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ChannelLinkCountAggregateInputType = {
+    id?: true
+    organization_id?: true
+    user_id?: true
+    bot_id?: true
+    channel?: true
+    status?: true
+    external_id?: true
+    inbound_token?: true
+    link_code?: true
+    link_code_expires_at?: true
+    conversation_id?: true
+    last_message_at?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type ChannelLinkAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChannelLink to aggregate.
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelLinks to fetch.
+     */
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ChannelLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ChannelLinks
+    **/
+    _count?: true | ChannelLinkCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ChannelLinkMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ChannelLinkMaxAggregateInputType
+  }
+
+  export type GetChannelLinkAggregateType<T extends ChannelLinkAggregateArgs> = {
+        [P in keyof T & keyof AggregateChannelLink]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateChannelLink[P]>
+      : GetScalarType<T[P], AggregateChannelLink[P]>
+  }
+
+
+
+
+  export type ChannelLinkGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ChannelLinkWhereInput
+    orderBy?: ChannelLinkOrderByWithAggregationInput | ChannelLinkOrderByWithAggregationInput[]
+    by: ChannelLinkScalarFieldEnum[] | ChannelLinkScalarFieldEnum
+    having?: ChannelLinkScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ChannelLinkCountAggregateInputType | true
+    _min?: ChannelLinkMinAggregateInputType
+    _max?: ChannelLinkMaxAggregateInputType
+  }
+
+  export type ChannelLinkGroupByOutputType = {
+    id: string
+    organization_id: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status: $Enums.ChannelLinkStatus
+    external_id: string | null
+    inbound_token: string | null
+    link_code: string | null
+    link_code_expires_at: Date | null
+    conversation_id: string | null
+    last_message_at: Date | null
+    created_at: Date
+    updated_at: Date
+    _count: ChannelLinkCountAggregateOutputType | null
+    _min: ChannelLinkMinAggregateOutputType | null
+    _max: ChannelLinkMaxAggregateOutputType | null
+  }
+
+  type GetChannelLinkGroupByPayload<T extends ChannelLinkGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ChannelLinkGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ChannelLinkGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ChannelLinkGroupByOutputType[P]>
+            : GetScalarType<T[P], ChannelLinkGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ChannelLinkSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    bot_id?: boolean
+    channel?: boolean
+    status?: boolean
+    external_id?: boolean
+    inbound_token?: boolean
+    link_code?: boolean
+    link_code_expires_at?: boolean
+    conversation_id?: boolean
+    last_message_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }, ExtArgs["result"]["channelLink"]>
+
+  export type ChannelLinkSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    bot_id?: boolean
+    channel?: boolean
+    status?: boolean
+    external_id?: boolean
+    inbound_token?: boolean
+    link_code?: boolean
+    link_code_expires_at?: boolean
+    conversation_id?: boolean
+    last_message_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }, ExtArgs["result"]["channelLink"]>
+
+  export type ChannelLinkSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    bot_id?: boolean
+    channel?: boolean
+    status?: boolean
+    external_id?: boolean
+    inbound_token?: boolean
+    link_code?: boolean
+    link_code_expires_at?: boolean
+    conversation_id?: boolean
+    last_message_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }, ExtArgs["result"]["channelLink"]>
+
+  export type ChannelLinkSelectScalar = {
+    id?: boolean
+    organization_id?: boolean
+    user_id?: boolean
+    bot_id?: boolean
+    channel?: boolean
+    status?: boolean
+    external_id?: boolean
+    inbound_token?: boolean
+    link_code?: boolean
+    link_code_expires_at?: boolean
+    conversation_id?: boolean
+    last_message_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type ChannelLinkOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "bot_id" | "channel" | "status" | "external_id" | "inbound_token" | "link_code" | "link_code_expires_at" | "conversation_id" | "last_message_at" | "created_at" | "updated_at", ExtArgs["result"]["channelLink"]>
+  export type ChannelLinkInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }
+  export type ChannelLinkIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }
+  export type ChannelLinkIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    organization?: boolean | OrganizationDefaultArgs<ExtArgs>
+    user?: boolean | UserDefaultArgs<ExtArgs>
+    bot?: boolean | BotDefaultArgs<ExtArgs>
+    conversation?: boolean | ChannelLink$conversationArgs<ExtArgs>
+  }
+
+  export type $ChannelLinkPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ChannelLink"
+    objects: {
+      organization: Prisma.$OrganizationPayload<ExtArgs>
+      user: Prisma.$UserPayload<ExtArgs>
+      bot: Prisma.$BotPayload<ExtArgs>
+      conversation: Prisma.$ConversationPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      organization_id: string
+      user_id: string
+      bot_id: string
+      channel: $Enums.ExternalChannel
+      status: $Enums.ChannelLinkStatus
+      /**
+       * Slack "<team>:<user>", WhatsApp phone number in E.164 digits; null for email (the member's account email is used).
+       */
+      external_id: string | null
+      /**
+       * Email: the local part of the member's personal inbound address. Random, unguessable.
+       */
+      inbound_token: string | null
+      /**
+       * One-time code the member sends from Slack / WhatsApp to finish linking.
+       */
+      link_code: string | null
+      link_code_expires_at: Date | null
+      /**
+       * The direct conversation the channel's messages go to (created on first message).
+       */
+      conversation_id: string | null
+      last_message_at: Date | null
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["channelLink"]>
+    composites: {}
+  }
+
+  type ChannelLinkGetPayload<S extends boolean | null | undefined | ChannelLinkDefaultArgs> = $Result.GetResult<Prisma.$ChannelLinkPayload, S>
+
+  type ChannelLinkCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ChannelLinkFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ChannelLinkCountAggregateInputType | true
+    }
+
+  export interface ChannelLinkDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ChannelLink'], meta: { name: 'ChannelLink' } }
+    /**
+     * Find zero or one ChannelLink that matches the filter.
+     * @param {ChannelLinkFindUniqueArgs} args - Arguments to find a ChannelLink
+     * @example
+     * // Get one ChannelLink
+     * const channelLink = await prisma.channelLink.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ChannelLinkFindUniqueArgs>(args: SelectSubset<T, ChannelLinkFindUniqueArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ChannelLink that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ChannelLinkFindUniqueOrThrowArgs} args - Arguments to find a ChannelLink
+     * @example
+     * // Get one ChannelLink
+     * const channelLink = await prisma.channelLink.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ChannelLinkFindUniqueOrThrowArgs>(args: SelectSubset<T, ChannelLinkFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChannelLink that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkFindFirstArgs} args - Arguments to find a ChannelLink
+     * @example
+     * // Get one ChannelLink
+     * const channelLink = await prisma.channelLink.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ChannelLinkFindFirstArgs>(args?: SelectSubset<T, ChannelLinkFindFirstArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ChannelLink that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkFindFirstOrThrowArgs} args - Arguments to find a ChannelLink
+     * @example
+     * // Get one ChannelLink
+     * const channelLink = await prisma.channelLink.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ChannelLinkFindFirstOrThrowArgs>(args?: SelectSubset<T, ChannelLinkFindFirstOrThrowArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ChannelLinks that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ChannelLinks
+     * const channelLinks = await prisma.channelLink.findMany()
+     * 
+     * // Get first 10 ChannelLinks
+     * const channelLinks = await prisma.channelLink.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const channelLinkWithIdOnly = await prisma.channelLink.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ChannelLinkFindManyArgs>(args?: SelectSubset<T, ChannelLinkFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ChannelLink.
+     * @param {ChannelLinkCreateArgs} args - Arguments to create a ChannelLink.
+     * @example
+     * // Create one ChannelLink
+     * const ChannelLink = await prisma.channelLink.create({
+     *   data: {
+     *     // ... data to create a ChannelLink
+     *   }
+     * })
+     * 
+     */
+    create<T extends ChannelLinkCreateArgs>(args: SelectSubset<T, ChannelLinkCreateArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ChannelLinks.
+     * @param {ChannelLinkCreateManyArgs} args - Arguments to create many ChannelLinks.
+     * @example
+     * // Create many ChannelLinks
+     * const channelLink = await prisma.channelLink.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ChannelLinkCreateManyArgs>(args?: SelectSubset<T, ChannelLinkCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ChannelLinks and returns the data saved in the database.
+     * @param {ChannelLinkCreateManyAndReturnArgs} args - Arguments to create many ChannelLinks.
+     * @example
+     * // Create many ChannelLinks
+     * const channelLink = await prisma.channelLink.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ChannelLinks and only return the `id`
+     * const channelLinkWithIdOnly = await prisma.channelLink.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ChannelLinkCreateManyAndReturnArgs>(args?: SelectSubset<T, ChannelLinkCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ChannelLink.
+     * @param {ChannelLinkDeleteArgs} args - Arguments to delete one ChannelLink.
+     * @example
+     * // Delete one ChannelLink
+     * const ChannelLink = await prisma.channelLink.delete({
+     *   where: {
+     *     // ... filter to delete one ChannelLink
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ChannelLinkDeleteArgs>(args: SelectSubset<T, ChannelLinkDeleteArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ChannelLink.
+     * @param {ChannelLinkUpdateArgs} args - Arguments to update one ChannelLink.
+     * @example
+     * // Update one ChannelLink
+     * const channelLink = await prisma.channelLink.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ChannelLinkUpdateArgs>(args: SelectSubset<T, ChannelLinkUpdateArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ChannelLinks.
+     * @param {ChannelLinkDeleteManyArgs} args - Arguments to filter ChannelLinks to delete.
+     * @example
+     * // Delete a few ChannelLinks
+     * const { count } = await prisma.channelLink.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ChannelLinkDeleteManyArgs>(args?: SelectSubset<T, ChannelLinkDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChannelLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ChannelLinks
+     * const channelLink = await prisma.channelLink.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ChannelLinkUpdateManyArgs>(args: SelectSubset<T, ChannelLinkUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ChannelLinks and returns the data updated in the database.
+     * @param {ChannelLinkUpdateManyAndReturnArgs} args - Arguments to update many ChannelLinks.
+     * @example
+     * // Update many ChannelLinks
+     * const channelLink = await prisma.channelLink.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ChannelLinks and only return the `id`
+     * const channelLinkWithIdOnly = await prisma.channelLink.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ChannelLinkUpdateManyAndReturnArgs>(args: SelectSubset<T, ChannelLinkUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ChannelLink.
+     * @param {ChannelLinkUpsertArgs} args - Arguments to update or create a ChannelLink.
+     * @example
+     * // Update or create a ChannelLink
+     * const channelLink = await prisma.channelLink.upsert({
+     *   create: {
+     *     // ... data to create a ChannelLink
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ChannelLink we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ChannelLinkUpsertArgs>(args: SelectSubset<T, ChannelLinkUpsertArgs<ExtArgs>>): Prisma__ChannelLinkClient<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ChannelLinks.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkCountArgs} args - Arguments to filter ChannelLinks to count.
+     * @example
+     * // Count the number of ChannelLinks
+     * const count = await prisma.channelLink.count({
+     *   where: {
+     *     // ... the filter for the ChannelLinks we want to count
+     *   }
+     * })
+    **/
+    count<T extends ChannelLinkCountArgs>(
+      args?: Subset<T, ChannelLinkCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ChannelLinkCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ChannelLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ChannelLinkAggregateArgs>(args: Subset<T, ChannelLinkAggregateArgs>): Prisma.PrismaPromise<GetChannelLinkAggregateType<T>>
+
+    /**
+     * Group by ChannelLink.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ChannelLinkGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ChannelLinkGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ChannelLinkGroupByArgs['orderBy'] }
+        : { orderBy?: ChannelLinkGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ChannelLinkGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetChannelLinkGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ChannelLink model
+   */
+  readonly fields: ChannelLinkFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ChannelLink.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ChannelLinkClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    user<T extends UserDefaultArgs<ExtArgs> = {}>(args?: Subset<T, UserDefaultArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    bot<T extends BotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BotDefaultArgs<ExtArgs>>): Prisma__BotClient<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    conversation<T extends ChannelLink$conversationArgs<ExtArgs> = {}>(args?: Subset<T, ChannelLink$conversationArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ChannelLink model
+   */
+  interface ChannelLinkFieldRefs {
+    readonly id: FieldRef<"ChannelLink", 'String'>
+    readonly organization_id: FieldRef<"ChannelLink", 'String'>
+    readonly user_id: FieldRef<"ChannelLink", 'String'>
+    readonly bot_id: FieldRef<"ChannelLink", 'String'>
+    readonly channel: FieldRef<"ChannelLink", 'ExternalChannel'>
+    readonly status: FieldRef<"ChannelLink", 'ChannelLinkStatus'>
+    readonly external_id: FieldRef<"ChannelLink", 'String'>
+    readonly inbound_token: FieldRef<"ChannelLink", 'String'>
+    readonly link_code: FieldRef<"ChannelLink", 'String'>
+    readonly link_code_expires_at: FieldRef<"ChannelLink", 'DateTime'>
+    readonly conversation_id: FieldRef<"ChannelLink", 'String'>
+    readonly last_message_at: FieldRef<"ChannelLink", 'DateTime'>
+    readonly created_at: FieldRef<"ChannelLink", 'DateTime'>
+    readonly updated_at: FieldRef<"ChannelLink", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ChannelLink findUnique
+   */
+  export type ChannelLinkFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelLink to fetch.
+     */
+    where: ChannelLinkWhereUniqueInput
+  }
+
+  /**
+   * ChannelLink findUniqueOrThrow
+   */
+  export type ChannelLinkFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelLink to fetch.
+     */
+    where: ChannelLinkWhereUniqueInput
+  }
+
+  /**
+   * ChannelLink findFirst
+   */
+  export type ChannelLinkFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelLink to fetch.
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelLinks to fetch.
+     */
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChannelLinks.
+     */
+    cursor?: ChannelLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChannelLinks.
+     */
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelLink findFirstOrThrow
+   */
+  export type ChannelLinkFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelLink to fetch.
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelLinks to fetch.
+     */
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ChannelLinks.
+     */
+    cursor?: ChannelLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChannelLinks.
+     */
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelLink findMany
+   */
+  export type ChannelLinkFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter, which ChannelLinks to fetch.
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ChannelLinks to fetch.
+     */
+    orderBy?: ChannelLinkOrderByWithRelationInput | ChannelLinkOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ChannelLinks.
+     */
+    cursor?: ChannelLinkWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ChannelLinks from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ChannelLinks.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ChannelLinks.
+     */
+    distinct?: ChannelLinkScalarFieldEnum | ChannelLinkScalarFieldEnum[]
+  }
+
+  /**
+   * ChannelLink create
+   */
+  export type ChannelLinkCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ChannelLink.
+     */
+    data: XOR<ChannelLinkCreateInput, ChannelLinkUncheckedCreateInput>
+  }
+
+  /**
+   * ChannelLink createMany
+   */
+  export type ChannelLinkCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ChannelLinks.
+     */
+    data: ChannelLinkCreateManyInput | ChannelLinkCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ChannelLink createManyAndReturn
+   */
+  export type ChannelLinkCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * The data used to create many ChannelLinks.
+     */
+    data: ChannelLinkCreateManyInput | ChannelLinkCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ChannelLink update
+   */
+  export type ChannelLinkUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ChannelLink.
+     */
+    data: XOR<ChannelLinkUpdateInput, ChannelLinkUncheckedUpdateInput>
+    /**
+     * Choose, which ChannelLink to update.
+     */
+    where: ChannelLinkWhereUniqueInput
+  }
+
+  /**
+   * ChannelLink updateMany
+   */
+  export type ChannelLinkUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ChannelLinks.
+     */
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyInput>
+    /**
+     * Filter which ChannelLinks to update
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * Limit how many ChannelLinks to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChannelLink updateManyAndReturn
+   */
+  export type ChannelLinkUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * The data used to update ChannelLinks.
+     */
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyInput>
+    /**
+     * Filter which ChannelLinks to update
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * Limit how many ChannelLinks to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ChannelLink upsert
+   */
+  export type ChannelLinkUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ChannelLink to update in case it exists.
+     */
+    where: ChannelLinkWhereUniqueInput
+    /**
+     * In case the ChannelLink found by the `where` argument doesn't exist, create a new ChannelLink with this data.
+     */
+    create: XOR<ChannelLinkCreateInput, ChannelLinkUncheckedCreateInput>
+    /**
+     * In case the ChannelLink was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ChannelLinkUpdateInput, ChannelLinkUncheckedUpdateInput>
+  }
+
+  /**
+   * ChannelLink delete
+   */
+  export type ChannelLinkDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+    /**
+     * Filter which ChannelLink to delete.
+     */
+    where: ChannelLinkWhereUniqueInput
+  }
+
+  /**
+   * ChannelLink deleteMany
+   */
+  export type ChannelLinkDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ChannelLinks to delete
+     */
+    where?: ChannelLinkWhereInput
+    /**
+     * Limit how many ChannelLinks to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ChannelLink.conversation
+   */
+  export type ChannelLink$conversationArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the Conversation
+     */
+    select?: ConversationSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the Conversation
+     */
+    omit?: ConversationOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationInclude<ExtArgs> | null
+    where?: ConversationWhereInput
+  }
+
+  /**
+   * ChannelLink without action
+   */
+  export type ChannelLinkDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ChannelLink
+     */
+    select?: ChannelLinkSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ChannelLink
+     */
+    omit?: ChannelLinkOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ChannelLinkInclude<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -118782,6 +121665,7 @@ export namespace Prisma {
     is_online: 'is_online',
     last_seen_at: 'last_seen_at',
     allowed_folders: 'allowed_folders',
+    blocked_apps: 'blocked_apps',
     launch_at_startup: 'launch_at_startup',
     quick_ask_shortcut: 'quick_ask_shortcut',
     approve_from_lock_screen: 'approve_from_lock_screen',
@@ -118888,6 +121772,7 @@ export namespace Prisma {
     daily_email_digest: 'daily_email_digest',
     sounds_enabled: 'sounds_enabled',
     auto_delete_conversations: 'auto_delete_conversations',
+    purge_deleted_artifacts: 'purge_deleted_artifacts',
     created_at: 'created_at',
     updated_at: 'updated_at'
   };
@@ -119006,6 +121891,7 @@ export namespace Prisma {
     artifact_embedding_enabled: 'artifact_embedding_enabled',
     artifact_design_default: 'artifact_design_default',
     voice_mode_enabled: 'voice_mode_enabled',
+    voice_visual_input: 'voice_visual_input',
     voice_mode_who: 'voice_mode_who',
     voice_max_session: 'voice_max_session',
     voice_approvals_enabled: 'voice_approvals_enabled',
@@ -119039,6 +121925,7 @@ export namespace Prisma {
     user_id: 'user_id',
     role: 'role',
     color_theme: 'color_theme',
+    meeting_assistant: 'meeting_assistant',
     joined_at: 'joined_at',
     updated_at: 'updated_at'
   };
@@ -119368,6 +122255,7 @@ export namespace Prisma {
     status: 'status',
     content: 'content',
     parts: 'parts',
+    channel_meta: 'channel_meta',
     run_id: 'run_id',
     parent_message_id: 'parent_message_id',
     reply_to_message_id: 'reply_to_message_id',
@@ -119500,7 +122388,11 @@ export namespace Prisma {
     error: 'error',
     started_at: 'started_at',
     finished_at: 'finished_at',
-    duration_ms: 'duration_ms'
+    duration_ms: 'duration_ms',
+    undo: 'undo',
+    undo_until: 'undo_until',
+    undone_at: 'undone_at',
+    undone_by_id: 'undone_by_id'
   };
 
   export type RunStepScalarFieldEnum = (typeof RunStepScalarFieldEnum)[keyof typeof RunStepScalarFieldEnum]
@@ -119724,6 +122616,17 @@ export namespace Prisma {
   };
 
   export type ArtifactRecordScalarFieldEnum = (typeof ArtifactRecordScalarFieldEnum)[keyof typeof ArtifactRecordScalarFieldEnum]
+
+
+  export const ArtifactDataGrantScalarFieldEnum: {
+    id: 'id',
+    artifact_id: 'artifact_id',
+    user_id: 'user_id',
+    service_key: 'service_key',
+    created_at: 'created_at'
+  };
+
+  export type ArtifactDataGrantScalarFieldEnum = (typeof ArtifactDataGrantScalarFieldEnum)[keyof typeof ArtifactDataGrantScalarFieldEnum]
 
 
   export const ArtifactReportScalarFieldEnum: {
@@ -120011,6 +122914,7 @@ export namespace Prisma {
     automation_id: 'automation_id',
     connection_id: 'connection_id',
     trigger_key: 'trigger_key',
+    trigger_name: 'trigger_name',
     composio_trigger_id: 'composio_trigger_id',
     config: 'config',
     created_at: 'created_at'
@@ -120026,6 +122930,7 @@ export namespace Prisma {
     attempt: 'attempt',
     is_retry: 'is_retry',
     trigger_event_id: 'trigger_event_id',
+    trigger_event: 'trigger_event',
     scheduled_for: 'scheduled_for',
     started_at: 'started_at',
     finished_at: 'finished_at',
@@ -120219,6 +123124,26 @@ export namespace Prisma {
   };
 
   export type AppVersionPolicyScalarFieldEnum = (typeof AppVersionPolicyScalarFieldEnum)[keyof typeof AppVersionPolicyScalarFieldEnum]
+
+
+  export const ChannelLinkScalarFieldEnum: {
+    id: 'id',
+    organization_id: 'organization_id',
+    user_id: 'user_id',
+    bot_id: 'bot_id',
+    channel: 'channel',
+    status: 'status',
+    external_id: 'external_id',
+    inbound_token: 'inbound_token',
+    link_code: 'link_code',
+    link_code_expires_at: 'link_code_expires_at',
+    conversation_id: 'conversation_id',
+    last_message_at: 'last_message_at',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type ChannelLinkScalarFieldEnum = (typeof ChannelLinkScalarFieldEnum)[keyof typeof ChannelLinkScalarFieldEnum]
 
 
   export const SortOrder: {
@@ -122057,6 +124982,34 @@ export namespace Prisma {
    */
   export type ListEnumExportStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExportStatus[]'>
     
+
+
+  /**
+   * Reference to a field of type 'ExternalChannel'
+   */
+  export type EnumExternalChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExternalChannel'>
+    
+
+
+  /**
+   * Reference to a field of type 'ExternalChannel[]'
+   */
+  export type ListEnumExternalChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ExternalChannel[]'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChannelLinkStatus'
+   */
+  export type EnumChannelLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelLinkStatus'>
+    
+
+
+  /**
+   * Reference to a field of type 'ChannelLinkStatus[]'
+   */
+  export type ListEnumChannelLinkStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChannelLinkStatus[]'>
+    
   /**
    * Deep Input Types
    */
@@ -122106,6 +125059,7 @@ export namespace Prisma {
     pinned_messages?: MessageListRelationFilter
     reactions?: MessageReactionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    artifact_data_grants?: ArtifactDataGrantListRelationFilter
     runs?: RunListRelationFilter
     approvals_resolved?: ApprovalListRelationFilter
     voice_sessions?: VoiceSessionListRelationFilter
@@ -122131,6 +125085,7 @@ export namespace Prisma {
     data_exports?: DataExportListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
     knowledge_links?: KnowledgeLinkListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }
 
   export type UserOrderByWithRelationInput = {
@@ -122174,6 +125129,7 @@ export namespace Prisma {
     pinned_messages?: MessageOrderByRelationAggregateInput
     reactions?: MessageReactionOrderByRelationAggregateInput
     saved_widgets?: SavedWidgetOrderByRelationAggregateInput
+    artifact_data_grants?: ArtifactDataGrantOrderByRelationAggregateInput
     runs?: RunOrderByRelationAggregateInput
     approvals_resolved?: ApprovalOrderByRelationAggregateInput
     voice_sessions?: VoiceSessionOrderByRelationAggregateInput
@@ -122199,6 +125155,7 @@ export namespace Prisma {
     data_exports?: DataExportOrderByRelationAggregateInput
     knowledge_items?: KnowledgeItemOrderByRelationAggregateInput
     knowledge_links?: KnowledgeLinkOrderByRelationAggregateInput
+    channel_links?: ChannelLinkOrderByRelationAggregateInput
   }
 
   export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -122245,6 +125202,7 @@ export namespace Prisma {
     pinned_messages?: MessageListRelationFilter
     reactions?: MessageReactionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    artifact_data_grants?: ArtifactDataGrantListRelationFilter
     runs?: RunListRelationFilter
     approvals_resolved?: ApprovalListRelationFilter
     voice_sessions?: VoiceSessionListRelationFilter
@@ -122270,6 +125228,7 @@ export namespace Prisma {
     data_exports?: DataExportListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
     knowledge_links?: KnowledgeLinkListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }, "id" | "email" | "phone" | "avatar_file_id">
 
   export type UserOrderByWithAggregationInput = {
@@ -122618,6 +125577,7 @@ export namespace Prisma {
     is_online?: BoolFilter<"Device"> | boolean
     last_seen_at?: DateTimeFilter<"Device"> | Date | string
     allowed_folders?: StringNullableListFilter<"Device">
+    blocked_apps?: StringNullableListFilter<"Device">
     launch_at_startup?: BoolFilter<"Device"> | boolean
     quick_ask_shortcut?: StringNullableFilter<"Device"> | string | null
     approve_from_lock_screen?: BoolFilter<"Device"> | boolean
@@ -122644,6 +125604,7 @@ export namespace Prisma {
     is_online?: SortOrder
     last_seen_at?: SortOrder
     allowed_folders?: SortOrder
+    blocked_apps?: SortOrder
     launch_at_startup?: SortOrder
     quick_ask_shortcut?: SortOrderInput | SortOrder
     approve_from_lock_screen?: SortOrder
@@ -122673,6 +125634,7 @@ export namespace Prisma {
     is_online?: BoolFilter<"Device"> | boolean
     last_seen_at?: DateTimeFilter<"Device"> | Date | string
     allowed_folders?: StringNullableListFilter<"Device">
+    blocked_apps?: StringNullableListFilter<"Device">
     launch_at_startup?: BoolFilter<"Device"> | boolean
     quick_ask_shortcut?: StringNullableFilter<"Device"> | string | null
     approve_from_lock_screen?: BoolFilter<"Device"> | boolean
@@ -122699,6 +125661,7 @@ export namespace Prisma {
     is_online?: SortOrder
     last_seen_at?: SortOrder
     allowed_folders?: SortOrder
+    blocked_apps?: SortOrder
     launch_at_startup?: SortOrder
     quick_ask_shortcut?: SortOrderInput | SortOrder
     approve_from_lock_screen?: SortOrder
@@ -122724,6 +125687,7 @@ export namespace Prisma {
     is_online?: BoolWithAggregatesFilter<"Device"> | boolean
     last_seen_at?: DateTimeWithAggregatesFilter<"Device"> | Date | string
     allowed_folders?: StringNullableListFilter<"Device">
+    blocked_apps?: StringNullableListFilter<"Device">
     launch_at_startup?: BoolWithAggregatesFilter<"Device"> | boolean
     quick_ask_shortcut?: StringNullableWithAggregatesFilter<"Device"> | string | null
     approve_from_lock_screen?: BoolWithAggregatesFilter<"Device"> | boolean
@@ -122996,6 +125960,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFilter<"UserSettings"> | boolean
     sounds_enabled?: BoolFilter<"UserSettings"> | boolean
     auto_delete_conversations?: EnumConversationRetentionFilter<"UserSettings"> | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFilter<"UserSettings"> | boolean
     created_at?: DateTimeFilter<"UserSettings"> | Date | string
     updated_at?: DateTimeFilter<"UserSettings"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -123058,6 +126023,7 @@ export namespace Prisma {
     daily_email_digest?: SortOrder
     sounds_enabled?: SortOrder
     auto_delete_conversations?: SortOrder
+    purge_deleted_artifacts?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     user?: UserOrderByWithRelationInput
@@ -123123,6 +126089,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFilter<"UserSettings"> | boolean
     sounds_enabled?: BoolFilter<"UserSettings"> | boolean
     auto_delete_conversations?: EnumConversationRetentionFilter<"UserSettings"> | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFilter<"UserSettings"> | boolean
     created_at?: DateTimeFilter<"UserSettings"> | Date | string
     updated_at?: DateTimeFilter<"UserSettings"> | Date | string
     user?: XOR<UserScalarRelationFilter, UserWhereInput>
@@ -123185,6 +126152,7 @@ export namespace Prisma {
     daily_email_digest?: SortOrder
     sounds_enabled?: SortOrder
     auto_delete_conversations?: SortOrder
+    purge_deleted_artifacts?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
     _count?: UserSettingsCountOrderByAggregateInput
@@ -123251,6 +126219,7 @@ export namespace Prisma {
     daily_email_digest?: BoolWithAggregatesFilter<"UserSettings"> | boolean
     sounds_enabled?: BoolWithAggregatesFilter<"UserSettings"> | boolean
     auto_delete_conversations?: EnumConversationRetentionWithAggregatesFilter<"UserSettings"> | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolWithAggregatesFilter<"UserSettings"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"UserSettings"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"UserSettings"> | Date | string
   }
@@ -123509,6 +126478,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultListRelationFilter
     tool_permissions?: UserToolPermissionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }
 
   export type OrganizationOrderByWithRelationInput = {
@@ -123560,6 +126530,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultOrderByRelationAggregateInput
     tool_permissions?: UserToolPermissionOrderByRelationAggregateInput
     saved_widgets?: SavedWidgetOrderByRelationAggregateInput
+    channel_links?: ChannelLinkOrderByRelationAggregateInput
   }
 
   export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -123614,6 +126585,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultListRelationFilter
     tool_permissions?: UserToolPermissionListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }, "id" | "slug" | "logo_file_id" | "stripe_customer_id">
 
   export type OrganizationOrderByWithAggregationInput = {
@@ -123710,6 +126682,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFilter<"OrganizationSettings"> | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_visual_input?: BoolFilter<"OrganizationSettings"> | boolean
     voice_mode_who?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123791,6 +126764,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: SortOrder
     artifact_design_default?: SortOrder
     voice_mode_enabled?: SortOrder
+    voice_visual_input?: SortOrder
     voice_mode_who?: SortOrder
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
@@ -123875,6 +126849,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFilter<"OrganizationSettings"> | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_visual_input?: BoolFilter<"OrganizationSettings"> | boolean
     voice_mode_who?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -123956,6 +126931,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: SortOrder
     artifact_design_default?: SortOrder
     voice_mode_enabled?: SortOrder
+    voice_visual_input?: SortOrder
     voice_mode_who?: SortOrder
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
@@ -124043,6 +127019,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     artifact_design_default?: EnumArtifactDesignDefaultWithAggregatesFilter<"OrganizationSettings"> | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
+    voice_visual_input?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
     voice_mode_who?: EnumWhoCanWithAggregatesFilter<"OrganizationSettings"> | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthWithAggregatesFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolWithAggregatesFilter<"OrganizationSettings"> | boolean
@@ -124076,6 +127053,7 @@ export namespace Prisma {
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
+    meeting_assistant?: JsonNullableFilter<"OrganizationMember">
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -124088,6 +127066,7 @@ export namespace Prisma {
     user_id?: SortOrder
     role?: SortOrder
     color_theme?: SortOrder
+    meeting_assistant?: SortOrderInput | SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
@@ -124104,6 +127083,7 @@ export namespace Prisma {
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
+    meeting_assistant?: JsonNullableFilter<"OrganizationMember">
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
@@ -124116,6 +127096,7 @@ export namespace Prisma {
     user_id?: SortOrder
     role?: SortOrder
     color_theme?: SortOrder
+    meeting_assistant?: SortOrderInput | SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
     _count?: OrganizationMemberCountOrderByAggregateInput
@@ -124132,6 +127113,7 @@ export namespace Prisma {
     user_id?: StringWithAggregatesFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleWithAggregatesFilter<"OrganizationMember"> | $Enums.OrganizationRole
     color_theme?: EnumColorThemeWithAggregatesFilter<"OrganizationMember"> | $Enums.ColorTheme
+    meeting_assistant?: JsonNullableWithAggregatesFilter<"OrganizationMember">
     joined_at?: DateTimeWithAggregatesFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"OrganizationMember"> | Date | string
   }
@@ -124727,6 +127709,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionListRelationFilter
     credential_last_used?: CredentialListRelationFilter
     artifact_comment_mentions?: ArtifactCommentListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }
 
   export type BotOrderByWithRelationInput = {
@@ -124810,6 +127793,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionOrderByRelationAggregateInput
     credential_last_used?: CredentialOrderByRelationAggregateInput
     artifact_comment_mentions?: ArtifactCommentOrderByRelationAggregateInput
+    channel_links?: ChannelLinkOrderByRelationAggregateInput
   }
 
   export type BotWhereUniqueInput = Prisma.AtLeast<{
@@ -124896,6 +127880,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionListRelationFilter
     credential_last_used?: CredentialListRelationFilter
     artifact_comment_mentions?: ArtifactCommentListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }, "id" | "image_file_id">
 
   export type BotOrderByWithAggregationInput = {
@@ -125729,6 +128714,7 @@ export namespace Prisma {
     automations_results?: AutomationListRelationFilter
     automations_source?: AutomationListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }
 
   export type ConversationOrderByWithRelationInput = {
@@ -125760,6 +128746,7 @@ export namespace Prisma {
     automations_results?: AutomationOrderByRelationAggregateInput
     automations_source?: AutomationOrderByRelationAggregateInput
     saved_widgets?: SavedWidgetOrderByRelationAggregateInput
+    channel_links?: ChannelLinkOrderByRelationAggregateInput
   }
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -125794,6 +128781,7 @@ export namespace Prisma {
     automations_results?: AutomationListRelationFilter
     automations_source?: AutomationListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
+    channel_links?: ChannelLinkListRelationFilter
   }, "id">
 
   export type ConversationOrderByWithAggregationInput = {
@@ -125955,6 +128943,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFilter<"Message"> | $Enums.MessageStatus
     content?: StringNullableFilter<"Message"> | string | null
     parts?: JsonNullableFilter<"Message">
+    channel_meta?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
     reply_to_message_id?: StringNullableFilter<"Message"> | string | null
@@ -126002,6 +128991,7 @@ export namespace Prisma {
     status?: SortOrder
     content?: SortOrderInput | SortOrder
     parts?: SortOrderInput | SortOrder
+    channel_meta?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     parent_message_id?: SortOrderInput | SortOrder
     reply_to_message_id?: SortOrderInput | SortOrder
@@ -126052,6 +129042,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFilter<"Message"> | $Enums.MessageStatus
     content?: StringNullableFilter<"Message"> | string | null
     parts?: JsonNullableFilter<"Message">
+    channel_meta?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
     reply_to_message_id?: StringNullableFilter<"Message"> | string | null
@@ -126099,6 +129090,7 @@ export namespace Prisma {
     status?: SortOrder
     content?: SortOrderInput | SortOrder
     parts?: SortOrderInput | SortOrder
+    channel_meta?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     parent_message_id?: SortOrderInput | SortOrder
     reply_to_message_id?: SortOrderInput | SortOrder
@@ -126134,6 +129126,7 @@ export namespace Prisma {
     status?: EnumMessageStatusWithAggregatesFilter<"Message"> | $Enums.MessageStatus
     content?: StringNullableWithAggregatesFilter<"Message"> | string | null
     parts?: JsonNullableWithAggregatesFilter<"Message">
+    channel_meta?: JsonNullableWithAggregatesFilter<"Message">
     run_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     parent_message_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
     reply_to_message_id?: StringNullableWithAggregatesFilter<"Message"> | string | null
@@ -126731,6 +129724,10 @@ export namespace Prisma {
     started_at?: DateTimeFilter<"RunStep"> | Date | string
     finished_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
     duration_ms?: IntNullableFilter<"RunStep"> | number | null
+    undo?: JsonNullableFilter<"RunStep">
+    undo_until?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_by_id?: StringNullableFilter<"RunStep"> | string | null
     run?: XOR<RunScalarRelationFilter, RunWhereInput>
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     device?: XOR<DeviceNullableScalarRelationFilter, DeviceWhereInput> | null
@@ -126756,6 +129753,10 @@ export namespace Prisma {
     started_at?: SortOrder
     finished_at?: SortOrderInput | SortOrder
     duration_ms?: SortOrderInput | SortOrder
+    undo?: SortOrderInput | SortOrder
+    undo_until?: SortOrderInput | SortOrder
+    undone_at?: SortOrderInput | SortOrder
+    undone_by_id?: SortOrderInput | SortOrder
     run?: RunOrderByWithRelationInput
     connection?: ConnectionOrderByWithRelationInput
     device?: DeviceOrderByWithRelationInput
@@ -126785,6 +129786,10 @@ export namespace Prisma {
     started_at?: DateTimeFilter<"RunStep"> | Date | string
     finished_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
     duration_ms?: IntNullableFilter<"RunStep"> | number | null
+    undo?: JsonNullableFilter<"RunStep">
+    undo_until?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_by_id?: StringNullableFilter<"RunStep"> | string | null
     run?: XOR<RunScalarRelationFilter, RunWhereInput>
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
     device?: XOR<DeviceNullableScalarRelationFilter, DeviceWhereInput> | null
@@ -126810,6 +129815,10 @@ export namespace Prisma {
     started_at?: SortOrder
     finished_at?: SortOrderInput | SortOrder
     duration_ms?: SortOrderInput | SortOrder
+    undo?: SortOrderInput | SortOrder
+    undo_until?: SortOrderInput | SortOrder
+    undone_at?: SortOrderInput | SortOrder
+    undone_by_id?: SortOrderInput | SortOrder
     _count?: RunStepCountOrderByAggregateInput
     _avg?: RunStepAvgOrderByAggregateInput
     _max?: RunStepMaxOrderByAggregateInput
@@ -126839,6 +129848,10 @@ export namespace Prisma {
     started_at?: DateTimeWithAggregatesFilter<"RunStep"> | Date | string
     finished_at?: DateTimeNullableWithAggregatesFilter<"RunStep"> | Date | string | null
     duration_ms?: IntNullableWithAggregatesFilter<"RunStep"> | number | null
+    undo?: JsonNullableWithAggregatesFilter<"RunStep">
+    undo_until?: DateTimeNullableWithAggregatesFilter<"RunStep"> | Date | string | null
+    undone_at?: DateTimeNullableWithAggregatesFilter<"RunStep"> | Date | string | null
+    undone_by_id?: StringNullableWithAggregatesFilter<"RunStep"> | string | null
   }
 
   export type ApprovalWhereInput = {
@@ -127591,6 +130604,7 @@ export namespace Prisma {
     reports?: ArtifactReportListRelationFilter
     files?: FileListRelationFilter
     usage_records?: UsageRecordListRelationFilter
+    data_grants?: ArtifactDataGrantListRelationFilter
   }
 
   export type ArtifactOrderByWithRelationInput = {
@@ -127637,6 +130651,7 @@ export namespace Prisma {
     reports?: ArtifactReportOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
     usage_records?: UsageRecordOrderByRelationAggregateInput
+    data_grants?: ArtifactDataGrantOrderByRelationAggregateInput
   }
 
   export type ArtifactWhereUniqueInput = Prisma.AtLeast<{
@@ -127687,6 +130702,7 @@ export namespace Prisma {
     reports?: ArtifactReportListRelationFilter
     files?: FileListRelationFilter
     usage_records?: UsageRecordListRelationFilter
+    data_grants?: ArtifactDataGrantListRelationFilter
   }, "id" | "current_version_id" | "draft_version_id" | "organization_id_slug">
 
   export type ArtifactOrderByWithAggregationInput = {
@@ -128098,6 +131114,65 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableWithAggregatesFilter<"ArtifactRecord"> | Date | string | null
     created_at?: DateTimeWithAggregatesFilter<"ArtifactRecord"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"ArtifactRecord"> | Date | string
+  }
+
+  export type ArtifactDataGrantWhereInput = {
+    AND?: ArtifactDataGrantWhereInput | ArtifactDataGrantWhereInput[]
+    OR?: ArtifactDataGrantWhereInput[]
+    NOT?: ArtifactDataGrantWhereInput | ArtifactDataGrantWhereInput[]
+    id?: StringFilter<"ArtifactDataGrant"> | string
+    artifact_id?: StringFilter<"ArtifactDataGrant"> | string
+    user_id?: StringFilter<"ArtifactDataGrant"> | string
+    service_key?: StringFilter<"ArtifactDataGrant"> | string
+    created_at?: DateTimeFilter<"ArtifactDataGrant"> | Date | string
+    artifact?: XOR<ArtifactScalarRelationFilter, ArtifactWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }
+
+  export type ArtifactDataGrantOrderByWithRelationInput = {
+    id?: SortOrder
+    artifact_id?: SortOrder
+    user_id?: SortOrder
+    service_key?: SortOrder
+    created_at?: SortOrder
+    artifact?: ArtifactOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+  }
+
+  export type ArtifactDataGrantWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    artifact_id_user_id_service_key?: ArtifactDataGrantArtifact_idUser_idService_keyCompoundUniqueInput
+    AND?: ArtifactDataGrantWhereInput | ArtifactDataGrantWhereInput[]
+    OR?: ArtifactDataGrantWhereInput[]
+    NOT?: ArtifactDataGrantWhereInput | ArtifactDataGrantWhereInput[]
+    artifact_id?: StringFilter<"ArtifactDataGrant"> | string
+    user_id?: StringFilter<"ArtifactDataGrant"> | string
+    service_key?: StringFilter<"ArtifactDataGrant"> | string
+    created_at?: DateTimeFilter<"ArtifactDataGrant"> | Date | string
+    artifact?: XOR<ArtifactScalarRelationFilter, ArtifactWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+  }, "id" | "artifact_id_user_id_service_key">
+
+  export type ArtifactDataGrantOrderByWithAggregationInput = {
+    id?: SortOrder
+    artifact_id?: SortOrder
+    user_id?: SortOrder
+    service_key?: SortOrder
+    created_at?: SortOrder
+    _count?: ArtifactDataGrantCountOrderByAggregateInput
+    _max?: ArtifactDataGrantMaxOrderByAggregateInput
+    _min?: ArtifactDataGrantMinOrderByAggregateInput
+  }
+
+  export type ArtifactDataGrantScalarWhereWithAggregatesInput = {
+    AND?: ArtifactDataGrantScalarWhereWithAggregatesInput | ArtifactDataGrantScalarWhereWithAggregatesInput[]
+    OR?: ArtifactDataGrantScalarWhereWithAggregatesInput[]
+    NOT?: ArtifactDataGrantScalarWhereWithAggregatesInput | ArtifactDataGrantScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ArtifactDataGrant"> | string
+    artifact_id?: StringWithAggregatesFilter<"ArtifactDataGrant"> | string
+    user_id?: StringWithAggregatesFilter<"ArtifactDataGrant"> | string
+    service_key?: StringWithAggregatesFilter<"ArtifactDataGrant"> | string
+    created_at?: DateTimeWithAggregatesFilter<"ArtifactDataGrant"> | Date | string
   }
 
   export type ArtifactReportWhereInput = {
@@ -129725,6 +132800,7 @@ export namespace Prisma {
     automation_id?: StringFilter<"AutomationTriggerSubscription"> | string
     connection_id?: StringFilter<"AutomationTriggerSubscription"> | string
     trigger_key?: StringFilter<"AutomationTriggerSubscription"> | string
+    trigger_name?: StringNullableFilter<"AutomationTriggerSubscription"> | string | null
     composio_trigger_id?: StringNullableFilter<"AutomationTriggerSubscription"> | string | null
     config?: JsonNullableFilter<"AutomationTriggerSubscription">
     created_at?: DateTimeFilter<"AutomationTriggerSubscription"> | Date | string
@@ -129737,6 +132813,7 @@ export namespace Prisma {
     automation_id?: SortOrder
     connection_id?: SortOrder
     trigger_key?: SortOrder
+    trigger_name?: SortOrderInput | SortOrder
     composio_trigger_id?: SortOrderInput | SortOrder
     config?: SortOrderInput | SortOrder
     created_at?: SortOrder
@@ -129753,6 +132830,7 @@ export namespace Prisma {
     automation_id?: StringFilter<"AutomationTriggerSubscription"> | string
     connection_id?: StringFilter<"AutomationTriggerSubscription"> | string
     trigger_key?: StringFilter<"AutomationTriggerSubscription"> | string
+    trigger_name?: StringNullableFilter<"AutomationTriggerSubscription"> | string | null
     config?: JsonNullableFilter<"AutomationTriggerSubscription">
     created_at?: DateTimeFilter<"AutomationTriggerSubscription"> | Date | string
     automation?: XOR<AutomationScalarRelationFilter, AutomationWhereInput>
@@ -129764,6 +132842,7 @@ export namespace Prisma {
     automation_id?: SortOrder
     connection_id?: SortOrder
     trigger_key?: SortOrder
+    trigger_name?: SortOrderInput | SortOrder
     composio_trigger_id?: SortOrderInput | SortOrder
     config?: SortOrderInput | SortOrder
     created_at?: SortOrder
@@ -129780,6 +132859,7 @@ export namespace Prisma {
     automation_id?: StringWithAggregatesFilter<"AutomationTriggerSubscription"> | string
     connection_id?: StringWithAggregatesFilter<"AutomationTriggerSubscription"> | string
     trigger_key?: StringWithAggregatesFilter<"AutomationTriggerSubscription"> | string
+    trigger_name?: StringNullableWithAggregatesFilter<"AutomationTriggerSubscription"> | string | null
     composio_trigger_id?: StringNullableWithAggregatesFilter<"AutomationTriggerSubscription"> | string | null
     config?: JsonNullableWithAggregatesFilter<"AutomationTriggerSubscription">
     created_at?: DateTimeWithAggregatesFilter<"AutomationTriggerSubscription"> | Date | string
@@ -129795,6 +132875,7 @@ export namespace Prisma {
     attempt?: IntFilter<"AutomationRun"> | number
     is_retry?: BoolFilter<"AutomationRun"> | boolean
     trigger_event_id?: StringNullableFilter<"AutomationRun"> | string | null
+    trigger_event?: JsonNullableFilter<"AutomationRun">
     scheduled_for?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     started_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     finished_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
@@ -129813,6 +132894,7 @@ export namespace Prisma {
     attempt?: SortOrder
     is_retry?: SortOrder
     trigger_event_id?: SortOrderInput | SortOrder
+    trigger_event?: SortOrderInput | SortOrder
     scheduled_for?: SortOrderInput | SortOrder
     started_at?: SortOrderInput | SortOrder
     finished_at?: SortOrderInput | SortOrder
@@ -129834,6 +132916,7 @@ export namespace Prisma {
     attempt?: IntFilter<"AutomationRun"> | number
     is_retry?: BoolFilter<"AutomationRun"> | boolean
     trigger_event_id?: StringNullableFilter<"AutomationRun"> | string | null
+    trigger_event?: JsonNullableFilter<"AutomationRun">
     scheduled_for?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     started_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     finished_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
@@ -129852,6 +132935,7 @@ export namespace Prisma {
     attempt?: SortOrder
     is_retry?: SortOrder
     trigger_event_id?: SortOrderInput | SortOrder
+    trigger_event?: SortOrderInput | SortOrder
     scheduled_for?: SortOrderInput | SortOrder
     started_at?: SortOrderInput | SortOrder
     finished_at?: SortOrderInput | SortOrder
@@ -129876,6 +132960,7 @@ export namespace Prisma {
     attempt?: IntWithAggregatesFilter<"AutomationRun"> | number
     is_retry?: BoolWithAggregatesFilter<"AutomationRun"> | boolean
     trigger_event_id?: StringNullableWithAggregatesFilter<"AutomationRun"> | string | null
+    trigger_event?: JsonNullableWithAggregatesFilter<"AutomationRun">
     scheduled_for?: DateTimeNullableWithAggregatesFilter<"AutomationRun"> | Date | string | null
     started_at?: DateTimeNullableWithAggregatesFilter<"AutomationRun"> | Date | string | null
     finished_at?: DateTimeNullableWithAggregatesFilter<"AutomationRun"> | Date | string | null
@@ -130859,6 +133944,117 @@ export namespace Prisma {
     updated_at?: DateTimeWithAggregatesFilter<"AppVersionPolicy"> | Date | string
   }
 
+  export type ChannelLinkWhereInput = {
+    AND?: ChannelLinkWhereInput | ChannelLinkWhereInput[]
+    OR?: ChannelLinkWhereInput[]
+    NOT?: ChannelLinkWhereInput | ChannelLinkWhereInput[]
+    id?: StringFilter<"ChannelLink"> | string
+    organization_id?: StringFilter<"ChannelLink"> | string
+    user_id?: StringFilter<"ChannelLink"> | string
+    bot_id?: StringFilter<"ChannelLink"> | string
+    channel?: EnumExternalChannelFilter<"ChannelLink"> | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFilter<"ChannelLink"> | $Enums.ChannelLinkStatus
+    external_id?: StringNullableFilter<"ChannelLink"> | string | null
+    inbound_token?: StringNullableFilter<"ChannelLink"> | string | null
+    link_code?: StringNullableFilter<"ChannelLink"> | string | null
+    link_code_expires_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    conversation_id?: StringNullableFilter<"ChannelLink"> | string | null
+    last_message_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    created_at?: DateTimeFilter<"ChannelLink"> | Date | string
+    updated_at?: DateTimeFilter<"ChannelLink"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    bot?: XOR<BotScalarRelationFilter, BotWhereInput>
+    conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
+  }
+
+  export type ChannelLinkOrderByWithRelationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    bot_id?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    external_id?: SortOrderInput | SortOrder
+    inbound_token?: SortOrderInput | SortOrder
+    link_code?: SortOrderInput | SortOrder
+    link_code_expires_at?: SortOrderInput | SortOrder
+    conversation_id?: SortOrderInput | SortOrder
+    last_message_at?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    organization?: OrganizationOrderByWithRelationInput
+    user?: UserOrderByWithRelationInput
+    bot?: BotOrderByWithRelationInput
+    conversation?: ConversationOrderByWithRelationInput
+  }
+
+  export type ChannelLinkWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    inbound_token?: string
+    link_code?: string
+    organization_id_user_id_channel?: ChannelLinkOrganization_idUser_idChannelCompoundUniqueInput
+    channel_external_id?: ChannelLinkChannelExternal_idCompoundUniqueInput
+    AND?: ChannelLinkWhereInput | ChannelLinkWhereInput[]
+    OR?: ChannelLinkWhereInput[]
+    NOT?: ChannelLinkWhereInput | ChannelLinkWhereInput[]
+    organization_id?: StringFilter<"ChannelLink"> | string
+    user_id?: StringFilter<"ChannelLink"> | string
+    bot_id?: StringFilter<"ChannelLink"> | string
+    channel?: EnumExternalChannelFilter<"ChannelLink"> | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFilter<"ChannelLink"> | $Enums.ChannelLinkStatus
+    external_id?: StringNullableFilter<"ChannelLink"> | string | null
+    link_code_expires_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    conversation_id?: StringNullableFilter<"ChannelLink"> | string | null
+    last_message_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    created_at?: DateTimeFilter<"ChannelLink"> | Date | string
+    updated_at?: DateTimeFilter<"ChannelLink"> | Date | string
+    organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
+    user?: XOR<UserScalarRelationFilter, UserWhereInput>
+    bot?: XOR<BotScalarRelationFilter, BotWhereInput>
+    conversation?: XOR<ConversationNullableScalarRelationFilter, ConversationWhereInput> | null
+  }, "id" | "inbound_token" | "link_code" | "organization_id_user_id_channel" | "channel_external_id">
+
+  export type ChannelLinkOrderByWithAggregationInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    bot_id?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    external_id?: SortOrderInput | SortOrder
+    inbound_token?: SortOrderInput | SortOrder
+    link_code?: SortOrderInput | SortOrder
+    link_code_expires_at?: SortOrderInput | SortOrder
+    conversation_id?: SortOrderInput | SortOrder
+    last_message_at?: SortOrderInput | SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: ChannelLinkCountOrderByAggregateInput
+    _max?: ChannelLinkMaxOrderByAggregateInput
+    _min?: ChannelLinkMinOrderByAggregateInput
+  }
+
+  export type ChannelLinkScalarWhereWithAggregatesInput = {
+    AND?: ChannelLinkScalarWhereWithAggregatesInput | ChannelLinkScalarWhereWithAggregatesInput[]
+    OR?: ChannelLinkScalarWhereWithAggregatesInput[]
+    NOT?: ChannelLinkScalarWhereWithAggregatesInput | ChannelLinkScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ChannelLink"> | string
+    organization_id?: StringWithAggregatesFilter<"ChannelLink"> | string
+    user_id?: StringWithAggregatesFilter<"ChannelLink"> | string
+    bot_id?: StringWithAggregatesFilter<"ChannelLink"> | string
+    channel?: EnumExternalChannelWithAggregatesFilter<"ChannelLink"> | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusWithAggregatesFilter<"ChannelLink"> | $Enums.ChannelLinkStatus
+    external_id?: StringNullableWithAggregatesFilter<"ChannelLink"> | string | null
+    inbound_token?: StringNullableWithAggregatesFilter<"ChannelLink"> | string | null
+    link_code?: StringNullableWithAggregatesFilter<"ChannelLink"> | string | null
+    link_code_expires_at?: DateTimeNullableWithAggregatesFilter<"ChannelLink"> | Date | string | null
+    conversation_id?: StringNullableWithAggregatesFilter<"ChannelLink"> | string | null
+    last_message_at?: DateTimeNullableWithAggregatesFilter<"ChannelLink"> | Date | string | null
+    created_at?: DateTimeWithAggregatesFilter<"ChannelLink"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"ChannelLink"> | Date | string
+  }
+
   export type UserCreateInput = {
     id?: string
     email: string
@@ -130899,6 +134095,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -130924,6 +134121,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateInput = {
@@ -130966,6 +134164,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -130991,6 +134190,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserUpdateInput = {
@@ -131033,6 +134233,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -131058,6 +134259,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateInput = {
@@ -131100,6 +134302,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -131125,6 +134328,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateManyInput = {
@@ -131504,6 +134708,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -131530,6 +134735,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -131554,6 +134760,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -131580,6 +134787,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -131605,6 +134813,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -131623,6 +134832,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -131642,6 +134852,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -131921,6 +135132,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutSettingsInput
@@ -131983,6 +135195,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -132041,6 +135254,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSettingsNestedInput
@@ -132103,6 +135317,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -132163,6 +135378,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -132221,6 +135437,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -132281,6 +135498,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -132529,6 +135747,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateInput = {
@@ -132578,6 +135797,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUpdateInput = {
@@ -132627,6 +135847,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateInput = {
@@ -132676,6 +135897,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateManyInput = {
@@ -132774,6 +135996,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -132855,6 +136078,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -132932,6 +136156,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133013,6 +136238,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133092,6 +136318,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -133169,6 +136396,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133248,6 +136476,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -133276,6 +136505,7 @@ export namespace Prisma {
     id?: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
@@ -133288,6 +136518,7 @@ export namespace Prisma {
     user_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -133296,6 +136527,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
@@ -133308,6 +136540,7 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -133318,6 +136551,7 @@ export namespace Prisma {
     user_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -133326,6 +136560,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -133336,6 +136571,7 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -133956,6 +137192,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateInput = {
@@ -134033,6 +137270,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotUpdateInput = {
@@ -134110,6 +137348,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateInput = {
@@ -134187,6 +137426,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotCreateManyInput = {
@@ -135030,6 +138270,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateInput = {
@@ -135058,6 +138299,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUpdateInput = {
@@ -135086,6 +138328,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
@@ -135114,6 +138357,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationCreateManyInput = {
@@ -135272,6 +138516,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -135314,6 +138559,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -135348,6 +138594,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -135390,6 +138637,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -135428,6 +138676,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -135451,6 +138700,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -135473,6 +138723,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -136061,6 +139312,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
     run: RunCreateNestedOneWithoutStepsInput
     connection?: ConnectionCreateNestedOneWithoutRun_stepsInput
     device?: DeviceCreateNestedOneWithoutRun_stepsInput
@@ -136086,6 +139341,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepUpdateInput = {
@@ -136103,6 +139362,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     run?: RunUpdateOneRequiredWithoutStepsNestedInput
     connection?: ConnectionUpdateOneWithoutRun_stepsNestedInput
     device?: DeviceUpdateOneWithoutRun_stepsNestedInput
@@ -136128,6 +139391,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepCreateManyInput = {
@@ -136149,6 +139416,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepUpdateManyMutationInput = {
@@ -136166,6 +139437,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepUncheckedUpdateManyInput = {
@@ -136187,6 +139462,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApprovalCreateInput = {
@@ -136971,6 +140250,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateInput = {
@@ -137010,6 +140290,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUpdateInput = {
@@ -137049,6 +140330,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateInput = {
@@ -137088,6 +140370,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactCreateManyInput = {
@@ -137526,6 +140809,60 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantCreateInput = {
+    id?: string
+    service_key: string
+    created_at?: Date | string
+    artifact: ArtifactCreateNestedOneWithoutData_grantsInput
+    user: UserCreateNestedOneWithoutArtifact_data_grantsInput
+  }
+
+  export type ArtifactDataGrantUncheckedCreateInput = {
+    id?: string
+    artifact_id: string
+    user_id: string
+    service_key: string
+    created_at?: Date | string
+  }
+
+  export type ArtifactDataGrantUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    artifact?: ArtifactUpdateOneRequiredWithoutData_grantsNestedInput
+    user?: UserUpdateOneRequiredWithoutArtifact_data_grantsNestedInput
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artifact_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantCreateManyInput = {
+    id?: string
+    artifact_id: string
+    user_id: string
+    service_key: string
+    created_at?: Date | string
+  }
+
+  export type ArtifactDataGrantUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artifact_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ArtifactReportCreateInput = {
@@ -139270,6 +142607,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionCreateInput = {
     id?: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -139282,6 +142620,7 @@ export namespace Prisma {
     automation_id: string
     connection_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -139290,6 +142629,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139302,6 +142642,7 @@ export namespace Prisma {
     automation_id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139312,6 +142653,7 @@ export namespace Prisma {
     automation_id: string
     connection_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -139320,6 +142662,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139330,6 +142673,7 @@ export namespace Prisma {
     automation_id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -139341,6 +142685,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -139359,6 +142704,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -139375,6 +142721,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139393,6 +142740,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139410,6 +142758,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -139425,6 +142774,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -139441,6 +142791,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -140480,6 +143831,121 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ChannelLinkCreateInput = {
+    id?: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutChannel_linksInput
+    user: UserCreateNestedOneWithoutChannel_linksInput
+    bot: BotCreateNestedOneWithoutChannel_linksInput
+    conversation?: ConversationCreateNestedOneWithoutChannel_linksInput
+  }
+
+  export type ChannelLinkUncheckedCreateInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutChannel_linksNestedInput
+    user?: UserUpdateOneRequiredWithoutChannel_linksNestedInput
+    bot?: BotUpdateOneRequiredWithoutChannel_linksNestedInput
+    conversation?: ConversationUpdateOneWithoutChannel_linksNestedInput
+  }
+
+  export type ChannelLinkUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkCreateManyInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type StringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -140685,6 +144151,12 @@ export namespace Prisma {
     none?: SavedWidgetWhereInput
   }
 
+  export type ArtifactDataGrantListRelationFilter = {
+    every?: ArtifactDataGrantWhereInput
+    some?: ArtifactDataGrantWhereInput
+    none?: ArtifactDataGrantWhereInput
+  }
+
   export type RunListRelationFilter = {
     every?: RunWhereInput
     some?: RunWhereInput
@@ -140835,6 +144307,12 @@ export namespace Prisma {
     none?: KnowledgeLinkWhereInput
   }
 
+  export type ChannelLinkListRelationFilter = {
+    every?: ChannelLinkWhereInput
+    some?: ChannelLinkWhereInput
+    none?: ChannelLinkWhereInput
+  }
+
   export type SortOrderInput = {
     sort: SortOrder
     nulls?: NullsOrder
@@ -140909,6 +144387,10 @@ export namespace Prisma {
   }
 
   export type SavedWidgetOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ArtifactDataGrantOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -141009,6 +144491,10 @@ export namespace Prisma {
   }
 
   export type KnowledgeLinkOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ChannelLinkOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -141471,6 +144957,7 @@ export namespace Prisma {
     is_online?: SortOrder
     last_seen_at?: SortOrder
     allowed_folders?: SortOrder
+    blocked_apps?: SortOrder
     launch_at_startup?: SortOrder
     quick_ask_shortcut?: SortOrder
     approve_from_lock_screen?: SortOrder
@@ -141940,6 +145427,7 @@ export namespace Prisma {
     daily_email_digest?: SortOrder
     sounds_enabled?: SortOrder
     auto_delete_conversations?: SortOrder
+    purge_deleted_artifacts?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -142000,6 +145488,7 @@ export namespace Prisma {
     daily_email_digest?: SortOrder
     sounds_enabled?: SortOrder
     auto_delete_conversations?: SortOrder
+    purge_deleted_artifacts?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -142060,6 +145549,7 @@ export namespace Prisma {
     daily_email_digest?: SortOrder
     sounds_enabled?: SortOrder
     auto_delete_conversations?: SortOrder
+    purge_deleted_artifacts?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -142861,6 +146351,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: SortOrder
     artifact_design_default?: SortOrder
     voice_mode_enabled?: SortOrder
+    voice_visual_input?: SortOrder
     voice_mode_who?: SortOrder
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
@@ -142942,6 +146433,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: SortOrder
     artifact_design_default?: SortOrder
     voice_mode_enabled?: SortOrder
+    voice_visual_input?: SortOrder
     voice_mode_who?: SortOrder
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
@@ -143013,6 +146505,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: SortOrder
     artifact_design_default?: SortOrder
     voice_mode_enabled?: SortOrder
+    voice_visual_input?: SortOrder
     voice_mode_who?: SortOrder
     voice_max_session?: SortOrder
     voice_approvals_enabled?: SortOrder
@@ -143293,6 +146786,7 @@ export namespace Prisma {
     user_id?: SortOrder
     role?: SortOrder
     color_theme?: SortOrder
+    meeting_assistant?: SortOrder
     joined_at?: SortOrder
     updated_at?: SortOrder
   }
@@ -144866,6 +148360,7 @@ export namespace Prisma {
     status?: SortOrder
     content?: SortOrder
     parts?: SortOrder
+    channel_meta?: SortOrder
     run_id?: SortOrder
     parent_message_id?: SortOrder
     reply_to_message_id?: SortOrder
@@ -145430,6 +148925,10 @@ export namespace Prisma {
     started_at?: SortOrder
     finished_at?: SortOrder
     duration_ms?: SortOrder
+    undo?: SortOrder
+    undo_until?: SortOrder
+    undone_at?: SortOrder
+    undone_by_id?: SortOrder
   }
 
   export type RunStepAvgOrderByAggregateInput = {
@@ -145454,6 +148953,9 @@ export namespace Prisma {
     started_at?: SortOrder
     finished_at?: SortOrder
     duration_ms?: SortOrder
+    undo_until?: SortOrder
+    undone_at?: SortOrder
+    undone_by_id?: SortOrder
   }
 
   export type RunStepMinOrderByAggregateInput = {
@@ -145473,6 +148975,9 @@ export namespace Prisma {
     started_at?: SortOrder
     finished_at?: SortOrder
     duration_ms?: SortOrder
+    undo_until?: SortOrder
+    undone_at?: SortOrder
+    undone_by_id?: SortOrder
   }
 
   export type RunStepSumOrderByAggregateInput = {
@@ -146296,6 +149801,36 @@ export namespace Prisma {
     deleted_at?: SortOrder
     created_at?: SortOrder
     updated_at?: SortOrder
+  }
+
+  export type ArtifactDataGrantArtifact_idUser_idService_keyCompoundUniqueInput = {
+    artifact_id: string
+    user_id: string
+    service_key: string
+  }
+
+  export type ArtifactDataGrantCountOrderByAggregateInput = {
+    id?: SortOrder
+    artifact_id?: SortOrder
+    user_id?: SortOrder
+    service_key?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type ArtifactDataGrantMaxOrderByAggregateInput = {
+    id?: SortOrder
+    artifact_id?: SortOrder
+    user_id?: SortOrder
+    service_key?: SortOrder
+    created_at?: SortOrder
+  }
+
+  export type ArtifactDataGrantMinOrderByAggregateInput = {
+    id?: SortOrder
+    artifact_id?: SortOrder
+    user_id?: SortOrder
+    service_key?: SortOrder
+    created_at?: SortOrder
   }
 
   export type EnumArtifactReportStatusFilter<$PrismaModel = never> = {
@@ -147548,6 +151083,7 @@ export namespace Prisma {
     automation_id?: SortOrder
     connection_id?: SortOrder
     trigger_key?: SortOrder
+    trigger_name?: SortOrder
     composio_trigger_id?: SortOrder
     config?: SortOrder
     created_at?: SortOrder
@@ -147558,6 +151094,7 @@ export namespace Prisma {
     automation_id?: SortOrder
     connection_id?: SortOrder
     trigger_key?: SortOrder
+    trigger_name?: SortOrder
     composio_trigger_id?: SortOrder
     created_at?: SortOrder
   }
@@ -147567,6 +151104,7 @@ export namespace Prisma {
     automation_id?: SortOrder
     connection_id?: SortOrder
     trigger_key?: SortOrder
+    trigger_name?: SortOrder
     composio_trigger_id?: SortOrder
     created_at?: SortOrder
   }
@@ -147585,6 +151123,7 @@ export namespace Prisma {
     attempt?: SortOrder
     is_retry?: SortOrder
     trigger_event_id?: SortOrder
+    trigger_event?: SortOrder
     scheduled_for?: SortOrder
     started_at?: SortOrder
     finished_at?: SortOrder
@@ -148354,6 +151893,102 @@ export namespace Prisma {
     updated_at?: SortOrder
   }
 
+  export type EnumExternalChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExternalChannel | EnumExternalChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumExternalChannelFilter<$PrismaModel> | $Enums.ExternalChannel
+  }
+
+  export type EnumChannelLinkStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelLinkStatus | EnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelLinkStatusFilter<$PrismaModel> | $Enums.ChannelLinkStatus
+  }
+
+  export type ChannelLinkOrganization_idUser_idChannelCompoundUniqueInput = {
+    organization_id: string
+    user_id: string
+    channel: $Enums.ExternalChannel
+  }
+
+  export type ChannelLinkChannelExternal_idCompoundUniqueInput = {
+    channel: $Enums.ExternalChannel
+    external_id: string
+  }
+
+  export type ChannelLinkCountOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    bot_id?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    external_id?: SortOrder
+    inbound_token?: SortOrder
+    link_code?: SortOrder
+    link_code_expires_at?: SortOrder
+    conversation_id?: SortOrder
+    last_message_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ChannelLinkMaxOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    bot_id?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    external_id?: SortOrder
+    inbound_token?: SortOrder
+    link_code?: SortOrder
+    link_code_expires_at?: SortOrder
+    conversation_id?: SortOrder
+    last_message_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ChannelLinkMinOrderByAggregateInput = {
+    id?: SortOrder
+    organization_id?: SortOrder
+    user_id?: SortOrder
+    bot_id?: SortOrder
+    channel?: SortOrder
+    status?: SortOrder
+    external_id?: SortOrder
+    inbound_token?: SortOrder
+    link_code?: SortOrder
+    link_code_expires_at?: SortOrder
+    conversation_id?: SortOrder
+    last_message_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type EnumExternalChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExternalChannel | EnumExternalChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumExternalChannelWithAggregatesFilter<$PrismaModel> | $Enums.ExternalChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExternalChannelFilter<$PrismaModel>
+    _max?: NestedEnumExternalChannelFilter<$PrismaModel>
+  }
+
+  export type EnumChannelLinkStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelLinkStatus | EnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelLinkStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChannelLinkStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelLinkStatusFilter<$PrismaModel>
+    _max?: NestedEnumChannelLinkStatusFilter<$PrismaModel>
+  }
+
   export type FileCreateNestedOneWithoutUser_avatarInput = {
     create?: XOR<FileCreateWithoutUser_avatarInput, FileUncheckedCreateWithoutUser_avatarInput>
     connectOrCreate?: FileCreateOrConnectWithoutUser_avatarInput
@@ -148504,6 +152139,13 @@ export namespace Prisma {
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutUserInput | SavedWidgetCreateOrConnectWithoutUserInput[]
     createMany?: SavedWidgetCreateManyUserInputEnvelope
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
+  }
+
+  export type ArtifactDataGrantCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput> | ArtifactDataGrantCreateWithoutUserInput[] | ArtifactDataGrantUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutUserInput | ArtifactDataGrantCreateOrConnectWithoutUserInput[]
+    createMany?: ArtifactDataGrantCreateManyUserInputEnvelope
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
   }
 
   export type RunCreateNestedManyWithoutUserInput = {
@@ -148681,6 +152323,13 @@ export namespace Prisma {
     connect?: KnowledgeLinkWhereUniqueInput | KnowledgeLinkWhereUniqueInput[]
   }
 
+  export type ChannelLinkCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput> | ChannelLinkCreateWithoutUserInput[] | ChannelLinkUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutUserInput | ChannelLinkCreateOrConnectWithoutUserInput[]
+    createMany?: ChannelLinkCreateManyUserInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+  }
+
   export type UserSettingsUncheckedCreateNestedOneWithoutUserInput = {
     create?: XOR<UserSettingsCreateWithoutUserInput, UserSettingsUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserSettingsCreateOrConnectWithoutUserInput
@@ -148825,6 +152474,13 @@ export namespace Prisma {
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutUserInput | SavedWidgetCreateOrConnectWithoutUserInput[]
     createMany?: SavedWidgetCreateManyUserInputEnvelope
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
+  }
+
+  export type ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput> | ArtifactDataGrantCreateWithoutUserInput[] | ArtifactDataGrantUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutUserInput | ArtifactDataGrantCreateOrConnectWithoutUserInput[]
+    createMany?: ArtifactDataGrantCreateManyUserInputEnvelope
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
   }
 
   export type RunUncheckedCreateNestedManyWithoutUserInput = {
@@ -149000,6 +152656,13 @@ export namespace Prisma {
     connectOrCreate?: KnowledgeLinkCreateOrConnectWithoutFetched_byInput | KnowledgeLinkCreateOrConnectWithoutFetched_byInput[]
     createMany?: KnowledgeLinkCreateManyFetched_byInputEnvelope
     connect?: KnowledgeLinkWhereUniqueInput | KnowledgeLinkWhereUniqueInput[]
+  }
+
+  export type ChannelLinkUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput> | ChannelLinkCreateWithoutUserInput[] | ChannelLinkUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutUserInput | ChannelLinkCreateOrConnectWithoutUserInput[]
+    createMany?: ChannelLinkCreateManyUserInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
   }
 
   export type StringFieldUpdateOperationsInput = {
@@ -149324,6 +152987,20 @@ export namespace Prisma {
     update?: SavedWidgetUpdateWithWhereUniqueWithoutUserInput | SavedWidgetUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SavedWidgetUpdateManyWithWhereWithoutUserInput | SavedWidgetUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
+  }
+
+  export type ArtifactDataGrantUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput> | ArtifactDataGrantCreateWithoutUserInput[] | ArtifactDataGrantUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutUserInput | ArtifactDataGrantCreateOrConnectWithoutUserInput[]
+    upsert?: ArtifactDataGrantUpsertWithWhereUniqueWithoutUserInput | ArtifactDataGrantUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtifactDataGrantCreateManyUserInputEnvelope
+    set?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    disconnect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    delete?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    update?: ArtifactDataGrantUpdateWithWhereUniqueWithoutUserInput | ArtifactDataGrantUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtifactDataGrantUpdateManyWithWhereWithoutUserInput | ArtifactDataGrantUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
   }
 
   export type RunUpdateManyWithoutUserNestedInput = {
@@ -149676,6 +153353,20 @@ export namespace Prisma {
     deleteMany?: KnowledgeLinkScalarWhereInput | KnowledgeLinkScalarWhereInput[]
   }
 
+  export type ChannelLinkUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput> | ChannelLinkCreateWithoutUserInput[] | ChannelLinkUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutUserInput | ChannelLinkCreateOrConnectWithoutUserInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutUserInput | ChannelLinkUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChannelLinkCreateManyUserInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutUserInput | ChannelLinkUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutUserInput | ChannelLinkUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
   export type UserSettingsUncheckedUpdateOneWithoutUserNestedInput = {
     create?: XOR<UserSettingsCreateWithoutUserInput, UserSettingsUncheckedCreateWithoutUserInput>
     connectOrCreate?: UserSettingsCreateOrConnectWithoutUserInput
@@ -149964,6 +153655,20 @@ export namespace Prisma {
     update?: SavedWidgetUpdateWithWhereUniqueWithoutUserInput | SavedWidgetUpdateWithWhereUniqueWithoutUserInput[]
     updateMany?: SavedWidgetUpdateManyWithWhereWithoutUserInput | SavedWidgetUpdateManyWithWhereWithoutUserInput[]
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput> | ArtifactDataGrantCreateWithoutUserInput[] | ArtifactDataGrantUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutUserInput | ArtifactDataGrantCreateOrConnectWithoutUserInput[]
+    upsert?: ArtifactDataGrantUpsertWithWhereUniqueWithoutUserInput | ArtifactDataGrantUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ArtifactDataGrantCreateManyUserInputEnvelope
+    set?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    disconnect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    delete?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    update?: ArtifactDataGrantUpdateWithWhereUniqueWithoutUserInput | ArtifactDataGrantUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ArtifactDataGrantUpdateManyWithWhereWithoutUserInput | ArtifactDataGrantUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
   }
 
   export type RunUncheckedUpdateManyWithoutUserNestedInput = {
@@ -150316,6 +154021,20 @@ export namespace Prisma {
     deleteMany?: KnowledgeLinkScalarWhereInput | KnowledgeLinkScalarWhereInput[]
   }
 
+  export type ChannelLinkUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput> | ChannelLinkCreateWithoutUserInput[] | ChannelLinkUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutUserInput | ChannelLinkCreateOrConnectWithoutUserInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutUserInput | ChannelLinkUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: ChannelLinkCreateManyUserInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutUserInput | ChannelLinkUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutUserInput | ChannelLinkUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
   export type UserCreateNestedOneWithoutIdentitiesInput = {
     create?: XOR<UserCreateWithoutIdentitiesInput, UserUncheckedCreateWithoutIdentitiesInput>
     connectOrCreate?: UserCreateOrConnectWithoutIdentitiesInput
@@ -150395,6 +154114,10 @@ export namespace Prisma {
   }
 
   export type DeviceCreateallowed_foldersInput = {
+    set: string[]
+  }
+
+  export type DeviceCreateblocked_appsInput = {
     set: string[]
   }
 
@@ -150502,6 +154225,11 @@ export namespace Prisma {
   }
 
   export type DeviceUpdateallowed_foldersInput = {
+    set?: string[]
+    push?: string | string[]
+  }
+
+  export type DeviceUpdateblocked_appsInput = {
     set?: string[]
     push?: string | string[]
   }
@@ -151279,6 +155007,13 @@ export namespace Prisma {
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
   }
 
+  export type ChannelLinkCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput> | ChannelLinkCreateWithoutOrganizationInput[] | ChannelLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutOrganizationInput | ChannelLinkCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ChannelLinkCreateManyOrganizationInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+  }
+
   export type OrganizationSettingsUncheckedCreateNestedOneWithoutOrganizationInput = {
     create?: XOR<OrganizationSettingsCreateWithoutOrganizationInput, OrganizationSettingsUncheckedCreateWithoutOrganizationInput>
     connectOrCreate?: OrganizationSettingsCreateOrConnectWithoutOrganizationInput
@@ -151513,6 +155248,13 @@ export namespace Prisma {
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutOrganizationInput | SavedWidgetCreateOrConnectWithoutOrganizationInput[]
     createMany?: SavedWidgetCreateManyOrganizationInputEnvelope
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
+  }
+
+  export type ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput> | ChannelLinkCreateWithoutOrganizationInput[] | ChannelLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutOrganizationInput | ChannelLinkCreateOrConnectWithoutOrganizationInput[]
+    createMany?: ChannelLinkCreateManyOrganizationInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
   }
 
   export type FileUpdateOneWithoutOrg_logoNestedInput = {
@@ -152003,6 +155745,20 @@ export namespace Prisma {
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
   }
 
+  export type ChannelLinkUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput> | ChannelLinkCreateWithoutOrganizationInput[] | ChannelLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutOrganizationInput | ChannelLinkCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutOrganizationInput | ChannelLinkUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ChannelLinkCreateManyOrganizationInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutOrganizationInput | ChannelLinkUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutOrganizationInput | ChannelLinkUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
   export type OrganizationSettingsUncheckedUpdateOneWithoutOrganizationNestedInput = {
     create?: XOR<OrganizationSettingsCreateWithoutOrganizationInput, OrganizationSettingsUncheckedCreateWithoutOrganizationInput>
     connectOrCreate?: OrganizationSettingsCreateOrConnectWithoutOrganizationInput
@@ -152469,6 +156225,20 @@ export namespace Prisma {
     update?: SavedWidgetUpdateWithWhereUniqueWithoutOrganizationInput | SavedWidgetUpdateWithWhereUniqueWithoutOrganizationInput[]
     updateMany?: SavedWidgetUpdateManyWithWhereWithoutOrganizationInput | SavedWidgetUpdateManyWithWhereWithoutOrganizationInput[]
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput> | ChannelLinkCreateWithoutOrganizationInput[] | ChannelLinkUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutOrganizationInput | ChannelLinkCreateOrConnectWithoutOrganizationInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutOrganizationInput | ChannelLinkUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: ChannelLinkCreateManyOrganizationInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutOrganizationInput | ChannelLinkUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutOrganizationInput | ChannelLinkUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
   }
 
   export type OrganizationSettingsCreateservice_listInput = {
@@ -153524,6 +157294,13 @@ export namespace Prisma {
     connect?: ArtifactCommentWhereUniqueInput | ArtifactCommentWhereUniqueInput[]
   }
 
+  export type ChannelLinkCreateNestedManyWithoutBotInput = {
+    create?: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput> | ChannelLinkCreateWithoutBotInput[] | ChannelLinkUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutBotInput | ChannelLinkCreateOrConnectWithoutBotInput[]
+    createMany?: ChannelLinkCreateManyBotInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+  }
+
   export type BotUncheckedCreateNestedManyWithoutDuplicated_fromInput = {
     create?: XOR<BotCreateWithoutDuplicated_fromInput, BotUncheckedCreateWithoutDuplicated_fromInput> | BotCreateWithoutDuplicated_fromInput[] | BotUncheckedCreateWithoutDuplicated_fromInput[]
     connectOrCreate?: BotCreateOrConnectWithoutDuplicated_fromInput | BotCreateOrConnectWithoutDuplicated_fromInput[]
@@ -153689,6 +157466,13 @@ export namespace Prisma {
     connectOrCreate?: ArtifactCommentCreateOrConnectWithoutMentioned_botInput | ArtifactCommentCreateOrConnectWithoutMentioned_botInput[]
     createMany?: ArtifactCommentCreateManyMentioned_botInputEnvelope
     connect?: ArtifactCommentWhereUniqueInput | ArtifactCommentWhereUniqueInput[]
+  }
+
+  export type ChannelLinkUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput> | ChannelLinkCreateWithoutBotInput[] | ChannelLinkUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutBotInput | ChannelLinkCreateOrConnectWithoutBotInput[]
+    createMany?: ChannelLinkCreateManyBotInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
   }
 
   export type BotUpdateconversation_startersInput = {
@@ -154138,6 +157922,20 @@ export namespace Prisma {
     deleteMany?: ArtifactCommentScalarWhereInput | ArtifactCommentScalarWhereInput[]
   }
 
+  export type ChannelLinkUpdateManyWithoutBotNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput> | ChannelLinkCreateWithoutBotInput[] | ChannelLinkUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutBotInput | ChannelLinkCreateOrConnectWithoutBotInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutBotInput | ChannelLinkUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: ChannelLinkCreateManyBotInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutBotInput | ChannelLinkUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutBotInput | ChannelLinkUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
   export type BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput = {
     create?: XOR<BotCreateWithoutDuplicated_fromInput, BotUncheckedCreateWithoutDuplicated_fromInput> | BotCreateWithoutDuplicated_fromInput[] | BotUncheckedCreateWithoutDuplicated_fromInput[]
     connectOrCreate?: BotCreateOrConnectWithoutDuplicated_fromInput | BotCreateOrConnectWithoutDuplicated_fromInput[]
@@ -154468,6 +158266,20 @@ export namespace Prisma {
     update?: ArtifactCommentUpdateWithWhereUniqueWithoutMentioned_botInput | ArtifactCommentUpdateWithWhereUniqueWithoutMentioned_botInput[]
     updateMany?: ArtifactCommentUpdateManyWithWhereWithoutMentioned_botInput | ArtifactCommentUpdateManyWithWhereWithoutMentioned_botInput[]
     deleteMany?: ArtifactCommentScalarWhereInput | ArtifactCommentScalarWhereInput[]
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput> | ChannelLinkCreateWithoutBotInput[] | ChannelLinkUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutBotInput | ChannelLinkCreateOrConnectWithoutBotInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutBotInput | ChannelLinkUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: ChannelLinkCreateManyBotInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutBotInput | ChannelLinkUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutBotInput | ChannelLinkUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
   }
 
   export type BotCreateNestedOneWithoutApproval_rulesInput = {
@@ -155041,6 +158853,13 @@ export namespace Prisma {
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
   }
 
+  export type ChannelLinkCreateNestedManyWithoutConversationInput = {
+    create?: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput> | ChannelLinkCreateWithoutConversationInput[] | ChannelLinkUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutConversationInput | ChannelLinkCreateOrConnectWithoutConversationInput[]
+    createMany?: ChannelLinkCreateManyConversationInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+  }
+
   export type ConversationParticipantUncheckedCreateNestedManyWithoutConversationInput = {
     create?: XOR<ConversationParticipantCreateWithoutConversationInput, ConversationParticipantUncheckedCreateWithoutConversationInput> | ConversationParticipantCreateWithoutConversationInput[] | ConversationParticipantUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: ConversationParticipantCreateOrConnectWithoutConversationInput | ConversationParticipantCreateOrConnectWithoutConversationInput[]
@@ -155116,6 +158935,13 @@ export namespace Prisma {
     connectOrCreate?: SavedWidgetCreateOrConnectWithoutConversationInput | SavedWidgetCreateOrConnectWithoutConversationInput[]
     createMany?: SavedWidgetCreateManyConversationInputEnvelope
     connect?: SavedWidgetWhereUniqueInput | SavedWidgetWhereUniqueInput[]
+  }
+
+  export type ChannelLinkUncheckedCreateNestedManyWithoutConversationInput = {
+    create?: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput> | ChannelLinkCreateWithoutConversationInput[] | ChannelLinkUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutConversationInput | ChannelLinkCreateOrConnectWithoutConversationInput[]
+    createMany?: ChannelLinkCreateManyConversationInputEnvelope
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
   }
 
   export type EnumConversationTypeFieldUpdateOperationsInput = {
@@ -155304,6 +159130,20 @@ export namespace Prisma {
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
   }
 
+  export type ChannelLinkUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput> | ChannelLinkCreateWithoutConversationInput[] | ChannelLinkUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutConversationInput | ChannelLinkCreateOrConnectWithoutConversationInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutConversationInput | ChannelLinkUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: ChannelLinkCreateManyConversationInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutConversationInput | ChannelLinkUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutConversationInput | ChannelLinkUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
   export type ConversationParticipantUncheckedUpdateManyWithoutConversationNestedInput = {
     create?: XOR<ConversationParticipantCreateWithoutConversationInput, ConversationParticipantUncheckedCreateWithoutConversationInput> | ConversationParticipantCreateWithoutConversationInput[] | ConversationParticipantUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: ConversationParticipantCreateOrConnectWithoutConversationInput | ConversationParticipantCreateOrConnectWithoutConversationInput[]
@@ -155456,6 +159296,20 @@ export namespace Prisma {
     update?: SavedWidgetUpdateWithWhereUniqueWithoutConversationInput | SavedWidgetUpdateWithWhereUniqueWithoutConversationInput[]
     updateMany?: SavedWidgetUpdateManyWithWhereWithoutConversationInput | SavedWidgetUpdateManyWithWhereWithoutConversationInput[]
     deleteMany?: SavedWidgetScalarWhereInput | SavedWidgetScalarWhereInput[]
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput = {
+    create?: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput> | ChannelLinkCreateWithoutConversationInput[] | ChannelLinkUncheckedCreateWithoutConversationInput[]
+    connectOrCreate?: ChannelLinkCreateOrConnectWithoutConversationInput | ChannelLinkCreateOrConnectWithoutConversationInput[]
+    upsert?: ChannelLinkUpsertWithWhereUniqueWithoutConversationInput | ChannelLinkUpsertWithWhereUniqueWithoutConversationInput[]
+    createMany?: ChannelLinkCreateManyConversationInputEnvelope
+    set?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    disconnect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    delete?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+    update?: ChannelLinkUpdateWithWhereUniqueWithoutConversationInput | ChannelLinkUpdateWithWhereUniqueWithoutConversationInput[]
+    updateMany?: ChannelLinkUpdateManyWithWhereWithoutConversationInput | ChannelLinkUpdateManyWithWhereWithoutConversationInput[]
+    deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
   }
 
   export type ConversationCreateNestedOneWithoutParticipantsInput = {
@@ -157844,6 +161698,13 @@ export namespace Prisma {
     connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
   }
 
+  export type ArtifactDataGrantCreateNestedManyWithoutArtifactInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
+    createMany?: ArtifactDataGrantCreateManyArtifactInputEnvelope
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+  }
+
   export type ArtifactUncheckedCreateNestedManyWithoutDuplicated_fromInput = {
     create?: XOR<ArtifactCreateWithoutDuplicated_fromInput, ArtifactUncheckedCreateWithoutDuplicated_fromInput> | ArtifactCreateWithoutDuplicated_fromInput[] | ArtifactUncheckedCreateWithoutDuplicated_fromInput[]
     connectOrCreate?: ArtifactCreateOrConnectWithoutDuplicated_fromInput | ArtifactCreateOrConnectWithoutDuplicated_fromInput[]
@@ -157898,6 +161759,13 @@ export namespace Prisma {
     connectOrCreate?: UsageRecordCreateOrConnectWithoutArtifactInput | UsageRecordCreateOrConnectWithoutArtifactInput[]
     createMany?: UsageRecordCreateManyArtifactInputEnvelope
     connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  }
+
+  export type ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
+    createMany?: ArtifactDataGrantCreateManyArtifactInputEnvelope
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
   }
 
   export type EnumArtifactTypeFieldUpdateOperationsInput = {
@@ -158084,6 +161952,20 @@ export namespace Prisma {
     deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
   }
 
+  export type ArtifactDataGrantUpdateManyWithoutArtifactNestedInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
+    upsert?: ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput | ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput[]
+    createMany?: ArtifactDataGrantCreateManyArtifactInputEnvelope
+    set?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    disconnect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    delete?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    update?: ArtifactDataGrantUpdateWithWhereUniqueWithoutArtifactInput | ArtifactDataGrantUpdateWithWhereUniqueWithoutArtifactInput[]
+    updateMany?: ArtifactDataGrantUpdateManyWithWhereWithoutArtifactInput | ArtifactDataGrantUpdateManyWithWhereWithoutArtifactInput[]
+    deleteMany?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
+  }
+
   export type ArtifactUncheckedUpdateManyWithoutDuplicated_fromNestedInput = {
     create?: XOR<ArtifactCreateWithoutDuplicated_fromInput, ArtifactUncheckedCreateWithoutDuplicated_fromInput> | ArtifactCreateWithoutDuplicated_fromInput[] | ArtifactUncheckedCreateWithoutDuplicated_fromInput[]
     connectOrCreate?: ArtifactCreateOrConnectWithoutDuplicated_fromInput | ArtifactCreateOrConnectWithoutDuplicated_fromInput[]
@@ -158194,6 +162076,20 @@ export namespace Prisma {
     update?: UsageRecordUpdateWithWhereUniqueWithoutArtifactInput | UsageRecordUpdateWithWhereUniqueWithoutArtifactInput[]
     updateMany?: UsageRecordUpdateManyWithWhereWithoutArtifactInput | UsageRecordUpdateManyWithWhereWithoutArtifactInput[]
     deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput = {
+    create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
+    connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
+    upsert?: ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput | ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput[]
+    createMany?: ArtifactDataGrantCreateManyArtifactInputEnvelope
+    set?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    disconnect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    delete?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    connect?: ArtifactDataGrantWhereUniqueInput | ArtifactDataGrantWhereUniqueInput[]
+    update?: ArtifactDataGrantUpdateWithWhereUniqueWithoutArtifactInput | ArtifactDataGrantUpdateWithWhereUniqueWithoutArtifactInput[]
+    updateMany?: ArtifactDataGrantUpdateManyWithWhereWithoutArtifactInput | ArtifactDataGrantUpdateManyWithWhereWithoutArtifactInput[]
+    deleteMany?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
   }
 
   export type ArtifactCreateNestedOneWithoutVersionsInput = {
@@ -158460,6 +162356,34 @@ export namespace Prisma {
     upsert?: ArtifactUpsertWithoutRecordsInput
     connect?: ArtifactWhereUniqueInput
     update?: XOR<XOR<ArtifactUpdateToOneWithWhereWithoutRecordsInput, ArtifactUpdateWithoutRecordsInput>, ArtifactUncheckedUpdateWithoutRecordsInput>
+  }
+
+  export type ArtifactCreateNestedOneWithoutData_grantsInput = {
+    create?: XOR<ArtifactCreateWithoutData_grantsInput, ArtifactUncheckedCreateWithoutData_grantsInput>
+    connectOrCreate?: ArtifactCreateOrConnectWithoutData_grantsInput
+    connect?: ArtifactWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutArtifact_data_grantsInput = {
+    create?: XOR<UserCreateWithoutArtifact_data_grantsInput, UserUncheckedCreateWithoutArtifact_data_grantsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtifact_data_grantsInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type ArtifactUpdateOneRequiredWithoutData_grantsNestedInput = {
+    create?: XOR<ArtifactCreateWithoutData_grantsInput, ArtifactUncheckedCreateWithoutData_grantsInput>
+    connectOrCreate?: ArtifactCreateOrConnectWithoutData_grantsInput
+    upsert?: ArtifactUpsertWithoutData_grantsInput
+    connect?: ArtifactWhereUniqueInput
+    update?: XOR<XOR<ArtifactUpdateToOneWithWhereWithoutData_grantsInput, ArtifactUpdateWithoutData_grantsInput>, ArtifactUncheckedUpdateWithoutData_grantsInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutArtifact_data_grantsNestedInput = {
+    create?: XOR<UserCreateWithoutArtifact_data_grantsInput, UserUncheckedCreateWithoutArtifact_data_grantsInput>
+    connectOrCreate?: UserCreateOrConnectWithoutArtifact_data_grantsInput
+    upsert?: UserUpsertWithoutArtifact_data_grantsInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutArtifact_data_grantsInput, UserUpdateWithoutArtifact_data_grantsInput>, UserUncheckedUpdateWithoutArtifact_data_grantsInput>
   }
 
   export type ArtifactCreateNestedOneWithoutReportsInput = {
@@ -161170,6 +165094,72 @@ export namespace Prisma {
     update?: XOR<XOR<FileUpdateToOneWithWhereWithoutExportInput, FileUpdateWithoutExportInput>, FileUncheckedUpdateWithoutExportInput>
   }
 
+  export type OrganizationCreateNestedOneWithoutChannel_linksInput = {
+    create?: XOR<OrganizationCreateWithoutChannel_linksInput, OrganizationUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutChannel_linksInput
+    connect?: OrganizationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutChannel_linksInput = {
+    create?: XOR<UserCreateWithoutChannel_linksInput, UserUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChannel_linksInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type BotCreateNestedOneWithoutChannel_linksInput = {
+    create?: XOR<BotCreateWithoutChannel_linksInput, BotUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: BotCreateOrConnectWithoutChannel_linksInput
+    connect?: BotWhereUniqueInput
+  }
+
+  export type ConversationCreateNestedOneWithoutChannel_linksInput = {
+    create?: XOR<ConversationCreateWithoutChannel_linksInput, ConversationUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutChannel_linksInput
+    connect?: ConversationWhereUniqueInput
+  }
+
+  export type EnumExternalChannelFieldUpdateOperationsInput = {
+    set?: $Enums.ExternalChannel
+  }
+
+  export type EnumChannelLinkStatusFieldUpdateOperationsInput = {
+    set?: $Enums.ChannelLinkStatus
+  }
+
+  export type OrganizationUpdateOneRequiredWithoutChannel_linksNestedInput = {
+    create?: XOR<OrganizationCreateWithoutChannel_linksInput, OrganizationUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutChannel_linksInput
+    upsert?: OrganizationUpsertWithoutChannel_linksInput
+    connect?: OrganizationWhereUniqueInput
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutChannel_linksInput, OrganizationUpdateWithoutChannel_linksInput>, OrganizationUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type UserUpdateOneRequiredWithoutChannel_linksNestedInput = {
+    create?: XOR<UserCreateWithoutChannel_linksInput, UserUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: UserCreateOrConnectWithoutChannel_linksInput
+    upsert?: UserUpsertWithoutChannel_linksInput
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutChannel_linksInput, UserUpdateWithoutChannel_linksInput>, UserUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type BotUpdateOneRequiredWithoutChannel_linksNestedInput = {
+    create?: XOR<BotCreateWithoutChannel_linksInput, BotUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: BotCreateOrConnectWithoutChannel_linksInput
+    upsert?: BotUpsertWithoutChannel_linksInput
+    connect?: BotWhereUniqueInput
+    update?: XOR<XOR<BotUpdateToOneWithWhereWithoutChannel_linksInput, BotUpdateWithoutChannel_linksInput>, BotUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type ConversationUpdateOneWithoutChannel_linksNestedInput = {
+    create?: XOR<ConversationCreateWithoutChannel_linksInput, ConversationUncheckedCreateWithoutChannel_linksInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutChannel_linksInput
+    upsert?: ConversationUpsertWithoutChannel_linksInput
+    disconnect?: ConversationWhereInput | boolean
+    delete?: ConversationWhereInput | boolean
+    connect?: ConversationWhereUniqueInput
+    update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutChannel_linksInput, ConversationUpdateWithoutChannel_linksInput>, ConversationUncheckedUpdateWithoutChannel_linksInput>
+  }
+
   export type NestedStringFilter<$PrismaModel = never> = {
     equals?: string | StringFieldRefInput<$PrismaModel>
     in?: string[] | ListStringFieldRefInput<$PrismaModel>
@@ -163649,6 +167639,40 @@ export namespace Prisma {
     _max?: NestedEnumExportStatusFilter<$PrismaModel>
   }
 
+  export type NestedEnumExternalChannelFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExternalChannel | EnumExternalChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumExternalChannelFilter<$PrismaModel> | $Enums.ExternalChannel
+  }
+
+  export type NestedEnumChannelLinkStatusFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelLinkStatus | EnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelLinkStatusFilter<$PrismaModel> | $Enums.ChannelLinkStatus
+  }
+
+  export type NestedEnumExternalChannelWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ExternalChannel | EnumExternalChannelFieldRefInput<$PrismaModel>
+    in?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ExternalChannel[] | ListEnumExternalChannelFieldRefInput<$PrismaModel>
+    not?: NestedEnumExternalChannelWithAggregatesFilter<$PrismaModel> | $Enums.ExternalChannel
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumExternalChannelFilter<$PrismaModel>
+    _max?: NestedEnumExternalChannelFilter<$PrismaModel>
+  }
+
+  export type NestedEnumChannelLinkStatusWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ChannelLinkStatus | EnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    in?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ChannelLinkStatus[] | ListEnumChannelLinkStatusFieldRefInput<$PrismaModel>
+    not?: NestedEnumChannelLinkStatusWithAggregatesFilter<$PrismaModel> | $Enums.ChannelLinkStatus
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumChannelLinkStatusFilter<$PrismaModel>
+    _max?: NestedEnumChannelLinkStatusFilter<$PrismaModel>
+  }
+
   export type FileCreateWithoutUser_avatarInput = {
     id?: string
     bucket: $Enums.FileBucket
@@ -163780,6 +167804,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     default_bot?: BotCreateNestedOneWithoutDefault_for_usersInput
@@ -163840,6 +167865,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -163948,6 +167974,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -163972,6 +167999,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -164057,6 +168085,7 @@ export namespace Prisma {
     id?: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutMembersInput
@@ -164067,6 +168096,7 @@ export namespace Prisma {
     organization_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -164127,6 +168157,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCreated_byInput = {
@@ -164175,6 +168206,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCreated_byInput = {
@@ -164341,6 +168373,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutCreated_byInput = {
@@ -164417,6 +168450,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutCreated_byInput = {
@@ -164510,6 +168544,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutCreated_byInput = {
@@ -164537,6 +168572,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutCreated_byInput = {
@@ -164624,6 +168660,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -164664,6 +168701,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -164708,6 +168746,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -164749,6 +168788,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -164840,6 +168880,30 @@ export namespace Prisma {
 
   export type SavedWidgetCreateManyUserInputEnvelope = {
     data: SavedWidgetCreateManyUserInput | SavedWidgetCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ArtifactDataGrantCreateWithoutUserInput = {
+    id?: string
+    service_key: string
+    created_at?: Date | string
+    artifact: ArtifactCreateNestedOneWithoutData_grantsInput
+  }
+
+  export type ArtifactDataGrantUncheckedCreateWithoutUserInput = {
+    id?: string
+    artifact_id: string
+    service_key: string
+    created_at?: Date | string
+  }
+
+  export type ArtifactDataGrantCreateOrConnectWithoutUserInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    create: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtifactDataGrantCreateManyUserInputEnvelope = {
+    data: ArtifactDataGrantCreateManyUserInput | ArtifactDataGrantCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -165253,6 +169317,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutOwnerInput = {
@@ -165291,6 +169356,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutOwnerInput = {
@@ -166105,6 +170171,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ChannelLinkCreateWithoutUserInput = {
+    id?: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutChannel_linksInput
+    bot: BotCreateNestedOneWithoutChannel_linksInput
+    conversation?: ConversationCreateNestedOneWithoutChannel_linksInput
+  }
+
+  export type ChannelLinkUncheckedCreateWithoutUserInput = {
+    id?: string
+    organization_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkCreateOrConnectWithoutUserInput = {
+    where: ChannelLinkWhereUniqueInput
+    create: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChannelLinkCreateManyUserInputEnvelope = {
+    data: ChannelLinkCreateManyUserInput | ChannelLinkCreateManyUserInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FileUpsertWithoutUser_avatarInput = {
     update: XOR<FileUpdateWithoutUser_avatarInput, FileUncheckedUpdateWithoutUser_avatarInput>
     create: XOR<FileCreateWithoutUser_avatarInput, FileUncheckedCreateWithoutUser_avatarInput>
@@ -166253,6 +170361,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     default_bot?: BotUpdateOneWithoutDefault_for_usersNestedInput
@@ -166313,6 +170422,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -166437,6 +170547,7 @@ export namespace Prisma {
     is_online?: BoolFilter<"Device"> | boolean
     last_seen_at?: DateTimeFilter<"Device"> | Date | string
     allowed_folders?: StringNullableListFilter<"Device">
+    blocked_apps?: StringNullableListFilter<"Device">
     launch_at_startup?: BoolFilter<"Device"> | boolean
     quick_ask_shortcut?: StringNullableFilter<"Device"> | string | null
     approve_from_lock_screen?: BoolFilter<"Device"> | boolean
@@ -166527,6 +170638,7 @@ export namespace Prisma {
     user_id?: StringFilter<"OrganizationMember"> | string
     role?: EnumOrganizationRoleFilter<"OrganizationMember"> | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFilter<"OrganizationMember"> | $Enums.ColorTheme
+    meeting_assistant?: JsonNullableFilter<"OrganizationMember">
     joined_at?: DateTimeFilter<"OrganizationMember"> | Date | string
     updated_at?: DateTimeFilter<"OrganizationMember"> | Date | string
   }
@@ -166875,6 +170987,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFilter<"Message"> | $Enums.MessageStatus
     content?: StringNullableFilter<"Message"> | string | null
     parts?: JsonNullableFilter<"Message">
+    channel_meta?: JsonNullableFilter<"Message">
     run_id?: StringNullableFilter<"Message"> | string | null
     parent_message_id?: StringNullableFilter<"Message"> | string | null
     reply_to_message_id?: StringNullableFilter<"Message"> | string | null
@@ -166964,6 +171077,33 @@ export namespace Prisma {
     refresh_prompt?: StringNullableFilter<"SavedWidget"> | string | null
     created_at?: DateTimeFilter<"SavedWidget"> | Date | string
     updated_at?: DateTimeFilter<"SavedWidget"> | Date | string
+  }
+
+  export type ArtifactDataGrantUpsertWithWhereUniqueWithoutUserInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    update: XOR<ArtifactDataGrantUpdateWithoutUserInput, ArtifactDataGrantUncheckedUpdateWithoutUserInput>
+    create: XOR<ArtifactDataGrantCreateWithoutUserInput, ArtifactDataGrantUncheckedCreateWithoutUserInput>
+  }
+
+  export type ArtifactDataGrantUpdateWithWhereUniqueWithoutUserInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    data: XOR<ArtifactDataGrantUpdateWithoutUserInput, ArtifactDataGrantUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ArtifactDataGrantUpdateManyWithWhereWithoutUserInput = {
+    where: ArtifactDataGrantScalarWhereInput
+    data: XOR<ArtifactDataGrantUpdateManyMutationInput, ArtifactDataGrantUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ArtifactDataGrantScalarWhereInput = {
+    AND?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
+    OR?: ArtifactDataGrantScalarWhereInput[]
+    NOT?: ArtifactDataGrantScalarWhereInput | ArtifactDataGrantScalarWhereInput[]
+    id?: StringFilter<"ArtifactDataGrant"> | string
+    artifact_id?: StringFilter<"ArtifactDataGrant"> | string
+    user_id?: StringFilter<"ArtifactDataGrant"> | string
+    service_key?: StringFilter<"ArtifactDataGrant"> | string
+    created_at?: DateTimeFilter<"ArtifactDataGrant"> | Date | string
   }
 
   export type RunUpsertWithWhereUniqueWithoutUserInput = {
@@ -167905,6 +172045,42 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"KnowledgeLink"> | Date | string
   }
 
+  export type ChannelLinkUpsertWithWhereUniqueWithoutUserInput = {
+    where: ChannelLinkWhereUniqueInput
+    update: XOR<ChannelLinkUpdateWithoutUserInput, ChannelLinkUncheckedUpdateWithoutUserInput>
+    create: XOR<ChannelLinkCreateWithoutUserInput, ChannelLinkUncheckedCreateWithoutUserInput>
+  }
+
+  export type ChannelLinkUpdateWithWhereUniqueWithoutUserInput = {
+    where: ChannelLinkWhereUniqueInput
+    data: XOR<ChannelLinkUpdateWithoutUserInput, ChannelLinkUncheckedUpdateWithoutUserInput>
+  }
+
+  export type ChannelLinkUpdateManyWithWhereWithoutUserInput = {
+    where: ChannelLinkScalarWhereInput
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyWithoutUserInput>
+  }
+
+  export type ChannelLinkScalarWhereInput = {
+    AND?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+    OR?: ChannelLinkScalarWhereInput[]
+    NOT?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+    id?: StringFilter<"ChannelLink"> | string
+    organization_id?: StringFilter<"ChannelLink"> | string
+    user_id?: StringFilter<"ChannelLink"> | string
+    bot_id?: StringFilter<"ChannelLink"> | string
+    channel?: EnumExternalChannelFilter<"ChannelLink"> | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFilter<"ChannelLink"> | $Enums.ChannelLinkStatus
+    external_id?: StringNullableFilter<"ChannelLink"> | string | null
+    inbound_token?: StringNullableFilter<"ChannelLink"> | string | null
+    link_code?: StringNullableFilter<"ChannelLink"> | string | null
+    link_code_expires_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    conversation_id?: StringNullableFilter<"ChannelLink"> | string | null
+    last_message_at?: DateTimeNullableFilter<"ChannelLink"> | Date | string | null
+    created_at?: DateTimeFilter<"ChannelLink"> | Date | string
+    updated_at?: DateTimeFilter<"ChannelLink"> | Date | string
+  }
+
   export type UserCreateWithoutIdentitiesInput = {
     id?: string
     email: string
@@ -167944,6 +172120,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -167969,6 +172146,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutIdentitiesInput = {
@@ -168010,6 +172188,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -168035,6 +172214,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutIdentitiesInput = {
@@ -168092,6 +172272,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -168117,6 +172298,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutIdentitiesInput = {
@@ -168158,6 +172340,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -168183,6 +172366,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutSessionsInput = {
@@ -168224,6 +172408,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -168249,6 +172434,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSessionsInput = {
@@ -168290,6 +172476,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -168315,6 +172502,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSessionsInput = {
@@ -168333,6 +172521,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -168358,6 +172547,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -168425,6 +172615,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -168450,6 +172641,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -168491,6 +172683,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -168516,6 +172709,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type DeviceUpsertWithoutSessionsInput = {
@@ -168540,6 +172734,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -168565,6 +172760,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -168616,6 +172812,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -168641,6 +172838,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPassword_reset_tokensInput = {
@@ -168682,6 +172880,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -168707,6 +172906,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPassword_reset_tokensInput = {
@@ -168764,6 +172964,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -168789,6 +172990,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPassword_reset_tokensInput = {
@@ -168830,6 +173032,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -168855,6 +173058,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutDevicesInput = {
@@ -168896,6 +173100,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -168921,6 +173126,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevicesInput = {
@@ -168962,6 +173168,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -168987,6 +173194,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevicesInput = {
@@ -169099,6 +173307,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
     run: RunCreateNestedOneWithoutStepsInput
     connection?: ConnectionCreateNestedOneWithoutRun_stepsInput
     skill?: SkillCreateNestedOneWithoutRun_stepsInput
@@ -169122,6 +173334,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepCreateOrConnectWithoutDeviceInput = {
@@ -169262,6 +173478,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -169287,6 +173504,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevicesInput = {
@@ -169328,6 +173546,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -169353,6 +173572,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SessionUpsertWithWhereUniqueWithoutDeviceInput = {
@@ -169467,6 +173687,10 @@ export namespace Prisma {
     started_at?: DateTimeFilter<"RunStep"> | Date | string
     finished_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
     duration_ms?: IntNullableFilter<"RunStep"> | number | null
+    undo?: JsonNullableFilter<"RunStep">
+    undo_until?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_at?: DateTimeNullableFilter<"RunStep"> | Date | string | null
+    undone_by_id?: StringNullableFilter<"RunStep"> | string | null
   }
 
   export type NotificationDeliveryUpsertWithWhereUniqueWithoutDeviceInput = {
@@ -169528,6 +173752,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -169553,6 +173778,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -169592,6 +173818,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -169617,6 +173844,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -169640,6 +173868,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -169665,6 +173894,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -169704,6 +173934,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -169729,6 +173960,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -169780,6 +174012,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -169805,6 +174038,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutDevice_placesInput = {
@@ -169846,6 +174080,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -169871,6 +174106,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutDevice_placesInput = {
@@ -170008,6 +174244,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -170033,6 +174270,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutDevice_placesInput = {
@@ -170074,6 +174312,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -170099,6 +174338,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AutomationUpsertWithWhereUniqueWithoutDevice_placeInput = {
@@ -170156,6 +174396,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -170181,6 +174422,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSettingsInput = {
@@ -170222,6 +174464,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -170247,6 +174490,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSettingsInput = {
@@ -170328,6 +174572,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutDefault_for_usersInput = {
@@ -170404,6 +174649,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutDefault_for_usersInput = {
@@ -170461,6 +174707,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -170486,6 +174733,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSettingsInput = {
@@ -170527,6 +174775,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -170552,6 +174801,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutDefault_for_usersInput = {
@@ -170639,6 +174889,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutDefault_for_usersInput = {
@@ -170715,6 +174966,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type UserCreateWithoutNotification_prefsInput = {
@@ -170756,6 +175008,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -170781,6 +175034,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotification_prefsInput = {
@@ -170822,6 +175076,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -170847,6 +175102,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotification_prefsInput = {
@@ -170904,6 +175160,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -170929,6 +175186,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotification_prefsInput = {
@@ -170970,6 +175228,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -170995,6 +175254,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserCreateWithoutBot_connection_defaultsInput = {
@@ -171036,6 +175296,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -171061,6 +175322,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBot_connection_defaultsInput = {
@@ -171102,6 +175364,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -171127,6 +175390,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBot_connection_defaultsInput = {
@@ -171180,6 +175444,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutService_defaultsInput = {
@@ -171228,6 +175493,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutService_defaultsInput = {
@@ -171358,6 +175624,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -171383,6 +175650,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBot_connection_defaultsInput = {
@@ -171424,6 +175692,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -171449,6 +175718,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutService_defaultsInput = {
@@ -171508,6 +175778,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutService_defaultsInput = {
@@ -171556,6 +175827,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ConnectionUpsertWithoutUser_defaultsInput = {
@@ -171676,6 +175948,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -171701,6 +175974,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTool_permissionsInput = {
@@ -171742,6 +176016,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -171767,6 +176042,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTool_permissionsInput = {
@@ -171820,6 +176096,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutTool_permissionsInput = {
@@ -171868,6 +176145,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutTool_permissionsInput = {
@@ -171925,6 +176203,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -171950,6 +176229,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTool_permissionsInput = {
@@ -171991,6 +176271,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -172016,6 +176297,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutTool_permissionsInput = {
@@ -172075,6 +176357,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutTool_permissionsInput = {
@@ -172123,6 +176406,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type FileCreateWithoutOrg_logoInput = {
@@ -172241,6 +176525,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -172266,6 +176551,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutOwned_organizationsInput = {
@@ -172307,6 +176593,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -172332,6 +176619,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutOwned_organizationsInput = {
@@ -172392,6 +176680,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -172471,6 +176760,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -172504,6 +176794,7 @@ export namespace Prisma {
     id?: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutMembershipsInput
@@ -172514,6 +176805,7 @@ export namespace Prisma {
     user_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -172702,6 +176994,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutOrganizationInput = {
@@ -172778,6 +177071,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutOrganizationInput = {
@@ -172815,6 +177109,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutOrganizationInput = {
@@ -172842,6 +177137,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutOrganizationInput = {
@@ -172891,6 +177187,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -172931,6 +177228,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -173362,6 +177660,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutOrganizationInput = {
@@ -173400,6 +177699,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutOrganizationInput = {
@@ -174207,6 +178507,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ChannelLinkCreateWithoutOrganizationInput = {
+    id?: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    user: UserCreateNestedOneWithoutChannel_linksInput
+    bot: BotCreateNestedOneWithoutChannel_linksInput
+    conversation?: ConversationCreateNestedOneWithoutChannel_linksInput
+  }
+
+  export type ChannelLinkUncheckedCreateWithoutOrganizationInput = {
+    id?: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkCreateOrConnectWithoutOrganizationInput = {
+    where: ChannelLinkWhereUniqueInput
+    create: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ChannelLinkCreateManyOrganizationInputEnvelope = {
+    data: ChannelLinkCreateManyOrganizationInput | ChannelLinkCreateManyOrganizationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type FileUpsertWithoutOrg_logoInput = {
     update: XOR<FileUpdateWithoutOrg_logoInput, FileUncheckedUpdateWithoutOrg_logoInput>
     create: XOR<FileCreateWithoutOrg_logoInput, FileUncheckedCreateWithoutOrg_logoInput>
@@ -174340,6 +178682,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -174365,6 +178708,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutOwned_organizationsInput = {
@@ -174406,6 +178750,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -174431,6 +178776,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationSettingsUpsertWithoutOrganizationInput = {
@@ -174497,6 +178843,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -174576,6 +178923,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -175250,6 +179598,22 @@ export namespace Prisma {
     data: XOR<SavedWidgetUpdateManyMutationInput, SavedWidgetUncheckedUpdateManyWithoutOrganizationInput>
   }
 
+  export type ChannelLinkUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: ChannelLinkWhereUniqueInput
+    update: XOR<ChannelLinkUpdateWithoutOrganizationInput, ChannelLinkUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<ChannelLinkCreateWithoutOrganizationInput, ChannelLinkUncheckedCreateWithoutOrganizationInput>
+  }
+
+  export type ChannelLinkUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: ChannelLinkWhereUniqueInput
+    data: XOR<ChannelLinkUpdateWithoutOrganizationInput, ChannelLinkUncheckedUpdateWithoutOrganizationInput>
+  }
+
+  export type ChannelLinkUpdateManyWithWhereWithoutOrganizationInput = {
+    where: ChannelLinkScalarWhereInput
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyWithoutOrganizationInput>
+  }
+
   export type OrganizationCreateWithoutSettingsInput = {
     id?: string
     name: string
@@ -175296,6 +179660,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSettingsInput = {
@@ -175344,6 +179709,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSettingsInput = {
@@ -175463,6 +179829,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSettingsInput = {
@@ -175511,6 +179878,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AiModelUpsertWithoutOrg_defaultsInput = {
@@ -175620,6 +179988,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -175668,6 +180037,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -175714,6 +180084,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -175739,6 +180110,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -175780,6 +180152,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -175805,6 +180178,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -175869,6 +180243,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -175917,6 +180292,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutMembershipsInput = {
@@ -175969,6 +180345,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -175994,6 +180371,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -176035,6 +180413,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -176060,6 +180439,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutInvitationsInput = {
@@ -176108,6 +180488,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutInvitationsInput = {
@@ -176156,6 +180537,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutInvitationsInput = {
@@ -176202,6 +180584,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -176227,6 +180610,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvitations_sentInput = {
@@ -176268,6 +180652,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -176293,6 +180678,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvitations_sentInput = {
@@ -176339,6 +180725,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -176364,6 +180751,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutInvitations_acceptedInput = {
@@ -176405,6 +180793,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -176430,6 +180819,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutInvitations_acceptedInput = {
@@ -176494,6 +180884,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutInvitationsInput = {
@@ -176542,6 +180933,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutInvitations_sentInput = {
@@ -176594,6 +180986,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -176619,6 +181012,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvitations_sentInput = {
@@ -176660,6 +181054,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -176685,6 +181080,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type UserUpsertWithoutInvitations_acceptedInput = {
@@ -176737,6 +181133,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -176762,6 +181159,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutInvitations_acceptedInput = {
@@ -176803,6 +181201,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -176828,6 +181227,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type AiModelCreateWithoutFallbacks_forInput = {
@@ -177019,6 +181419,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutModelInput = {
@@ -177095,6 +181496,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutModelInput = {
@@ -177216,6 +181618,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -177295,6 +181698,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -177714,6 +182118,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFilter<"OrganizationSettings"> | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFilter<"OrganizationSettings"> | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFilter<"OrganizationSettings"> | boolean
+    voice_visual_input?: BoolFilter<"OrganizationSettings"> | boolean
     voice_mode_who?: EnumWhoCanFilter<"OrganizationSettings"> | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFilter<"OrganizationSettings"> | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFilter<"OrganizationSettings"> | boolean
@@ -177832,6 +182237,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAllowed_modelsInput = {
@@ -177880,6 +182286,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAllowed_modelsInput = {
@@ -177999,6 +182406,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAllowed_modelsInput = {
@@ -178047,6 +182455,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type AiModelUpsertWithoutOrg_allowedInput = {
@@ -178257,6 +182666,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutTemplateInput = {
@@ -178333,6 +182743,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutTemplateInput = {
@@ -178776,6 +183187,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAllowed_templatesInput = {
@@ -178824,6 +183236,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAllowed_templatesInput = {
@@ -178939,6 +183352,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAllowed_templatesInput = {
@@ -178987,6 +183401,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotTemplateUpsertWithoutOrganizationsInput = {
@@ -179092,6 +183507,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutBotsInput = {
@@ -179140,6 +183556,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutBotsInput = {
@@ -179186,6 +183603,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -179211,6 +183629,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutBots_createdInput = {
@@ -179252,6 +183671,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -179277,6 +183697,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutBots_createdInput = {
@@ -179409,6 +183830,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutDuplicatesInput = {
@@ -179485,6 +183907,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutDuplicatesInput = {
@@ -179566,6 +183989,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutDuplicated_fromInput = {
@@ -179642,6 +184066,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutDuplicated_fromInput = {
@@ -180086,6 +184511,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutLead_botInput = {
@@ -180113,6 +184539,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutLead_botInput = {
@@ -180132,6 +184559,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -180172,6 +184600,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -180753,6 +185182,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
     user: UserCreateNestedOneWithoutSettingsInput
@@ -180813,6 +185243,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -180951,6 +185382,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ChannelLinkCreateWithoutBotInput = {
+    id?: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutChannel_linksInput
+    user: UserCreateNestedOneWithoutChannel_linksInput
+    conversation?: ConversationCreateNestedOneWithoutChannel_linksInput
+  }
+
+  export type ChannelLinkUncheckedCreateWithoutBotInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkCreateOrConnectWithoutBotInput = {
+    where: ChannelLinkWhereUniqueInput
+    create: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput>
+  }
+
+  export type ChannelLinkCreateManyBotInputEnvelope = {
+    data: ChannelLinkCreateManyBotInput | ChannelLinkCreateManyBotInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutBotsInput = {
     update: XOR<OrganizationUpdateWithoutBotsInput, OrganizationUncheckedUpdateWithoutBotsInput>
     create: XOR<OrganizationCreateWithoutBotsInput, OrganizationUncheckedCreateWithoutBotsInput>
@@ -181008,6 +185481,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutBotsInput = {
@@ -181056,6 +185530,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutBots_createdInput = {
@@ -181108,6 +185583,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -181133,6 +185609,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutBots_createdInput = {
@@ -181174,6 +185651,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -181199,6 +185677,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotTemplateUpsertWithoutBotsInput = {
@@ -181343,6 +185822,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutDuplicatesInput = {
@@ -181419,6 +185899,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUpsertWithWhereUniqueWithoutDuplicated_fromInput = {
@@ -182042,6 +186523,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFilter<"UserSettings"> | boolean
     sounds_enabled?: BoolFilter<"UserSettings"> | boolean
     auto_delete_conversations?: EnumConversationRetentionFilter<"UserSettings"> | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFilter<"UserSettings"> | boolean
     created_at?: DateTimeFilter<"UserSettings"> | Date | string
     updated_at?: DateTimeFilter<"UserSettings"> | Date | string
   }
@@ -182101,6 +186583,22 @@ export namespace Prisma {
   export type ArtifactCommentUpdateManyWithWhereWithoutMentioned_botInput = {
     where: ArtifactCommentScalarWhereInput
     data: XOR<ArtifactCommentUpdateManyMutationInput, ArtifactCommentUncheckedUpdateManyWithoutMentioned_botInput>
+  }
+
+  export type ChannelLinkUpsertWithWhereUniqueWithoutBotInput = {
+    where: ChannelLinkWhereUniqueInput
+    update: XOR<ChannelLinkUpdateWithoutBotInput, ChannelLinkUncheckedUpdateWithoutBotInput>
+    create: XOR<ChannelLinkCreateWithoutBotInput, ChannelLinkUncheckedCreateWithoutBotInput>
+  }
+
+  export type ChannelLinkUpdateWithWhereUniqueWithoutBotInput = {
+    where: ChannelLinkWhereUniqueInput
+    data: XOR<ChannelLinkUpdateWithoutBotInput, ChannelLinkUncheckedUpdateWithoutBotInput>
+  }
+
+  export type ChannelLinkUpdateManyWithWhereWithoutBotInput = {
+    where: ChannelLinkScalarWhereInput
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyWithoutBotInput>
   }
 
   export type BotCreateWithoutApproval_rulesInput = {
@@ -182177,6 +186675,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutApproval_rulesInput = {
@@ -182253,6 +186752,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutApproval_rulesInput = {
@@ -182345,6 +186845,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutApproval_rulesInput = {
@@ -182421,6 +186922,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotCreateWithoutBot_connectionsInput = {
@@ -182497,6 +186999,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutBot_connectionsInput = {
@@ -182573,6 +187076,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutBot_connectionsInput = {
@@ -182738,6 +187242,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutBot_connectionsInput = {
@@ -182814,6 +187319,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ConnectionUpsertWithoutBot_connectionsInput = {
@@ -182969,6 +187475,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutBot_tool_serversInput = {
@@ -183045,6 +187552,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutBot_tool_serversInput = {
@@ -183180,6 +187688,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutBot_tool_serversInput = {
@@ -183256,6 +187765,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ToolServerUpsertWithoutBotsInput = {
@@ -183381,6 +187891,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutBot_credentialsInput = {
@@ -183457,6 +187968,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutBot_credentialsInput = {
@@ -183610,6 +188122,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutBot_credentialsInput = {
@@ -183686,6 +188199,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type CredentialUpsertWithoutBotsInput = {
@@ -183829,6 +188343,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutBot_skillsInput = {
@@ -183905,6 +188420,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutBot_skillsInput = {
@@ -184064,6 +188580,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutBot_skillsInput = {
@@ -184140,6 +188657,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type SkillUpsertWithoutBotsInput = {
@@ -184261,6 +188779,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutKnowledge_itemsInput = {
@@ -184309,6 +188828,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutKnowledge_itemsInput = {
@@ -184390,6 +188910,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutKnowledge_itemsInput = {
@@ -184466,6 +188987,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutKnowledge_itemsInput = {
@@ -184590,6 +189112,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -184614,6 +189137,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutKnowledge_itemsInput = {
@@ -184656,6 +189180,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -184680,6 +189205,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutKnowledge_itemsInput = {
@@ -184798,6 +189324,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutKnowledge_itemsInput = {
@@ -184846,6 +189373,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutKnowledge_itemsInput = {
@@ -184933,6 +189461,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutKnowledge_itemsInput = {
@@ -185009,6 +189538,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type FileUpsertWithoutKnowledge_itemInput = {
@@ -185145,6 +189675,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -185169,6 +189700,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledge_itemsInput = {
@@ -185211,6 +189743,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -185235,6 +189768,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type KnowledgeLinkUpsertWithWhereUniqueWithoutKnowledge_itemInput = {
@@ -185462,6 +189996,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -185486,6 +190021,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutKnowledge_linksInput = {
@@ -185528,6 +190064,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -185552,6 +190089,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutKnowledge_linksInput = {
@@ -185661,6 +190199,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -185685,6 +190224,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutKnowledge_linksInput = {
@@ -185727,6 +190267,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -185751,6 +190292,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutMemoriesInput = {
@@ -185799,6 +190341,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMemoriesInput = {
@@ -185847,6 +190390,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMemoriesInput = {
@@ -185928,6 +190472,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutMemoriesInput = {
@@ -186004,6 +190549,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutMemoriesInput = {
@@ -186051,6 +190597,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -186075,6 +190622,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMemoriesInput = {
@@ -186117,6 +190665,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -186141,6 +190690,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMemoriesInput = {
@@ -186173,6 +190723,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutMemoriesInput = {
@@ -186200,6 +190751,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutMemoriesInput = {
@@ -186264,6 +190816,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMemoriesInput = {
@@ -186312,6 +190865,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutMemoriesInput = {
@@ -186399,6 +190953,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutMemoriesInput = {
@@ -186475,6 +191030,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type UserUpsertWithoutMemoriesInput = {
@@ -186528,6 +191084,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -186552,6 +191109,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMemoriesInput = {
@@ -186594,6 +191152,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -186618,6 +191177,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutMemoriesInput = {
@@ -186656,6 +191216,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMemoriesInput = {
@@ -186683,6 +191244,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type OrganizationCreateWithoutFoldersInput = {
@@ -186731,6 +191293,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFoldersInput = {
@@ -186779,6 +191342,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFoldersInput = {
@@ -186825,6 +191389,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -186850,6 +191415,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversation_foldersInput = {
@@ -186891,6 +191457,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -186916,6 +191483,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversation_foldersInput = {
@@ -187018,6 +191586,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFoldersInput = {
@@ -187066,6 +191635,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutConversation_foldersInput = {
@@ -187118,6 +191688,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -187143,6 +191714,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversation_foldersInput = {
@@ -187184,6 +191756,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -187209,6 +191782,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationParticipantUpsertWithWhereUniqueWithoutFolderInput = {
@@ -187273,6 +191847,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutConversationsInput = {
@@ -187321,6 +191896,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutConversationsInput = {
@@ -187402,6 +191978,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutLead_conversationsInput = {
@@ -187478,6 +192055,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutLead_conversationsInput = {
@@ -187524,6 +192102,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -187549,6 +192128,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConversations_createdInput = {
@@ -187590,6 +192170,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -187615,6 +192196,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConversations_createdInput = {
@@ -187667,6 +192249,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -187707,6 +192290,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -188016,6 +192600,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutConversationInput = {
@@ -188054,6 +192639,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutConversationInput = {
@@ -188342,6 +192928,48 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ChannelLinkCreateWithoutConversationInput = {
+    id?: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutChannel_linksInput
+    user: UserCreateNestedOneWithoutChannel_linksInput
+    bot: BotCreateNestedOneWithoutChannel_linksInput
+  }
+
+  export type ChannelLinkUncheckedCreateWithoutConversationInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkCreateOrConnectWithoutConversationInput = {
+    where: ChannelLinkWhereUniqueInput
+    create: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput>
+  }
+
+  export type ChannelLinkCreateManyConversationInputEnvelope = {
+    data: ChannelLinkCreateManyConversationInput | ChannelLinkCreateManyConversationInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutConversationsInput = {
     update: XOR<OrganizationUpdateWithoutConversationsInput, OrganizationUncheckedUpdateWithoutConversationsInput>
     create: XOR<OrganizationCreateWithoutConversationsInput, OrganizationUncheckedCreateWithoutConversationsInput>
@@ -188399,6 +193027,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutConversationsInput = {
@@ -188447,6 +193076,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutLead_conversationsInput = {
@@ -188534,6 +193164,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutLead_conversationsInput = {
@@ -188610,6 +193241,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type UserUpsertWithoutConversations_createdInput = {
@@ -188662,6 +193294,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -188687,6 +193320,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConversations_createdInput = {
@@ -188728,6 +193362,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -188753,6 +193388,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationParticipantUpsertWithWhereUniqueWithoutConversationInput = {
@@ -188931,6 +193567,22 @@ export namespace Prisma {
     data: XOR<SavedWidgetUpdateManyMutationInput, SavedWidgetUncheckedUpdateManyWithoutConversationInput>
   }
 
+  export type ChannelLinkUpsertWithWhereUniqueWithoutConversationInput = {
+    where: ChannelLinkWhereUniqueInput
+    update: XOR<ChannelLinkUpdateWithoutConversationInput, ChannelLinkUncheckedUpdateWithoutConversationInput>
+    create: XOR<ChannelLinkCreateWithoutConversationInput, ChannelLinkUncheckedCreateWithoutConversationInput>
+  }
+
+  export type ChannelLinkUpdateWithWhereUniqueWithoutConversationInput = {
+    where: ChannelLinkWhereUniqueInput
+    data: XOR<ChannelLinkUpdateWithoutConversationInput, ChannelLinkUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type ChannelLinkUpdateManyWithWhereWithoutConversationInput = {
+    where: ChannelLinkScalarWhereInput
+    data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyWithoutConversationInput>
+  }
+
   export type ConversationCreateWithoutParticipantsInput = {
     id?: string
     type: $Enums.ConversationType
@@ -188956,6 +193608,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutParticipantsInput = {
@@ -188983,6 +193636,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutParticipantsInput = {
@@ -189029,6 +193683,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -189054,6 +193709,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutParticipationsInput = {
@@ -189095,6 +193751,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -189120,6 +193777,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutParticipationsInput = {
@@ -189201,6 +193859,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutParticipationsInput = {
@@ -189277,6 +193936,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutParticipationsInput = {
@@ -189345,6 +194005,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutParticipantsInput = {
@@ -189372,6 +194033,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutParticipationsInput = {
@@ -189424,6 +194086,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -189449,6 +194112,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutParticipationsInput = {
@@ -189490,6 +194154,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -189515,6 +194180,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutParticipationsInput = {
@@ -189602,6 +194268,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutParticipationsInput = {
@@ -189678,6 +194345,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ConversationFolderUpsertWithoutParticipantsInput = {
@@ -189757,6 +194425,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutMessagesInput = {
@@ -189805,6 +194474,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutMessagesInput = {
@@ -189837,6 +194507,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -189864,6 +194535,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutMessagesInput = {
@@ -189910,6 +194582,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -189935,6 +194608,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutMessagesInput = {
@@ -189976,6 +194650,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -190001,6 +194676,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutMessagesInput = {
@@ -190082,6 +194758,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutMessagesInput = {
@@ -190158,6 +194835,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutMessagesInput = {
@@ -190261,6 +194939,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190302,6 +194981,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -190340,6 +195020,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190381,6 +195062,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     reply_to_message_id?: string | null
     branch_from_message_id?: string | null
@@ -190424,6 +195106,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190465,6 +195148,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -190503,6 +195187,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190544,6 +195229,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     branch_from_message_id?: string | null
@@ -190587,6 +195273,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190628,6 +195315,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -190666,6 +195354,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -190707,6 +195396,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -190782,6 +195472,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -190807,6 +195498,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutPinned_messagesInput = {
@@ -190848,6 +195540,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -190873,6 +195566,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutPinned_messagesInput = {
@@ -191102,6 +195796,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutMessageInput = {
@@ -191140,6 +195835,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutMessageInput = {
@@ -191303,6 +195999,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutMessagesInput = {
@@ -191351,6 +196048,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ConversationUpsertWithoutMessagesInput = {
@@ -191389,6 +196087,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -191416,6 +196115,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutMessagesInput = {
@@ -191468,6 +196168,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -191493,6 +196194,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutMessagesInput = {
@@ -191534,6 +196236,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -191559,6 +196262,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutMessagesInput = {
@@ -191646,6 +196350,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutMessagesInput = {
@@ -191722,6 +196427,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type RunUpsertWithoutMessagesInput = {
@@ -191837,6 +196543,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -191878,6 +196585,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191938,6 +196646,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -191979,6 +196688,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192039,6 +196749,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -192080,6 +196791,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192172,6 +196884,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -192197,6 +196910,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutPinned_messagesInput = {
@@ -192238,6 +196952,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -192263,6 +196978,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageFileUpsertWithWhereUniqueWithoutMessageInput = {
@@ -192432,6 +197148,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -192473,6 +197190,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -192599,6 +197317,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -192640,6 +197359,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192756,6 +197476,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -192797,6 +197518,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -192867,6 +197589,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -192892,6 +197615,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutReactionsInput = {
@@ -192933,6 +197657,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -192958,6 +197683,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutReactionsInput = {
@@ -192983,6 +197709,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -193024,6 +197751,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -193100,6 +197828,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -193125,6 +197854,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutReactionsInput = {
@@ -193166,6 +197896,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -193191,6 +197922,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageCreateWithoutMentionsInput = {
@@ -193200,6 +197932,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -193241,6 +197974,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -193357,6 +198091,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -193398,6 +198133,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -193504,6 +198240,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -193545,6 +198282,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -193594,6 +198332,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -193635,6 +198374,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -193707,6 +198447,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSaved_widgetsInput = {
@@ -193755,6 +198496,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSaved_widgetsInput = {
@@ -193801,6 +198543,7 @@ export namespace Prisma {
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -193826,6 +198569,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSaved_widgetsInput = {
@@ -193867,6 +198611,7 @@ export namespace Prisma {
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -193892,6 +198637,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSaved_widgetsInput = {
@@ -193924,6 +198670,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutConversationInput
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutSaved_widgetsInput = {
@@ -193951,6 +198698,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutConversationInput
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutSaved_widgetsInput = {
@@ -193965,6 +198713,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -194006,6 +198755,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -194094,6 +198844,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSaved_widgetsInput = {
@@ -194142,6 +198893,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutSaved_widgetsInput = {
@@ -194194,6 +198946,7 @@ export namespace Prisma {
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -194219,6 +198972,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSaved_widgetsInput = {
@@ -194260,6 +199014,7 @@ export namespace Prisma {
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -194285,6 +199040,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutSaved_widgetsInput = {
@@ -194323,6 +199079,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutConversationNestedInput
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutSaved_widgetsInput = {
@@ -194350,6 +199107,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutConversationNestedInput
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutSaved_widgetsInput = {
@@ -194370,6 +199128,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -194411,6 +199170,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -194483,6 +199243,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutRunsInput = {
@@ -194531,6 +199292,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutRunsInput = {
@@ -194563,6 +199325,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutRunsInput = {
@@ -194590,6 +199353,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutRunsInput = {
@@ -194671,6 +199435,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutRunsInput = {
@@ -194747,6 +199512,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutRunsInput = {
@@ -194794,6 +199560,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
     memories?: MemoryCreateNestedManyWithoutUserInput
@@ -194818,6 +199585,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutRunsInput = {
@@ -194860,6 +199628,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
     memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
@@ -194884,6 +199653,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutRunsInput = {
@@ -194898,6 +199668,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -194939,6 +199710,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -195227,6 +199999,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutConsultationsInput = {
@@ -195303,6 +200076,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutConsultationsInput = {
@@ -195316,6 +200090,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -195333,6 +200108,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -195519,6 +200295,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -195560,6 +200337,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: string | null
     reply_to_message_id?: string | null
     branch_from_message_id?: string | null
@@ -195611,6 +200389,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
     connection?: ConnectionCreateNestedOneWithoutRun_stepsInput
     device?: DeviceCreateNestedOneWithoutRun_stepsInput
     skill?: SkillCreateNestedOneWithoutRun_stepsInput
@@ -195634,6 +200416,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepCreateOrConnectWithoutRunInput = {
@@ -196053,6 +200839,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutRunsInput = {
@@ -196101,6 +200888,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ConversationUpsertWithoutRunsInput = {
@@ -196139,6 +200927,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutRunsInput = {
@@ -196166,6 +200955,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type BotUpsertWithoutRunsInput = {
@@ -196253,6 +201043,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutRunsInput = {
@@ -196329,6 +201120,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type UserUpsertWithoutRunsInput = {
@@ -196382,6 +201174,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
     memories?: MemoryUpdateManyWithoutUserNestedInput
@@ -196406,6 +201199,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutRunsInput = {
@@ -196448,6 +201242,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
@@ -196472,6 +201267,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type MessageUpsertWithoutTriggered_runsInput = {
@@ -196492,6 +201288,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -196533,6 +201330,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -196755,6 +201553,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutConsultationsInput = {
@@ -196831,6 +201630,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type AutomationRunUpsertWithoutRunInput = {
@@ -196850,6 +201650,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -196867,6 +201668,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -197395,6 +202197,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -197420,6 +202223,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -197700,6 +202504,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -197725,6 +202530,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -197856,6 +202662,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutApprovalsInput = {
@@ -197904,6 +202711,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutApprovalsInput = {
@@ -198025,6 +202833,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutApprovalsInput = {
@@ -198052,6 +202861,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutApprovalsInput = {
@@ -198066,6 +202876,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -198107,6 +202918,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -198212,6 +203024,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutApprovalsInput = {
@@ -198288,6 +203101,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutApprovalsInput = {
@@ -198335,6 +203149,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
     memories?: MemoryCreateNestedManyWithoutUserInput
@@ -198359,6 +203174,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutApprovals_resolvedInput = {
@@ -198401,6 +203217,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
     memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
@@ -198425,6 +203242,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutApprovals_resolvedInput = {
@@ -198489,6 +203307,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutApprovalsInput = {
@@ -198537,6 +203356,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type RunUpsertWithoutApprovalsInput = {
@@ -198670,6 +203490,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutApprovalsInput = {
@@ -198697,6 +203518,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutApprovalsInput = {
@@ -198717,6 +203539,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -198758,6 +203581,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -198869,6 +203693,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutApprovalsInput = {
@@ -198945,6 +203770,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type UserUpsertWithoutApprovals_resolvedInput = {
@@ -198998,6 +203824,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
     memories?: MemoryUpdateManyWithoutUserNestedInput
@@ -199022,6 +203849,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutApprovals_resolvedInput = {
@@ -199064,6 +203892,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
@@ -199088,6 +203917,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutVoice_sessionsInput = {
@@ -199136,6 +203966,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutVoice_sessionsInput = {
@@ -199184,6 +204015,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutVoice_sessionsInput = {
@@ -199216,6 +204048,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutVoice_sessionsInput = {
@@ -199243,6 +204076,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutVoice_sessionsInput = {
@@ -199290,6 +204124,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     memories?: MemoryCreateNestedManyWithoutUserInput
@@ -199314,6 +204149,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutVoice_sessionsInput = {
@@ -199356,6 +204192,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
@@ -199380,6 +204217,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutVoice_sessionsInput = {
@@ -199461,6 +204299,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutVoice_sessionsInput = {
@@ -199537,6 +204376,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutVoice_sessionsInput = {
@@ -199695,6 +204535,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutVoice_sessionsInput = {
@@ -199743,6 +204584,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type ConversationUpsertWithoutVoice_sessionsInput = {
@@ -199781,6 +204623,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutVoice_sessionsInput = {
@@ -199808,6 +204651,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutVoice_sessionsInput = {
@@ -199861,6 +204705,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     memories?: MemoryUpdateManyWithoutUserNestedInput
@@ -199885,6 +204730,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutVoice_sessionsInput = {
@@ -199927,6 +204773,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
@@ -199951,6 +204798,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutVoice_sessionsInput = {
@@ -200038,6 +204886,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutVoice_sessionsInput = {
@@ -200114,6 +204963,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type RunUpsertWithWhereUniqueWithoutVoice_sessionInput = {
@@ -200178,6 +205028,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSkillsInput = {
@@ -200226,6 +205077,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSkillsInput = {
@@ -200273,6 +205125,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -200297,6 +205150,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSkills_ownedInput = {
@@ -200339,6 +205193,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -200363,6 +205218,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSkills_ownedInput = {
@@ -200603,6 +205459,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
     run: RunCreateNestedOneWithoutStepsInput
     connection?: ConnectionCreateNestedOneWithoutRun_stepsInput
     device?: DeviceCreateNestedOneWithoutRun_stepsInput
@@ -200626,6 +205486,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepCreateOrConnectWithoutSkillInput = {
@@ -200819,6 +205683,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSkillsInput = {
@@ -200867,6 +205732,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutSkills_ownedInput = {
@@ -200920,6 +205786,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -200944,6 +205811,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSkills_ownedInput = {
@@ -200986,6 +205854,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -201010,6 +205879,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SkillVersionUpsertWithWhereUniqueWithoutSkillInput = {
@@ -201288,6 +206158,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -201312,6 +206183,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSkill_versionsInput = {
@@ -201354,6 +206226,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -201378,6 +206251,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSkill_versionsInput = {
@@ -201509,6 +206383,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -201533,6 +206408,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSkill_versionsInput = {
@@ -201575,6 +206451,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -201599,6 +206476,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SkillCreateWithoutSharesInput = {
@@ -201708,6 +206586,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -201732,6 +206611,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutSkill_sharesInput = {
@@ -201774,6 +206654,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -201798,6 +206679,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutSkill_sharesInput = {
@@ -201929,6 +206811,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -201953,6 +206836,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutSkill_sharesInput = {
@@ -201995,6 +206879,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -202019,6 +206904,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type SkillCreateWithoutFilesInput = {
@@ -202367,6 +207253,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutStarter_skillsInput = {
@@ -202415,6 +207302,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutStarter_skillsInput = {
@@ -202546,6 +207434,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutStarter_skillsInput = {
@@ -202594,6 +207483,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type SkillUpsertWithoutStarter_orgsInput = {
@@ -202715,6 +207605,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutArtifactsInput = {
@@ -202763,6 +207654,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutArtifactsInput = {
@@ -202810,6 +207702,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -202834,6 +207727,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutArtifacts_ownedInput = {
@@ -202876,6 +207770,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -202900,6 +207795,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutArtifacts_ownedInput = {
@@ -202932,6 +207828,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutArtifactsInput = {
@@ -202959,6 +207856,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutArtifactsInput = {
@@ -202973,6 +207871,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: number
     model_id?: string | null
     is_pinned?: boolean
@@ -203014,6 +207913,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -203081,6 +207981,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutDuplicatesInput = {
@@ -203119,6 +208020,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutDuplicatesInput = {
@@ -203162,6 +208064,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutDuplicated_fromInput = {
@@ -203200,6 +208103,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutDuplicated_fromInput = {
@@ -203582,6 +208486,30 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ArtifactDataGrantCreateWithoutArtifactInput = {
+    id?: string
+    service_key: string
+    created_at?: Date | string
+    user: UserCreateNestedOneWithoutArtifact_data_grantsInput
+  }
+
+  export type ArtifactDataGrantUncheckedCreateWithoutArtifactInput = {
+    id?: string
+    user_id: string
+    service_key: string
+    created_at?: Date | string
+  }
+
+  export type ArtifactDataGrantCreateOrConnectWithoutArtifactInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    create: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput>
+  }
+
+  export type ArtifactDataGrantCreateManyArtifactInputEnvelope = {
+    data: ArtifactDataGrantCreateManyArtifactInput | ArtifactDataGrantCreateManyArtifactInput[]
+    skipDuplicates?: boolean
+  }
+
   export type OrganizationUpsertWithoutArtifactsInput = {
     update: XOR<OrganizationUpdateWithoutArtifactsInput, OrganizationUncheckedUpdateWithoutArtifactsInput>
     create: XOR<OrganizationCreateWithoutArtifactsInput, OrganizationUncheckedCreateWithoutArtifactsInput>
@@ -203639,6 +208567,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutArtifactsInput = {
@@ -203687,6 +208616,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutArtifacts_ownedInput = {
@@ -203740,6 +208670,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -203764,6 +208695,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtifacts_ownedInput = {
@@ -203806,6 +208738,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -203830,6 +208763,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutArtifactsInput = {
@@ -203868,6 +208802,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutArtifactsInput = {
@@ -203895,6 +208830,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutArtifactsInput = {
@@ -203915,6 +208851,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -203956,6 +208893,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -204029,6 +208967,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutDuplicatesInput = {
@@ -204067,6 +209006,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUpsertWithWhereUniqueWithoutDuplicated_fromInput = {
@@ -204302,6 +209242,22 @@ export namespace Prisma {
     data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutArtifactInput>
   }
 
+  export type ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    update: XOR<ArtifactDataGrantUpdateWithoutArtifactInput, ArtifactDataGrantUncheckedUpdateWithoutArtifactInput>
+    create: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput>
+  }
+
+  export type ArtifactDataGrantUpdateWithWhereUniqueWithoutArtifactInput = {
+    where: ArtifactDataGrantWhereUniqueInput
+    data: XOR<ArtifactDataGrantUpdateWithoutArtifactInput, ArtifactDataGrantUncheckedUpdateWithoutArtifactInput>
+  }
+
+  export type ArtifactDataGrantUpdateManyWithWhereWithoutArtifactInput = {
+    where: ArtifactDataGrantScalarWhereInput
+    data: XOR<ArtifactDataGrantUpdateManyMutationInput, ArtifactDataGrantUncheckedUpdateManyWithoutArtifactInput>
+  }
+
   export type ArtifactCreateWithoutVersionsInput = {
     id?: string
     title: string
@@ -204338,6 +209294,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutVersionsInput = {
@@ -204376,6 +209333,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutVersionsInput = {
@@ -204423,6 +209381,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -204447,6 +209406,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutArtifact_versionsInput = {
@@ -204489,6 +209449,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -204513,6 +209474,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutArtifact_versionsInput = {
@@ -204645,6 +209607,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutCurrent_versionInput = {
@@ -204683,6 +209646,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutCurrent_versionInput = {
@@ -204726,6 +209690,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutDraft_versionInput = {
@@ -204764,6 +209729,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutDraft_versionInput = {
@@ -204818,6 +209784,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutVersionsInput = {
@@ -204856,6 +209823,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type UserUpsertWithoutArtifact_versionsInput = {
@@ -204909,6 +209877,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -204933,6 +209902,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtifact_versionsInput = {
@@ -204975,6 +209945,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -204999,6 +209970,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type RunUpsertWithoutArtifact_versionsInput = {
@@ -205143,6 +210115,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutCurrent_versionInput = {
@@ -205181,6 +210154,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUpsertWithoutDraft_versionInput = {
@@ -205230,6 +210204,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutDraft_versionInput = {
@@ -205268,6 +210243,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactCreateWithoutSharesInput = {
@@ -205306,6 +210282,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutSharesInput = {
@@ -205344,6 +210321,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutSharesInput = {
@@ -205391,6 +210369,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -205415,6 +210394,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutArtifact_sharesInput = {
@@ -205457,6 +210437,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -205481,6 +210462,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutArtifact_sharesInput = {
@@ -205535,6 +210517,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutSharesInput = {
@@ -205573,6 +210556,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type UserUpsertWithoutArtifact_sharesInput = {
@@ -205626,6 +210610,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -205650,6 +210635,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtifact_sharesInput = {
@@ -205692,6 +210678,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -205716,6 +210703,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ArtifactCreateWithoutCommentsInput = {
@@ -205754,6 +210742,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutCommentsInput = {
@@ -205792,6 +210781,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutCommentsInput = {
@@ -205839,6 +210829,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -205863,6 +210854,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutArtifact_commentsInput = {
@@ -205905,6 +210897,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -205929,6 +210922,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutArtifact_commentsInput = {
@@ -206081,6 +211075,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutArtifact_comment_mentionsInput = {
@@ -206157,6 +211152,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutArtifact_comment_mentionsInput = {
@@ -206211,6 +211207,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutCommentsInput = {
@@ -206249,6 +211246,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type UserUpsertWithoutArtifact_commentsInput = {
@@ -206302,6 +211300,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -206326,6 +211325,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtifact_commentsInput = {
@@ -206368,6 +211368,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -206392,6 +211393,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ArtifactCommentUpsertWithoutRepliesInput = {
@@ -206534,6 +211536,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutArtifact_comment_mentionsInput = {
@@ -206610,6 +211613,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ArtifactCreateWithoutRecordsInput = {
@@ -206648,6 +211652,7 @@ export namespace Prisma {
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutRecordsInput = {
@@ -206686,6 +211691,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutRecordsInput = {
@@ -206740,6 +211746,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutRecordsInput = {
@@ -206778,9 +211785,10 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
-  export type ArtifactCreateWithoutReportsInput = {
+  export type ArtifactCreateWithoutData_grantsInput = {
     id?: string
     title: string
     slug: string
@@ -206814,11 +211822,12 @@ export namespace Prisma {
     shares?: ArtifactShareCreateNestedManyWithoutArtifactInput
     comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
+    reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
   }
 
-  export type ArtifactUncheckedCreateWithoutReportsInput = {
+  export type ArtifactUncheckedCreateWithoutData_grantsInput = {
     id?: string
     organization_id: string
     owner_id?: string | null
@@ -206852,16 +211861,17 @@ export namespace Prisma {
     shares?: ArtifactShareUncheckedCreateNestedManyWithoutArtifactInput
     comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
+    reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
   }
 
-  export type ArtifactCreateOrConnectWithoutReportsInput = {
+  export type ArtifactCreateOrConnectWithoutData_grantsInput = {
     where: ArtifactWhereUniqueInput
-    create: XOR<ArtifactCreateWithoutReportsInput, ArtifactUncheckedCreateWithoutReportsInput>
+    create: XOR<ArtifactCreateWithoutData_grantsInput, ArtifactUncheckedCreateWithoutData_grantsInput>
   }
 
-  export type UserCreateWithoutArtifact_reportsInput = {
+  export type UserCreateWithoutArtifact_data_grantsInput = {
     id?: string
     email: string
     phone?: string | null
@@ -206912,6 +211922,7 @@ export namespace Prisma {
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutCreated_byInput
     artifact_shares?: ArtifactShareCreateNestedManyWithoutUserInput
     artifact_comments?: ArtifactCommentCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportCreateNestedManyWithoutReporterInput
     connections?: ConnectionCreateNestedManyWithoutOwnerInput
     credentials?: CredentialCreateNestedManyWithoutOwnerInput
     credential_events?: CredentialEventCreateNestedManyWithoutActor_userInput
@@ -206925,9 +211936,10 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutArtifact_reportsInput = {
+  export type UserUncheckedCreateWithoutArtifact_data_grantsInput = {
     id?: string
     email: string
     phone?: string | null
@@ -206978,6 +211990,7 @@ export namespace Prisma {
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutCreated_byInput
     artifact_shares?: ArtifactShareUncheckedCreateNestedManyWithoutUserInput
     artifact_comments?: ArtifactCommentUncheckedCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportUncheckedCreateNestedManyWithoutReporterInput
     connections?: ConnectionUncheckedCreateNestedManyWithoutOwnerInput
     credentials?: CredentialUncheckedCreateNestedManyWithoutOwnerInput
     credential_events?: CredentialEventUncheckedCreateNestedManyWithoutActor_userInput
@@ -206991,6 +212004,467 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutArtifact_data_grantsInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutArtifact_data_grantsInput, UserUncheckedCreateWithoutArtifact_data_grantsInput>
+  }
+
+  export type ArtifactUpsertWithoutData_grantsInput = {
+    update: XOR<ArtifactUpdateWithoutData_grantsInput, ArtifactUncheckedUpdateWithoutData_grantsInput>
+    create: XOR<ArtifactCreateWithoutData_grantsInput, ArtifactUncheckedCreateWithoutData_grantsInput>
+    where?: ArtifactWhereInput
+  }
+
+  export type ArtifactUpdateToOneWithWhereWithoutData_grantsInput = {
+    where?: ArtifactWhereInput
+    data: XOR<ArtifactUpdateWithoutData_grantsInput, ArtifactUncheckedUpdateWithoutData_grantsInput>
+  }
+
+  export type ArtifactUpdateWithoutData_grantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    type?: EnumArtifactTypeFieldUpdateOperationsInput | $Enums.ArtifactType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sharing_level?: EnumArtifactSharingLevelFieldUpdateOperationsInput | $Enums.ArtifactSharingLevel
+    public_enabled?: BoolFieldUpdateOperationsInput | boolean
+    public_password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    public_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allow_search_engines?: BoolFieldUpdateOperationsInput | boolean
+    allow_embedding?: BoolFieldUpdateOperationsInput | boolean
+    public_ai_enabled?: BoolFieldUpdateOperationsInput | boolean
+    public_uploads_enabled?: BoolFieldUpdateOperationsInput | boolean
+    review_before_publish?: BoolFieldUpdateOperationsInput | boolean
+    view_count?: IntFieldUpdateOperationsInput | number
+    use_count?: IntFieldUpdateOperationsInput | number
+    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
+    taken_down_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutArtifactsNestedInput
+    owner?: UserUpdateOneWithoutArtifacts_ownedNestedInput
+    conversation?: ConversationUpdateOneWithoutArtifactsNestedInput
+    message?: MessageUpdateOneWithoutArtifactsNestedInput
+    duplicated_from?: ArtifactUpdateOneWithoutDuplicatesNestedInput
+    duplicates?: ArtifactUpdateManyWithoutDuplicated_fromNestedInput
+    current_version?: ArtifactVersionUpdateOneWithoutCurrent_ofNestedInput
+    draft_version?: ArtifactVersionUpdateOneWithoutDraft_ofNestedInput
+    versions?: ArtifactVersionUpdateManyWithoutArtifactNestedInput
+    shares?: ArtifactShareUpdateManyWithoutArtifactNestedInput
+    comments?: ArtifactCommentUpdateManyWithoutArtifactNestedInput
+    records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
+    reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
+    files?: FileUpdateManyWithoutArtifactNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+  }
+
+  export type ArtifactUncheckedUpdateWithoutData_grantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    owner_id?: NullableStringFieldUpdateOperationsInput | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    message_id?: NullableStringFieldUpdateOperationsInput | string | null
+    duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    title?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    type?: EnumArtifactTypeFieldUpdateOperationsInput | $Enums.ArtifactType
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    sharing_level?: EnumArtifactSharingLevelFieldUpdateOperationsInput | $Enums.ArtifactSharingLevel
+    public_enabled?: BoolFieldUpdateOperationsInput | boolean
+    public_password_hash?: NullableStringFieldUpdateOperationsInput | string | null
+    public_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    allow_search_engines?: BoolFieldUpdateOperationsInput | boolean
+    allow_embedding?: BoolFieldUpdateOperationsInput | boolean
+    public_ai_enabled?: BoolFieldUpdateOperationsInput | boolean
+    public_uploads_enabled?: BoolFieldUpdateOperationsInput | boolean
+    review_before_publish?: BoolFieldUpdateOperationsInput | boolean
+    current_version_id?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_version_id?: NullableStringFieldUpdateOperationsInput | string | null
+    view_count?: IntFieldUpdateOperationsInput | number
+    use_count?: IntFieldUpdateOperationsInput | number
+    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
+    taken_down_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    duplicates?: ArtifactUncheckedUpdateManyWithoutDuplicated_fromNestedInput
+    versions?: ArtifactVersionUncheckedUpdateManyWithoutArtifactNestedInput
+    shares?: ArtifactShareUncheckedUpdateManyWithoutArtifactNestedInput
+    comments?: ArtifactCommentUncheckedUpdateManyWithoutArtifactNestedInput
+    records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
+    files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+  }
+
+  export type UserUpsertWithoutArtifact_data_grantsInput = {
+    update: XOR<UserUpdateWithoutArtifact_data_grantsInput, UserUncheckedUpdateWithoutArtifact_data_grantsInput>
+    create: XOR<UserCreateWithoutArtifact_data_grantsInput, UserUncheckedCreateWithoutArtifact_data_grantsInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutArtifact_data_grantsInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutArtifact_data_grantsInput, UserUncheckedUpdateWithoutArtifact_data_grantsInput>
+  }
+
+  export type UserUpdateWithoutArtifact_data_grantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatar?: FileUpdateOneWithoutUser_avatarNestedInput
+    settings?: UserSettingsUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    devices?: DeviceUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    messages?: MessageUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    runs?: RunUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
+    memories?: MemoryUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
+    automations?: AutomationUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutArtifact_data_grantsInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    devices?: DeviceUncheckedUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUncheckedUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUncheckedUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    runs?: RunUncheckedUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUncheckedUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUncheckedUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUncheckedUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUncheckedUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUncheckedUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUncheckedUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUncheckedUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
+  }
+
+  export type ArtifactCreateWithoutReportsInput = {
+    id?: string
+    title: string
+    slug: string
+    type?: $Enums.ArtifactType
+    description?: string | null
+    sharing_level?: $Enums.ArtifactSharingLevel
+    public_enabled?: boolean
+    public_password_hash?: string | null
+    public_expires_at?: Date | string | null
+    allow_search_engines?: boolean
+    allow_embedding?: boolean
+    public_ai_enabled?: boolean
+    public_uploads_enabled?: boolean
+    review_before_publish?: boolean
+    view_count?: number
+    use_count?: number
+    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
+    taken_down_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutArtifactsInput
+    owner?: UserCreateNestedOneWithoutArtifacts_ownedInput
+    conversation?: ConversationCreateNestedOneWithoutArtifactsInput
+    message?: MessageCreateNestedOneWithoutArtifactsInput
+    duplicated_from?: ArtifactCreateNestedOneWithoutDuplicatesInput
+    duplicates?: ArtifactCreateNestedManyWithoutDuplicated_fromInput
+    current_version?: ArtifactVersionCreateNestedOneWithoutCurrent_ofInput
+    draft_version?: ArtifactVersionCreateNestedOneWithoutDraft_ofInput
+    versions?: ArtifactVersionCreateNestedManyWithoutArtifactInput
+    shares?: ArtifactShareCreateNestedManyWithoutArtifactInput
+    comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
+    records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
+    files?: FileCreateNestedManyWithoutArtifactInput
+    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
+  }
+
+  export type ArtifactUncheckedCreateWithoutReportsInput = {
+    id?: string
+    organization_id: string
+    owner_id?: string | null
+    conversation_id?: string | null
+    message_id?: string | null
+    duplicated_from_id?: string | null
+    title: string
+    slug: string
+    type?: $Enums.ArtifactType
+    description?: string | null
+    sharing_level?: $Enums.ArtifactSharingLevel
+    public_enabled?: boolean
+    public_password_hash?: string | null
+    public_expires_at?: Date | string | null
+    allow_search_engines?: boolean
+    allow_embedding?: boolean
+    public_ai_enabled?: boolean
+    public_uploads_enabled?: boolean
+    review_before_publish?: boolean
+    current_version_id?: string | null
+    draft_version_id?: string | null
+    view_count?: number
+    use_count?: number
+    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
+    taken_down_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    duplicates?: ArtifactUncheckedCreateNestedManyWithoutDuplicated_fromInput
+    versions?: ArtifactVersionUncheckedCreateNestedManyWithoutArtifactInput
+    shares?: ArtifactShareUncheckedCreateNestedManyWithoutArtifactInput
+    comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
+    records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
+    files?: FileUncheckedCreateNestedManyWithoutArtifactInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
+  }
+
+  export type ArtifactCreateOrConnectWithoutReportsInput = {
+    where: ArtifactWhereUniqueInput
+    create: XOR<ArtifactCreateWithoutReportsInput, ArtifactUncheckedCreateWithoutReportsInput>
+  }
+
+  export type UserCreateWithoutArtifact_reportsInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    avatar?: FileCreateNestedOneWithoutUser_avatarInput
+    settings?: UserSettingsCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    devices?: DeviceCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantCreateNestedManyWithoutUserInput
+    messages?: MessageCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
+    runs?: RunCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
+    memories?: MemoryCreateNestedManyWithoutUserInput
+    skills_owned?: SkillCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentCreateNestedManyWithoutAuthorInput
+    connections?: ConnectionCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
+    automations?: AutomationCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutArtifact_reportsInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    avatar_file_id?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    devices?: DeviceUncheckedCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceUncheckedCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationUncheckedCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
+    runs?: RunUncheckedCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
+    skills_owned?: SkillUncheckedCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareUncheckedCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactUncheckedCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareUncheckedCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentUncheckedCreateNestedManyWithoutAuthorInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventUncheckedCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutArtifact_reportsInput = {
@@ -207045,6 +212519,7 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutReportsInput = {
@@ -207083,6 +212558,7 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type UserUpsertWithoutArtifact_reportsInput = {
@@ -207136,6 +212612,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -207160,6 +212637,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutArtifact_reportsInput = {
@@ -207202,6 +212680,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -207226,6 +212705,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutConnectionsInput = {
@@ -207274,6 +212754,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutConnectionsInput = {
@@ -207322,6 +212803,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutConnectionsInput = {
@@ -207369,6 +212851,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -207393,6 +212876,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutConnectionsInput = {
@@ -207435,6 +212919,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -207459,6 +212944,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutConnectionsInput = {
@@ -207629,6 +213115,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
     run: RunCreateNestedOneWithoutStepsInput
     device?: DeviceCreateNestedOneWithoutRun_stepsInput
     skill?: SkillCreateNestedOneWithoutRun_stepsInput
@@ -207652,6 +213142,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type RunStepCreateOrConnectWithoutConnectionInput = {
@@ -207849,6 +213343,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionCreateWithoutConnectionInput = {
     id?: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -207859,6 +213354,7 @@ export namespace Prisma {
     id?: string
     automation_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -207931,6 +213427,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutConnectionsInput = {
@@ -207979,6 +213476,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutConnectionsInput = {
@@ -208032,6 +213530,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -208056,6 +213555,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutConnectionsInput = {
@@ -208098,6 +213598,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -208122,6 +213623,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CredentialUpsertWithoutConnectionInput = {
@@ -208441,6 +213943,7 @@ export namespace Prisma {
     automation_id?: StringFilter<"AutomationTriggerSubscription"> | string
     connection_id?: StringFilter<"AutomationTriggerSubscription"> | string
     trigger_key?: StringFilter<"AutomationTriggerSubscription"> | string
+    trigger_name?: StringNullableFilter<"AutomationTriggerSubscription"> | string | null
     composio_trigger_id?: StringNullableFilter<"AutomationTriggerSubscription"> | string | null
     config?: JsonNullableFilter<"AutomationTriggerSubscription">
     created_at?: DateTimeFilter<"AutomationTriggerSubscription"> | Date | string
@@ -208593,6 +214096,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutConnection_restrictionsInput = {
@@ -208669,6 +214173,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutConnection_restrictionsInput = {
@@ -208840,6 +214345,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutConnection_restrictionsInput = {
@@ -208916,6 +214422,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type OrganizationCreateWithoutCredentialsInput = {
@@ -208964,6 +214471,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCredentialsInput = {
@@ -209012,6 +214520,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCredentialsInput = {
@@ -209059,6 +214568,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -209083,6 +214593,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCredentialsInput = {
@@ -209125,6 +214636,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -209149,6 +214661,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCredentialsInput = {
@@ -209230,6 +214743,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutCredential_last_usedInput = {
@@ -209306,6 +214820,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutCredential_last_usedInput = {
@@ -209538,6 +215053,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCredentialsInput = {
@@ -209586,6 +215102,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutCredentialsInput = {
@@ -209639,6 +215156,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -209663,6 +215181,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCredentialsInput = {
@@ -209705,6 +215224,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -209729,6 +215249,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutCredential_last_usedInput = {
@@ -209816,6 +215337,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutCredential_last_usedInput = {
@@ -209892,6 +215414,7 @@ export namespace Prisma {
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ConnectionUpsertWithoutCredentialInput = {
@@ -210155,6 +215678,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -210179,6 +215703,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutCredential_eventsInput = {
@@ -210221,6 +215746,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -210245,6 +215771,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutCredential_eventsInput = {
@@ -210370,6 +215897,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -210394,6 +215922,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutCredential_eventsInput = {
@@ -210436,6 +215965,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -210460,6 +215990,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationCreateWithoutTool_serversInput = {
@@ -210508,6 +216039,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutTool_serversInput = {
@@ -210556,6 +216088,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutTool_serversInput = {
@@ -210603,6 +216136,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -210627,6 +216161,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutTool_serversInput = {
@@ -210669,6 +216204,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -210693,6 +216229,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutTool_serversInput = {
@@ -210911,6 +216448,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutTool_serversInput = {
@@ -210959,6 +216497,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutTool_serversInput = {
@@ -211012,6 +216551,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -211036,6 +216576,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutTool_serversInput = {
@@ -211078,6 +216619,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -211102,6 +216644,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type CredentialUpsertWithoutTool_serverInput = {
@@ -211312,6 +216855,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutFilesInput = {
@@ -211360,6 +216904,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutFilesInput = {
@@ -211407,6 +216952,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -211431,6 +216977,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutFiles_uploadedInput = {
@@ -211473,6 +217020,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -211497,6 +217045,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutFiles_uploadedInput = {
@@ -211529,6 +217078,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutFilesInput = {
@@ -211556,6 +217106,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutFilesInput = {
@@ -211619,6 +217170,7 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutFilesInput = {
@@ -211657,6 +217209,7 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutFilesInput = {
@@ -211967,6 +217520,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -211992,6 +217546,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAvatarInput = {
@@ -212033,6 +217588,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -212058,6 +217614,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAvatarInput = {
@@ -212111,6 +217668,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutLogoInput = {
@@ -212159,6 +217717,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutLogoInput = {
@@ -212240,6 +217799,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutImageInput = {
@@ -212316,6 +217876,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutImageInput = {
@@ -212488,6 +218049,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutFilesInput = {
@@ -212536,6 +218098,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutFiles_uploadedInput = {
@@ -212589,6 +218152,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -212613,6 +218177,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutFiles_uploadedInput = {
@@ -212655,6 +218220,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -212679,6 +218245,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type ConversationUpsertWithoutFilesInput = {
@@ -212717,6 +218284,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutFilesInput = {
@@ -212744,6 +218312,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type SkillFileUpsertWithWhereUniqueWithoutFileInput = {
@@ -212809,6 +218378,7 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutFilesInput = {
@@ -212847,6 +218417,7 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type AutomationUpsertWithoutFilesInput = {
@@ -213183,6 +218754,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -213208,6 +218780,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAvatarInput = {
@@ -213249,6 +218822,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -213274,6 +218848,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type OrganizationUpsertWithoutLogoInput = {
@@ -213333,6 +218908,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutLogoInput = {
@@ -213381,6 +218957,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutImageInput = {
@@ -213468,6 +219045,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutImageInput = {
@@ -213544,6 +219122,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ComputerSessionUpsertWithoutReplay_fileInput = {
@@ -213688,6 +219267,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutCloud_computersInput = {
@@ -213736,6 +219316,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutCloud_computersInput = {
@@ -213817,6 +219398,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutCloud_computerInput = {
@@ -213893,6 +219475,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutCloud_computerInput = {
@@ -214061,6 +219644,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCloud_computersInput = {
@@ -214109,6 +219693,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutCloud_computerInput = {
@@ -214196,6 +219781,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutCloud_computerInput = {
@@ -214272,6 +219858,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ComputerSessionUpsertWithWhereUniqueWithoutCloud_computerInput = {
@@ -214505,6 +220092,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -214529,6 +220117,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutComputer_sessionsInput = {
@@ -214571,6 +220160,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -214595,6 +220185,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutComputer_sessionsInput = {
@@ -214956,6 +220547,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -214980,6 +220572,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutComputer_sessionsInput = {
@@ -215022,6 +220615,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -215046,6 +220640,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FileUpsertWithoutReplay_ofInput = {
@@ -215873,6 +221468,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutAutomationsInput = {
@@ -215921,6 +221517,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutAutomationsInput = {
@@ -215968,6 +221565,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -215992,6 +221590,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutAutomationsInput = {
@@ -216034,6 +221633,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -216058,6 +221658,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutAutomationsInput = {
@@ -216139,6 +221740,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutAutomationsInput = {
@@ -216215,6 +221817,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutAutomationsInput = {
@@ -216341,6 +221944,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutConversationInput
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutAutomations_sourceInput = {
@@ -216368,6 +221972,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutConversationInput
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutAutomations_sourceInput = {
@@ -216400,6 +222005,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutConversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutAutomations_resultsInput = {
@@ -216427,6 +222033,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutConversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutAutomations_resultsInput = {
@@ -216509,6 +222116,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionCreateWithoutAutomationInput = {
     id?: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -216519,6 +222127,7 @@ export namespace Prisma {
     id?: string
     connection_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -216540,6 +222149,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -216556,6 +222166,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -216715,6 +222326,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutAutomationsInput = {
@@ -216763,6 +222375,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutAutomationsInput = {
@@ -216816,6 +222429,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -216840,6 +222454,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutAutomationsInput = {
@@ -216882,6 +222497,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -216906,6 +222522,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutAutomationsInput = {
@@ -216993,6 +222610,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutAutomationsInput = {
@@ -217069,6 +222687,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type SkillUpsertWithoutAutomationsInput = {
@@ -217213,6 +222832,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutConversationNestedInput
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutAutomations_sourceInput = {
@@ -217240,6 +222860,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutConversationNestedInput
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUpsertWithoutAutomations_resultsInput = {
@@ -217278,6 +222899,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutConversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutAutomations_resultsInput = {
@@ -217305,6 +222927,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutConversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type AutomationConnectionUpsertWithWhereUniqueWithoutAutomationInput = {
@@ -217397,6 +223020,7 @@ export namespace Prisma {
     attempt?: IntFilter<"AutomationRun"> | number
     is_retry?: BoolFilter<"AutomationRun"> | boolean
     trigger_event_id?: StringNullableFilter<"AutomationRun"> | string | null
+    trigger_event?: JsonNullableFilter<"AutomationRun">
     scheduled_for?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     started_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
     finished_at?: DateTimeNullableFilter<"AutomationRun"> | Date | string | null
@@ -219040,6 +224664,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutNotificationsInput = {
@@ -219088,6 +224713,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutNotificationsInput = {
@@ -219135,6 +224761,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -219159,6 +224786,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutNotificationsInput = {
@@ -219201,6 +224829,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -219225,6 +224854,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutNotificationsInput = {
@@ -219323,6 +224953,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutNotificationsInput = {
@@ -219371,6 +225002,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutNotificationsInput = {
@@ -219424,6 +225056,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -219448,6 +225081,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutNotificationsInput = {
@@ -219490,6 +225124,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -219514,6 +225149,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type NotificationDeliveryUpsertWithWhereUniqueWithoutNotificationInput = {
@@ -219576,6 +225212,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -219601,6 +225238,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -219679,6 +225317,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -219704,6 +225343,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -219762,6 +225402,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsage_recordsInput = {
@@ -219810,6 +225451,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsage_recordsInput = {
@@ -219857,6 +225499,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -219881,6 +225524,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutUsage_recordsInput = {
@@ -219923,6 +225567,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -219947,6 +225592,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutUsage_recordsInput = {
@@ -220028,6 +225674,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutUsage_recordsInput = {
@@ -220104,6 +225751,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutUsage_recordsInput = {
@@ -220202,6 +225850,7 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutUsage_recordsInput = {
@@ -220240,6 +225889,7 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
+    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutUsage_recordsInput = {
@@ -220393,6 +226043,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsage_recordsInput = {
@@ -220441,6 +226092,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutUsage_recordsInput = {
@@ -220494,6 +226146,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -220518,6 +226171,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutUsage_recordsInput = {
@@ -220560,6 +226214,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -220584,6 +226239,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutUsage_recordsInput = {
@@ -220671,6 +226327,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutUsage_recordsInput = {
@@ -220747,6 +226404,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type AiModelUpsertWithoutUsage_recordsInput = {
@@ -220857,6 +226515,7 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutUsage_recordsInput = {
@@ -220895,6 +226554,7 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type RunUpsertWithoutUsage_recordsInput = {
@@ -221038,6 +226698,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsage_limitsInput = {
@@ -221086,6 +226747,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsage_limitsInput = {
@@ -221167,6 +226829,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutUsage_limitsInput = {
@@ -221243,6 +226906,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutUsage_limitsInput = {
@@ -221307,6 +226971,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsage_limitsInput = {
@@ -221355,6 +227020,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type BotUpsertWithoutUsage_limitsInput = {
@@ -221442,6 +227108,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutUsage_limitsInput = {
@@ -221518,6 +227185,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type OrganizationCreateWithoutUsage_alertsInput = {
@@ -221566,6 +227234,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutUsage_alertsInput = {
@@ -221614,6 +227283,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutUsage_alertsInput = {
@@ -221678,6 +227348,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutUsage_alertsInput = {
@@ -221726,6 +227397,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutSubscriptionInput = {
@@ -221774,6 +227446,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutSubscriptionInput = {
@@ -221822,6 +227495,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutSubscriptionInput = {
@@ -221886,6 +227560,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutSubscriptionInput = {
@@ -221934,6 +227609,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutInvoicesInput = {
@@ -221982,6 +227658,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutInvoicesInput = {
@@ -222030,6 +227707,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutInvoicesInput = {
@@ -222094,6 +227772,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutInvoicesInput = {
@@ -222142,6 +227821,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationCreateWithoutActivity_logsInput = {
@@ -222190,6 +227870,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutActivity_logsInput = {
@@ -222238,6 +227919,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutActivity_logsInput = {
@@ -222285,6 +227967,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -222309,6 +227992,7 @@ export namespace Prisma {
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutActivity_logsInput = {
@@ -222351,6 +228035,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -222375,6 +228060,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutActivity_logsInput = {
@@ -222456,6 +228142,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
   export type BotUncheckedCreateWithoutActivity_logsInput = {
@@ -222532,6 +228219,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
     credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
     artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
   export type BotCreateOrConnectWithoutActivity_logsInput = {
@@ -222712,6 +228400,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -222737,6 +228426,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -222811,6 +228501,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutActivity_logsInput = {
@@ -222859,6 +228550,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutActivity_logsInput = {
@@ -222912,6 +228604,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -222936,6 +228629,7 @@ export namespace Prisma {
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutActivity_logsInput = {
@@ -222978,6 +228672,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -223002,6 +228697,7 @@ export namespace Prisma {
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type BotUpsertWithoutActivity_logsInput = {
@@ -223089,6 +228785,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutActivity_logsInput = {
@@ -223165,6 +228862,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type ConnectionUpsertWithoutActivity_logsInput = {
@@ -223363,6 +229061,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -223388,6 +229087,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -223446,6 +229146,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationUncheckedCreateWithoutData_exportsInput = {
@@ -223494,6 +229195,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
   export type OrganizationCreateOrConnectWithoutData_exportsInput = {
@@ -223541,6 +229243,7 @@ export namespace Prisma {
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
     runs?: RunCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
@@ -223565,6 +229268,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
   export type UserUncheckedCreateWithoutData_exportsInput = {
@@ -223607,6 +229311,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
     reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
     runs?: RunUncheckedCreateNestedManyWithoutUserInput
     approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
@@ -223631,6 +229336,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
   export type UserCreateOrConnectWithoutData_exportsInput = {
@@ -223772,6 +229478,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutData_exportsInput = {
@@ -223820,6 +229527,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type UserUpsertWithoutData_exportsInput = {
@@ -223873,6 +229581,7 @@ export namespace Prisma {
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
     runs?: RunUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
@@ -223897,6 +229606,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
   export type UserUncheckedUpdateWithoutData_exportsInput = {
@@ -223939,6 +229649,7 @@ export namespace Prisma {
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
     reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
     runs?: RunUncheckedUpdateManyWithoutUserNestedInput
     approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
@@ -223963,6 +229674,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
   export type FileUpsertWithoutExportInput = {
@@ -224048,6 +229760,958 @@ export namespace Prisma {
     transfers?: ComputerTransferUncheckedUpdateManyWithoutFileNestedInput
   }
 
+  export type OrganizationCreateWithoutChannel_linksInput = {
+    id?: string
+    name: string
+    slug: string
+    brand_color?: string | null
+    is_personal?: boolean
+    stripe_customer_id?: string | null
+    deleted_at?: Date | string | null
+    purge_after?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    logo?: FileCreateNestedOneWithoutOrg_logoInput
+    created_by?: UserCreateNestedOneWithoutOwned_organizationsInput
+    settings?: OrganizationSettingsCreateNestedOneWithoutOrganizationInput
+    members?: OrganizationMemberCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationCreateNestedManyWithoutOrganizationInput
+    allowed_models?: OrganizationAllowedModelCreateNestedManyWithoutOrganizationInput
+    allowed_templates?: OrganizationTemplateCreateNestedManyWithoutOrganizationInput
+    starter_skills?: OrganizationStarterSkillCreateNestedManyWithoutOrganizationInput
+    bots?: BotCreateNestedManyWithoutOrganizationInput
+    conversations?: ConversationCreateNestedManyWithoutOrganizationInput
+    folders?: ConversationFolderCreateNestedManyWithoutOrganizationInput
+    messages?: MessageCreateNestedManyWithoutOrganizationInput
+    runs?: RunCreateNestedManyWithoutOrganizationInput
+    approvals?: ApprovalCreateNestedManyWithoutOrganizationInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutOrganizationInput
+    memories?: MemoryCreateNestedManyWithoutOrganizationInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutOrganizationInput
+    skills?: SkillCreateNestedManyWithoutOrganizationInput
+    artifacts?: ArtifactCreateNestedManyWithoutOrganizationInput
+    connections?: ConnectionCreateNestedManyWithoutOrganizationInput
+    credentials?: CredentialCreateNestedManyWithoutOrganizationInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOrganizationInput
+    files?: FileCreateNestedManyWithoutOrganizationInput
+    cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
+    automations?: AutomationCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationCreateNestedManyWithoutOrganizationInput
+    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
+    usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
+    invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutOrganizationInput
+    data_exports?: DataExportCreateNestedManyWithoutOrganizationInput
+    service_defaults?: UserServiceDefaultCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutOrganizationInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationUncheckedCreateWithoutChannel_linksInput = {
+    id?: string
+    name: string
+    slug: string
+    logo_file_id?: string | null
+    brand_color?: string | null
+    is_personal?: boolean
+    created_by_id?: string | null
+    stripe_customer_id?: string | null
+    deleted_at?: Date | string | null
+    purge_after?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: OrganizationSettingsUncheckedCreateNestedOneWithoutOrganizationInput
+    members?: OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+    invitations?: InvitationUncheckedCreateNestedManyWithoutOrganizationInput
+    allowed_models?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutOrganizationInput
+    allowed_templates?: OrganizationTemplateUncheckedCreateNestedManyWithoutOrganizationInput
+    starter_skills?: OrganizationStarterSkillUncheckedCreateNestedManyWithoutOrganizationInput
+    bots?: BotUncheckedCreateNestedManyWithoutOrganizationInput
+    conversations?: ConversationUncheckedCreateNestedManyWithoutOrganizationInput
+    folders?: ConversationFolderUncheckedCreateNestedManyWithoutOrganizationInput
+    messages?: MessageUncheckedCreateNestedManyWithoutOrganizationInput
+    runs?: RunUncheckedCreateNestedManyWithoutOrganizationInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutOrganizationInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutOrganizationInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutOrganizationInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutOrganizationInput
+    skills?: SkillUncheckedCreateNestedManyWithoutOrganizationInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutOrganizationInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOrganizationInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOrganizationInput
+    files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
+    cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
+    subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
+    invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutOrganizationInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutOrganizationInput
+    service_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutOrganizationInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutOrganizationInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutOrganizationInput
+  }
+
+  export type OrganizationCreateOrConnectWithoutChannel_linksInput = {
+    where: OrganizationWhereUniqueInput
+    create: XOR<OrganizationCreateWithoutChannel_linksInput, OrganizationUncheckedCreateWithoutChannel_linksInput>
+  }
+
+  export type UserCreateWithoutChannel_linksInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    avatar?: FileCreateNestedOneWithoutUser_avatarInput
+    settings?: UserSettingsCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    devices?: DeviceCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantCreateNestedManyWithoutUserInput
+    messages?: MessageCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
+    runs?: RunCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
+    memories?: MemoryCreateNestedManyWithoutUserInput
+    skills_owned?: SkillCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportCreateNestedManyWithoutReporterInput
+    connections?: ConnectionCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
+    automations?: AutomationCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+  }
+
+  export type UserUncheckedCreateWithoutChannel_linksInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    avatar_file_id?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    devices?: DeviceUncheckedCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceUncheckedCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationUncheckedCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
+    runs?: RunUncheckedCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
+    skills_owned?: SkillUncheckedCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareUncheckedCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactUncheckedCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareUncheckedCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentUncheckedCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportUncheckedCreateNestedManyWithoutReporterInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventUncheckedCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+  }
+
+  export type UserCreateOrConnectWithoutChannel_linksInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutChannel_linksInput, UserUncheckedCreateWithoutChannel_linksInput>
+  }
+
+  export type BotCreateWithoutChannel_linksInput = {
+    id?: string
+    is_starter?: boolean
+    name: string
+    emoji?: string
+    color?: string
+    description?: string | null
+    welcome_message?: string | null
+    conversation_starters?: BotCreateconversation_startersInput | string[]
+    instructions: string
+    creativity?: $Enums.Creativity
+    style_override?: boolean
+    reply_length?: $Enums.ReplyLength | null
+    reply_tone?: $Enums.ReplyTone | null
+    reply_formatting?: $Enums.ReplyFormatting | null
+    emoji_usage?: $Enums.EmojiUsage | null
+    lock_style?: boolean
+    reply_language?: $Enums.AppLanguage | null
+    clarifying_questions?: $Enums.BotClarifyingQuestions
+    group_response?: $Enums.BotGroupResponse
+    web_search_enabled?: boolean
+    image_generation_enabled?: boolean
+    document_creation_enabled?: boolean
+    interactive_replies_mode?: $Enums.InteractiveRepliesMode
+    artifacts_enabled?: boolean
+    cloud_computer_enabled?: boolean
+    use_skills_automatically?: boolean
+    org_knowledge_enabled?: boolean
+    voice_mode_enabled?: boolean
+    voice?: string | null
+    spoken_reply_style?: $Enums.SpokenReplyStyle
+    memory_enabled?: boolean
+    memory_scope?: $Enums.MemoryScope
+    can_ask_other_bots?: boolean
+    can_be_asked?: boolean
+    is_sensitive?: boolean
+    approval_level?: $Enums.ApprovalLevel
+    max_task_duration?: $Enums.MaxTaskDuration
+    monthly_usage_limit?: Decimal | DecimalJsLike | number | string | null
+    visibility?: $Enums.BotVisibility
+    edit_policy?: $Enums.BotEditPolicy
+    is_archived?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutBotsInput
+    created_by?: UserCreateNestedOneWithoutBots_createdInput
+    template?: BotTemplateCreateNestedOneWithoutBotsInput
+    duplicated_from?: BotCreateNestedOneWithoutDuplicatesInput
+    duplicates?: BotCreateNestedManyWithoutDuplicated_fromInput
+    model?: AiModelCreateNestedOneWithoutBotsInput
+    image?: FileCreateNestedOneWithoutBot_imageInput
+    approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
+    bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
+    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
+    bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
+    bot_skills?: BotSkillCreateNestedManyWithoutBotInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
+    memories?: MemoryCreateNestedManyWithoutBotInput
+    cloud_computer?: CloudComputerCreateNestedOneWithoutBotInput
+    participations?: ConversationParticipantCreateNestedManyWithoutBotInput
+    lead_conversations?: ConversationCreateNestedManyWithoutLead_botInput
+    messages?: MessageCreateNestedManyWithoutAuthor_botInput
+    runs?: RunCreateNestedManyWithoutBotInput
+    consultations?: RunCreateNestedManyWithoutRequested_by_botInput
+    approvals?: ApprovalCreateNestedManyWithoutBotInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
+    automations?: AutomationCreateNestedManyWithoutBotInput
+    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
+    default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
+    connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
+    credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
+    artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
+  }
+
+  export type BotUncheckedCreateWithoutChannel_linksInput = {
+    id?: string
+    organization_id: string
+    created_by_id?: string | null
+    template_id?: string | null
+    duplicated_from_id?: string | null
+    is_starter?: boolean
+    name: string
+    emoji?: string
+    color?: string
+    description?: string | null
+    image_file_id?: string | null
+    welcome_message?: string | null
+    conversation_starters?: BotCreateconversation_startersInput | string[]
+    instructions: string
+    model_id?: string | null
+    creativity?: $Enums.Creativity
+    style_override?: boolean
+    reply_length?: $Enums.ReplyLength | null
+    reply_tone?: $Enums.ReplyTone | null
+    reply_formatting?: $Enums.ReplyFormatting | null
+    emoji_usage?: $Enums.EmojiUsage | null
+    lock_style?: boolean
+    reply_language?: $Enums.AppLanguage | null
+    clarifying_questions?: $Enums.BotClarifyingQuestions
+    group_response?: $Enums.BotGroupResponse
+    web_search_enabled?: boolean
+    image_generation_enabled?: boolean
+    document_creation_enabled?: boolean
+    interactive_replies_mode?: $Enums.InteractiveRepliesMode
+    artifacts_enabled?: boolean
+    cloud_computer_enabled?: boolean
+    use_skills_automatically?: boolean
+    org_knowledge_enabled?: boolean
+    voice_mode_enabled?: boolean
+    voice?: string | null
+    spoken_reply_style?: $Enums.SpokenReplyStyle
+    memory_enabled?: boolean
+    memory_scope?: $Enums.MemoryScope
+    can_ask_other_bots?: boolean
+    can_be_asked?: boolean
+    is_sensitive?: boolean
+    approval_level?: $Enums.ApprovalLevel
+    max_task_duration?: $Enums.MaxTaskDuration
+    monthly_usage_limit?: Decimal | DecimalJsLike | number | string | null
+    visibility?: $Enums.BotVisibility
+    edit_policy?: $Enums.BotEditPolicy
+    is_archived?: boolean
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
+    approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
+    bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
+    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
+    bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
+    bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutBotInput
+    cloud_computer?: CloudComputerUncheckedCreateNestedOneWithoutBotInput
+    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutBotInput
+    lead_conversations?: ConversationUncheckedCreateNestedManyWithoutLead_botInput
+    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_botInput
+    runs?: RunUncheckedCreateNestedManyWithoutBotInput
+    consultations?: RunUncheckedCreateNestedManyWithoutRequested_by_botInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
+    default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
+    connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
+    credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
+    artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
+  }
+
+  export type BotCreateOrConnectWithoutChannel_linksInput = {
+    where: BotWhereUniqueInput
+    create: XOR<BotCreateWithoutChannel_linksInput, BotUncheckedCreateWithoutChannel_linksInput>
+  }
+
+  export type ConversationCreateWithoutChannel_linksInput = {
+    id?: string
+    type: $Enums.ConversationType
+    name?: string | null
+    emoji?: string | null
+    color?: string | null
+    is_temporary?: boolean
+    last_message_at?: Date | string | null
+    message_count?: number
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutConversationsInput
+    lead_bot?: BotCreateNestedOneWithoutLead_conversationsInput
+    created_by?: UserCreateNestedOneWithoutConversations_createdInput
+    participants?: ConversationParticipantCreateNestedManyWithoutConversationInput
+    messages?: MessageCreateNestedManyWithoutConversationInput
+    runs?: RunCreateNestedManyWithoutConversationInput
+    approvals?: ApprovalCreateNestedManyWithoutConversationInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutConversationInput
+    memories?: MemoryCreateNestedManyWithoutSource_conversationInput
+    artifacts?: ArtifactCreateNestedManyWithoutConversationInput
+    files?: FileCreateNestedManyWithoutConversationInput
+    automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
+    automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationUncheckedCreateWithoutChannel_linksInput = {
+    id?: string
+    organization_id: string
+    type: $Enums.ConversationType
+    name?: string | null
+    emoji?: string | null
+    color?: string | null
+    lead_bot_id?: string | null
+    created_by_id?: string | null
+    is_temporary?: boolean
+    last_message_at?: Date | string | null
+    message_count?: number
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    participants?: ConversationParticipantUncheckedCreateNestedManyWithoutConversationInput
+    messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
+    runs?: RunUncheckedCreateNestedManyWithoutConversationInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutConversationInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutConversationInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutSource_conversationInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutConversationInput
+    files?: FileUncheckedCreateNestedManyWithoutConversationInput
+    automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
+    automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationCreateOrConnectWithoutChannel_linksInput = {
+    where: ConversationWhereUniqueInput
+    create: XOR<ConversationCreateWithoutChannel_linksInput, ConversationUncheckedCreateWithoutChannel_linksInput>
+  }
+
+  export type OrganizationUpsertWithoutChannel_linksInput = {
+    update: XOR<OrganizationUpdateWithoutChannel_linksInput, OrganizationUncheckedUpdateWithoutChannel_linksInput>
+    create: XOR<OrganizationCreateWithoutChannel_linksInput, OrganizationUncheckedCreateWithoutChannel_linksInput>
+    where?: OrganizationWhereInput
+  }
+
+  export type OrganizationUpdateToOneWithWhereWithoutChannel_linksInput = {
+    where?: OrganizationWhereInput
+    data: XOR<OrganizationUpdateWithoutChannel_linksInput, OrganizationUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type OrganizationUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    brand_color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_personal?: BoolFieldUpdateOperationsInput | boolean
+    stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purge_after?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    logo?: FileUpdateOneWithoutOrg_logoNestedInput
+    created_by?: UserUpdateOneWithoutOwned_organizationsNestedInput
+    settings?: OrganizationSettingsUpdateOneWithoutOrganizationNestedInput
+    members?: OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUpdateManyWithoutOrganizationNestedInput
+    allowed_models?: OrganizationAllowedModelUpdateManyWithoutOrganizationNestedInput
+    allowed_templates?: OrganizationTemplateUpdateManyWithoutOrganizationNestedInput
+    starter_skills?: OrganizationStarterSkillUpdateManyWithoutOrganizationNestedInput
+    bots?: BotUpdateManyWithoutOrganizationNestedInput
+    conversations?: ConversationUpdateManyWithoutOrganizationNestedInput
+    folders?: ConversationFolderUpdateManyWithoutOrganizationNestedInput
+    messages?: MessageUpdateManyWithoutOrganizationNestedInput
+    runs?: RunUpdateManyWithoutOrganizationNestedInput
+    approvals?: ApprovalUpdateManyWithoutOrganizationNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutOrganizationNestedInput
+    memories?: MemoryUpdateManyWithoutOrganizationNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutOrganizationNestedInput
+    skills?: SkillUpdateManyWithoutOrganizationNestedInput
+    artifacts?: ArtifactUpdateManyWithoutOrganizationNestedInput
+    connections?: ConnectionUpdateManyWithoutOrganizationNestedInput
+    credentials?: CredentialUpdateManyWithoutOrganizationNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOrganizationNestedInput
+    files?: FileUpdateManyWithoutOrganizationNestedInput
+    cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
+    automations?: AutomationUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
+    usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
+    invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutOrganizationNestedInput
+    data_exports?: DataExportUpdateManyWithoutOrganizationNestedInput
+    service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type OrganizationUncheckedUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    name?: StringFieldUpdateOperationsInput | string
+    slug?: StringFieldUpdateOperationsInput | string
+    logo_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    brand_color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_personal?: BoolFieldUpdateOperationsInput | boolean
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    stripe_customer_id?: NullableStringFieldUpdateOperationsInput | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    purge_after?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: OrganizationSettingsUncheckedUpdateOneWithoutOrganizationNestedInput
+    members?: OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+    invitations?: InvitationUncheckedUpdateManyWithoutOrganizationNestedInput
+    allowed_models?: OrganizationAllowedModelUncheckedUpdateManyWithoutOrganizationNestedInput
+    allowed_templates?: OrganizationTemplateUncheckedUpdateManyWithoutOrganizationNestedInput
+    starter_skills?: OrganizationStarterSkillUncheckedUpdateManyWithoutOrganizationNestedInput
+    bots?: BotUncheckedUpdateManyWithoutOrganizationNestedInput
+    conversations?: ConversationUncheckedUpdateManyWithoutOrganizationNestedInput
+    folders?: ConversationFolderUncheckedUpdateManyWithoutOrganizationNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutOrganizationNestedInput
+    runs?: RunUncheckedUpdateManyWithoutOrganizationNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutOrganizationNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutOrganizationNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutOrganizationNestedInput
+    skills?: SkillUncheckedUpdateManyWithoutOrganizationNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutOrganizationNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOrganizationNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOrganizationNestedInput
+    files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
+    cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
+    subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
+    invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutOrganizationNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutOrganizationNestedInput
+    service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+  }
+
+  export type UserUpsertWithoutChannel_linksInput = {
+    update: XOR<UserUpdateWithoutChannel_linksInput, UserUncheckedUpdateWithoutChannel_linksInput>
+    create: XOR<UserCreateWithoutChannel_linksInput, UserUncheckedCreateWithoutChannel_linksInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutChannel_linksInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutChannel_linksInput, UserUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type UserUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatar?: FileUpdateOneWithoutUser_avatarNestedInput
+    settings?: UserSettingsUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    devices?: DeviceUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    messages?: MessageUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
+    runs?: RunUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
+    memories?: MemoryUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
+    automations?: AutomationUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    devices?: DeviceUncheckedUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUncheckedUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUncheckedUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
+    runs?: RunUncheckedUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUncheckedUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUncheckedUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUncheckedUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUncheckedUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUncheckedUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUncheckedUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUncheckedUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+  }
+
+  export type BotUpsertWithoutChannel_linksInput = {
+    update: XOR<BotUpdateWithoutChannel_linksInput, BotUncheckedUpdateWithoutChannel_linksInput>
+    create: XOR<BotCreateWithoutChannel_linksInput, BotUncheckedCreateWithoutChannel_linksInput>
+    where?: BotWhereInput
+  }
+
+  export type BotUpdateToOneWithWhereWithoutChannel_linksInput = {
+    where?: BotWhereInput
+    data: XOR<BotUpdateWithoutChannel_linksInput, BotUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type BotUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
+    conversation_starters?: BotUpdateconversation_startersInput | string[]
+    instructions?: StringFieldUpdateOperationsInput | string
+    creativity?: EnumCreativityFieldUpdateOperationsInput | $Enums.Creativity
+    style_override?: BoolFieldUpdateOperationsInput | boolean
+    reply_length?: NullableEnumReplyLengthFieldUpdateOperationsInput | $Enums.ReplyLength | null
+    reply_tone?: NullableEnumReplyToneFieldUpdateOperationsInput | $Enums.ReplyTone | null
+    reply_formatting?: NullableEnumReplyFormattingFieldUpdateOperationsInput | $Enums.ReplyFormatting | null
+    emoji_usage?: NullableEnumEmojiUsageFieldUpdateOperationsInput | $Enums.EmojiUsage | null
+    lock_style?: BoolFieldUpdateOperationsInput | boolean
+    reply_language?: NullableEnumAppLanguageFieldUpdateOperationsInput | $Enums.AppLanguage | null
+    clarifying_questions?: EnumBotClarifyingQuestionsFieldUpdateOperationsInput | $Enums.BotClarifyingQuestions
+    group_response?: EnumBotGroupResponseFieldUpdateOperationsInput | $Enums.BotGroupResponse
+    web_search_enabled?: BoolFieldUpdateOperationsInput | boolean
+    image_generation_enabled?: BoolFieldUpdateOperationsInput | boolean
+    document_creation_enabled?: BoolFieldUpdateOperationsInput | boolean
+    interactive_replies_mode?: EnumInteractiveRepliesModeFieldUpdateOperationsInput | $Enums.InteractiveRepliesMode
+    artifacts_enabled?: BoolFieldUpdateOperationsInput | boolean
+    cloud_computer_enabled?: BoolFieldUpdateOperationsInput | boolean
+    use_skills_automatically?: BoolFieldUpdateOperationsInput | boolean
+    org_knowledge_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice?: NullableStringFieldUpdateOperationsInput | string | null
+    spoken_reply_style?: EnumSpokenReplyStyleFieldUpdateOperationsInput | $Enums.SpokenReplyStyle
+    memory_enabled?: BoolFieldUpdateOperationsInput | boolean
+    memory_scope?: EnumMemoryScopeFieldUpdateOperationsInput | $Enums.MemoryScope
+    can_ask_other_bots?: BoolFieldUpdateOperationsInput | boolean
+    can_be_asked?: BoolFieldUpdateOperationsInput | boolean
+    is_sensitive?: BoolFieldUpdateOperationsInput | boolean
+    approval_level?: EnumApprovalLevelFieldUpdateOperationsInput | $Enums.ApprovalLevel
+    max_task_duration?: EnumMaxTaskDurationFieldUpdateOperationsInput | $Enums.MaxTaskDuration
+    monthly_usage_limit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    visibility?: EnumBotVisibilityFieldUpdateOperationsInput | $Enums.BotVisibility
+    edit_policy?: EnumBotEditPolicyFieldUpdateOperationsInput | $Enums.BotEditPolicy
+    is_archived?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutBotsNestedInput
+    created_by?: UserUpdateOneWithoutBots_createdNestedInput
+    template?: BotTemplateUpdateOneWithoutBotsNestedInput
+    duplicated_from?: BotUpdateOneWithoutDuplicatesNestedInput
+    duplicates?: BotUpdateManyWithoutDuplicated_fromNestedInput
+    model?: AiModelUpdateOneWithoutBotsNestedInput
+    image?: FileUpdateOneWithoutBot_imageNestedInput
+    approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
+    bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
+    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
+    bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
+    bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
+    memories?: MemoryUpdateManyWithoutBotNestedInput
+    cloud_computer?: CloudComputerUpdateOneWithoutBotNestedInput
+    participations?: ConversationParticipantUpdateManyWithoutBotNestedInput
+    lead_conversations?: ConversationUpdateManyWithoutLead_botNestedInput
+    messages?: MessageUpdateManyWithoutAuthor_botNestedInput
+    runs?: RunUpdateManyWithoutBotNestedInput
+    consultations?: RunUpdateManyWithoutRequested_by_botNestedInput
+    approvals?: ApprovalUpdateManyWithoutBotNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
+    automations?: AutomationUpdateManyWithoutBotNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
+    default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
+    connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
+    credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
+    artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+  }
+
+  export type BotUncheckedUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    template_id?: NullableStringFieldUpdateOperationsInput | string | null
+    duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_starter?: BoolFieldUpdateOperationsInput | boolean
+    name?: StringFieldUpdateOperationsInput | string
+    emoji?: StringFieldUpdateOperationsInput | string
+    color?: StringFieldUpdateOperationsInput | string
+    description?: NullableStringFieldUpdateOperationsInput | string | null
+    image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
+    conversation_starters?: BotUpdateconversation_startersInput | string[]
+    instructions?: StringFieldUpdateOperationsInput | string
+    model_id?: NullableStringFieldUpdateOperationsInput | string | null
+    creativity?: EnumCreativityFieldUpdateOperationsInput | $Enums.Creativity
+    style_override?: BoolFieldUpdateOperationsInput | boolean
+    reply_length?: NullableEnumReplyLengthFieldUpdateOperationsInput | $Enums.ReplyLength | null
+    reply_tone?: NullableEnumReplyToneFieldUpdateOperationsInput | $Enums.ReplyTone | null
+    reply_formatting?: NullableEnumReplyFormattingFieldUpdateOperationsInput | $Enums.ReplyFormatting | null
+    emoji_usage?: NullableEnumEmojiUsageFieldUpdateOperationsInput | $Enums.EmojiUsage | null
+    lock_style?: BoolFieldUpdateOperationsInput | boolean
+    reply_language?: NullableEnumAppLanguageFieldUpdateOperationsInput | $Enums.AppLanguage | null
+    clarifying_questions?: EnumBotClarifyingQuestionsFieldUpdateOperationsInput | $Enums.BotClarifyingQuestions
+    group_response?: EnumBotGroupResponseFieldUpdateOperationsInput | $Enums.BotGroupResponse
+    web_search_enabled?: BoolFieldUpdateOperationsInput | boolean
+    image_generation_enabled?: BoolFieldUpdateOperationsInput | boolean
+    document_creation_enabled?: BoolFieldUpdateOperationsInput | boolean
+    interactive_replies_mode?: EnumInteractiveRepliesModeFieldUpdateOperationsInput | $Enums.InteractiveRepliesMode
+    artifacts_enabled?: BoolFieldUpdateOperationsInput | boolean
+    cloud_computer_enabled?: BoolFieldUpdateOperationsInput | boolean
+    use_skills_automatically?: BoolFieldUpdateOperationsInput | boolean
+    org_knowledge_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice?: NullableStringFieldUpdateOperationsInput | string | null
+    spoken_reply_style?: EnumSpokenReplyStyleFieldUpdateOperationsInput | $Enums.SpokenReplyStyle
+    memory_enabled?: BoolFieldUpdateOperationsInput | boolean
+    memory_scope?: EnumMemoryScopeFieldUpdateOperationsInput | $Enums.MemoryScope
+    can_ask_other_bots?: BoolFieldUpdateOperationsInput | boolean
+    can_be_asked?: BoolFieldUpdateOperationsInput | boolean
+    is_sensitive?: BoolFieldUpdateOperationsInput | boolean
+    approval_level?: EnumApprovalLevelFieldUpdateOperationsInput | $Enums.ApprovalLevel
+    max_task_duration?: EnumMaxTaskDurationFieldUpdateOperationsInput | $Enums.MaxTaskDuration
+    monthly_usage_limit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
+    visibility?: EnumBotVisibilityFieldUpdateOperationsInput | $Enums.BotVisibility
+    edit_policy?: EnumBotEditPolicyFieldUpdateOperationsInput | $Enums.BotEditPolicy
+    is_archived?: BoolFieldUpdateOperationsInput | boolean
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
+    approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
+    bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
+    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
+    bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
+    bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutBotNestedInput
+    cloud_computer?: CloudComputerUncheckedUpdateOneWithoutBotNestedInput
+    participations?: ConversationParticipantUncheckedUpdateManyWithoutBotNestedInput
+    lead_conversations?: ConversationUncheckedUpdateManyWithoutLead_botNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutAuthor_botNestedInput
+    runs?: RunUncheckedUpdateManyWithoutBotNestedInput
+    consultations?: RunUncheckedUpdateManyWithoutRequested_by_botNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
+    default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
+    connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
+    credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
+    artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+  }
+
+  export type ConversationUpsertWithoutChannel_linksInput = {
+    update: XOR<ConversationUpdateWithoutChannel_linksInput, ConversationUncheckedUpdateWithoutChannel_linksInput>
+    create: XOR<ConversationCreateWithoutChannel_linksInput, ConversationUncheckedCreateWithoutChannel_linksInput>
+    where?: ConversationWhereInput
+  }
+
+  export type ConversationUpdateToOneWithWhereWithoutChannel_linksInput = {
+    where?: ConversationWhereInput
+    data: XOR<ConversationUpdateWithoutChannel_linksInput, ConversationUncheckedUpdateWithoutChannel_linksInput>
+  }
+
+  export type ConversationUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumConversationTypeFieldUpdateOperationsInput | $Enums.ConversationType
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    emoji?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_temporary?: BoolFieldUpdateOperationsInput | boolean
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message_count?: IntFieldUpdateOperationsInput | number
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutConversationsNestedInput
+    lead_bot?: BotUpdateOneWithoutLead_conversationsNestedInput
+    created_by?: UserUpdateOneWithoutConversations_createdNestedInput
+    participants?: ConversationParticipantUpdateManyWithoutConversationNestedInput
+    messages?: MessageUpdateManyWithoutConversationNestedInput
+    runs?: RunUpdateManyWithoutConversationNestedInput
+    approvals?: ApprovalUpdateManyWithoutConversationNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutConversationNestedInput
+    memories?: MemoryUpdateManyWithoutSource_conversationNestedInput
+    artifacts?: ArtifactUpdateManyWithoutConversationNestedInput
+    files?: FileUpdateManyWithoutConversationNestedInput
+    automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
+    automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+  }
+
+  export type ConversationUncheckedUpdateWithoutChannel_linksInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    type?: EnumConversationTypeFieldUpdateOperationsInput | $Enums.ConversationType
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    emoji?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_temporary?: BoolFieldUpdateOperationsInput | boolean
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message_count?: IntFieldUpdateOperationsInput | number
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: ConversationParticipantUncheckedUpdateManyWithoutConversationNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
+    runs?: RunUncheckedUpdateManyWithoutConversationNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutConversationNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutConversationNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutSource_conversationNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutConversationNestedInput
+    files?: FileUncheckedUpdateManyWithoutConversationNestedInput
+    automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
+    automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
   export type AuthIdentityCreateManyUserInput = {
     id?: string
     provider: $Enums.AuthProvider
@@ -224088,6 +230752,7 @@ export namespace Prisma {
     is_online?: boolean
     last_seen_at?: Date | string
     allowed_folders?: DeviceCreateallowed_foldersInput | string[]
+    blocked_apps?: DeviceCreateblocked_appsInput | string[]
     launch_at_startup?: boolean
     quick_ask_shortcut?: string | null
     approve_from_lock_screen?: boolean
@@ -224118,6 +230783,7 @@ export namespace Prisma {
     organization_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -224285,6 +230951,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -224312,6 +230979,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -224344,6 +231012,13 @@ export namespace Prisma {
     refresh_prompt?: string | null
     created_at?: Date | string
     updated_at?: Date | string
+  }
+
+  export type ArtifactDataGrantCreateManyUserInput = {
+    id?: string
+    artifact_id: string
+    service_key: string
+    created_at?: Date | string
   }
 
   export type RunCreateManyUserInput = {
@@ -224785,6 +231460,22 @@ export namespace Prisma {
     created_at?: Date | string
   }
 
+  export type ChannelLinkCreateManyUserInput = {
+    id?: string
+    organization_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type AuthIdentityUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     provider?: EnumAuthProviderFieldUpdateOperationsInput | $Enums.AuthProvider
@@ -224883,6 +231574,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -224907,6 +231599,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -224931,6 +231624,7 @@ export namespace Prisma {
     is_online?: BoolFieldUpdateOperationsInput | boolean
     last_seen_at?: DateTimeFieldUpdateOperationsInput | Date | string
     allowed_folders?: DeviceUpdateallowed_foldersInput | string[]
+    blocked_apps?: DeviceUpdateblocked_appsInput | string[]
     launch_at_startup?: BoolFieldUpdateOperationsInput | boolean
     quick_ask_shortcut?: NullableStringFieldUpdateOperationsInput | string | null
     approve_from_lock_screen?: BoolFieldUpdateOperationsInput | boolean
@@ -224998,6 +231692,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutMembersNestedInput
@@ -225008,6 +231703,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -225017,6 +231713,7 @@ export namespace Prisma {
     organization_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -225067,6 +231764,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateWithoutCreated_byInput = {
@@ -225115,6 +231813,7 @@ export namespace Prisma {
     service_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutOrganizationNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutOrganizationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutOrganizationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
   export type OrganizationUncheckedUpdateManyWithoutCreated_byInput = {
@@ -225295,6 +231994,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutCreated_byInput = {
@@ -225371,6 +232071,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateManyWithoutCreated_byInput = {
@@ -225504,6 +232205,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutCreated_byInput = {
@@ -225531,6 +232233,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutCreated_byInput = {
@@ -225627,6 +232330,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -225667,6 +232371,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225704,6 +232409,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225727,6 +232433,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -225768,6 +232475,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225805,6 +232513,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225875,6 +232584,27 @@ export namespace Prisma {
     refresh_prompt?: NullableStringFieldUpdateOperationsInput | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    artifact?: ArtifactUpdateOneRequiredWithoutData_grantsNestedInput
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artifact_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    artifact_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type RunUpdateWithoutUserInput = {
@@ -226348,6 +233078,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutOwnerInput = {
@@ -226386,6 +233117,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateManyWithoutOwnerInput = {
@@ -227328,6 +234060,54 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ChannelLinkUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutChannel_linksNestedInput
+    bot?: BotUpdateOneRequiredWithoutChannel_linksNestedInput
+    conversation?: ConversationUpdateOneWithoutChannel_linksNestedInput
+  }
+
+  export type ChannelLinkUncheckedUpdateWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutUserInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type SessionCreateManyDeviceInput = {
     id?: string
     user_id: string
@@ -227376,6 +234156,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type NotificationDeliveryCreateManyDeviceInput = {
@@ -227512,6 +234296,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     run?: RunUpdateOneRequiredWithoutStepsNestedInput
     connection?: ConnectionUpdateOneWithoutRun_stepsNestedInput
     skill?: SkillUpdateOneWithoutRun_stepsNestedInput
@@ -227535,6 +234323,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepUncheckedUpdateManyWithoutDeviceInput = {
@@ -227555,6 +234347,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type NotificationDeliveryUpdateWithoutDeviceInput = {
@@ -227777,6 +234573,7 @@ export namespace Prisma {
     user_id: string
     role?: $Enums.OrganizationRole
     color_theme?: $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: Date | string
     updated_at?: Date | string
   }
@@ -227898,6 +234695,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -228335,10 +235133,27 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type ChannelLinkCreateManyOrganizationInput = {
+    id?: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type OrganizationMemberUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutMembershipsNestedInput
@@ -228349,6 +235164,7 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -228358,6 +235174,7 @@ export namespace Prisma {
     user_id?: StringFieldUpdateOperationsInput | string
     role?: EnumOrganizationRoleFieldUpdateOperationsInput | $Enums.OrganizationRole
     color_theme?: EnumColorThemeFieldUpdateOperationsInput | $Enums.ColorTheme
+    meeting_assistant?: NullableJsonNullValueInput | InputJsonValue
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -228526,6 +235343,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutOrganizationInput = {
@@ -228602,6 +235420,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateManyWithoutOrganizationInput = {
@@ -228681,6 +235500,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutOrganizationInput = {
@@ -228708,6 +235528,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutOrganizationInput = {
@@ -228762,6 +235583,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -228802,6 +235624,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228839,6 +235662,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229315,6 +236139,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutOrganizationInput = {
@@ -229353,6 +236178,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateManyWithoutOrganizationInput = {
@@ -230250,6 +237076,54 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ChannelLinkUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutChannel_linksNestedInput
+    bot?: BotUpdateOneRequiredWithoutChannel_linksNestedInput
+    conversation?: ConversationUpdateOneWithoutChannel_linksNestedInput
+  }
+
+  export type ChannelLinkUncheckedUpdateWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutOrganizationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type AiModelCreateManyFallback_modelInput = {
     id?: string
     openrouter_id: string
@@ -230394,6 +237268,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: boolean
     artifact_design_default?: $Enums.ArtifactDesignDefault
     voice_mode_enabled?: boolean
+    voice_visual_input?: boolean
     voice_mode_who?: $Enums.WhoCan
     voice_max_session?: $Enums.VoiceSessionLength
     voice_approvals_enabled?: boolean
@@ -230613,6 +237488,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutModelInput = {
@@ -230689,6 +237565,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateManyWithoutModelInput = {
@@ -230862,6 +237739,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -230941,6 +237819,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -231019,6 +237898,7 @@ export namespace Prisma {
     artifact_embedding_enabled?: BoolFieldUpdateOperationsInput | boolean
     artifact_design_default?: EnumArtifactDesignDefaultFieldUpdateOperationsInput | $Enums.ArtifactDesignDefault
     voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
+    voice_visual_input?: BoolFieldUpdateOperationsInput | boolean
     voice_mode_who?: EnumWhoCanFieldUpdateOperationsInput | $Enums.WhoCan
     voice_max_session?: EnumVoiceSessionLengthFieldUpdateOperationsInput | $Enums.VoiceSessionLength
     voice_approvals_enabled?: BoolFieldUpdateOperationsInput | boolean
@@ -231369,6 +238249,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutTemplateInput = {
@@ -231445,6 +238326,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateManyWithoutTemplateInput = {
@@ -231666,6 +238548,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -231915,6 +238798,7 @@ export namespace Prisma {
     daily_email_digest?: boolean
     sounds_enabled?: boolean
     auto_delete_conversations?: $Enums.ConversationRetention
+    purge_deleted_artifacts?: boolean
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -231957,6 +238841,22 @@ export namespace Prisma {
     content: string
     resolved_at?: Date | string | null
     deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ChannelLinkCreateManyBotInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    conversation_id?: string | null
+    last_message_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -232035,6 +238935,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateWithoutDuplicated_fromInput = {
@@ -232111,6 +239012,7 @@ export namespace Prisma {
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
     credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
     artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
   export type BotUncheckedUpdateManyWithoutDuplicated_fromInput = {
@@ -232416,6 +239318,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutLead_botInput = {
@@ -232443,6 +239346,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutLead_botInput = {
@@ -232468,6 +239372,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -232508,6 +239413,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -232545,6 +239451,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -233203,6 +240110,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     user?: UserUpdateOneRequiredWithoutSettingsNestedInput
@@ -233263,6 +240171,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -233322,6 +240231,7 @@ export namespace Prisma {
     daily_email_digest?: BoolFieldUpdateOperationsInput | boolean
     sounds_enabled?: BoolFieldUpdateOperationsInput | boolean
     auto_delete_conversations?: EnumConversationRetentionFieldUpdateOperationsInput | $Enums.ConversationRetention
+    purge_deleted_artifacts?: BoolFieldUpdateOperationsInput | boolean
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -233458,6 +240368,54 @@ export namespace Prisma {
     content?: StringFieldUpdateOperationsInput | string
     resolved_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutChannel_linksNestedInput
+    user?: UserUpdateOneRequiredWithoutChannel_linksNestedInput
+    conversation?: ConversationUpdateOneWithoutChannel_linksNestedInput
+  }
+
+  export type ChannelLinkUncheckedUpdateWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutBotInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -233610,6 +240568,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -233840,6 +240799,22 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type ChannelLinkCreateManyConversationInput = {
+    id?: string
+    organization_id: string
+    user_id: string
+    bot_id: string
+    channel: $Enums.ExternalChannel
+    status?: $Enums.ChannelLinkStatus
+    external_id?: string | null
+    inbound_token?: string | null
+    link_code?: string | null
+    link_code_expires_at?: Date | string | null
+    last_message_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
   export type ConversationParticipantUpdateWithoutConversationInput = {
     id?: StringFieldUpdateOperationsInput | string
     is_favourite?: BoolFieldUpdateOperationsInput | boolean
@@ -233889,6 +240864,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -233929,6 +240905,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -233966,6 +240943,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -234301,6 +241279,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutConversationInput = {
@@ -234339,6 +241318,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateManyWithoutConversationInput = {
@@ -234704,6 +241684,54 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ChannelLinkUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutChannel_linksNestedInput
+    user?: UserUpdateOneRequiredWithoutChannel_linksNestedInput
+    bot?: BotUpdateOneRequiredWithoutChannel_linksNestedInput
+  }
+
+  export type ChannelLinkUncheckedUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ChannelLinkUncheckedUpdateManyWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    bot_id?: StringFieldUpdateOperationsInput | string
+    channel?: EnumExternalChannelFieldUpdateOperationsInput | $Enums.ExternalChannel
+    status?: EnumChannelLinkStatusFieldUpdateOperationsInput | $Enums.ChannelLinkStatus
+    external_id?: NullableStringFieldUpdateOperationsInput | string | null
+    inbound_token?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code?: NullableStringFieldUpdateOperationsInput | string | null
+    link_code_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type MessageCreateManyParentInput = {
     id?: string
     organization_id: string
@@ -234715,6 +241743,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     reply_to_message_id?: string | null
     branch_from_message_id?: string | null
@@ -234741,6 +241770,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     branch_from_message_id?: string | null
@@ -234767,6 +241797,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: string | null
     parent_message_id?: string | null
     reply_to_message_id?: string | null
@@ -234914,6 +241945,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -234955,6 +241987,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -234992,6 +242025,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -235014,6 +242048,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -235055,6 +242090,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -235092,6 +242128,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -235114,6 +242151,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -235155,6 +242193,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -235192,6 +242231,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -235432,6 +242472,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutMessageInput = {
@@ -235470,6 +242511,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateManyWithoutMessageInput = {
@@ -235661,6 +242703,7 @@ export namespace Prisma {
     status?: $Enums.MessageStatus
     content?: string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: string | null
     reply_to_message_id?: string | null
     branch_from_message_id?: string | null
@@ -235694,6 +242737,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type ApprovalCreateManyRunInput = {
@@ -235947,6 +242994,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     branch_index?: IntFieldUpdateOperationsInput | number
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_pinned?: BoolFieldUpdateOperationsInput | boolean
@@ -235988,6 +243036,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -236025,6 +243074,7 @@ export namespace Prisma {
     status?: EnumMessageStatusFieldUpdateOperationsInput | $Enums.MessageStatus
     content?: NullableStringFieldUpdateOperationsInput | string | null
     parts?: NullableJsonNullValueInput | InputJsonValue
+    channel_meta?: NullableJsonNullValueInput | InputJsonValue
     parent_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     reply_to_message_id?: NullableStringFieldUpdateOperationsInput | string | null
     branch_from_message_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -236055,6 +243105,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     connection?: ConnectionUpdateOneWithoutRun_stepsNestedInput
     device?: DeviceUpdateOneWithoutRun_stepsNestedInput
     skill?: SkillUpdateOneWithoutRun_stepsNestedInput
@@ -236078,6 +243132,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepUncheckedUpdateManyWithoutRunInput = {
@@ -236098,6 +243156,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type ApprovalUpdateWithoutRunInput = {
@@ -236743,6 +243805,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type MessageMentionCreateManySkillInput = {
@@ -237028,6 +244094,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     run?: RunUpdateOneRequiredWithoutStepsNestedInput
     connection?: ConnectionUpdateOneWithoutRun_stepsNestedInput
     device?: DeviceUpdateOneWithoutRun_stepsNestedInput
@@ -237051,6 +244121,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepUncheckedUpdateManyWithoutSkillInput = {
@@ -237071,6 +244145,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type MessageMentionUpdateWithoutSkillInput = {
@@ -237337,6 +244415,13 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
+  export type ArtifactDataGrantCreateManyArtifactInput = {
+    id?: string
+    user_id: string
+    service_key: string
+    created_at?: Date | string
+  }
+
   export type ArtifactUpdateWithoutDuplicated_fromInput = {
     id?: StringFieldUpdateOperationsInput | string
     title?: StringFieldUpdateOperationsInput | string
@@ -237373,6 +244458,7 @@ export namespace Prisma {
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutDuplicated_fromInput = {
@@ -237411,6 +244497,7 @@ export namespace Prisma {
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
     usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
+    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateManyWithoutDuplicated_fromInput = {
@@ -237764,6 +244851,27 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
+  export type ArtifactDataGrantUpdateWithoutArtifactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    user?: UserUpdateOneRequiredWithoutArtifact_data_grantsNestedInput
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateWithoutArtifactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ArtifactDataGrantUncheckedUpdateManyWithoutArtifactInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    user_id?: StringFieldUpdateOperationsInput | string
+    service_key?: StringFieldUpdateOperationsInput | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
   export type ArtifactCommentCreateManyParentInput = {
     id?: string
     artifact_id: string
@@ -237848,6 +244956,10 @@ export namespace Prisma {
     started_at?: Date | string
     finished_at?: Date | string | null
     duration_ms?: number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: Date | string | null
+    undone_at?: Date | string | null
+    undone_by_id?: string | null
   }
 
   export type AutomationConnectionCreateManyConnectionInput = {
@@ -237915,6 +245027,7 @@ export namespace Prisma {
     id?: string
     automation_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -237971,6 +245084,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     run?: RunUpdateOneRequiredWithoutStepsNestedInput
     device?: DeviceUpdateOneWithoutRun_stepsNestedInput
     skill?: SkillUpdateOneWithoutRun_stepsNestedInput
@@ -237994,6 +245111,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type RunStepUncheckedUpdateManyWithoutConnectionInput = {
@@ -238014,6 +245135,10 @@ export namespace Prisma {
     started_at?: DateTimeFieldUpdateOperationsInput | Date | string
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     duration_ms?: NullableIntFieldUpdateOperationsInput | number | null
+    undo?: NullableJsonNullValueInput | InputJsonValue
+    undo_until?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    undone_by_id?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type AutomationConnectionUpdateWithoutConnectionInput = {
@@ -238202,6 +245327,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionUpdateWithoutConnectionInput = {
     id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238212,6 +245338,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     automation_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238221,6 +245348,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     automation_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238707,6 +245835,7 @@ export namespace Prisma {
     id?: string
     connection_id: string
     trigger_key: string
+    trigger_name?: string | null
     composio_trigger_id?: string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: Date | string
@@ -238718,6 +245847,7 @@ export namespace Prisma {
     attempt?: number
     is_retry?: boolean
     trigger_event_id?: string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: Date | string | null
     started_at?: Date | string | null
     finished_at?: Date | string | null
@@ -238820,6 +245950,7 @@ export namespace Prisma {
   export type AutomationTriggerSubscriptionUpdateWithoutAutomationInput = {
     id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238830,6 +245961,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238839,6 +245971,7 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     trigger_key?: StringFieldUpdateOperationsInput | string
+    trigger_name?: NullableStringFieldUpdateOperationsInput | string | null
     composio_trigger_id?: NullableStringFieldUpdateOperationsInput | string | null
     config?: NullableJsonNullValueInput | InputJsonValue
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
@@ -238850,6 +245983,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -238866,6 +246000,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -238882,6 +246017,7 @@ export namespace Prisma {
     attempt?: IntFieldUpdateOperationsInput | number
     is_retry?: BoolFieldUpdateOperationsInput | boolean
     trigger_event_id?: NullableStringFieldUpdateOperationsInput | string | null
+    trigger_event?: NullableJsonNullValueInput | InputJsonValue
     scheduled_for?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     started_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     finished_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

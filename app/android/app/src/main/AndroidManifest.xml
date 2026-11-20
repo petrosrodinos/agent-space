@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -19,7 +19,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
 
-            <!-- Deep links: agentspace://c/<id>, sign-in and connection returns (§14.2) -->
+            <!-- Deep links: agentspace://c/<id>, sign-in and connection returns, widgets, Google Assistant (§14.2) -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
@@ -27,7 +27,16 @@
                 <data android:scheme="agentspace" />
             </intent-filter>
 
-            <!-- Share-to-bot from other apps (text, links, images, PDFs) -->
+            <!-- Android App Links: https://<web domain>/… opens the app. Host from APP_LINKS_HOST (app/build.gradle);
+                 the host must serve /.well-known/assetlinks.json (api/src/modules/app-links). -->
+            <intent-filter android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="https" android:host="${appLinksHost}" />
+            </intent-filter>
+
+            <!-- Share-to-bot from other apps (text, links, images, PDFs); handled by @capgo/capacitor-share-target -->
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />
                 <action android:name="android.intent.action.SEND_MULTIPLE" />
@@ -36,6 +45,9 @@
                 <data android:mimeType="image/*" />
                 <data android:mimeType="application/pdf" />
             </intent-filter>
+
+            <!-- Google Assistant App Actions and launcher shortcuts -->
+            <meta-data android:name="android.app.shortcuts" android:resource="@xml/shortcuts" />
         </activity>
 
         <provider
@@ -45,6 +57,63 @@
             android:grantUriPermissions="true">
             <meta-data android:name="android.support.FILE_PROVIDER_PATHS" android:resource="@xml/file_paths" />
         </provider>
+
+        <!-- Icon and colour for FCM notifications shown by the system while the app is in the background -->
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_icon"
+            android:resource="@drawable/ic_stat_agentspace"
+        />
+        <meta-data
+            android:name="com.google.firebase.messaging.default_notification_color"
+            android:resource="@color/widget_surface"
+        />
+
+        <!-- FCM: our service replaces the push plugin's (only one may receive messages) and forwards to it. -->
+        <service android:name="com.capacitorjs.plugins.pushnotifications.MessagingService" tools:node="remove" />
+        <service android:name=".approvals.AgentSpaceMessagingService" android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+
+        <!-- Approve / Reject from the notification -->
+        <receiver android:name=".approvals.ApprovalActionReceiver" android:exported="false" />
+
+        <!-- Native voice mode keeps running with the screen locked (§7.6) -->
+        <service
+            android:name=".voice.VoiceService"
+            android:exported="false"
+            android:foregroundServiceType="microphone|mediaPlayback"
+        />
+
+        <!-- Home-screen widgets (§14.2) -->
+        <receiver
+            android:name=".widgets.QuickAskWidget"
+            android:exported="false"
+            android:label="@string/widget_quick_ask_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_quick_ask" />
+        </receiver>
+        <receiver
+            android:name=".widgets.VoiceWidget"
+            android:exported="false"
+            android:label="@string/widget_voice_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_voice" />
+        </receiver>
+        <receiver
+            android:name=".widgets.ApprovalsWidget"
+            android:exported="false"
+            android:label="@string/widget_approvals_name">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data android:name="android.appwidget.provider" android:resource="@xml/widget_approvals" />
+        </receiver>
     </application>
 
     <!-- Permissions -->
@@ -53,8 +122,44 @@
     <!-- Voice mode and voice notes (§7.6) -->
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <!-- Camera and document photos -->
+    <!-- Voice mode with the screen locked: foreground service (microphone + playback) and a wake lock -->
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MICROPHONE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <!-- Camera and document scanner -->
     <uses-permission android:name="android.permission.CAMERA" />
     <!-- Push and local notifications (Android 13+) -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- Contacts search (§14.3). WRITE is declared only because @capacitor-community/contacts requests READ+WRITE as one
+         group; Agent Space never creates or edits contacts. -->
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <!-- Device calendar and reminders (§14.3) -->
+    <uses-permission android:name="android.permission.READ_CALENDAR" />
+    <uses-permission android:name="android.permission.WRITE_CALENDAR" />
+    <!-- Current location, once, when asked (§14.3). No background location. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+
+    <!-- Apps the "send via phone apps" tool may open (Android 11+ package visibility) -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.SENDTO" />
+            <data android:scheme="smsto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="sms" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <data android:scheme="mailto" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.DIAL" />
+            <data android:scheme="tel" />
+        </intent>
+        <package android:name="com.whatsapp" />
+    </queries>
 </manifest>

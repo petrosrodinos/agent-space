@@ -39,6 +39,15 @@ export type ToolFailureKind = (typeof ToolFailureKinds)[keyof typeof ToolFailure
 const NEEDS_RECONNECTING_PATTERN = /expired|revoked|invalid_grant|unauthori[sz]ed|not active|inactive|re-?auth|ConnectedAccountNotFound|\b401\b/i;
 
 /** Thrown by executeTool so callers can tell the user the right thing instead of relaying raw Composio errors. */
+export interface ComposioTriggerType {
+    slug: string;
+    name: string;
+    description: string;
+    /** JSON schema of the trigger's settings (e.g. a label or channel to watch). */
+    config: Record<string, unknown>;
+    toolkit: string;
+}
+
 export class ComposioToolError extends Error {
     constructor(
         readonly kind: ToolFailureKind,
@@ -114,6 +123,38 @@ export class ComposioService {
             tools_count: t.meta?.tools_count ?? 0,
             website: t.meta?.app_url ?? null,
         };
+    }
+
+    // ---------------- Triggers (§10.2 "When something happens in a connected service") ----------------
+
+    /** Events a service can start an automation with, e.g. GMAIL_NEW_GMAIL_MESSAGE. `config` is a JSON schema. */
+    async listTriggerTypes(toolkitSlug: string): Promise<ComposioTriggerType[]> {
+        const res = await this.call<{ items: any[] }>(`/triggers_types?toolkit_slugs=${encodeURIComponent(toolkitSlug)}&limit=100`);
+        return (res.items ?? []).map((t) => ({ slug: t.slug, name: t.name ?? t.slug, description: t.description ?? '', config: t.config ?? { type: 'object', properties: {} }, toolkit: toolkitSlug }));
+    }
+
+    async getTriggerType(slug: string): Promise<ComposioTriggerType> {
+        const t = await this.call<any>(`/triggers_types/${encodeURIComponent(slug)}`);
+        return { slug: t.slug, name: t.name ?? t.slug, description: t.description ?? '', config: t.config ?? { type: 'object', properties: {} }, toolkit: t.toolkit?.slug ?? '' };
+    }
+
+    /** Starts watching for an event on one connected account; Composio then sends it to our webhook. Returns the trigger id. */
+    async upsertTrigger(slug: string, connectedAccountId: string, userId: string, config: Record<string, unknown>): Promise<string> {
+        const res = await this.call<{ trigger_id?: string; id?: string }>(`/trigger_instances/${encodeURIComponent(slug)}/upsert`, {
+            method: 'POST',
+            body: JSON.stringify({ connected_account_id: connectedAccountId, user_id: userId, trigger_config: config ?? {} }),
+        });
+        const id = res.trigger_id ?? res.id;
+        if (!id) throw new BadGatewayException('The connection service did not return a trigger');
+        return id;
+    }
+
+    async setTriggerEnabled(triggerId: string, enabled: boolean) {
+        await this.call(`/trigger_instances/manage/${encodeURIComponent(triggerId)}`, { method: 'PATCH', body: JSON.stringify({ status: enabled ? 'enable' : 'disable' }) });
+    }
+
+    async deleteTrigger(triggerId: string) {
+        await this.call(`/trigger_instances/manage/${encodeURIComponent(triggerId)}`, { method: 'DELETE' });
     }
 
     async listToolkits(params: { search?: string; category?: string; cursor?: string; limit?: number }) {

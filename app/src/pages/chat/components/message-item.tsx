@@ -25,6 +25,22 @@ import { ReplyQuote, ReplyQuoteVariants } from "./reply-quote";
 import { useSwipeToReply } from "../hooks/use-swipe-to-reply";
 import { ComputerHandoffCard } from "./computer-handoff-card";
 import { QUICK_REACTIONS } from "@/config/constants/reactions";
+import { Mail, MessageCircle, MessagesSquare, MonitorUp, Video, type LucideIcon } from "lucide-react";
+
+/** Messages that came from outside the app (§16 Message from anywhere). */
+const CHANNEL_SOURCE_ICONS: Partial<Record<Message["source"], { icon: LucideIcon; label: string }>> = {
+  [MessageSources.EMAIL]: { icon: Mail, label: "Sent by email" },
+  [MessageSources.SLACK]: { icon: MessagesSquare, label: "Sent from Slack" },
+  [MessageSources.WHATSAPP]: { icon: MessageCircle, label: "Sent from WhatsApp" },
+};
+
+const ChannelSourceIcon: FC<{ source: Message["source"]; className: string }> = ({ source, className }) => {
+  const c = CHANNEL_SOURCE_ICONS[source];
+  if (!c) return null;
+  const Icon = c.icon;
+  return <Icon className={className} aria-label={c.label}><title>{c.label}</title></Icon>;
+};
+import { VisualKinds } from "@/features/voice/interfaces/voice.interfaces";
 
 export interface MessageActions {
   onRetry: (m: Message, modelId?: string) => void;
@@ -48,6 +64,13 @@ interface Props {
   actions: MessageActions;
   canAnswerApprovals: boolean;
 }
+
+/** A small camera or screen icon on spoken messages that came with a picture (§7.6). */
+const VisualIcon: FC<{ parts: MessagePart[] | undefined; className: string }> = ({ parts, className }) => {
+  const v = (parts as unknown as { type: string; kind?: string }[] | undefined)?.find((p) => p.type === MessagePartTypes.VISUAL);
+  if (!v) return null;
+  return v.kind === VisualKinds.SCREEN ? <MonitorUp className={className} aria-label="With a screen picture" /> : <Video className={className} aria-label="With a camera picture" />;
+};
 
 const TypingDots: FC<{ color: string }> = ({ color }) => (
   <span className="inline-flex items-center gap-1 px-1 py-2" aria-label="Thinking">
@@ -241,6 +264,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
   const timeLine = (
     <span className="text-[11px] font-semibold text-muted-foreground">
       {m.source === MessageSources.VOICE && <Mic className="mr-0.5 inline h-3 w-3 align-[-2px]" aria-label="Spoken" />}
+      <ChannelSourceIcon source={m.source} className="mr-0.5 inline h-3 w-3 align-[-2px]" />
+      <VisualIcon parts={m.parts} className="mr-0.5 inline h-3 w-3 align-[-2px]" />
       {formatTime(m.created_at)}
       {m.edited_at && " · edited"}
       {m.is_pinned && (
@@ -284,6 +309,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
               <ActionsMenu m={m} mine models={models} actions={actions} onStartEdit={() => setEditing(true)} />
               {quote}
               {m.source === MessageSources.VOICE && <Mic className="mr-1 inline h-3.5 w-3.5 opacity-80" aria-label="Spoken" />}
+              <VisualIcon parts={m.parts} className="mr-1 inline h-3.5 w-3.5 opacity-80" />
               {interaction ? (
                 <span className="text-[14px]">
                   <ClipboardCheck className="mr-1 inline h-3.5 w-3.5 align-[-2px]" aria-hidden /> Responded to <strong>{interaction.component_id}</strong>

@@ -55,7 +55,7 @@ npm run build      # static files in dist/ (no SSR, API address from VITE_API_UR
 
 ## Desktop and mobile apps (§14.2)
 
-The same `app/` build is packaged with **Electron** (Windows, Mac) in `desktop/` and with **Capacitor** (iPhone, Android) in `app/android` and `app/ios`. The platform layer (`app/src/platform/`) picks the implementation at start-up: `desktop.ts` when the Electron preload bridge (`window.agentspaceDesktop`) is present, `native.ts` inside Capacitor, `web.ts` otherwise. The apps keep the refresh token in the OS keychain (Electron `safeStorage`; iOS Keychain / Android Keystore via `@aparajita/capacitor-secure-storage`) and send `X-Client-Platform: desktop|ios|android`, so the API returns the token in the body instead of the cookie. The API allows the app-shell origins `app://agentspace`, `capacitor://localhost` and `https://localhost` (`api/src/shared/config/cors`).
+The same `app/` build is packaged with **Electron** (Windows, Mac) in `desktop/` and with **Capacitor** (Android) in `app/android`. The platform layer (`app/src/platform/`) picks the implementation at start-up: `desktop.ts` when the Electron preload bridge (`window.agentspaceDesktop`) is present, `native.ts` inside Capacitor, `web.ts` otherwise. The apps keep the refresh token in the OS keychain (Electron `safeStorage`; Android Keystore via `@aparajita/capacitor-secure-storage`) and send `X-Client-Platform: desktop|android`, so the API returns the token in the body instead of the cookie. The API allows the app-shell origins `app://agentspace` and `https://localhost` (`api/src/shared/config/cors`).
 
 Build the web bundle for the API the apps should talk to first: `VITE_API_URL=https://api.example.com/api npm run build` in `app/`.
 
@@ -95,27 +95,35 @@ Build the web bundle for the API the apps should talk to first: `VITE_API_URL=ht
 
 | Command | What it does |
 |---|---|
-| `npm run cap:sync` | Builds the web bundle and copies it plus the plugins into `android/` and `ios/` |
-| `npm run cap:android` / `cap:ios` | Opens Android Studio / Xcode (iOS needs a Mac; Capacitor 8 uses Swift Package Manager, no CocoaPods) |
+| `npm run cap:sync` | Builds the web bundle and copies it plus the plugins into `android/` |
+| `npm run cap:android` | Opens Android Studio |
 | `CAP_SERVER_URL=http://<lan-ip>:5180 npx cap run android` | Live reload from the dev server (development only; release builds always bundle the code) |
+| `cd android && gradlew.bat assembleDebug` (with `JAVA_HOME` = Android Studio's `jbr`) | Debug APK in `android/app/build/outputs/apk/debug/` without opening Android Studio |
 
 - **Plugins:**
   - push notifications and local notifications
   - share and clipboard
   - camera and preferences
   - app (for deep links) and browser (external sign-in)
-  - secure storage
-- **Android manifest:** `agentspace://` deep links, a share target (text, images, PDF), and the microphone, camera and notification permissions.
-- **iOS `Info.plist`:** the `agentspace` URL scheme, microphone, camera and photos usage strings, and remote notifications.
-- **Push:** the apps register FCM (Android) / APNs (iOS) tokens at `POST /me/push-subscription` with `{ provider, token }`.
+  - secure storage, biometrics, geolocation, contacts, calendar, document scanner, app launcher, share target
+- **Native code** (`android/app/src/main/java/com/agentspace/app/`): voice mode in a foreground service (native WebRTC, keeps working with the screen locked), lock-screen Approve / Reject, home-screen widgets, ongoing task-progress notifications, Google Assistant and launcher shortcuts (`res/xml/shortcuts.xml`), and the shared encrypted sign-in store.
+- **Android manifest:** `agentspace://` deep links, auto-verified App Links for `APP_LINKS_HOST` (set it in the Android build; the API serves `/.well-known/assetlinks.json` with the fingerprints in `ANDROID_CERT_SHA256`, comma-separated), a share target (text, images, PDF), and the microphone, camera, contacts, calendar, location and notification permissions.
+- **Push:** the apps register FCM tokens at `POST /me/push-subscription` with `{ provider, token }`.
   - The API sends FCM through HTTP v1 when `FCM_PROJECT_ID` and `FCM_CREDENTIALS_JSON_BASE64` (a Firebase service account) are set. Android also needs `android/app/google-services.json` from the Firebase project.
-  - **APNs sending is not built yet.** iOS tokens are stored, but no push is delivered until an APNs sender (or FCM for iOS) is added.
+  - Approval pushes are data-only (`kind: "approval"`, `approval_id`, `organization_id`, `requires_biometric`, `url`) so the app draws the Approve / Reject buttons itself; other pushes carry a normal notification.
+- **Store listing:** `android/store-listing.md` (texts and data safety answers).
 
 **Not built yet**
-- Device tools (§14.3): local files, screen capture, local tool servers, contacts, calendar, location and place-based triggers.
-- The native voice plugin `@agentspace/voice`: voice mode on mobile uses the WebView's WebRTC, so it stops when the iPhone screen locks.
-- Siri / App Actions, home-screen widgets and Live Activities.
-- Biometrics for sensitive approvals, and lock-screen Approve/Reject actions.
-- The document scanner, the iOS Share Extension, and handling the shared content in the app (Android only declares the share intent).
-- Universal links / App Links (needs `apple-app-site-association` / `assetlinks.json` on the web domain).
-- App icons and splash screens (the defaults are used), and store listings.
+- Place-based automation triggers (geofencing).
+
+**Message from anywhere (email, Slack, WhatsApp; §16)**
+
+Each channel is offered in Settings → Message from anywhere only when its variables are set on the API. Webhooks are under `$PUBLIC_API_URL/api/webhooks/channels/…` and every delivery is signature-checked.
+
+| Channel | Variables | Provider setup |
+|---|---|---|
+| Email (Resend inbound) | `INBOUND_EMAIL_DOMAIN`, `RESEND_INBOUND_WEBHOOK_SECRET`, `RESEND_API_KEY` | Receiving domain (MX record, or the `<id>.resend.app` address) for `INBOUND_EMAIL_DOMAIN`; a webhook for `email.received` to `/webhooks/channels/email`, its signing secret in `RESEND_INBOUND_WEBHOOK_SECRET`. Replies are sent from the member's personal address on that domain, so the domain must also be verified for sending |
+| Slack | `SLACK_SIGNING_SECRET`, `SLACK_BOT_TOKEN` | A Slack app with the Messages tab on, bot scopes `chat:write` and `im:history`, and Event Subscriptions (`message.im`) to `/webhooks/channels/slack` |
+| WhatsApp (Cloud API) | `WHATSAPP_APP_SECRET`, `WHATSAPP_VERIFY_TOKEN`, `WHATSAPP_ACCESS_TOKEN`, `WHATSAPP_PHONE_NUMBER_ID`, optional `WHATSAPP_DISPLAY_NUMBER` | Meta app with WhatsApp; webhook URL `/webhooks/channels/whatsapp` with the verify token, subscribed to `messages` |
+
+`RESEND_API_URL`, `SLACK_API_URL` and `WHATSAPP_API_URL` point the API at mock servers for local tests.

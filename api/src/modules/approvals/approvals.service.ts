@@ -1,7 +1,7 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { ActionType, Prisma } from 'generated/prisma';
+import { ActionType, BiometricApprovalScope, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { Jobs, Queues } from '@/core/queues/queues.constants';
 import { ConversationEvents, EventsService, UserEvents } from '@/core/realtime/events.service';
@@ -23,6 +23,18 @@ export interface CreateApprovalInput {
     preview: Record<string, unknown>;
     tool_call_id: string;
     requires_tap?: boolean;
+}
+
+/** Fingerprint / face unlock on mobile (§13.4): payments and website passwords always, plus what the organisation adds. */
+const ALWAYS_BIOMETRIC: ActionType[] = [ActionType.PURCHASE_PAYMENT, ActionType.ENTER_PASSWORD];
+const BIOMETRIC_SCOPE_ACTIONS: Record<BiometricApprovalScope, ActionType[] | 'all'> = {
+    [BiometricApprovalScope.ALL_APPROVALS]: 'all',
+    [BiometricApprovalScope.EXTERNAL_EMAILS]: [ActionType.EXTERNAL_EMAIL],
+    [BiometricApprovalScope.DELETING_DATA]: [ActionType.DELETE_DATA],
+};
+export function needsBiometric(action: ActionType, scopes: BiometricApprovalScope[]): boolean {
+    if (ALWAYS_BIOMETRIC.includes(action)) return true;
+    return scopes.some((s) => { const a = BIOMETRIC_SCOPE_ACTIONS[s]; return a === 'all' || a.includes(action); });
 }
 
 const TIMEOUT_MS = { KEEP_WAITING: null, CANCEL_AFTER_1H: 3600_000, CANCEL_AFTER_24H: 86400_000 } as const;
@@ -48,6 +60,7 @@ export class ApprovalsService {
         const orgMs = orgSettings?.approval_timeout_minutes ? orgSettings.approval_timeout_minutes * 60_000 : null;
         const ms = [userMs, orgMs].filter((x): x is number => !!x).sort((a, b) => a - b)[0];
         const requiresTap = input.requires_tap || TAP_ONLY.includes(input.action_type);
+        const requiresBiometric = needsBiometric(input.action_type, orgSettings?.biometric_approval_scopes ?? []);
         // Auto-accept only when the organisation timeout is the one that fires, and never for enforced or tap-only actions.
         const autoApprove =
             !!ms && ms === orgMs && orgSettings?.approval_timeout_action === 'APPROVE' && !requiresTap && !orgSettings.enforced_approvals.includes(input.action_type);
@@ -64,6 +77,7 @@ export class ApprovalsService {
                 preview: input.preview as Prisma.InputJsonValue,
                 tool_call_id: input.tool_call_id,
                 requires_tap: requiresTap,
+                requires_biometric: requiresBiometric,
                 is_urgent: input.action_type === 'PURCHASE_PAYMENT',
                 timeout_at: ms ? new Date(Date.now() + ms) : null,
             },
@@ -80,7 +94,7 @@ export class ApprovalsService {
                 title: `${approval.bot.name} needs your approval`,
                 body: approval.title,
                 link_path: input.conversation_id ? `/c/${input.conversation_id}` : `/approvals/${approval.id}`,
-                data: { approval_id: approval.id },
+                data: { approval_id: approval.id, approval_title: approval.title, requires_biometric: requiresBiometric },
                 is_urgent: approval.is_urgent,
             });
         }

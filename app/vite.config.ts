@@ -14,7 +14,7 @@ export default defineConfig({
     port: 5180,
     strictPort: true,
     // Native projects (Capacitor) and build output are not part of the web app — don't watch them.
-    watch: { ignored: ["**/android/**", "**/ios/**", "**/dist/**"] },
+    watch: { ignored: ["**/android/**", "**/dist/**"] },
   },
   preview: { port: 5180, strictPort: true },
   resolve: {

@@ -6,7 +6,8 @@ import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
 import { ZodValidationPipe } from '@/shared/pipes/zod.validation.pipe';
 import type { Actor } from '../bots/bots.service';
 import { AutomationsService } from './automations.service';
-import { AutomationListQuery, AutomationListQuerySchema, AutomationRunsQuery, AutomationRunsQuerySchema, CreateAutomationDto, UpdateAutomationDto, UpdateAutomationMemoryDto } from './dto/automation.dto';
+import { AutomationTriggersService } from './automation-triggers.service';
+import { AutomationTriggerTypesQuery, AutomationTriggerTypesQuerySchema, AutomationListQuery, AutomationListQuerySchema, AutomationRunsQuery, AutomationRunsQuerySchema, CreateAutomationDto, UpdateAutomationDto, UpdateAutomationMemoryDto } from './dto/automation.dto';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
 
@@ -16,11 +17,20 @@ const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_i
 @Controller('automations')
 @UseGuards(JwtGuard, OrgGuard)
 export class AutomationsController {
-    constructor(private readonly automations: AutomationsService) { }
+    constructor(
+        private readonly automations: AutomationsService,
+        private readonly triggers: AutomationTriggersService,
+    ) { }
 
     @Get()
     list(@CurrentMembership() m: OrgMembership, @Query(new ZodValidationPipe(AutomationListQuerySchema)) q: AutomationListQuery) {
         return this.automations.list(actor(m), q);
+    }
+
+    @Get('triggers')
+    @ApiOperation({ summary: 'Events a connected account can start an automation with (§10.2)' })
+    triggerTypes(@CurrentMembership() m: OrgMembership, @Query(new ZodValidationPipe(AutomationTriggerTypesQuerySchema)) q: AutomationTriggerTypesQuery) {
+        return this.triggers.typesFor(actor(m), q.connection_id);
     }
 
     @Post()

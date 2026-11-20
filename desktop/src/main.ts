@@ -9,6 +9,7 @@ import { existsSync, promises as fs } from 'fs';
 import os from 'os';
 import path from 'path';
 import { pathToFileURL } from 'url';
+import { registerDeviceIpc } from './device';
 import { checkForUpdates, getUpdateState, initUpdater, installUpdate } from './updater';
 
 const DEV = process.argv.includes('--dev') || !!process.env.AGENTSPACE_DEV_URL;
@@ -193,10 +194,16 @@ function createWindow() {
 
 // ---------------- Quick-ask shortcut ----------------
 
+let quickAskAccelerator: string | null = null;
+
+/** Replaces only the quick-ask shortcut, so the control-my-computer stop shortcut (device/control.ts) stays registered. */
 function registerShortcut(accelerator: string): boolean {
-    globalShortcut.unregisterAll();
+    if (quickAskAccelerator) globalShortcut.unregister(quickAskAccelerator);
+    quickAskAccelerator = null;
     try {
-        return globalShortcut.register(accelerator, () => openPath('/'));
+        const ok = globalShortcut.register(accelerator, () => openPath('/'));
+        if (ok) quickAskAccelerator = accelerator;
+        return ok;
     } catch {
         return false;
     }
@@ -283,6 +290,7 @@ function registerIpc() {
     ipcMain.handle('updates:check', (e) => (guard(e), checkForUpdates({ force: true })));
     ipcMain.handle('updates:state', (e) => (guard(e), getUpdateState()));
     ipcMain.handle('updates:install', (e) => (guard(e), installUpdate()));
+    registerDeviceIpc(() => win, guard);
 }
 
 // ---------------- App lifecycle ----------------

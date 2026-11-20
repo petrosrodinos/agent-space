@@ -1,9 +1,11 @@
-import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req, Res, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { memoryStorage } from 'multer';
 import { ApiExcludeController } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import type { Request, Response } from 'express';
 import { reportPage, messagePageCsp } from './artifact-runtime';
-import { ArtifactViewService, RenderResult } from './artifact-view.service';
+import { ArtifactViewService, MAX_UPLOAD_BYTES, RenderResult } from './artifact-view.service';
 
 const MAX_BODY = 64_000;
 
@@ -70,6 +72,22 @@ export class ArtifactViewController {
     list(@Param('id', ParseUUIDPipe) id: string, @Query('session') session: string | undefined, @Query('collection') collection: string | undefined, @Res({ passthrough: true }) res: Response) {
         openCors(res);
         return this.view.listRecords(id, session, collection);
+    }
+
+    /** `agentspace.upload(file)`: a multipart form post (a simple request, so no CORS preflight). */
+    @Post('ax/:id/files')
+    @Throttle({ default: { limit: 10, ttl: 60_000 } })
+    @UseInterceptors(FileInterceptor('file', { storage: memoryStorage(), limits: { fileSize: MAX_UPLOAD_BYTES, files: 1 } }))
+    upload(@Param('id', ParseUUIDPipe) id: string, @Query('session') session: string | undefined, @UploadedFile() file: Express.Multer.File | undefined, @Res({ passthrough: true }) res: Response) {
+        openCors(res);
+        return this.view.uploadFile(id, session, file);
+    }
+
+    @Post('ax/:id/live')
+    @Throttle({ default: { limit: 120, ttl: 60_000 } })
+    async live(@Param('id', ParseUUIDPipe) id: string, @Req() req: Request, @Res({ passthrough: true }) res: Response) {
+        openCors(res);
+        return this.view.live(id, await readJson(req));
     }
 
     @Post('ax/:id/ai')

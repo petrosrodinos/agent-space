@@ -12,6 +12,9 @@ import {
   getArtifact,
   getArtifacts,
   getComments,
+  getDataGrants,
+  grantData,
+  revokeData,
   getRecords,
   getVersions,
   getViewUrl,
@@ -57,7 +60,10 @@ const useArtifactMutation = <T, R = unknown>(fn: (v: T) => Promise<R>, success: 
 };
 
 export const useUpdateArtifact = (success: string | null = "Saved") => useArtifactMutation(({ id, ...dto }: { id: string } & UpdateArtifactDto) => updateArtifact(id, dto), success, "Could not save");
-export const useDeleteArtifact = () => useArtifactMutation(deleteArtifact, "Artifact deleted — restorable for 30 days", "Could not delete");
+export const useArtifactDataGrants = (id: string) => useQuery({ queryKey: [QueryKeys.ARTIFACT, id, "data-grants"], queryFn: () => getDataGrants(id), enabled: !!id });
+export const useGrantArtifactData = () => useArtifactMutation(grantData, "Access allowed", "Could not allow access");
+export const useRevokeArtifactData = () => useArtifactMutation(revokeData, "Access removed", "Could not remove access");
+export const useDeleteArtifact = () => useArtifactMutation(deleteArtifact, "Artifact deleted — you can restore it from the Deleted tab", "Could not delete");
 export const useRestoreArtifact = () => useArtifactMutation(restoreArtifact, "Artifact restored", "Could not restore");
 export const useDuplicateArtifact = () => useArtifactMutation(duplicateArtifact, "Copy created — it's yours to change", "Could not duplicate");
 export const useShareArtifact = () => useArtifactMutation(({ id, ...dto }: { id: string } & ShareArtifactDto) => shareArtifact(id, dto), "Sharing updated", "Could not update sharing");

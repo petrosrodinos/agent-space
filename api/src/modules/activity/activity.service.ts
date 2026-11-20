@@ -15,6 +15,8 @@ export interface ActivityEntry {
     target_id?: string;
     connection_id?: string | null;
     run_id?: string | null;
+    /** Device tools (§14.3): which computer or phone it ran on. */
+    device_id?: string | null;
     metadata?: Record<string, unknown>;
     ip_address?: string;
 }
@@ -40,6 +42,7 @@ export class ActivityService {
                     target_id: entry.target_id,
                     connection_id: entry.connection_id ?? null,
                     run_id: entry.run_id ?? null,
+                    device_id: entry.device_id ?? null,
                     metadata: (entry.metadata ?? undefined) as Prisma.InputJsonValue,
                     ip_address: entry.ip_address,
                 },

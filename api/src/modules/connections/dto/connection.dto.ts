@@ -44,7 +44,7 @@ class SecretRequestRefDto {
 }
 
 /** What the secure secret box / Secrets page can save. */
-export const SecretInputKinds = { API_KEY: 'api_key', MCP_TOKEN: 'mcp_token', WEBSITE_LOGIN: 'website_login' } as const;
+export const SecretInputKinds = { API_KEY: 'api_key', MCP_TOKEN: 'mcp_token', WEBSITE_LOGIN: 'website_login', PASSWORD_MANAGER: 'password_manager' } as const;
 export type SecretInputKind = (typeof SecretInputKinds)[keyof typeof SecretInputKinds];
 const SECRET_INPUT_KINDS = Object.values(SecretInputKinds);
 
@@ -58,6 +58,7 @@ export class CreateCredentialDto {
     @ApiPropertyOptional({ description: 'Website login: the site it may be typed into', example: 'portal.acme.com' }) @IsOptional() @IsString() @MaxLength(253) website?: string;
     @ApiPropertyOptional({ description: 'Website login: username or email' }) @IsOptional() @IsString() @MaxLength(320) username?: string;
     @ApiPropertyOptional({ description: 'Website login: authenticator secret (base32 or otpauth:// link) for two-step codes' }) @IsOptional() @IsString() @MaxLength(1000) totp_secret?: string;
+    @ApiPropertyOptional({ description: 'Password manager: the 1Password Connect server address', example: 'https://op-connect.acme.com' }) @IsOptional() @IsString() @MaxLength(500) server_url?: string;
     @ApiPropertyOptional({ enum: ['PRIVATE', 'SHARED'] }) @IsOptional() @IsIn(['PRIVATE', 'SHARED']) visibility?: 'PRIVATE' | 'SHARED';
     @ApiPropertyOptional() @IsOptional() @IsArray() @ArrayMaxSize(50) @IsUUID('all', { each: true }) bot_ids?: string[];
     @ApiPropertyOptional({ type: SecretRequestRefDto }) @IsOptional() @ValidateNested() @Type(() => SecretRequestRefDto) request?: SecretRequestRefDto;

@@ -17,11 +17,19 @@ export class PreApprovalDto {
     target: string;
 }
 
+/** §10.2 "When something happens in a connected service": the event that starts each run. */
+export class AutomationTriggerDto {
+    @ApiProperty({ description: 'Connected account to watch' }) @IsUUID() connection_id: string;
+    @ApiProperty({ example: 'GMAIL_NEW_GMAIL_MESSAGE' }) @IsString() @MinLength(3) @MaxLength(120) trigger_slug: string;
+    @ApiPropertyOptional({ description: "The event's settings (its JSON schema comes with the trigger list)" }) @IsOptional() @IsObject() config?: Record<string, unknown>;
+}
+
 export class CreateAutomationDto {
     @ApiProperty({ example: 'Daily vulnerability scan – x' }) @IsString() @MinLength(1) @MaxLength(120) name: string;
     @ApiProperty() @IsUUID() bot_id: string;
     @ApiProperty({ description: 'What to do on each run, in plain language' }) @IsString() @MinLength(3) @MaxLength(20000) instructions: string;
-    @ApiProperty({ example: '0 7 * * *', description: '5-part cron expression' }) @IsString() @MinLength(9) @MaxLength(100) cron_expression: string;
+    @ApiPropertyOptional({ example: '0 7 * * *', description: '5-part cron expression (required unless a trigger is given)' }) @IsOptional() @IsString() @MinLength(9) @MaxLength(100) cron_expression?: string;
+    @ApiPropertyOptional({ type: AutomationTriggerDto, description: 'Start each run when this event happens instead of on a schedule' }) @IsOptional() @ValidateNested() @Type(() => AutomationTriggerDto) trigger?: AutomationTriggerDto;
     @ApiPropertyOptional({ example: 'Europe/Athens' }) @IsOptional() @IsString() @MaxLength(64) timezone?: string;
     @ApiPropertyOptional() @IsOptional() @IsUUID() skill_id?: string | null;
     @ApiPropertyOptional({ isArray: true }) @IsOptional() @IsArray() @ArrayMaxSize(20) @IsUUID('all', { each: true }) connection_ids?: string[];
@@ -39,7 +47,8 @@ export class CreateAutomationDto {
 export class UpdateAutomationDto {
     @ApiPropertyOptional() @IsOptional() @IsString() @MinLength(1) @MaxLength(120) name?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() @MinLength(3) @MaxLength(20000) instructions?: string;
-    @ApiPropertyOptional() @IsOptional() @IsString() @MinLength(9) @MaxLength(100) cron_expression?: string;
+    @ApiPropertyOptional({ description: 'Switch to (or change) a schedule' }) @IsOptional() @IsString() @MinLength(9) @MaxLength(100) cron_expression?: string;
+    @ApiPropertyOptional({ type: AutomationTriggerDto, description: 'Switch to (or change) a trigger' }) @IsOptional() @ValidateNested() @Type(() => AutomationTriggerDto) trigger?: AutomationTriggerDto;
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(64) timezone?: string;
     @ApiPropertyOptional() @IsOptional() @IsUUID() bot_id?: string;
     @ApiPropertyOptional() @IsOptional() @IsUUID() skill_id?: string | null;
@@ -64,6 +73,9 @@ export const AutomationListQuerySchema = z.object({
     search: z.string().trim().max(80).optional(),
 });
 export type AutomationListQuery = z.infer<typeof AutomationListQuerySchema>;
+
+export const AutomationTriggerTypesQuerySchema = z.object({ connection_id: z.string().uuid() });
+export type AutomationTriggerTypesQuery = z.infer<typeof AutomationTriggerTypesQuerySchema>;
 
 export const AutomationRunsQuerySchema = PaginationQuerySchema;
 export type AutomationRunsQuery = z.infer<typeof AutomationRunsQuerySchema>;

@@ -2,8 +2,8 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useAuthStore, AuthStatuses } from "@/stores/auth";
 import { getOrganizationStoreState } from "@/stores/organization";
-import type { ColorTheme, MeResponse, UserSettings } from "../interfaces/users.interfaces";
-import { deleteAccount, getDevices, getMe, getSessions, renameDevice, revokeOtherSessions, revokeSession, signOutDevice, updateColorTheme, updateProfile, updateSettings } from "../services/users.services";
+import type { ColorTheme, DeviceToolPermission, MeResponse, UserSettings } from "../interfaces/users.interfaces";
+import { deleteAccount, getDeviceTools, getDevices, getMe, setDeviceToolPermission, getSessions, renameDevice, revokeOtherSessions, revokeSession, signOutDevice, updateColorTheme, updateProfile, updateSettings } from "../services/users.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 
 export const useMe = () => {
@@ -81,6 +81,19 @@ export const useDeleteAccount = () =>
 
 export const useDevices = () => useQuery({ queryKey: [QueryKeys.DEVICES], queryFn: getDevices });
 export const useSessions = () => useQuery({ queryKey: [QueryKeys.SESSIONS], queryFn: getSessions });
+
+export const useDeviceTools = (id: string | null) => useQuery({ queryKey: [QueryKeys.DEVICES, id, "tools"], queryFn: () => getDeviceTools(id!), enabled: !!id });
+export const useSetDeviceTool = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, tool, permission }: { id: string; tool: string; permission: DeviceToolPermission }) => setDeviceToolPermission(id, tool, permission),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: [QueryKeys.DEVICES] });
+      toast({ title: "Saved", duration: 1500 });
+    },
+    onError: (e: Error) => toast({ title: "Could not save", description: e.message, variant: "error" }),
+  });
+};
 
 export const useRenameDevice = () => {
   const qc = useQueryClient();

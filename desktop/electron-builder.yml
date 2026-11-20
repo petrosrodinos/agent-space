@@ -19,6 +19,17 @@ protocols:
   - name: Agent Space
     schemes: [agentspace]
 asar: true
+# Device tools (§14.3) native modules. Native code can't load from inside app.asar, so these are unpacked:
+#   - @nut-tree-fork/libnut-* (input for control my computer): prebuilt N-API .node per platform
+#   - uiohook-napi (detects the user's own mouse/keyboard input): N-API prebuilds/ loaded by node-gyp-build
+#   - get-windows (frontmost app): N-API binding on Windows, a Swift helper binary (`main`) run with execFile on Mac
+# All three are N-API (ABI-stable), so the prebuilt binaries work in Electron as-is: no electron-rebuild needed, and
+# npmRebuild is off so packaging never tries to compile them (which would need a C++/Swift toolchain).
+asarUnpack:
+  - node_modules/@nut-tree-fork/libnut-*/**
+  - node_modules/uiohook-napi/**
+  - node_modules/get-windows/**
+npmRebuild: false
 win:
   icon: build/icon.png
   target: [nsis]

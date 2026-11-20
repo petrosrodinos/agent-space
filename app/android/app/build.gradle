@@ -1,4 +1,13 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+
+/**
+ * Host for Android App Links (https://<host>/... opens the app, section 14.2). Set APP_LINKS_HOST in gradle.properties or
+ * with -PAPP_LINKS_HOST=app.example.com; the host must serve /.well-known/assetlinks.json (see api/src/modules/app-links).
+ */
+def appLinksHost = project.findProperty('APP_LINKS_HOST') ?: 'app.agentspace.example'
 
 android {
     namespace = "com.agentspace.app"
@@ -10,6 +19,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        manifestPlaceholders = [appLinksHost: appLinksHost]
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
              // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
@@ -21,6 +31,12 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget = JvmTarget.JVM_21
     }
 }
 
@@ -40,6 +56,16 @@ dependencies {
     androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
     androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
     implementation project(':capacitor-cordova-android-plugins')
+
+    // In-app native code (app/src/main/java/com/agentspace/app)
+    implementation "androidx.core:core-ktx:$androidxCoreVersion"
+    implementation "androidx.work:work-runtime-ktx:2.10.5"
+    // Same version as @capacitor/push-notifications; needed to extend its MessagingService.
+    implementation "com.google.firebase:firebase-messaging:25.0.1"
+    // Native voice mode (OpenAI Realtime over WebRTC, section 7.6)
+    implementation "io.github.webrtc-sdk:android:144.7559.15"
+    // On-device text recognition for scanned documents (section 14.3)
+    implementation "com.google.mlkit:text-recognition:16.0.1"
 }
 
 apply from: 'capacitor.build.gradle'

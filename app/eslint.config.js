@@ -21,7 +21,7 @@ const platformRestrictions = {
 }
 
 export default tseslint.config([
-  globalIgnores(['dist', 'android', 'ios']),
+  globalIgnores(['dist', 'android']),
   {
     files: ['**/*.{ts,tsx}'],
     extends: [

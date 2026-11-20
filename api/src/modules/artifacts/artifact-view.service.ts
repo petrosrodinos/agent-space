@@ -6,10 +6,12 @@ import { Artifact, ArtifactShare } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { OpenRouterService } from '@/integrations/openrouter/openrouter.service';
-import { randomToken, sha256 } from '@/shared/utils/security/crypto.utils';
+import { newId, randomToken, sha256 } from '@/shared/utils/security/crypto.utils';
 import { parseCorsUrls } from '@/shared/config/cors';
 import { UTILITY_MODEL } from '../catalog/catalog.data';
 import { UsageService } from '../usage/usage.service';
+import { StorageService } from '@/integrations/storage/storage.service';
+import { ArtifactLiveDataService } from './artifact-live-data.service';
 import { ArtifactsService, ArtifactViewClaims, ROLE_RANK } from './artifacts.service';
 import { artifactCsp, messagePage, messagePageCsp, renderArtifactHtml } from './artifact-runtime';
 
@@ -19,6 +21,11 @@ const MAX_RECORD_BYTES = 20_000;
 const MAX_RECORDS_PER_ARTIFACT = 10_000;
 const AI_CALLS_PER_DAY = 200;
 const COLLECTION_RE = /^[A-Za-z0-9_-]{1,60}$/;
+/** Visitor uploads (§7.5): e.g. CVs on a job form. */
+export const MAX_UPLOAD_BYTES = 10 * 1024 ** 2;
+const MAX_FILES_PER_ARTIFACT = 500;
+const UPLOAD_MIME = /^(image\/(png|jpe?g|gif|webp|heic|heif)|application\/pdf|text\/(plain|csv|markdown)|application\/(msword|rtf|vnd\.openxmlformats-officedocument\.(wordprocessingml\.document|spreadsheetml\.sheet|presentationml\.presentation)|vnd\.ms-excel|vnd\.ms-powerpoint|vnd\.oasis\.opendocument\.(text|spreadsheet|presentation)|zip))$/i;
+const BLOCKED_EXT = /\.(exe|msi|bat|cmd|com|scr|ps1|vbs|jar|sh|app|dmg|apk|dll|js|html?|svg)$/i;
 
 interface SessionClaims {
     typ: 'artifact-session';
@@ -58,6 +65,8 @@ export class ArtifactViewService {
         private readonly openrouter: OpenRouterService,
         private readonly usage: UsageService,
         private readonly artifacts: ArtifactsService,
+        private readonly storage: StorageService,
+        private readonly liveData: ArtifactLiveDataService,
     ) { }
 
     private secret() {
@@ -216,6 +225,37 @@ export class ArtifactViewService {
         const r = await this.prisma.artifactRecord.create({ data: { artifact_id: a.id, collection, data: body.data as object, submitted_by_id: s.u, visitor_id: s.vis } });
         await this.prisma.artifact.update({ where: { id: a.id }, data: { use_count: { increment: 1 } } }).catch(() => undefined);
         return { id: r.id, created_at: r.created_at };
+    }
+
+    /**
+     * `agentspace.upload(file)`: stores a visitor's file with the artifact (§7.5, §7.7). Members can always upload;
+     * public visitors only while the owner allows uploads. The page saves the returned reference in a record, and
+     * owners/editors download it from the Data tab. Files are never served back to the page.
+     */
+    async uploadFile(artifactId: string, sessionToken: string | undefined, file: { buffer: Buffer; originalname: string; mimetype: string; size: number } | undefined) {
+        const { s, a } = await this.session(artifactId, sessionToken);
+        if (!s.u && !a.public_uploads_enabled) throw new ForbiddenException('File uploads are switched off for this page');
+        if (!file?.buffer?.length) throw new BadRequestException('Choose a file to upload');
+        if (file.size > MAX_UPLOAD_BYTES) throw new BadRequestException('Files can be at most 10 MB');
+        const filename = (Buffer.from(file.originalname, 'latin1').toString('utf8') || 'file').replace(/[\\/\r\n]/g, '_').slice(0, 200);
+        if (!UPLOAD_MIME.test(file.mimetype) || BLOCKED_EXT.test(filename)) throw new BadRequestException('This file type is not allowed. Use a PDF, image, Word, Excel, PowerPoint, text or ZIP file.');
+        const count = await this.prisma.file.count({ where: { artifact_id: a.id, deleted_at: null, is_public_upload: true } });
+        if (count >= MAX_FILES_PER_ARTIFACT) throw new BadRequestException('This page has reached its file limit');
+        const id = newId();
+        const path = `orgs/${a.organization_id}/artifacts/${a.id}/uploads/${id}`;
+        await this.storage.write('FILES', path, file.buffer, file.mimetype);
+        const row = await this.prisma.file.create({
+            data: { id, organization_id: a.organization_id, uploaded_by_id: s.u, bucket: 'FILES', area: 'ARTIFACTS', object_path: path, filename, mimetype: file.mimetype, size: BigInt(file.buffer.length), status: 'READY', artifact_id: a.id, is_public_upload: true, visitor_id: s.vis },
+        });
+        await this.prisma.artifact.update({ where: { id: a.id }, data: { use_count: { increment: 1 } } }).catch(() => undefined);
+        return { type: 'file', id: row.id, filename: row.filename, mimetype: row.mimetype, size: Number(row.size) };
+    }
+
+    /** `agentspace.live(action, params)` (§7.5 Show live data): members only, never public visitors. */
+    async live(artifactId: string, body: { session?: string; action?: unknown; params?: unknown }) {
+        const { s, a } = await this.session(artifactId, body.session);
+        if (!s.u) throw new ForbiddenException('Live data is only shown to signed-in members. Show saved information on public pages instead.');
+        return this.liveData.call(a, s.u, body);
     }
 
     /** Collections starting with `private_` are only readable by owners/editors in the app (e.g. form responses with emails). */

@@ -2,7 +2,7 @@
  * Platform layer (§14.1). Every capability that differs between web, desktop (Electron) and mobile (Capacitor)
  * has an interface here. Feature code calls `platform.supports(...)` and never assumes a feature exists.
  */
-export type PlatformKind = "web" | "desktop" | "ios" | "android";
+export type PlatformKind = "web" | "desktop" | "android";
 
 export type CapabilityName = "storage" | "files" | "share" | "clipboard" | "notifications" | "push" | "media" | "voice" | "links" | "appInfo" | "lifecycle" | "desktop";
 
@@ -11,7 +11,7 @@ export interface StorageCapability {
   get(key: string): string | null;
   set(key: string, value: string): void;
   remove(key: string): void;
-  /** Where the refresh token lives: "cookie" on web (httpOnly), "secure" on native (Keychain/Keystore). */
+  /** Where the refresh token lives: "cookie" on web (httpOnly), "secure" on native (Android Keystore). */
   refreshTokenMode: "cookie" | "secure";
   getRefreshToken(): Promise<string | null>;
   setRefreshToken(token: string | null): Promise<void>;
@@ -31,14 +31,14 @@ export interface ClipboardCapability {
   readText(): Promise<string>;
 }
 
-/** What a device registers for push: a Web Push subscription, or an FCM/APNs device token in the native apps. */
-export type PushRegistration = { provider: "WEBPUSH"; subscription: PushSubscriptionJSON } | { provider: "FCM" | "APNS"; token: string };
+/** What a device registers for push: a Web Push subscription, or an FCM device token in the native apps. */
+export type PushRegistration = { provider: "WEBPUSH"; subscription: PushSubscriptionJSON } | { provider: "FCM"; token: string };
 
 export interface NotificationsCapability {
   permission(): "granted" | "denied" | "default" | "unsupported";
   requestPermission(): Promise<"granted" | "denied" | "default" | "unsupported">;
   show(title: string, options?: { body?: string; tag?: string; onClick?: () => void }): void;
-  /** Push notifications while the app is closed: Web Push on web, APNs/FCM in the native shells. */
+  /** Push notifications while the app is closed: Web Push on web, FCM in the native shells. */
   push: {
     supported(): boolean;
     /** The current registration for this device, if push is on. */
@@ -51,7 +51,12 @@ export interface NotificationsCapability {
 
 export interface MediaCapability {
   getMicrophone(): Promise<MediaStream>;
-  getCamera(): Promise<MediaStream>;
+  /** "user" = front camera, "environment" = back camera (phones). */
+  getCamera(facing?: "user" | "environment"): Promise<MediaStream>;
+  /** Screen or window sharing (§7.6). Browsers show their own picker; null where the platform can't share a stream. */
+  getScreen(): Promise<MediaStream> | null;
+  /** Whether "Share screen" can be offered here (desktop browsers and the desktop app; never on phones). */
+  canShareScreen(): boolean;
 }
 
 export interface LinksCapability {

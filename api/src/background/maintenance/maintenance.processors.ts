@@ -44,6 +44,8 @@ export class ConnectionsProcessor extends WorkerHost {
     }
 }
 
+const ARTIFACT_PURGE_AFTER_MS = 30 * 86400_000;
+
 /** storage queue (§7.7): permanently delete objects 30 days after soft deletion; apply retention. */
 @Processor(Queues.STORAGE, { concurrency: 2 })
 export class StorageProcessor extends WorkerHost {
@@ -63,7 +65,17 @@ export class StorageProcessor extends WorkerHost {
                 await this.storage.remove(f.bucket, f.object_path).catch((e) => this.logger.warn(e.message));
                 await this.prisma.file.delete({ where: { id: f.id } }).catch(() => undefined);
             }
-            return { purged: files.length };
+            // §7.5: deleted artifacts are only removed for good when their owner turned on the 30-day setting.
+            const artifacts = await this.prisma.artifact.findMany({
+                where: { deleted_at: { lt: new Date(Date.now() - ARTIFACT_PURGE_AFTER_MS) }, owner: { settings: { purge_deleted_artifacts: true } } },
+                select: { id: true, files: { select: { bucket: true, object_path: true } } },
+                take: 200,
+            });
+            for (const a of artifacts) {
+                for (const f of a.files) await this.storage.remove(f.bucket, f.object_path).catch((e) => this.logger.warn(e.message));
+                await this.prisma.artifact.delete({ where: { id: a.id } }).catch((e) => this.logger.warn(`Artifact purge ${a.id}: ${e.message}`));
+            }
+            return { purged: files.length, artifacts: artifacts.length };
         }
         if (job.name === Jobs.storage.APPLY_RETENTION) {
             const orgs = await this.prisma.organizationSettings.findMany({ where: { conversation_retention: { not: 'FOREVER' } } });

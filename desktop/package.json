@@ -8,6 +8,7 @@
   "author": "Agent Space",
   "scripts": {
     "build": "tsc -p tsconfig.json",
+    "test:device": "npm run build && node scripts/test-device.mjs",
     "dev": "npm run build && electron . --dev",
     "start": "npm run build && electron .",
     "web": "npm --prefix ../app run build",
@@ -19,7 +20,11 @@
     "release:mac": "node scripts/release.mjs --mac"
   },
   "dependencies": {
-    "electron-updater": "6.8.11"
+    "@modelcontextprotocol/sdk": "1.32.2",
+    "@nut-tree-fork/nut-js": "4.2.6",
+    "electron-updater": "6.8.11",
+    "get-windows": "9.3.0",
+    "uiohook-napi": "1.5.5"
   },
   "devDependencies": {
     "@google-cloud/storage": "8.4.0",

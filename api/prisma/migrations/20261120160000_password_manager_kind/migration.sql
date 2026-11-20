@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "CredentialKind" ADD VALUE 'PASSWORD_MANAGER';

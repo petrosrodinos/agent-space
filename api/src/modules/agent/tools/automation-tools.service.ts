@@ -6,6 +6,7 @@ import { AutomationsService, MEMORY_MAX_BYTES } from '../../automations/automati
 import { cronError, describeCron, frequencyError, isValidTimezone } from '../../automations/automation-schedule.utils';
 import { ACTION_LABEL } from '../approval-policy';
 import { ConnectionToolsService } from './connection-tools.service';
+import { AutomationTriggersService } from '../../automations/automation-triggers.service';
 import { obj, ToolContext, ToolDef } from './tool.types';
 
 const ACTION_TYPES = Object.keys(ACTION_LABEL) as ActionType[];
@@ -27,12 +28,13 @@ export class AutomationToolsService {
         private readonly access: AccessService,
         private readonly automations: AutomationsService,
         private readonly connectionTools: ConnectionToolsService,
+        private readonly triggers: AutomationTriggersService,
     ) { }
 
     tools(ctx: ToolContext): ToolDef[] {
         const t: ToolDef[] = [];
         if (ctx.run.automation_run_id) t.push(this.memoryRead(), this.memoryWrite());
-        if (ctx.actor && ctx.org_settings?.automations_enabled !== false && !ctx.run.automation_run_id) t.push(this.createAutomation(), this.listAutomations(), this.updateAutomation());
+        if (ctx.actor && ctx.org_settings?.automations_enabled !== false && !ctx.run.automation_run_id) t.push(this.createAutomation(), this.listAutomations(), this.updateAutomation(), this.listTriggers());
         return t;
     }
 
@@ -76,13 +78,21 @@ export class AutomationToolsService {
         }
         const resultsConn = a.results_connection ? await this.connectionByLabel(ctx, a.results_connection) : null;
         if (resultsConn && !connections.some((x) => x.id === resultsConn.id)) connections.push(resultsConn);
+        // §10.2 event trigger: the account to watch and the event's settings.
+        let trigger: { connection_id: string; connection_label: string; slug: string; name: string; config: Record<string, unknown> } | null = null;
+        if (a.trigger) {
+            const c = await this.connectionByLabel(ctx, String(a.trigger.connection));
+            const checked = await this.triggers.validate(ctx.actor!, { connection_id: c.id, trigger_slug: String(a.trigger.event), config: a.trigger.config ?? {} });
+            trigger = { connection_id: c.id, connection_label: c.label, slug: checked.type.slug, name: checked.type.name, config: a.trigger.config ?? {} };
+            if (!connections.some((x) => x.id === c.id)) connections.push(c);
+        } else if (!a.cron) throw new Error('Give either a schedule (cron) or a trigger (an event in a connected account).');
         let skill: { id: string; slug: string; name: string; emoji: string | null } | null = null;
         if (a.skill) {
             const q = String(a.skill).replace(/^\//, '').toLowerCase();
             skill = await this.prisma.skill.findFirst({ where: { ...this.access.usableSkillsWhere(ctx.organization_id, ctx.actor!.user_id), OR: [{ slug: q }, { name: { equals: a.skill, mode: 'insensitive' } }] }, select: { id: true, slug: true, name: true, emoji: true } });
             if (!skill) throw new Error(`No skill called "${a.skill}"`);
         }
-        return { tz, connections, preApprovals, resultsConn, skill };
+        return { tz, connections, preApprovals, resultsConn, skill, trigger };
     }
 
     private async findAutomation(ctx: ToolContext, ref: string) {
@@ -106,12 +116,13 @@ export class AutomationToolsService {
         return {
             name: 'create_automation',
             description:
-                'Save a recurring job you will do by yourself on a schedule ("every morning at 8 summarise my emails"). BEFORE calling: make sure every account it needs is connected (ask the user to connect missing ones), agree the time (in the user\'s time zone), what to pre-approve (one action to one specific place each, e.g. SEND_MESSAGE to "channel:#security" in "Slack – Company"), what to remember between runs and where results go. The user sees a summary card and must confirm.',
+                'Save a job you will do by yourself, either on a schedule ("every morning at 8 summarise my emails") or each time something happens in a connected account ("when a new deal is created in HubSpot, research the company" — first call list_automation_triggers to find the event). BEFORE calling: make sure every account it needs is connected (ask the user to connect missing ones), agree the time (in the user\'s time zone), what to pre-approve (one action to one specific place each, e.g. SEND_MESSAGE to "channel:#security" in "Slack – Company"), what to remember between runs and where results go. The user sees a summary card and must confirm.',
             parameters: obj(
                 {
                     name: { type: 'string', description: 'Short name, e.g. "Daily vulnerability scan – x"' },
                     instructions: { type: 'string', description: 'What to do on each run, in plain language, complete and self-contained' },
-                    cron: { type: 'string', description: '5-part cron in the user\'s time zone, e.g. "0 7 * * *" (every day 07:00), "0 16 * * 5" (Fridays 16:00), "0 8 * * 1-5" (weekdays 08:00)' },
+                    cron: { type: 'string', description: 'Schedule: 5-part cron in the user\'s time zone, e.g. "0 7 * * *" (every day 07:00), "0 16 * * 5" (Fridays 16:00), "0 8 * * 1-5" (weekdays 08:00). Leave out when using a trigger.' },
+                    trigger: obj({ connection: { type: 'string', description: 'Label of the connected account to watch' }, event: { type: 'string', description: 'Event slug from list_automation_triggers, e.g. GMAIL_NEW_GMAIL_MESSAGE' }, config: { type: 'object', description: "The event's settings, if it has any" } }, ['connection', 'event']),
                     timezone: { type: 'string', description: 'IANA time zone; defaults to the user\'s' },
                     skill: { type: 'string', description: 'Optional skill short name to follow on each run' },
                     connections: { type: 'array', items: { type: 'string' }, description: 'Labels of connected accounts it uses' },
@@ -125,7 +136,7 @@ export class AutomationToolsService {
                     results_target: { type: 'string', description: 'Where in that service, e.g. "channel:#security"' },
                     uses_cloud_computer: { type: 'boolean' },
                 },
-                ['name', 'instructions', 'cron'],
+                ['name', 'instructions'],
             ),
             step_type: 'TOOL_CALL',
             runs_on: 'server',
@@ -136,7 +147,7 @@ export class AutomationToolsService {
                 const changes = [
                     { field: 'name', to: a.name },
                     { field: 'bot', to: `${ctx.bot.emoji} ${ctx.bot.name}` },
-                    { field: 'when', to: `${describeCron(a.cron)} (${r.tz})` },
+                    { field: 'when', to: r.trigger ? `When ${r.trigger.name} (${r.trigger.connection_label})` : `${describeCron(a.cron)} (${r.tz})` },
                     { field: 'instructions', to: String(a.instructions).slice(0, 600) },
                     ...(r.skill ? [{ field: 'skill', to: `${r.skill.emoji ? `${r.skill.emoji} ` : ''}${r.skill.name}` }] : []),
                     { field: 'uses', to: r.connections.length ? r.connections.map((c) => c.label).join(', ') : 'No connected accounts' },
@@ -155,7 +166,7 @@ export class AutomationToolsService {
                     name: a.name,
                     bot_id: ctx.bot.id,
                     instructions: a.instructions,
-                    cron_expression: a.cron,
+                    ...(r.trigger ? { trigger: { connection_id: r.trigger.connection_id, trigger_slug: r.trigger.slug, config: r.trigger.config } } : { cron_expression: a.cron }),
                     timezone: r.tz,
                     skill_id: r.skill?.id ?? null,
                     connection_ids: r.connections.map((c) => c.id),
@@ -170,6 +181,23 @@ export class AutomationToolsService {
                 });
                 await ctx.addPart({ type: 'automation', automation_id: created.id, name: created.name, schedule: created.schedule_description, next_run_at: created.next_run_at });
                 return { output: { created: true, id: created.id, name: created.name, schedule: created.schedule_description, next_run_at: created.next_run_at } };
+            },
+        };
+    }
+
+    /** Events a connected account can start an automation with (§10.2). */
+    private listTriggers(): ToolDef {
+        return {
+            name: 'list_automation_triggers',
+            description: 'List the events a connected account can start an automation with (e.g. a new email in Gmail, a new deal in HubSpot), with each event\'s settings.',
+            parameters: obj({ connection: { type: 'string', description: 'Label or service of the connected account' } }, ['connection']),
+            step_type: 'TOOL_CALL',
+            runs_on: 'server',
+            title: (a) => `Checking which events ${a.connection} can start`,
+            execute: async (a, ctx) => {
+                const c = await this.connectionByLabel(ctx, String(a.connection));
+                const res = await this.triggers.typesFor(ctx.actor!, c.id);
+                return { output: { account: res.connection.label, events: res.triggers.slice(0, 60).map((t) => ({ event: t.slug, name: t.name, description: t.description.slice(0, 200), settings: (t.config as { properties?: Record<string, unknown>; required?: string[] }).properties ? { properties: Object.keys((t.config as { properties: Record<string, unknown> }).properties), required: (t.config as { required?: string[] }).required ?? [] } : null })) } };
             },
         };
     }

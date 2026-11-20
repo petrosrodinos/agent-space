@@ -1,9 +1,15 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request, type Paginated } from "@/lib/request";
-import type { Automation, AutomationInput, AutomationMemory, AutomationRun, AutomationStatus, AutomationUpdate } from "../interfaces/automations.interfaces";
+import type { MeetingAssistantInput, MeetingAssistantStatus, AutomationTriggerType, Automation, AutomationInput, AutomationMemory, AutomationRun, AutomationStatus, AutomationUpdate } from "../interfaces/automations.interfaces";
 
 const R = ApiRoutes.automations;
+
+export const getMeetingAssistant = () => request<MeetingAssistantStatus>(() => axiosInstance.get(ApiRoutes.meeting_assistant));
+export const setMeetingAssistant = (dto: MeetingAssistantInput) => request<MeetingAssistantStatus>(() => axiosInstance.put(ApiRoutes.meeting_assistant, dto));
+export const disableMeetingAssistant = () => request<MeetingAssistantStatus>(() => axiosInstance.delete(ApiRoutes.meeting_assistant));
+export const getAutomationTriggers = (connectionId: string) =>
+  request<{ connection: { id: string; label: string; service_name: string; service_key: string }; triggers: AutomationTriggerType[] }>(() => axiosInstance.get(R.triggers, { params: { connection_id: connectionId } }));
 
 export const getAutomations = (params: { status?: AutomationStatus; bot_id?: string; search?: string } = {}) => request<Automation[]>(() => axiosInstance.get(R.root, { params }));
 export const getAutomation = (id: string) => request<Automation>(() => axiosInstance.get(R.one(id)));

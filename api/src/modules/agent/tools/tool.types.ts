@@ -33,6 +33,8 @@ export interface ToolOutput {
     images?: string[];
     /** Optional connection used, for the activity history. */
     connection_id?: string;
+    /** §16 Undo: how to reverse this action in the connected service (kept on the step, never shown to the model). */
+    undo?: { tool: string; args: Record<string, unknown>; label: string; connection_id: string };
 }
 
 export type ToolResult = ToolOutput | ToolWaitForInput;
@@ -64,6 +66,10 @@ export interface ToolDef {
     connectionFor?: (args: any) => string | undefined;
     /** The acting user's permission for this connected-service tool (service details page). Absent = AUTO_REVIEW. */
     tool_permission?: ToolPermission;
+    /** Always asks for approval for these arguments, whatever the approval level (e.g. deleting or overwriting a local file, §14.3). */
+    always_approve?: (args: any) => boolean;
+    /** Overrides the default tool timeout (device tools wait for the user or for the computer to come online). */
+    timeout_ms?: (args: any, ctx: ToolContext) => number;
 }
 
 export const obj = (properties: Record<string, unknown>, required: string[] = []) => ({ type: 'object', properties, required, additionalProperties: false });

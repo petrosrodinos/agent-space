@@ -11,7 +11,8 @@ import { BULL_BOARD_ADAPTER } from './core/queues/queues.constants';
 import { bullBoardAuthMiddleware } from './core/queues/bull-board.middleware';
 
 async function bootstrap() {
-    const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: false });
+    // rawBody: webhook signatures are checked against the exact bytes received (§10.2 Composio triggers).
+    const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: false, rawBody: true });
     const config = app.get(ConfigService);
     const logger = new Logger('Bootstrap');
 

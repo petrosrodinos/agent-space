@@ -139,7 +139,9 @@ export const webPlatform: Platform = {
   },
   media: {
     getMicrophone: () => navigator.mediaDevices.getUserMedia({ audio: { echoCancellation: true, noiseSuppression: true } }),
-    getCamera: () => navigator.mediaDevices.getUserMedia({ video: true }),
+    getCamera: (facing) => navigator.mediaDevices.getUserMedia({ video: facing ? { facingMode: facing } : true }),
+    getScreen: () => (navigator.mediaDevices?.getDisplayMedia ? navigator.mediaDevices.getDisplayMedia({ video: true, audio: false }) : null),
+    canShareScreen: () => typeof navigator !== "undefined" && !!navigator.mediaDevices?.getDisplayMedia && !/Android|iPhone|iPad/i.test(navigator.userAgent),
   },
   links: {
     openExternal: (url) => {

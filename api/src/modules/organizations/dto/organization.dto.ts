@@ -3,6 +3,7 @@ import { IsArray, IsBoolean, IsEmail, IsEnum, IsIn, IsInt, IsOptional, IsString,
 import {
     ActionType, AppLanguage, ApprovalTimeoutAction, InvitationExpiry, InteractiveRepliesMode, MinApprovalLevel, ModelPolicy, OrganizationRole,
     OrgConversationRetention, PublicLinkPolicy, WhoCan, MaxFileSize, ScheduleFrequency, LimitReachedAction,
+    BiometricApprovalScope,
 } from 'generated/prisma';
 import { VOICE_MODEL_IDS } from '@/modules/voice/voice-models';
 
@@ -40,6 +41,7 @@ export class UpdateOrganizationSettingsDto {
     @ApiPropertyOptional({ enum: MinApprovalLevel }) @IsOptional() @IsEnum(MinApprovalLevel) min_approval_level?: MinApprovalLevel;
     @ApiPropertyOptional({ enum: ActionType, isArray: true }) @IsOptional() @IsArray() @IsEnum(ActionType, { each: true }) enforced_approvals?: ActionType[];
     @ApiPropertyOptional() @IsOptional() @IsBoolean() bots_consulting_enabled?: boolean;
+    @ApiPropertyOptional({ enum: BiometricApprovalScope, isArray: true, description: 'Approvals that need fingerprint / face unlock on mobile, on top of payments and website passwords (§13.4)' }) @IsOptional() @IsArray() @IsEnum(BiometricApprovalScope, { each: true }) biometric_approval_scopes?: BiometricApprovalScope[];
     @ApiPropertyOptional() @IsOptional() @IsInt() @Min(5) @Max(60 * 24 * 30) approval_timeout_minutes?: number | null;
     @ApiPropertyOptional({ enum: ApprovalTimeoutAction, description: 'APPROVE = accept automatically when the timeout is reached' }) @IsOptional() @IsEnum(ApprovalTimeoutAction) approval_timeout_action?: ApprovalTimeoutAction;
     @ApiPropertyOptional({ enum: WhoCan }) @IsOptional() @IsEnum(WhoCan) who_can_create_skills?: WhoCan;
@@ -47,6 +49,7 @@ export class UpdateOrganizationSettingsDto {
     @ApiPropertyOptional() @IsOptional() @IsBoolean() artifacts_enabled?: boolean;
     @ApiPropertyOptional({ enum: PublicLinkPolicy }) @IsOptional() @IsEnum(PublicLinkPolicy) public_link_policy?: PublicLinkPolicy;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() voice_mode_enabled?: boolean;
+    @ApiPropertyOptional({ description: 'Camera and screen sharing in voice mode (§7.6)' }) @IsOptional() @IsBoolean() voice_visual_input?: boolean;
     @ApiPropertyOptional({ enum: VOICE_MODEL_IDS, nullable: true, description: 'null = platform default' }) @IsOptional() @IsIn([...VOICE_MODEL_IDS, null]) voice_model?: string | null;
     @ApiPropertyOptional() @IsOptional() @IsBoolean() automations_enabled?: boolean;
     @ApiPropertyOptional({ enum: ScheduleFrequency }) @IsOptional() @IsEnum(ScheduleFrequency) max_schedule_frequency?: ScheduleFrequency;

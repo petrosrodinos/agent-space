@@ -27,6 +27,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { SettingRow, SettingsCard } from "@/components/ui/setting-row";
+import { DeviceToolsCard } from "./device-tools-card";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import {
   Dialog,
@@ -823,6 +824,12 @@ export const MemorySection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
             )
           }
         />
+        <SwitchSetting
+          label="Permanently delete my deleted artifacts after 30 days"
+          description="When off, deleted artifacts stay in the Deleted tab and can be restored at any time."
+          checked={s.purge_deleted_artifacts}
+          onChange={(v) => set("purge_deleted_artifacts", v)}
+        />
       </SettingsCard>
       <SettingsCard
         title="What bots remember about you"
@@ -1097,6 +1104,7 @@ export const DevicesSection: FC = () => {
   return (
     <div className="space-y-4">
       <DesktopAppCard />
+      <DeviceToolsCard />
       <DesktopDownloadCard />
       <SettingsCard
         title="My devices"
@@ -1112,7 +1120,7 @@ export const DevicesSection: FC = () => {
           <ul className="divide-y divide-hairline">
             {data?.map((d) => (
               <li key={d.id} className="flex items-center gap-3 py-3">
-                {d.platform === Platforms.IOS || d.platform === Platforms.ANDROID ? (
+                {d.platform === Platforms.ANDROID ? (
                   <Smartphone className="h-5 w-5 text-muted-foreground" />
                 ) : (
                   <Laptop className="h-5 w-5 text-muted-foreground" />

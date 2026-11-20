@@ -26,6 +26,8 @@ export interface OrganizationSettings {
   interactive_replies_mode: "BLOCKS_AND_MINI_APPS" | "BLOCKS_ONLY" | "OFF";
   min_approval_level: "NONE" | "IMPORTANT_ACTIONS" | "ALWAYS_ASK";
   enforced_approvals: string[];
+  /** Extra approvals needing fingerprint / face unlock on the phone (§13.4). */
+  biometric_approval_scopes: string[];
   bots_consulting_enabled: boolean;
   approval_timeout_minutes: number | null;
   approval_timeout_action: ApprovalTimeoutAction;
@@ -37,6 +39,8 @@ export interface OrganizationSettings {
   members_may_export: boolean;
   require_two_factor: boolean;
   voice_mode_enabled: boolean;
+  /** §7.6 camera and screen sharing in voice mode. */
+  voice_visual_input: boolean;
   /** OpenAI Realtime model for voice mode; null = platform default. */
   voice_model: string | null;
   limit_reached_action: "PAUSE_AND_NOTIFY" | "SWITCH_TO_CHEAPER_MODEL" | "NOTIFY_ONLY";

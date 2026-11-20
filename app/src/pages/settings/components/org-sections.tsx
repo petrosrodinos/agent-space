@@ -31,7 +31,7 @@ import { useActivity, useSetUsageLimit, useUsage } from "@/features/usage/hooks/
 import { useMe } from "@/features/users/hooks/use-users";
 import { useVoiceModels } from "@/features/voice/hooks/use-voice-session";
 import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
-import { EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, UsageLimitScopeOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions, fromApprovalTimeoutValue, toApprovalTimeoutValue } from "@/config/constants/dropdowns/organizations/organization-form.options";
+import { BiometricApprovalScopeOptions, EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, UsageLimitScopeOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions, fromApprovalTimeoutValue, toApprovalTimeoutValue } from "@/config/constants/dropdowns/organizations/organization-form.options";
 import { AppLanguageOptions } from "@/config/constants/dropdowns/users/user-settings-form.options";
 import { ModelCostTierOptions } from "@/config/constants/dropdowns/bots/bot-settings-form.options";
 import { UsageKindOptions } from "@/config/constants/dropdowns/shared/status.options";
@@ -313,6 +313,12 @@ export const AiModelsSection: FC = () => {
         ]}
         onChange={(v) => set("voice_model", v === PickerValues.RECOMMENDED ? null : v)}
       />
+      <SwitchSetting
+        label="Camera and screen sharing in voice mode"
+        description="Members can show the bot what they're looking at while talking. Pictures aren't stored unless they post a snapshot."
+        checked={s.voice_visual_input}
+        onChange={(v) => set("voice_visual_input", v)}
+      />
     </SettingsCard>
   );
 };
@@ -321,6 +327,7 @@ export const SafetySection: FC = () => {
   const { s, set, update } = useOrgSetting();
   if (!s) return <SettingsSkeleton />;
   const enforced = new Set(s.enforced_approvals);
+  const biometric = new Set(s.biometric_approval_scopes ?? []);
   return (
     <SettingsCard title="Approvals and safety" description="Organisation rules always win over bot and personal settings.">
       <SelectSetting label="Minimum approval level" value={s.min_approval_level} options={MinApprovalLevelOptions} onChange={(v) => set("min_approval_level", v as OrganizationSettings["min_approval_level"])} />
@@ -329,6 +336,16 @@ export const SafetySection: FC = () => {
           {EnforcedApprovalOptions.map((o) => (
             <label key={o.id} className="flex min-h-[44px] cursor-pointer items-center gap-2">
               <Checkbox checked={enforced.has(o.id)} onCheckedChange={(v) => { const n = new Set(enforced); if (v) n.add(o.id); else n.delete(o.id); set("enforced_approvals", [...n]); }} />
+              <span className="text-sm text-ink">{o.label}</span>
+            </label>
+          ))}
+        </div>
+      </SettingRow>
+      <SettingRow label="Fingerprint / face unlock on the phone for" description="Payments and website passwords always need it. Lock-screen Approve / Reject is not offered for these; they open the app." stack>
+        <div className="grid gap-1 sm:grid-cols-2">
+          {BiometricApprovalScopeOptions.map((o) => (
+            <label key={o.id} className="flex min-h-[44px] cursor-pointer items-center gap-2">
+              <Checkbox checked={biometric.has(o.id)} onCheckedChange={(v) => { const n = new Set(biometric); if (v) n.add(o.id); else n.delete(o.id); set("biometric_approval_scopes", [...n]); }} />
               <span className="text-sm text-ink">{o.label}</span>
             </label>
           ))}

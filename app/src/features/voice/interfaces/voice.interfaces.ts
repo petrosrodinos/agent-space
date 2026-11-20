@@ -31,7 +31,8 @@ export const RealtimeAudioEvents = {
 } as const;
 
 /** Realtime conversation item types the voice bar watches. */
-export const RealtimeItemTypes = { FUNCTION_CALL_OUTPUT: "function_call_output" } as const;
+export const RealtimeItemTypes = { FUNCTION_CALL_OUTPUT: "function_call_output", MESSAGE: "message" } as const;
+export const RealtimeContentTypes = { INPUT_IMAGE: "input_image" } as const;
 
 /** Data channel label expected by OpenAI Realtime. */
 export const REALTIME_DATA_CHANNEL = "oai-events";
@@ -46,6 +47,13 @@ export const VoiceEndReasons = {
   ERROR: "ERROR",
 } as const;
 export type VoiceEndReason = (typeof VoiceEndReasons)[keyof typeof VoiceEndReasons];
+
+/** §7.6 Showing the bot what you see. */
+export const VisualKinds = { CAMERA: "camera", SCREEN: "screen" } as const;
+export type VisualKind = (typeof VisualKinds)[keyof typeof VisualKinds];
+
+/** Realtime client event that adds a picture to the conversation. */
+export const REALTIME_ITEM_CREATE = "conversation.item.create";
 
 /** RTCSessionDescription type of the answer returned by our API. */
 export const SDP_ANSWER = "answer" as const;

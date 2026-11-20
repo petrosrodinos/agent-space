@@ -22,6 +22,9 @@ import { ArtifactToolsService } from './tools/artifact-tools.service';
 import { KnowledgeToolsService } from './tools/knowledge-tools.service';
 import { ComputerToolsService } from './tools/computer-tools.service';
 import { McpToolsService } from './tools/mcp-tools.service';
+import { DeviceToolsService } from './tools/device-tools.service';
+import { ChannelsService } from '../channels/channels.service';
+import { UNDO_WINDOW_MS } from './undo/undo.rules';
 import { AutomationsService } from '../automations/automations.service';
 import { MessagePart, ToolContext, ToolDef } from './tools/tool.types';
 
@@ -75,6 +78,8 @@ export class AgentRunnerService {
         private readonly computerTools: ComputerToolsService,
         private readonly mcpTools: McpToolsService,
         private readonly automations: AutomationsService,
+        private readonly deviceTools: DeviceToolsService,
+        private readonly channels: ChannelsService,
     ) { }
 
     private cancelled(runId: string) {
@@ -249,6 +254,13 @@ export class AgentRunnerService {
         if (!ctx.is_temporary) toolDefs = [...toolDefs, ...(await this.artifactTools.tools(ctx))];
         toolDefs = [...toolDefs, ...(await this.knowledgeTools.tools(ctx)), ...(await this.computerTools.tools(ctx))];
         try {
+            const device = await this.deviceTools.tools(ctx);
+            toolDefs = [...toolDefs, ...device.tools];
+            summary = [...summary, ...device.summary];
+        } catch (e) {
+            this.logger.warn(`Device tools unavailable: ${(e as Error).message}`);
+        }
+        try {
             const conn = await this.connectionTools.tools(ctx);
             toolDefs = [...toolDefs, ...conn.tools];
             summary = conn.summary;
@@ -364,7 +376,7 @@ export class AgentRunnerService {
             } else {
                 const action = def.confirm ? 'OTHER' : await def.classify?.(args, ctx);
                 const preApproved = !def.confirm && ctx.run.automation_run_id ? await this.automations.isPreApproved(ctx.run, action ?? null, def.connectionFor?.(args), args) : false;
-                const decision = def.confirm ? { required: true } : decideApproval(action ?? null, ctx.bot, ctx.org_settings, { preApproved, toolPermission: def.tool_permission });
+                const decision = def.confirm || def.always_approve?.(args) ? { required: true } : decideApproval(action ?? null, ctx.bot, ctx.org_settings, { preApproved, toolPermission: def.tool_permission });
                 if (decision.required) {
                     let previewError: string | null = null;
                     const preview = def.preview
@@ -403,16 +415,18 @@ export class AgentRunnerService {
             const seq = (state.seq = (state.seq ?? 0) + 1);
             const title = def.title(args, ctx);
             const step = await this.prisma.runStep.create({
-                data: { run_id: ctx.run.id, sequence: seq, type: def.step_type, status: 'RUNNING', title, tool_name: def.name, runs_on: 'SERVER', input: redactValues(args, ctx.secrets_used) as Prisma.InputJsonValue },
+                data: { run_id: ctx.run.id, sequence: seq, type: def.step_type, status: 'RUNNING', title, tool_name: def.name, runs_on: def.runs_on === 'device' ? 'DEVICE' : 'SERVER', input: redactValues(args, ctx.secrets_used) as Prisma.InputJsonValue },
             });
             const partIndex = state.parts!.push({ type: 'tool', call_id: call.id, step_id: step.id, name: def.name, title, status: 'running', started_at: new Date().toISOString() }) - 1;
             await this.saveParts(state);
             if (ctx.conversation_id) await this.events.toConversation(ctx.conversation_id, ConversationEvents.RUN_STEP, { run_id: ctx.run.id, step_id: step.id, title, status: 'RUNNING' });
+            // Long tasks: live progress for the phone's ongoing notification (§14.2).
+            if (ctx.run.type === 'TASK' && ctx.run.user_id) await this.events.toUser(ctx.run.user_id, UserEvents.TASK_UPDATED, { run_id: ctx.run.id, status: 'RUNNING', step: title, steps: seq });
 
             try {
                 const result = await Promise.race([
                     def.execute(args, ctx),
-                    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('The tool took too long to respond')), TOOL_TIMEOUT_MS)),
+                    new Promise<never>((_, reject) => setTimeout(() => reject(new Error('The tool took too long to respond')), def.timeout_ms?.(args, ctx) ?? TOOL_TIMEOUT_MS)),
                 ]);
                 if ('wait' in result) {
                     const pIdx = state.parts!.push(result.part) - 1;
@@ -426,9 +440,16 @@ export class AgentRunnerService {
                 if (serialized.length > MAX_TOOL_OUTPUT) serialized = `${serialized.slice(0, MAX_TOOL_OUTPUT)}… [truncated]`;
                 await this.prisma.runStep.update({
                     where: { id: step.id },
-                    data: { status: 'COMPLETED', finished_at: new Date(), duration_ms: Date.now() - step.started_at.getTime(), output: JSON.parse(JSON.stringify(output ?? null, (_k, v) => (typeof v === 'string' && v.length > 4000 ? `${v.slice(0, 4000)}…` : v))) as Prisma.InputJsonValue, connection_id: result.connection_id },
+                    data: {
+                        status: 'COMPLETED',
+                        finished_at: new Date(),
+                        duration_ms: Date.now() - step.started_at.getTime(),
+                        output: JSON.parse(JSON.stringify(output ?? null, (_k, v) => (typeof v === 'string' && v.length > 4000 ? `${v.slice(0, 4000)}…` : v))) as Prisma.InputJsonValue,
+                        connection_id: result.connection_id,
+                        ...(result.undo ? { undo: result.undo as unknown as Prisma.InputJsonValue, undo_until: new Date(Date.now() + UNDO_WINDOW_MS) } : {}),
+                    },
                 });
-                Object.assign(state.parts![partIndex], { status: 'done', duration_ms: Date.now() - step.started_at.getTime() });
+                Object.assign(state.parts![partIndex], { status: 'done', duration_ms: Date.now() - step.started_at.getTime(), ...(result.undo ? { undo: { label: result.undo.label, until: new Date(Date.now() + UNDO_WINDOW_MS).toISOString() } } : {}) });
                 state.messages!.push({ role: 'tool', tool_call_id: call.id, content: serialized });
                 if ('images' in result && result.images?.length && ctx.supports_vision) this.pushImages(state, def.name, result.images);
             } catch (e) {
@@ -503,6 +524,8 @@ export class AgentRunnerService {
     private async statusEvent(run: { id: string; bot_id: string; conversation_id: string | null; user_id: string | null; automation_run_id?: string | null }, status: RunStatus, extra: Record<string, unknown> = {}) {
         if (run.conversation_id) await this.events.toConversation(run.conversation_id, ConversationEvents.RUN_STATUS, { run_id: run.id, bot_id: run.bot_id, status, ...extra });
         if (run.user_id) await this.events.toUser(run.user_id, UserEvents.TASK_UPDATED, { run_id: run.id, status });
+        // Message from anywhere (§16): answers to email / Slack / WhatsApp messages go back there.
+        await this.channels.onRunStatus(run.id, status).catch((e) => this.logger.warn(`Channel reply for run ${run.id}: ${(e as Error).message}`));
         // Automation run history, counters, retry and auto-pause (§10.5).
         if (run.automation_run_id) {
             await this.automations.recordRunOutcome(run.id, status, typeof extra.error === 'string' ? extra.error : null).catch((e) => this.logger.warn(`Automation outcome for run ${run.id}: ${(e as Error).message}`));
@@ -521,6 +544,7 @@ export class AgentRunnerService {
         await this.prisma.message.update({ where: { id: state.message_id! }, data: { status: 'COMPLETED', parts: state.parts as unknown as Prisma.InputJsonValue, content: this.textOf(state) } });
         await this.afterMessage(run, state);
         await this.computerTools.finishRun(run.id);
+        await this.deviceTools.finishRun(run.id, run.user_id).catch(() => undefined);
         await this.statusEvent(run, 'COMPLETED');
         if (run.type === 'TASK' && run.user_id) {
             const s = await this.prisma.userSettings.findUnique({ where: { user_id: run.user_id } });
@@ -550,6 +574,7 @@ export class AgentRunnerService {
         }
         await this.prisma.approval.updateMany({ where: { run_id: runId, status: 'PENDING' }, data: { status: 'CANCELLED', resolved_at: new Date() } });
         await this.computerTools.finishRun(runId);
+        await this.deviceTools.finishRun(runId, run.user_id).catch(() => undefined);
         await this.statusEvent(run, 'FAILED', { error: message });
         if (run.type === 'TASK' && run.user_id) {
             await this.notifications.notify({ user_id: run.user_id, organization_id: run.organization_id, event: 'TASK_FAILED', title: `Task failed: ${run.title ?? 'task'}`, body: message, link_path: run.conversation_id ? `/c/${run.conversation_id}` : `/tasks/${run.id}` });
@@ -567,6 +592,7 @@ export class AgentRunnerService {
         }
         await this.prisma.approval.updateMany({ where: { run_id: runId, status: 'PENDING' }, data: { status: 'CANCELLED', resolved_at: new Date() } });
         await this.computerTools.finishRun(runId);
+        await this.deviceTools.finishRun(runId, run.user_id).catch(() => undefined);
         await this.statusEvent(run, 'STOPPED');
     }
 

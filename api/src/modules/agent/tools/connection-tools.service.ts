@@ -8,6 +8,7 @@ import { SecretStoreService } from '@/integrations/secrets/secret-store.service'
 import { AccessService } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
 import { classifyToolSlug } from '../approval-policy';
+import { undoPlanFor } from '../undo/undo.rules';
 import { assertPublicUrl } from './web.utils';
 import { obj, ToolContext, ToolDef } from './tool.types';
 
@@ -158,7 +159,8 @@ export class ConnectionToolsService {
                     const res = await this.composio.executeTool(t.slug, c.composio_connected_account_id!, await this.composioUserIdFor(c), rest);
                     await this.prisma.connection.update({ where: { id: c.id }, data: { last_used_at: new Date() } });
                     await log(true);
-                    return { output: res.data, connection_id: c.id };
+                    const plan = undoPlanFor(t.slug, rest, res.data);
+                    return { output: res.data, connection_id: c.id, ...(plan ? { undo: { ...plan, connection_id: c.id } } : {}) };
                 } catch (e) {
                     if (!(e instanceof ComposioToolError)) throw e;
                     await log(false, e.kind);

@@ -10,6 +10,8 @@ import { VoiceInputModes } from "@/features/users/interfaces/users.interfaces";
 import { Keys } from "@/config/constants/browser.constants";
 import { VoicePhaseOptions } from "@/config/constants/dropdowns/voice/voice.options";
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
+import { useVoiceVisual } from "@/features/voice/hooks/use-voice-visual";
+import { DesktopScreenPicker, VoiceVisualButtons, VoiceVisualPreview } from "./voice-visual";
 
 
 /** Animated waveform: bar heights follow the live audio level (who is speaking). */
@@ -36,6 +38,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
   const [typing, setTyping] = useState(false);
   const [text, setText] = useState("");
   const [full, setFull] = useState(false);
+  const visual = useVoiceVisual(voice);
   const color = bot?.color ?? "var(--primary)";
   const ptt = voice.mode === VoiceInputModes.PUSH_TO_TALK;
   const label = voice.muted ? "Mic muted" : getDropdownOptionLabel(VoicePhaseOptions, voice.phase, "");
@@ -51,6 +54,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
       <Button type="button" variant="outline" size="icon" className="h-10 w-10" onClick={voice.interrupt} aria-label="Stop bot" disabled={voice.phase === VoicePhases.CONNECTING}>
         <Square className="!h-4 !w-4 fill-current" />
       </Button>
+      <VoiceVisualButtons visual={visual} disabled={voice.phase === VoicePhases.CONNECTING} />
       <Button type="button" variant={typing ? "default" : "outline"} size="icon" className="h-10 w-10" onClick={() => setTyping((t) => !t)} aria-label="Keyboard" aria-pressed={typing}>
         <Keyboard />
       </Button>
@@ -115,10 +119,12 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
         </div>
         <Waveform level={voice.level} color={color} big />
         <div className="flex w-full max-w-sm flex-col items-center gap-4">
+          <VoiceVisualPreview visual={visual} />
           {pttButton}
           {typeBox && <div className="w-full">{typeBox}</div>}
           {controls}
         </div>
+        <DesktopScreenPicker visual={visual} />
       </div>
     );
   }
@@ -138,7 +144,9 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
         {pttButton}
         {controls}
       </div>
+      <VoiceVisualPreview visual={visual} />
       {typeBox}
+      <DesktopScreenPicker visual={visual} />
     </div>
   );
 };

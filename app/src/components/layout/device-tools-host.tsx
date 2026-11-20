@@ -199,7 +199,7 @@ const DevicePromptDialog: FC<{ prompt: Prompt | null; onAnswer: (a: Answer) => v
               <DialogTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary" /> {bot} wants to {prompt.call.summary}</DialogTitle>
               <DialogDescription>On this computer. You can change this any time in Settings → Devices.</DialogDescription>
             </DialogHeader>
-            <DialogFooter className="flex-col gap-2 sm:flex-row">
+            <DialogFooter>
               <Button variant="outline" onClick={deny}>Don't allow</Button>
               <Button variant="outline" onClick={() => onAnswer({ allow: true, always: true })}>Always allow</Button>
               <Button onClick={() => onAnswer({ allow: true })}>Allow once</Button>

@@ -54,7 +54,7 @@ export const StoreSecretDialog: FC<Props> = ({ open, secret, service, botIds, on
             </div>
           </div>
         </div>
-        <DialogFooter className="gap-2 sm:justify-between">
+        <DialogFooter>
           <Button variant="ghost" onClick={onSendAnyway} disabled={create.isPending}>
             Send anyway
           </Button>

@@ -39,12 +39,12 @@ const ChatHomePage: FC = () => {
               <Plus />
             </CircleButton>
           </div>
-          <InstallAppBanner className="md:hidden" />
           {/* Desktop / tablet header */}
           <div className="sticky top-0 z-10 hidden items-center gap-2 bg-canvas/95 px-4 pb-2 pt-8 backdrop-blur md:flex">
             <h1 className="flex-1 font-display text-[28px] font-bold text-ink">Chats</h1>
             <ChatActions />
           </div>
+          <InstallAppBanner className="md:mx-4 md:mt-1" />
 
           <div className="pb-28 pt-1 md:pb-6">
             {isPending ? (

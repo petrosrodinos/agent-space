@@ -43,7 +43,7 @@ const ConfirmationDialog = ({ isOpen, onClose, onConfirm, title, description, co
             </div>
           </div>
         </DialogHeader>
-        <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+        <DialogFooter>
           <Button variant="outline" onClick={handleCancel} disabled={isLoading}>
             {cancelText}
           </Button>

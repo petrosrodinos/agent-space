@@ -281,7 +281,7 @@ const MobilePromptDialog: FC<{ prompt: Prompt | null; onAnswer: (a: Answer) => v
           </DialogTitle>
           <DialogDescription>On this phone. You can change this any time in Settings → Devices.</DialogDescription>
         </DialogHeader>
-        <DialogFooter className="flex-col gap-2 sm:flex-row">
+        <DialogFooter>
           <Button variant="outline" onClick={deny}>Don't allow</Button>
           <Button variant="outline" onClick={() => onAnswer({ allow: true, always: true })}>Always allow</Button>
           <Button onClick={() => onAnswer({ allow: true })}>Allow once</Button>

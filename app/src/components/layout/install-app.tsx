@@ -79,7 +79,7 @@ function installSteps(target: InstallTarget, iosBrowser: IosBrowser): Step[] {
 
 /** Mobile web banner on Chats: offers to install Agent Space to the home screen. */
 export const InstallAppBanner: FC<{ className?: string }> = ({ className }) => {
-  const { showBanner, target, canPrompt, install, dismissBanner } = useInstallApp();
+  const { showBanner, target, canPrompt, install, installsNative, isDesktop, dismissBanner } = useInstallApp();
   if (!showBanner) return null;
 
   return (
@@ -87,10 +87,10 @@ export const InstallAppBanner: FC<{ className?: string }> = ({ className }) => {
       <AppIcon />
       <div className="min-w-0 flex-1">
         <p className="text-[15px] font-bold text-ink">Get the Agent Space app</p>
-        <p className="text-xs text-muted-foreground">{target === InstallTargets.IOS ? "Add it to your Home Screen for full-screen chats and notifications." : "Install it for full-screen chats and notifications."}</p>
+        <p className="text-xs text-muted-foreground">{target === InstallTargets.IOS ? "Add it to your Home Screen for full-screen chats and notifications." : installsNative ? (isDesktop ? "Download the desktop app for notifications, voice mode and computer control." : "Download the Android app for push notifications, voice mode and lock-screen approvals.") : "Install it for full-screen chats and notifications."}</p>
       </div>
       <Button size="sm" onClick={() => void install()}>
-        {canPrompt ? "Install" : "How to"}
+        {installsNative ? "Download" : canPrompt ? "Install" : "How to"}
       </Button>
       <button type="button" onClick={dismissBanner} className="-mr-1 rounded-full p-1.5 text-muted-foreground transition-colors hover:bg-surface-sunken" aria-label="Not now">
         <X className="h-4 w-4" />

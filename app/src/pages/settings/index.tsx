@@ -180,7 +180,7 @@ const SettingsPage: FC = () => {
               <ListRow
                 icon={Download}
                 label="Install the app"
-                description="Add Agent Space to your home screen"
+                description={installApp.installsNative ? "Download the app" : "Add Agent Space to your home screen"}
                 onClick={() => void installApp.install()}
               />
             </ListGroup>

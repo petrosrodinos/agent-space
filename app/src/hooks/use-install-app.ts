@@ -1,5 +1,7 @@
 import { useCallback, useState, useSyncExternalStore } from "react";
 import { isAppShell, platform, pwa, InstallOutcomes, InstallTargets, type InstallOutcome } from "@/platform";
+import { ANDROID_LATEST_APK_URL } from "@/platform/android-release";
+import { DesktopOses, detectDesktopOs, DESKTOP_WINDOWS_INSTALLER_URL } from "@/platform/desktop-release";
 import { useUiStore } from "@/stores/ui";
 
 const DISMISSED_AT_KEY = "install-banner-dismissed-at";
@@ -24,12 +26,25 @@ export function useInstallApp() {
 
   const available = !isAppShell && !installed;
 
-  /** Install button: the browser's own prompt when it has one, otherwise our instructions. */
-  const install = useCallback(async (): Promise<InstallOutcome> => {
+  /** Web-app (PWA) install: the browser's own prompt when it has one, otherwise our "Add to Home Screen" instructions. */
+  const installPwa = useCallback(async (): Promise<InstallOutcome> => {
     if (pwa.canPrompt()) return pwa.prompt();
     setSheetOpen(true);
     return InstallOutcomes.UNAVAILABLE;
   }, [setSheetOpen]);
+
+  const nativeDownloadUrl =
+    target === InstallTargets.ANDROID ? ANDROID_LATEST_APK_URL : target === InstallTargets.DESKTOP && detectDesktopOs() === DesktopOses.WINDOWS ? DESKTOP_WINDOWS_INSTALLER_URL : null;
+
+  /** Main install button: downloads the native app (Android APK, Windows installer) when there is one, otherwise the PWA install flow. */
+  const install = useCallback(async (): Promise<InstallOutcome> => {
+    if (!nativeDownloadUrl) return installPwa();
+    const link = document.createElement("a");
+    link.href = nativeDownloadUrl;
+    link.download = "";
+    link.click();
+    return InstallOutcomes.ACCEPTED;
+  }, [nativeDownloadUrl, installPwa]);
 
   const dismissBanner = useCallback(() => {
     platform.storage.set(DISMISSED_AT_KEY, String(Date.now()));
@@ -39,12 +54,16 @@ export function useInstallApp() {
   return {
     /** The app can be installed from this browser (not already installed, not inside the native/desktop apps). */
     available,
-    /** Show the mobile banner: phones/tablets only, and not snoozed. */
-    showBanner: available && !bannerSnoozed && target !== InstallTargets.DESKTOP,
+    /** Show the banner: phones/tablets, and desktops that have an installer (Windows); not snoozed. */
+    showBanner: available && !bannerSnoozed && (target !== InstallTargets.DESKTOP || !!nativeDownloadUrl),
     target,
     iosBrowser: pwa.iosBrowser(),
     canPrompt,
     install,
+    installPwa,
+    /** The main install button downloads a native app (Android APK or Windows installer) instead of installing the PWA. */
+    installsNative: !!nativeDownloadUrl,
+    isDesktop: target === InstallTargets.DESKTOP,
     dismissBanner,
   };
 }

@@ -2,6 +2,12 @@ import { Injectable, Logger, ServiceUnavailableException } from '@nestjs/common'
 import { ConfigService } from '@nestjs/config';
 import { Daytona, Sandbox } from '@daytonaio/sdk';
 
+/** Labels put on every sandbox we create, so leftovers can be found again even when the database lost track of them. */
+export const SandboxLabels = { APP: 'app', ORG: 'org', BOT: 'bot' } as const;
+export const SANDBOX_APP = 'agentspace';
+/** Safety limit on how many sandboxes one listing reads. */
+const LIST_LIMIT = 2000;
+
 /**
  * Daytona sandboxes (§9): one persistent sandbox per bot with a desktop (Xvfb + noVNC) for live view and computer use.
  * The API key never leaves the server; clients only receive short-lived signed preview URLs.
@@ -29,6 +35,16 @@ export class DaytonaService {
 
     async create(labels: Record<string, string>, autoStopMinutes: number): Promise<Sandbox> {
         return this.daytona().create({ labels, autoStopInterval: autoStopMinutes, autoArchiveInterval: 60 * 24 * 7, public: false }, { timeout: 180 });
+    }
+
+    /** Every sandbox this app created (by label), whatever the database knows about it. */
+    async listManaged(): Promise<Sandbox[]> {
+        const out: Sandbox[] = [];
+        for await (const sb of this.daytona().list({ labels: { [SandboxLabels.APP]: SANDBOX_APP } })) {
+            out.push(sb);
+            if (out.length >= LIST_LIMIT) break;
+        }
+        return out;
     }
 
     async get(id: string): Promise<Sandbox | null> {

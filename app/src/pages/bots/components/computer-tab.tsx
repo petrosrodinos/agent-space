@@ -25,6 +25,7 @@ import { ComputerStatuses, ComputerSessionKinds } from "@/features/computers/int
 import { ComputerStatusOptions } from "@/config/constants/dropdowns/computers/computer.options";
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { ALL_FILTER } from "@/config/constants/filters";
+import { ComputerResourcesCard } from "./computer-resources-card";
 
 const WORKSPACE = "/home/daytona/workspace";
 
@@ -92,6 +93,7 @@ export const ComputerTab: FC<{ bot: Bot }> = ({ bot }) => {
               </div>
             )}
           </SettingsCard>
+          {computer.status !== ComputerStatuses.OFF && <ComputerResourcesCard botId={bot.id} running={running} canEdit={bot.can_edit} />}
           {running && <FilesCard botId={bot.id} />}
           {computer.status !== ComputerStatuses.OFF && <WebsitesCard botId={bot.id} canEdit={bot.can_edit} running={running} />}
           <ReplaysCard botId={bot.id} />

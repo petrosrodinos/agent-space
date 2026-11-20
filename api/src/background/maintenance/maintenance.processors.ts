@@ -7,6 +7,7 @@ import { StorageService } from '@/integrations/storage/storage.service';
 import { ApprovalsService } from '@/modules/approvals/approvals.service';
 import { ConnectionsService } from '@/modules/connections/connections.service';
 import { UsageService } from '@/modules/usage/usage.service';
+import { ComputersService } from '@/modules/computers/computers.service';
 
 @Processor(Queues.APPROVALS, { concurrency: 10 })
 export class ApprovalsProcessor extends WorkerHost {
@@ -16,6 +17,19 @@ export class ApprovalsProcessor extends WorkerHost {
 
     async process(job: Job<{ approval_id: string; auto_approve?: boolean }>) {
         if (job.name === Jobs.approvals.TIMEOUT) await this.approvals.expire(job.data.approval_id, !!job.data.auto_approve);
+    }
+}
+
+/** cloud-computers queue (§9): the safety net that keeps VMs from running (and billing) when they shouldn't. One sweep at a time. */
+@Processor(Queues.CLOUD_COMPUTERS, { concurrency: 1 })
+export class CloudComputersProcessor extends WorkerHost {
+    constructor(private readonly computers: ComputersService) {
+        super();
+    }
+
+    async process(job: Job) {
+        if (job.name === Jobs.cloudComputers.SWEEP) return this.computers.sweep();
+        return { ok: true };
     }
 }
 
@@ -102,10 +116,11 @@ export class PlatformSchedules implements OnApplicationBootstrap {
         @InjectQueue(Queues.AUTOMATIONS) private readonly automationsQ: Queue,
         @InjectQueue(Queues.CONNECTIONS) private readonly connectionsQ: Queue,
         @InjectQueue(Queues.USAGE) private readonly usageQ: Queue,
+        @InjectQueue(Queues.CLOUD_COMPUTERS) private readonly cloudQ: Queue,
     ) { }
 
     async onApplicationBootstrap() {
-        const byName: Record<string, Queue> = { [Queues.STORAGE]: this.storageQ, [Queues.AUTOMATIONS]: this.automationsQ, [Queues.CONNECTIONS]: this.connectionsQ, [Queues.USAGE]: this.usageQ };
+        const byName: Record<string, Queue> = { [Queues.STORAGE]: this.storageQ, [Queues.AUTOMATIONS]: this.automationsQ, [Queues.CONNECTIONS]: this.connectionsQ, [Queues.USAGE]: this.usageQ, [Queues.CLOUD_COMPUTERS]: this.cloudQ };
         for (const s of PLATFORM_SCHEDULES) {
             const q = byName[s.queue];
             if (!q) continue;

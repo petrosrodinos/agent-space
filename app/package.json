@@ -1,7 +1,7 @@
 {
   "name": "react-starter",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -9,6 +9,7 @@
     "lint": "eslint .",
     "preview": "vite preview",
     "cap:sync": "npm run build && cap sync",
+    "release:android": "node scripts/release-android.mjs",
     "cap:android": "cap open android",
     "cap:run:android": "cap run android",
     "icons": "node resources/generate-icons.mjs && capacitor-assets generate --android --iconBackgroundColor '#0A0A0A' --iconBackgroundColorDark '#0A0A0A' --splashBackgroundColor '#FAFAFA' --splashBackgroundColorDark '#0A0A0A'"
@@ -85,6 +86,7 @@
     "@capacitor/assets": "^3.0.5",
     "@capacitor/cli": "8.6.2",
     "@eslint/js": "^9.32.0",
+    "@google-cloud/storage": "^9.0.0",
     "@types/node": "^24.2.1",
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",

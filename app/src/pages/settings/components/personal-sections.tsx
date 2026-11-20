@@ -1,5 +1,6 @@
 import { DesktopAppCard } from "./desktop-app-card";
 import { DesktopDownloadCard } from "./desktop-download-card";
+import { AndroidAppCard } from "./android-app-card";
 import { VoicePicker } from "@/components/layout/voice-picker";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -1106,6 +1107,7 @@ export const DevicesSection: FC = () => {
       <DesktopAppCard />
       <DeviceToolsCard />
       <DesktopDownloadCard />
+      <AndroidAppCard />
       <SettingsCard
         title="My devices"
         description="Browsers and apps signed in to Agent Space."

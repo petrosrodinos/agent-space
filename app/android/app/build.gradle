@@ -9,6 +9,19 @@ apply plugin: 'org.jetbrains.kotlin.android'
  */
 def appLinksHost = project.findProperty('APP_LINKS_HOST') ?: 'app.agentspace.example'
 
+/**
+ * Release version, passed by app/scripts/release-android.mjs (-PAPP_VERSION_CODE=10004 -PAPP_VERSION_NAME=1.0.4).
+ * versionCode must only ever increase; the script derives it from the semver (major*10000 + minor*100 + patch).
+ */
+def appVersionCode = (project.findProperty('APP_VERSION_CODE') ?: '1').toInteger()
+def appVersionName = project.findProperty('APP_VERSION_NAME') ?: '1.0'
+
+/** Release signing: android/keystore.properties (git-ignored) or KEYSTORE_* environment variables (CI). */
+def keystoreProps = new Properties()
+def keystoreFile = rootProject.file('keystore.properties')
+if (keystoreFile.exists()) keystoreFile.withInputStream { keystoreProps.load(it) }
+def signingValue = { String name -> keystoreProps.getProperty(name) ?: System.getenv("KEYSTORE_${name.toUpperCase()}") }
+
 android {
     namespace = "com.agentspace.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -16,8 +29,8 @@ android {
         applicationId "com.agentspace.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 1
-        versionName "1.0"
+        versionCode appVersionCode
+        versionName appVersionName
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         manifestPlaceholders = [appLinksHost: appLinksHost]
         aaptOptions {
@@ -26,8 +39,20 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            def storePath = signingValue('storeFile')
+            if (storePath) {
+                storeFile rootProject.file(storePath)
+                storePassword signingValue('storePassword')
+                keyAlias signingValue('keyAlias')
+                keyPassword signingValue('keyPassword')
+            }
+        }
+    }
     buildTypes {
         release {
+            if (signingValue('storeFile')) signingConfig signingConfigs.release
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }

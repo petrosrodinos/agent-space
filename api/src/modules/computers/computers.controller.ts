@@ -1,12 +1,13 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Post, Query, Res, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
-import { IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
+import { ArrayMaxSize, ArrayNotEmpty, IsArray, IsIn, IsOptional, IsString, IsUUID, MaxLength } from 'class-validator';
 import type { Response } from 'express';
 import { JwtGuard } from '@/shared/guards/jwt.guard';
 import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
 import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
 import type { Actor } from '../bots/bots.service';
 import { ComputersService } from './computers.service';
+import { CleanupTargets, type CleanupTarget } from './computer-resources.scripts';
 
 class PathDto {
     @ApiProperty() @IsString() @MaxLength(1000) path: string;
@@ -17,6 +18,12 @@ class ShareDto extends PathDto {
 class ImportDto {
     @ApiProperty({ description: 'A file uploaded with purpose "chat" or "knowledge"' }) @IsUUID() file_id: string;
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(1000) folder?: string;
+}
+
+class CleanupDto {
+    @ApiProperty({ enum: Object.values(CleanupTargets), isArray: true })
+    @IsArray() @ArrayNotEmpty() @ArrayMaxSize(10) @IsIn(Object.values(CleanupTargets), { each: true })
+    targets: CleanupTarget[];
 }
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
@@ -62,6 +69,16 @@ export class ComputersController {
     @Post('hand-back')
     handBack(@CurrentMembership() m: OrgMembership, @Param('botId', ParseUUIDPipe) botId: string) {
         return this.computers.handBack(actor(m), botId);
+    }
+
+    @Get('resources')
+    resources(@CurrentMembership() m: OrgMembership, @Param('botId', ParseUUIDPipe) botId: string) {
+        return this.computers.resources(actor(m), botId);
+    }
+
+    @Post('cleanup')
+    cleanup(@CurrentMembership() m: OrgMembership, @Param('botId', ParseUUIDPipe) botId: string, @Body() dto: CleanupDto) {
+        return this.computers.cleanup(actor(m), botId, dto.targets);
     }
 
     @Get('sessions')

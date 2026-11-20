@@ -1,10 +1,10 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger } from '@nestjs/common';
 import type { Sandbox } from '@daytonaio/sdk';
-import { CloudComputer, CloudComputerStatus, IdlePause, Prisma } from 'generated/prisma';
+import { CloudComputer, CloudComputerStatus, IdlePause, MaxSession, Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { EventsService, UserEvents } from '@/core/realtime/events.service';
-import { DaytonaService } from '@/integrations/daytona/daytona.service';
+import { DaytonaService, SANDBOX_APP, SandboxLabels } from '@/integrations/daytona/daytona.service';
 import { StorageService } from '@/integrations/storage/storage.service';
 import { newId } from '@/shared/utils/security/crypto.utils';
 import { AccessService } from '../access/access.service';
@@ -15,11 +15,17 @@ import { UsageService } from '../usage/usage.service';
 import { ComputerViewProxy } from './computer-view.proxy';
 import { ConfigService } from '@nestjs/config';
 import type { Actor } from '../bots/bots.service';
+import { BROWSER_PROFILE, HOME, WORKSPACE } from './computer.paths';
+import { CLEANUP_PY, CLEANUP_SCRIPT_PATH, CleanupTargets, STATS_PY, STATS_SCRIPT_PATH, type CleanupTarget } from './computer-resources.scripts';
 
 const IDLE_MINUTES: Record<IdlePause, number> = { MIN_5: 5, MIN_15: 15, MIN_30: 30 };
-export const HOME = '/home/daytona';
-export const WORKSPACE = `${HOME}/workspace`;
-export const BROWSER_PROFILE = `${HOME}/.agentspace-browser`;
+export { HOME, WORKSPACE, BROWSER_PROFILE } from './computer.paths';
+/** Hard cap on one continuous run of a computer (organisation setting), enforced by the sweep. */
+const SESSION_LIMIT_MS: Record<MaxSession, number> = { HOUR_1: 3_600_000, HOUR_4: 4 * 3_600_000, HOUR_24: 24 * 3_600_000 };
+/** A sandbox younger than this may still be mid-creation, so the sweep leaves it alone. */
+const ORPHAN_GRACE_MS = 15 * 60_000;
+/** The sweep trusts a computer's saved status only after it has been unchanged this long (starts take up to ~4 minutes). */
+const STATE_GRACE_MS = 15 * 60_000;
 const TRANSFER_LIMIT = 1024 ** 3; // 1 GB per transfer (§9.5)
 
 /** Chromium preferences: never offer to save passwords or autofill (§9.4). */
@@ -116,6 +122,23 @@ export interface ComputerView {
     storage_used_bytes: number;
     total_minutes: number;
     controlled_by: { user_id: string; name: string | null } | null;
+}
+
+export interface ComputerLiveStats {
+    cpu: { percent: number; cores: number; load: number[] };
+    memory: { used_bytes: number; total_bytes: number };
+    disk: { used_bytes: number; total_bytes: number; home_bytes: number };
+    uptime_seconds: number;
+    reclaimable: Record<CleanupTarget, number>;
+    processes: { pid: number; name: string; command: string; memory_bytes: number; cpu_percent: number; protected: boolean }[];
+}
+
+export interface ComputerResources {
+    /** What Daytona allocated to the sandbox. Null when the computer was never created. */
+    allocated: { cpu: number; memory_gb: number; disk_gb: number } | null;
+    /** Live usage; null unless the computer is running. */
+    live: ComputerLiveStats | null;
+    checked_at: Date;
 }
 
 /**
@@ -233,15 +256,25 @@ export class ComputersService {
             c = await this.prisma.cloudComputer.findUniqueOrThrow({ where: { id: c.id } });
             let sb = c.daytona_sandbox_id ? await this.daytona.get(c.daytona_sandbox_id) : null;
             if (!sb || c.status !== 'RUNNING') c = await this.setStatus(c, 'STARTING', null);
+            let created: Sandbox | null = null;
             try {
                 if (!sb) {
-                    sb = await this.daytona.create({ app: 'agentspace', org: orgId, bot: botId }, allowed.idle!);
-                    await this.prepare(sb);
+                    sb = created = await this.daytona.create({ [SandboxLabels.APP]: SANDBOX_APP, [SandboxLabels.ORG]: orgId, [SandboxLabels.BOT]: botId }, allowed.idle!);
+                    // Remember it straight away: from here on the database always knows about a sandbox that is running (and billing).
                     c = await this.prisma.cloudComputer.update({ where: { id: c.id }, data: { daytona_sandbox_id: sb.id } });
+                    await this.prepare(sb);
                 }
                 sb = await this.daytona.ensureRunning(sb);
                 await sb.setAutostopInterval(allowed.idle!).catch(() => undefined);
             } catch (e) {
+                // A sandbox that was just created and never got set up is useless: remove it so it doesn't sit there running.
+                if (created) {
+                    const removed = await this.daytona.remove(created.id).then(() => true, (err) => {
+                        this.logger.error(`Could not remove the half-created sandbox ${created!.id}: ${(err as Error).message}`);
+                        return false;
+                    });
+                    if (removed) c = await this.prisma.cloudComputer.update({ where: { id: c.id }, data: { daytona_sandbox_id: null } });
+                }
                 await this.setStatus(c, 'ERROR', `The computer could not start: ${(e as Error).message.slice(0, 200)}`);
                 throw new BadRequestException('The cloud computer could not start. Please try again.');
             }
@@ -304,7 +337,13 @@ export class ComputersService {
         await this.requireBot(actor, botId, true);
         const c = await this.prisma.cloudComputer.findUnique({ where: { bot_id: botId } });
         if (!c) return this.view(actor, botId);
-        if (c.daytona_sandbox_id) await this.daytona.remove(c.daytona_sandbox_id).catch((e) => this.logger.warn(`Sandbox delete failed: ${(e as Error).message}`));
+        // If Daytona can't delete it, keep the record (don't forget a VM that is still running) and let the user try again.
+        if (c.daytona_sandbox_id) {
+            await this.daytona.remove(c.daytona_sandbox_id).catch((e) => {
+                this.logger.error(`Sandbox delete failed for ${c.daytona_sandbox_id}: ${(e as Error).message}`);
+                throw new BadRequestException('The computer could not be reset right now. Please try again in a moment.');
+            });
+        }
         await this.closeSessions(c.id);
         await this.prisma.signedInWebsite.deleteMany({ where: { cloud_computer_id: c.id } });
         await this.setStatus(c, 'OFF', null, { daytona_sandbox_id: null, storage_used_bytes: 0 });
@@ -316,8 +355,87 @@ export class ComputersService {
     async disableForBot(orgId: string, botId: string) {
         const c = await this.prisma.cloudComputer.findUnique({ where: { bot_id: botId } });
         if (!c) return;
-        if (c.daytona_sandbox_id) await this.daytona.remove(c.daytona_sandbox_id).catch(() => undefined);
+        if (c.daytona_sandbox_id) {
+            const removed = await this.daytona.remove(c.daytona_sandbox_id).then(() => true, (e) => {
+                this.logger.error(`Sandbox delete failed for ${c.daytona_sandbox_id}: ${(e as Error).message}`);
+                return false;
+            });
+            if (!removed) return; // keep the record so the sandbox isn't forgotten
+        }
         await this.prisma.cloudComputer.update({ where: { id: c.id }, data: { status: 'OFF', daytona_sandbox_id: null } });
+    }
+
+    // ---------------- Safety net (cost control) ----------------
+
+    /**
+     * Run every few minutes by the cloud-computers queue. Daytona's idle auto-stop does the normal pausing; this catches
+     * everything that would otherwise keep a VM running and billing:
+     *  - a computer past its organisation's max session length,
+     *  - a bot whose computer is switched off (stopped, files kept) or deleted (sandbox removed),
+     *  - a VM that is running although we think it is off, paused or stuck starting,
+     *  - a sandbox this app created that no computer record points to (a failed create or delete).
+     * Every action is best-effort per sandbox, so one failure never blocks the rest.
+     */
+    async sweep() {
+        const result = { session_limit: 0, switched_off: 0, untracked_running: 0, removed_for_deleted_bots: 0, removed_orphans: 0 };
+        if (!this.daytona.configured) return result;
+        const sandboxes = await this.daytona.listManaged();
+        const byId = new Map(sandboxes.map((s) => [s.id, s]));
+        const computers = await this.prisma.cloudComputer.findMany({ where: { daytona_sandbox_id: { not: null } }, include: { bot: { select: { cloud_computer_enabled: true, deleted_at: true } } } });
+        const known = new Set(computers.map((c) => c.daytona_sandbox_id!));
+        const orgIds = [...new Set(computers.map((c) => c.organization_id))];
+        const settings = new Map((await this.prisma.organizationSettings.findMany({ where: { organization_id: { in: orgIds } } })).map((s) => [s.organization_id, s]));
+        const now = Date.now();
+        const stateOf = (sb: Sandbox) => String(sb.state ?? '').toLowerCase();
+
+        for (const c of computers) {
+            const sb = byId.get(c.daytona_sandbox_id!);
+            if (!sb) continue; // gone from Daytona: the status sync on the next view marks it off
+            try {
+                if (c.bot.deleted_at) {
+                    await this.daytona.remove(sb.id);
+                    await this.closeSessions(c.id);
+                    await this.prisma.signedInWebsite.deleteMany({ where: { cloud_computer_id: c.id } });
+                    await this.setStatus(c, 'OFF', null, { daytona_sandbox_id: null, storage_used_bytes: 0 });
+                    result.removed_for_deleted_bots++;
+                    continue;
+                }
+                if (stateOf(sb) !== 'started') continue;
+                const startedAt = (c.session_started_at ?? c.updated_at).getTime();
+                const limit = SESSION_LIMIT_MS[settings.get(c.organization_id)?.computer_max_session ?? 'HOUR_4'];
+                let why: 'switched_off' | 'session_limit' | 'untracked_running' | null = null;
+                if (!c.bot.cloud_computer_enabled) why = 'switched_off';
+                else if (c.status === 'RUNNING' && now - startedAt > limit) why = 'session_limit';
+                else if (c.status !== 'RUNNING' && now - c.updated_at.getTime() > STATE_GRACE_MS) why = 'untracked_running';
+                if (!why) continue;
+                await this.daytona.stop(sb);
+                await this.closeSessions(c.id);
+                await this.setStatus(c, 'PAUSED', why === 'session_limit' ? 'Paused because it reached the longest time a computer can stay on. Turn it on again to continue.' : null);
+                await this.activity.log({ organization_id: c.organization_id, actor_type: 'SYSTEM', action: 'computer.auto_paused', target_type: 'bot', target_id: c.bot_id, metadata: { reason: why } });
+                result[why]++;
+            } catch (e) {
+                this.logger.warn(`Sweep failed for computer ${c.id}: ${(e as Error).message}`);
+            }
+        }
+
+        // Sandboxes we created that no computer points to. Only ones whose organisation exists in this database are touched,
+        // so another environment sharing the same Daytona account is never cleaned up by mistake.
+        for (const sb of sandboxes) {
+            if (known.has(sb.id) || ['destroyed', 'destroying'].includes(stateOf(sb))) continue;
+            const created = Date.parse(sb.createdAt ?? '');
+            if (!created || now - created < ORPHAN_GRACE_MS) continue;
+            const orgId = sb.labels?.[SandboxLabels.ORG];
+            if (!orgId || !(await this.prisma.organization.findUnique({ where: { id: orgId }, select: { id: true } }))) continue;
+            try {
+                await sb.delete(120);
+                this.logger.warn(`Removed orphaned sandbox ${sb.id} (org ${orgId})`);
+                result.removed_orphans++;
+            } catch (e) {
+                this.logger.warn(`Could not remove orphaned sandbox ${sb.id}: ${(e as Error).message}`);
+            }
+        }
+        if (Object.values(result).some(Boolean)) this.logger.log(`Computer sweep: ${JSON.stringify(result)}`);
+        return result;
     }
 
     // ---------------- Sessions, live view, control ----------------
@@ -592,6 +710,46 @@ export class ComputersService {
         await this.prisma.signedInWebsite.deleteMany({ where: { cloud_computer_id: c.id, ...(domain ? { domain } : {}) } });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'computer.signed_out', target_type: 'bot', target_id: botId, metadata: { domain: domain ?? 'all' } });
         return { ok: true };
+    }
+
+    // ---------------- Resources (CPU, memory, disk) and cleanup ----------------
+
+    /** Allocated resources from Daytona, plus live usage read inside the sandbox when it is running. Never turns the computer on. */
+    async resources(actor: Actor, botId: string): Promise<ComputerResources> {
+        await this.requireBot(actor, botId);
+        const c = await this.prisma.cloudComputer.findUnique({ where: { bot_id: botId } });
+        const sb = c?.daytona_sandbox_id ? await this.daytona.get(c.daytona_sandbox_id) : null;
+        if (!c || !sb) return { allocated: null, live: null, checked_at: new Date() };
+        const allocated = { cpu: sb.cpu, memory_gb: sb.memory, disk_gb: sb.disk };
+        if (String(sb.state).toLowerCase() !== 'started') return { allocated, live: null, checked_at: new Date() };
+        try {
+            await sb.fs.uploadFile(Buffer.from(STATS_PY), STATS_SCRIPT_PATH);
+            const r = await sb.process.executeCommand(`python3 ${STATS_SCRIPT_PATH}`, undefined, undefined, 60);
+            if (r.exitCode !== 0) throw new Error(r.result.slice(0, 200));
+            const live = JSON.parse(r.result.trim()) as ComputerLiveStats;
+            await this.prisma.cloudComputer.update({ where: { id: c.id }, data: { storage_used_bytes: BigInt(live.disk.home_bytes) } });
+            return { allocated, live, checked_at: new Date() };
+        } catch (e) {
+            this.logger.warn(`Computer stats failed: ${(e as Error).message}`);
+            return { allocated, live: null, checked_at: new Date() };
+        }
+    }
+
+    /** Clears caches, temp files, trash and/or leftover programs. Never touches the workspace or website sign-ins. */
+    async cleanup(actor: Actor, botId: string, targets: CleanupTarget[]) {
+        await this.requireBot(actor, botId, true);
+        const c = await this.prisma.cloudComputer.findUnique({ where: { bot_id: botId } });
+        const sb = c?.daytona_sandbox_id ? await this.daytona.get(c.daytona_sandbox_id) : null;
+        if (!c || !sb || String(sb.state).toLowerCase() !== 'started') throw new BadRequestException('Turn the computer on to clean it up');
+        const valid = Object.values(CleanupTargets) as string[];
+        const list = [...new Set(targets)].filter((t) => valid.includes(t));
+        if (!list.length) throw new BadRequestException('Choose what to clean up');
+        await sb.fs.uploadFile(Buffer.from(CLEANUP_PY), CLEANUP_SCRIPT_PATH);
+        const r = await sb.process.executeCommand(`python3 ${CLEANUP_SCRIPT_PATH} ${list.join(' ')}`, undefined, undefined, 120);
+        if (r.exitCode !== 0) throw new BadRequestException('The computer could not be cleaned up. Please try again.');
+        const { freed_bytes } = JSON.parse(r.result.trim()) as { freed_bytes: Partial<Record<CleanupTarget, number>> };
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'computer.cleaned_up', target_type: 'bot', target_id: botId, metadata: { targets: list, freed_bytes } });
+        return { freed_bytes };
     }
 
     /** Notifies the user that the bot is waiting for them to take control (§9.4). */

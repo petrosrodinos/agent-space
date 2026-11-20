@@ -63,6 +63,36 @@ export interface SignedInWebsite {
   last_seen_at: string;
 }
 
+/** What "Clean up" can clear on the computer (mirrors the API's CleanupTargets). */
+export const CleanupTargets = { CACHE: "cache", TEMP: "temp", TRASH: "trash", PROGRAMS: "programs" } as const;
+export type CleanupTarget = (typeof CleanupTargets)[keyof typeof CleanupTargets];
+
+export interface ComputerProcess {
+  pid: number;
+  name: string;
+  command: string;
+  memory_bytes: number;
+  cpu_percent: number;
+  /** Part of the desktop or Daytona itself; cleanup never ends it. */
+  protected: boolean;
+}
+
+export interface ComputerLiveStats {
+  cpu: { percent: number; cores: number; load: number[] };
+  memory: { used_bytes: number; total_bytes: number };
+  disk: { used_bytes: number; total_bytes: number; home_bytes: number };
+  uptime_seconds: number;
+  reclaimable: Record<CleanupTarget, number>;
+  processes: ComputerProcess[];
+}
+
+export interface ComputerResources {
+  allocated: { cpu: number; memory_gb: number; disk_gb: number } | null;
+  /** Null unless the computer is running. */
+  live: ComputerLiveStats | null;
+  checked_at: string;
+}
+
 /** Live view: watching (view-only) or in control (§9.2). */
 export const ComputerViewModes = { WATCH: "watch", CONTROL: "control" } as const;
 export type ComputerViewMode = (typeof ComputerViewModes)[keyof typeof ComputerViewModes];

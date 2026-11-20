@@ -100,6 +100,13 @@ Build the web bundle for the API the apps should talk to first: `VITE_API_URL=ht
 | `CAP_SERVER_URL=http://<lan-ip>:5180 npx cap run android` | Live reload from the dev server (development only; release builds always bundle the code) |
 | `cd android && gradlew.bat assembleDebug` (with `JAVA_HOME` = Android Studio's `jbr`) | Debug APK in `android/app/build/outputs/apk/debug/` without opening Android Studio |
 
+- **Releasing the APK** (`npm run release:android -- [patch|minor|major|x.y.z] [--notes "text"]` in `app/`; `--build-only` builds without uploading, `--skip-web` reuses `dist/`):
+  - Builds the web bundle against `PUBLIC_API_URL`, syncs, runs `assembleRelease`, signs it and uploads to `gs://$GCS_BUCKET_NAME/android-releases/` (same settings as the desktop release, read from `api/.env.staging`).
+  - Version: `versionName` = `x.y.z` from `app/package.json`, `versionCode` = major*10000 + minor*100 + patch (it must only ever increase).
+  - Bucket: `<version>/AgentSpace-<version>.apk` (immutable), `latest.json` (what the app reads), `releases.json` (history), `download/AgentSpace.apk` (stable link).
+  - The API serves it publicly at `/api/android/releases/*` (`api/src/modules/android-releases`). The download button is under Settings → Devices on the web; inside the Android app the same card shows an update check.
+  - Signing: `app/android/release.keystore` + `app/android/keystore.properties` (both git-ignored). **Back them up**: with a different key, installed apps can't update in place. Set `ANDROID_CERT_SHA256` on the API to the keystore's SHA-256 so App Links verify.
+  - Installing needs "install unknown apps" allowed once.
 - **Plugins:**
   - push notifications and local notifications
   - share and clipboard

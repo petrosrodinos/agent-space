@@ -1,7 +1,7 @@
 import axiosInstance from "@/config/api/axios";
 import { ApiRoutes } from "@/config/api/routes";
 import { request } from "@/lib/request";
-import type { ComputerFolder, ComputerSession, ComputerView, LiveView, ReplayFrame, SignedInWebsite } from "../interfaces/computers.interfaces";
+import type { CleanupTarget, ComputerFolder, ComputerResources, ComputerSession, ComputerView, LiveView, ReplayFrame, SignedInWebsite } from "../interfaces/computers.interfaces";
 
 const R = ApiRoutes.computers;
 
@@ -12,6 +12,9 @@ export const resetComputer = (botId: string) => request<ComputerView>(() => axio
 export const getLiveView = (botId: string) => request<LiveView>(() => axiosInstance.post(R.live_view(botId)), "Could not open the computer.");
 export const takeControl = (botId: string) => request<LiveView>(() => axiosInstance.post(R.take_control(botId)), "Could not take control.");
 export const handBack = (botId: string) => request<{ ok: boolean }>(() => axiosInstance.post(R.hand_back(botId)));
+export const getComputerResources = (botId: string) => request<ComputerResources>(() => axiosInstance.get(R.resources(botId)));
+export const cleanupComputer = (botId: string, targets: CleanupTarget[]) =>
+  request<{ freed_bytes: Partial<Record<CleanupTarget, number>> }>(() => axiosInstance.post(R.cleanup(botId), { targets }), "Could not clean up the computer.");
 export const getComputerSessions = (botId: string) => request<ComputerSession[]>(() => axiosInstance.get(R.sessions(botId)));
 export const getReplayFrames = (botId: string, sessionId: string) => request<ReplayFrame[]>(() => axiosInstance.get(R.frames(botId, sessionId)));
 export const getComputerFiles = (botId: string, path?: string) => request<ComputerFolder>(() => axiosInstance.get(R.files(botId), { params: { path } }));

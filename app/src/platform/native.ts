@@ -1,3 +1,4 @@
+import { SystemBars, SystemBarsStyle } from "@capacitor/core";
 import { App } from "@capacitor/app";
 import { Browser } from "@capacitor/browser";
 import { Clipboard } from "@capacitor/clipboard";
@@ -165,6 +166,8 @@ export function createNativePlatform(): Platform {
         };
       },
     },
+    // Dark UI → light status/navigation icons (SystemBarsStyle.Dark); the bars draw over the page, so they take its colour.
+    setChromeTheme: (dark) => void SystemBars.setStyle({ style: dark ? SystemBarsStyle.Dark : SystemBarsStyle.Light }).catch(() => {}),
     appInfo: { platform: kind, version: APP_VERSION, deviceName: "Android phone" },
     lifecycle: {
       ...webPlatform.lifecycle,

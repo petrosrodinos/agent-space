@@ -271,6 +271,21 @@ export class ConversationsService {
         return { ok: true };
     }
 
+    /** Wipes every message (and its files) but keeps the conversation, its participants and settings. */
+    async clear(actor: Actor, id: string) {
+        const me = await this.access.requireParticipant(id, actor.user_id);
+        const others = await this.prisma.conversationParticipant.count({ where: { conversation_id: id, user_id: { not: actor.user_id }, left_at: null } });
+        if (others > 0 && me.conversation.created_by_id !== actor.user_id) throw new ForbiddenException('Only the person who started this conversation can clear it');
+        const messages = await this.prisma.message.findMany({ where: { conversation_id: id, deleted_at: null }, select: { id: true } });
+        const ids = messages.map((m) => m.id);
+        const now = new Date();
+        await this.prisma.message.updateMany({ where: { id: { in: ids } }, data: { deleted_at: now, content: null, parts: Prisma.DbNull, is_pinned: false } });
+        await this.prisma.file.updateMany({ where: { messages: { some: { message_id: { in: ids } } }, deleted_at: null }, data: { deleted_at: now, purge_after: new Date(now.getTime() + 30 * 86400_000) } });
+        for (const mid of ids) await this.events.toConversation(id, ConversationEvents.MESSAGE_DELETED, { id: mid, conversation_id: id });
+        await this.events.toUser(actor.user_id, UserEvents.CONVERSATIONS_CHANGED, { conversation_id: id });
+        return { ok: true };
+    }
+
     // ---- Folders ----
     folders(actor: Actor) {
         return this.prisma.conversationFolder.findMany({ where: { user_id: actor.user_id, organization_id: actor.organization_id }, orderBy: { sort_order: 'asc' } });

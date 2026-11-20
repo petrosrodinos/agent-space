@@ -12,6 +12,8 @@ files:
   - dist/**
   - package.json
 extraResources:
+  - from: build/icon.png
+    to: tray-icon.png
   - from: ../app/dist
     to: web
     filter: ["**/*"]

@@ -223,3 +223,50 @@ export interface SearchHit {
   snippet: string;
   created_at: string;
 }
+
+/** What a public conversation link shows: only messages so far, or new messages too. */
+export const ConversationShareModes = { SNAPSHOT: "SNAPSHOT", LIVE: "LIVE" } as const;
+export type ConversationShareMode = (typeof ConversationShareModes)[keyof typeof ConversationShareModes];
+
+export interface ConversationShare {
+  url: string;
+  mode: ConversationShareMode;
+  /** Snapshot links show nothing newer than this. */
+  cutoff_at: string;
+  created_at: string;
+}
+
+export interface SharedMessageFile {
+  filename: string;
+  mimetype: string;
+}
+
+export type SharedMessage =
+  | { id: string; deleted: true }
+  | {
+      id: string;
+      deleted: false;
+      author_type: MessageAuthorType;
+      author_name: string;
+      author_emoji: string | null;
+      author_color: string | null;
+      content: string | null;
+      status: MessageStatus;
+      created_at: string;
+      updated_at: string;
+      edited_at: string | null;
+      files: SharedMessageFile[];
+      sources: { url: string; title: string | null }[];
+    };
+
+export interface SharedConversationPage {
+  conversation: { name: string; emoji: string | null; color: string | null; bots: { name: string; emoji: string; color: string }[] };
+  mode: ConversationShareMode;
+  shared_by: string | null;
+  shared_at: string;
+  /** Null for live links. */
+  cutoff_at: string | null;
+  messages: SharedMessage[];
+  has_more: boolean;
+  cursor: string;
+}

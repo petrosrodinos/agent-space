@@ -43,6 +43,8 @@ export const QueryKeys = {
   PUSH_SUBSCRIPTION: "push-subscription",
   RUN_STATUS: "run-status",
   SEARCH: "search",
+  SHARED_CONVERSATION: "shared-conversation",
+  CONVERSATION_SHARE: "conversation-share",
   SESSIONS: "sessions",
   SKILL: "skill",
   SKILLS: "skills",

@@ -5,8 +5,8 @@ import { useAuthStore } from "@/stores/auth";
 import type { Message, SendMessageDto } from "../interfaces/conversations.interfaces";
 import { allMessages, messagesKey, removeMessage, replyPreviewOf, upsertMessage, type MessagesCache } from "../utils/messages-cache";
 import {
-  addParticipants, createConversation, deleteConversation, deleteMessage, editMessage, getConversation, getConversations, getMessages, getPinned, interact, markRead,
-  openDirect, reactToMessage, removeParticipant, retryMessage, searchInConversation, searchMessages, sendMessage, stopRun, togglePin, updateConversation, updateMyConversation,
+  addParticipants, clearConversation, createConversation, deleteConversation, deleteMessage, editMessage, getConversation, getConversationShare, getConversations, getMessages, getPinned, interact, markRead,
+  openDirect, reactToMessage, removeParticipant, retryMessage, saveConversationShare, searchInConversation, searchMessages, sendMessage, stopConversationShare, stopRun, togglePin, updateConversation, updateMyConversation,
 } from "../services/conversations.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { MessageStatuses, MessagePartTypes, MessageAuthorTypes, MessageSources } from "../interfaces/conversations.interfaces";
@@ -73,6 +73,19 @@ const useConvMutation = <T,>(fn: (v: T) => Promise<unknown>, success?: string, f
 export const useUpdateConversation = () => useConvMutation(({ id, ...dto }: { id: string; name?: string; emoji?: string; color?: string; lead_bot_id?: string | null }) => updateConversation(id, dto), "Saved", "Could not save");
 export const useUpdateMyConversation = () => useConvMutation(({ id, ...dto }: { id: string; is_favourite?: boolean; is_archived?: boolean; is_muted?: boolean; folder_id?: string | null }) => updateMyConversation(id, dto));
 export const useDeleteConversation = () => useConvMutation(deleteConversation, "Conversation deleted", "Could not delete");
+export const useClearConversation = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: clearConversation,
+    onSuccess: (_, id) => {
+      qc.removeQueries({ queryKey: [QueryKeys.MESSAGES, id] });
+      qc.invalidateQueries({ queryKey: [QueryKeys.CONVERSATIONS] });
+      qc.invalidateQueries({ queryKey: [QueryKeys.CONVERSATION, id] });
+      toast({ title: "Conversation cleared", duration: 1500 });
+    },
+    onError: (e: Error) => toast({ title: "Could not clear the conversation", description: e.message, variant: "error" }),
+  });
+};
 export const useAddParticipants = () => useConvMutation(({ id, ...dto }: { id: string; user_ids?: string[]; bot_ids?: string[] }) => addParticipants(id, dto), "Added", "Could not add");
 export const useRemoveParticipant = () => useConvMutation(({ id, pid }: { id: string; pid: string }) => removeParticipant(id, pid), "Removed", "Could not remove");
 
@@ -168,3 +181,28 @@ export const useTogglePin = () => {
 };
 export const useInteract = () => useMutation({ mutationFn: ({ id, ...dto }: { id: string; component_id: string; payload: Record<string, unknown> }) => interact(id, dto), onError: (e) => toast({ title: "Could not submit", description: e.message, variant: "error" }) });
 export const useStopRun = () => useMutation({ mutationFn: stopRun, onError: (e) => toast({ title: "Could not stop", description: e.message, variant: "error" }) });
+
+/** The conversation's public link (null when it isn't shared). Only fetched while the share dialog is open. */
+export const useConversationShare = (id: string | undefined, enabled: boolean) =>
+  useQuery({ queryKey: [QueryKeys.CONVERSATION_SHARE, id], queryFn: async () => (await getConversationShare(id!)).share, enabled: !!id && enabled, staleTime: 0 });
+
+export const useSaveConversationShare = (id: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: (dto: Parameters<typeof saveConversationShare>[1]) => saveConversationShare(id, dto),
+    onSuccess: ({ share }) => qc.setQueryData([QueryKeys.CONVERSATION_SHARE, id], share),
+    onError: (e: Error) => toast({ title: "Could not update the link", description: e.message, variant: "error" }),
+  });
+};
+
+export const useStopConversationShare = (id: string) => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: () => stopConversationShare(id),
+    onSuccess: () => {
+      qc.setQueryData([QueryKeys.CONVERSATION_SHARE, id], null);
+      toast({ title: "Sharing stopped", description: "The link no longer works.", duration: 2000 });
+    },
+    onError: (e: Error) => toast({ title: "Could not stop sharing", description: e.message, variant: "error" }),
+  });
+};

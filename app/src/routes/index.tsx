@@ -12,6 +12,7 @@ const SignUpPage = lazy(() => import("@/pages/auth/pages/sign-up"));
 const ForgotPasswordPage = lazy(() => import("@/pages/auth/pages/forgot-password"));
 const ResetPasswordPage = lazy(() => import("@/pages/auth/pages/reset-password"));
 const InvitePage = lazy(() => import("@/pages/invite"));
+const SharedConversationPage = lazy(() => import("@/pages/shared-conversation"));
 const ChatHomePage = lazy(() => import("@/pages/chat"));
 const ConversationPage = lazy(() => import("@/pages/chat/pages/conversation"));
 const BotsPage = lazy(() => import("@/pages/bots"));
@@ -67,6 +68,8 @@ export default function AppRoutes() {
       <Route path={Routes.auth.forgot_password} element={authPage(<ForgotPasswordPage />)} />
       <Route path={Routes.auth.reset_password} element={<Suspense fallback={<SplashSkeleton />}><ResetPasswordPage /></Suspense>} />
       <Route path={Routes.invite_pattern} element={<Suspense fallback={<SplashSkeleton />}><InvitePage /></Suspense>} />
+      {/* Public: anyone with a share link can read the conversation, signed in or not. */}
+      <Route path={Routes.shared_pattern} element={<Suspense fallback={<SplashSkeleton />}><SharedConversationPage /></Suspense>} />
 
       <Route
         element={

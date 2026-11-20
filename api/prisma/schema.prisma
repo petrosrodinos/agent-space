@@ -483,6 +483,13 @@ enum ModelCostTier {
 // ENUMS — conversations, runs, approvals (§7, §10, §11)
 // =====================================================================
 
+enum ConversationShareMode {
+  /// Viewers see only the messages that existed when the link was made (or last refreshed).
+  SNAPSHOT
+  /// Viewers also see new messages as they arrive.
+  LIVE
+}
+
 enum ConversationType {
   DIRECT
   SHARED_BOT
@@ -936,6 +943,7 @@ model User {
   bot_connection_defaults UserServiceDefault[]
   tool_permissions        UserToolPermission[]
   conversations_created   Conversation[]            @relation("ConversationCreator")
+  conversation_shares     ConversationShare[]
   conversation_folders    ConversationFolder[]
   participations          ConversationParticipant[]
   messages                Message[]                 @relation("MessageUserAuthor")
@@ -1949,6 +1957,7 @@ model Conversation {
   saved_widgets       SavedWidget[]
 
   channel_links ChannelLink[]
+  share         ConversationShare?
 
   @@index([organization_id, type])
   @@index([lead_bot_id])
@@ -1959,6 +1968,25 @@ model Conversation {
 }
 
 /// A user or a bot in a conversation. Exactly one of user_id / bot_id is set.
+/// A public, read-only link to a conversation. One per conversation; stopping the share deletes the row, which kills the link.
+model ConversationShare {
+  id              String                @id @default(uuid())
+  conversation_id String                @unique
+  created_by_id   String?
+  /// Unguessable URL token (the link is the credential).
+  token           String                @unique
+  mode            ConversationShareMode @default(SNAPSHOT)
+  /// SNAPSHOT mode: only messages created at or before this moment are visible.
+  cutoff_at       DateTime
+  created_at      DateTime              @default(now())
+  updated_at      DateTime              @updatedAt
+
+  conversation Conversation @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
+  created_by   User?        @relation(fields: [created_by_id], references: [id], onDelete: SetNull)
+
+  @@map("conversation_shares")
+}
+
 model ConversationParticipant {
   id              String    @id @default(uuid())
   conversation_id String

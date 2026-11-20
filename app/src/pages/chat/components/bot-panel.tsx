@@ -6,8 +6,10 @@ import {
   type FC,
   type ReactNode,
 } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import {
+  Trash2,
   AlertTriangle,
   ChevronRight,
   Clock,
@@ -26,7 +28,7 @@ import { BotAvatar } from "@/components/ui/bot-avatar";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { KnowledgePanel } from "@/components/layout/knowledge-panel";
 import { VoicePicker } from "@/components/layout/voice-picker";
-import { useBot, useUpdateBot } from "@/features/bots/hooks/use-bots";
+import { useBot, useDeleteBot, useUpdateBot } from "@/features/bots/hooks/use-bots";
 import {
   useBotAutomations,
   usePauseAutomation,
@@ -406,6 +408,36 @@ const VoiceSection: FC<{ bot: Bot }> = ({ bot }) => {
   );
 };
 
+const DeleteSection: FC<{ bot: Bot }> = ({ bot }) => {
+  const del = useDeleteBot();
+  const navigate = useNavigate();
+  const [confirm, setConfirm] = useState(false);
+  return (
+    <Section title="Danger zone">
+      <Row
+        icon={<Trash2 className="text-error" />}
+        title={<span className="text-error">Delete bot</span>}
+        subtitle="Removes the bot and its chat from your sidebar"
+        onClick={() => setConfirm(true)}
+      />
+      <ConfirmationDialog
+        isOpen={confirm}
+        onClose={() => setConfirm(false)}
+        title={`Delete ${bot.name}?`}
+        description="The bot will be removed from your chats. This can't be undone."
+        confirmText="Delete"
+        variant="destructive"
+        isLoading={del.isPending}
+        onConfirm={() =>
+          del.mutate(bot.id, {
+            onSuccess: () => navigate(Routes.chat.root, { replace: true }),
+          })
+        }
+      />
+    </Section>
+  );
+};
+
 /** Bot side panel of a direct chat (Grok-style): avatar, click-to-rename name, Activity (automations, tasks, computer, voice) and Library. */
 export const BotPanel: FC<{
   botId: string;
@@ -484,6 +516,7 @@ export const BotPanel: FC<{
                     }
                   />
                 </Section>
+                {bot.can_edit && !bot.is_starter && <DeleteSection bot={bot} />}
               </Stagger>
             ) : (
               <div key={tab} className="mt-5 animate-slide-up">

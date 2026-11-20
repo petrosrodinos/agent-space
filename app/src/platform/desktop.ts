@@ -20,6 +20,10 @@ export function createDesktopPlatform(bridge: DesktopBridge): Platform {
   return {
     ...webPlatform,
     is: (kind) => kind === "desktop",
+    setChromeTheme: (dark) => {
+      const css = getComputedStyle(document.documentElement);
+      bridge.setTheme?.({ dark, color: css.getPropertyValue("--canvas").trim(), symbolColor: css.getPropertyValue("--ink").trim() });
+    },
     supports: (cap) => (cap === "push" ? false : cap === "desktop" ? true : webPlatform.supports(cap)),
     // Screen sharing in voice mode uses the device bridge's picker and stills here (§7.6), not getDisplayMedia.
     media: { ...webPlatform.media, getScreen: () => null, canShareScreen: () => !!bridge.device },

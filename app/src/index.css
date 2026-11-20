@@ -491,3 +491,10 @@ html[data-text-size="LARGE"] { font-size: 18px; }
     transition-duration: 1ms !important;
   }
 }
+
+/* Desktop app custom title bar (components/layout/desktop-title-bar.tsx): full-height layouts sit below it. */
+:root { --titlebar-h: 36px; }
+.titlebar-drag { -webkit-app-region: drag; }
+html[data-titlebar] body { padding-top: var(--titlebar-h); }
+html[data-titlebar] .h-dvh { height: calc(100dvh - var(--titlebar-h)); }
+html[data-titlebar] .min-h-dvh { min-height: calc(100dvh - var(--titlebar-h)); }

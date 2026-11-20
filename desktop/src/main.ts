@@ -4,7 +4,7 @@
  * - Navigation is locked to the app origin; outside links open in the system browser.
  * - Local files, notifications, the global quick-ask shortcut, deep links and updates live here, never in the page.
  */
-import { app, BrowserWindow, clipboard, dialog, globalShortcut, ipcMain, Menu, net, Notification, protocol, safeStorage, session, shell, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, clipboard, nativeTheme, Tray, dialog, globalShortcut, ipcMain, Menu, net, Notification, protocol, safeStorage, session, shell, type IpcMainInvokeEvent } from 'electron';
 import { existsSync, promises as fs } from 'fs';
 import os from 'os';
 import path from 'path';
@@ -23,18 +23,71 @@ const MAX_PICK_BYTES = 100 * 1024 * 1024;
 
 let win: BrowserWindow | null = null;
 let pendingPath: string | null = null;
+let tray: Tray | null = null;
+let quitting = false;
+
+function showWindow() {
+    if (!win) return createWindow();
+    if (win.isMinimized()) win.restore();
+    win.show();
+    win.focus();
+}
+
+/** Tray icon while the app keeps running in the background; click reopens the window. */
+function ensureTray() {
+    if (tray) return;
+    tray = new Tray((app.isPackaged ? path.join(process.resourcesPath, 'tray-icon.png') : path.join(app.getAppPath(), 'build', 'icon.png')));
+    tray.setToolTip('Agent Space');
+    tray.setContextMenu(Menu.buildFromTemplate([
+        { label: 'Open Agent Space', click: showWindow },
+        { type: 'separator' },
+        { label: 'Quit', click: () => app.quit() },
+    ]));
+    tray.on('click', showWindow);
+}
+
+function hideToBackground() {
+    ensureTray();
+    win?.hide();
+}
+
+/** Close button: quit, keep running in the background, or ask (with "remember my choice"). */
+async function handleClose(e: Electron.Event) {
+    if (quitting || !win) return;
+    const { closeAction } = await readSettings();
+    if (closeAction === 'quit') return;
+    e.preventDefault();
+    if (closeAction === 'background') return hideToBackground();
+    const { response, checkboxChecked } = await dialog.showMessageBox(win, {
+        type: 'question',
+        title: 'Close Agent Space',
+        message: 'Quit Agent Space, or keep it running in the background?',
+        detail: 'In the background it keeps your notifications and the quick-ask shortcut working.',
+        buttons: ['Keep in background', 'Quit', 'Cancel'],
+        defaultId: 0,
+        cancelId: 2,
+        checkboxLabel: 'Remember my choice',
+    });
+    if (response === 2) return;
+    if (checkboxChecked) await writeSettings({ ...(await readSettings()), closeAction: response === 0 ? 'background' : 'quit' });
+    if (response === 0) hideToBackground();
+    else app.quit();
+}
 
 // ---------------- Settings (non-sensitive) ----------------
 
+type CloseAction = 'ask' | 'background' | 'quit';
 interface Settings {
     quickAskShortcut: string;
+    /** What the window's close button does; 'ask' shows the choice dialog. */
+    closeAction: CloseAction;
 }
 const settingsFile = () => path.join(app.getPath('userData'), 'settings.json');
 async function readSettings(): Promise<Settings> {
     try {
-        return { quickAskShortcut: DEFAULT_SHORTCUT, ...JSON.parse(await fs.readFile(settingsFile(), 'utf8')) };
+        return { quickAskShortcut: DEFAULT_SHORTCUT, closeAction: 'ask', ...JSON.parse(await fs.readFile(settingsFile(), 'utf8')) };
     } catch {
-        return { quickAskShortcut: DEFAULT_SHORTCUT };
+        return { quickAskShortcut: DEFAULT_SHORTCUT, closeAction: 'ask' };
     }
 }
 async function writeSettings(s: Settings) {
@@ -162,6 +215,8 @@ function hardenSession() {
     });
 }
 
+const TITLEBAR_HEIGHT = 36;
+
 function createWindow() {
     win = new BrowserWindow({
         width: 1280,
@@ -172,6 +227,9 @@ function createWindow() {
         backgroundColor: '#FFFBF5',
         show: false,
         autoHideMenuBar: true,
+        // Custom title bar: the app draws it (drag strip) and we colour the native window controls to match.
+        titleBarStyle: process.platform === 'darwin' ? 'hiddenInset' : 'hidden',
+        ...(process.platform === 'darwin' ? {} : { titleBarOverlay: { color: '#FFFFFF', symbolColor: '#0D0D0F', height: TITLEBAR_HEIGHT } }),
         webPreferences: {
             preload: path.join(__dirname, 'preload.js'),
             contextIsolation: true,
@@ -182,6 +240,7 @@ function createWindow() {
         },
     });
     win.once('ready-to-show', () => win?.show());
+    win.on('close', (e) => void handleClose(e));
     win.on('closed', () => (win = null));
     win.webContents.on('did-finish-load', () => {
         if (pendingPath) {
@@ -211,7 +270,7 @@ function registerShortcut(accelerator: string): boolean {
 
 // ---------------- IPC (bridge) ----------------
 
-function guard(e: IpcMainInvokeEvent) {
+function guard(e: Pick<IpcMainInvokeEvent, 'senderFrame'>) {
     const url = e.senderFrame?.url ?? '';
     if (!isAppUrl(url)) throw new Error('Blocked: not the app');
 }
@@ -238,6 +297,15 @@ function acceptToExtensions(accept?: string): string[] | null {
 function registerIpc() {
     ipcMain.on('app:info', (e) => {
         e.returnValue = { version: app.getVersion(), os: process.platform, deviceName: `${os.hostname()} (${process.platform === 'darwin' ? 'Mac' : process.platform === 'win32' ? 'Windows' : 'Linux'} app)` };
+    });
+    ipcMain.on('window:theme', (e, t: { dark: boolean; color: string; symbolColor: string }) => {
+        guard(e);
+        const hex = /^#[0-9a-fA-F]{6}$/;
+        const color = hex.test(t?.color) ? t.color : t?.dark ? '#0A0A0A' : '#FFFFFF';
+        const symbolColor = hex.test(t?.symbolColor) ? t.symbolColor : t?.dark ? '#F5F5F5' : '#0D0D0F';
+        nativeTheme.themeSource = t?.dark ? 'dark' : 'light';
+        win?.setBackgroundColor(color);
+        if (process.platform !== 'darwin') win?.setTitleBarOverlay({ color, symbolColor, height: TITLEBAR_HEIGHT });
     });
     ipcMain.handle('token:get', (e) => (guard(e), getRefreshToken()));
     ipcMain.handle('token:set', (e, token: string | null) => (guard(e), setRefreshToken(typeof token === 'string' ? token : null)));
@@ -303,10 +371,7 @@ if (!app.requestSingleInstanceLock()) {
 
     app.on('second-instance', (_e, argv) => {
         handleArgv(argv);
-        if (win) {
-            if (win.isMinimized()) win.restore();
-            win.focus();
-        }
+        showWindow();
     });
     app.on('open-url', (e, url) => {
         e.preventDefault();
@@ -329,8 +394,9 @@ if (!app.requestSingleInstanceLock()) {
         });
     });
 
+    app.on('before-quit', () => (quitting = true));
     app.on('will-quit', () => globalShortcut.unregisterAll());
     app.on('window-all-closed', () => {
-        if (process.platform !== 'darwin') app.quit();
+        if (process.platform !== 'darwin' && quitting) app.quit();
     });
 }

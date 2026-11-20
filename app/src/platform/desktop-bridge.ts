@@ -9,6 +9,8 @@ export interface DesktopBridge {
   readonly version: string;
   readonly os: "win32" | "darwin" | "linux";
   readonly deviceName: string;
+  /** Themes the window title bar (light/dark). Absent in older desktop builds. */
+  setTheme?(t: { dark: boolean; color: string; symbolColor: string }): void;
   getRefreshToken(): Promise<string | null>;
   setRefreshToken(token: string | null): Promise<void>;
   pickFiles(options: { accept?: string; multiple?: boolean }): Promise<{ name: string; type: string; data: ArrayBuffer }[]>;

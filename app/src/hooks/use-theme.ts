@@ -29,6 +29,7 @@ export function applyAppearance(
   root.dataset.colorTheme = colorTheme;
   root.dataset.textSize = textSize;
   root.dataset.density = density;
+  platform.setChromeTheme?.(dark);
   platform.storage.set(KEY, JSON.stringify({ theme, textSize, density, colorTheme }));
 }
 

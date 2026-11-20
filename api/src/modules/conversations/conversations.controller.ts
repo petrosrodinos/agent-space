@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Query, UseGuards } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, UseGuards } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Throttle } from '@nestjs/throttler';
 import { JwtGuard } from '@/shared/guards/jwt.guard';
@@ -8,9 +8,10 @@ import { ZodValidationPipe } from '@/shared/pipes/zod.validation.pipe';
 import type { Actor } from '../bots/bots.service';
 import { ConversationsService } from './conversations.service';
 import { MessagesService } from './messages.service';
+import { ConversationSharesService } from './conversation-shares.service';
 import {
     AddParticipantsDto, ConversationListQuery, ConversationListSchema, CreateConversationDto, CreateDirectDto, CreateFolderDto, EditMessageDto,
-    InteractionDto, MessagesQuery, MessagesQuerySchema, ReactDto, RetryMessageDto, SendMessageDto, UpdateConversationDto, UpdateMyConversationDto,
+    InteractionDto, MessagesQuery, MessagesQuerySchema, ReactDto, RetryMessageDto, SaveShareDto, SendMessageDto, SharedConversationQuery, SharedConversationQuerySchema, UpdateConversationDto, UpdateMyConversationDto,
 } from './dto/conversation.dto';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
@@ -23,6 +24,7 @@ export class ConversationsController {
     constructor(
         private readonly conversations: ConversationsService,
         private readonly messages: MessagesService,
+        private readonly shares: ConversationSharesService,
     ) { }
 
     @Get()
@@ -79,6 +81,30 @@ export class ConversationsController {
     @Delete(':id')
     remove(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.conversations.remove(actor(m), id);
+    }
+
+    @Post(':id/clear')
+    @ApiOperation({ summary: 'Delete every message in the conversation but keep the conversation itself.' })
+    clear(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.conversations.clear(actor(m), id);
+    }
+
+    @Get(':id/share')
+    @ApiOperation({ summary: 'The public link for this conversation, if one exists' })
+    share(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.shares.get(actor(m), id);
+    }
+
+    @Put(':id/share')
+    @ApiOperation({ summary: 'Create the public link, or change what it shows (only messages so far, or new ones too)' })
+    saveShare(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: SaveShareDto) {
+        return this.shares.save(actor(m), id, dto);
+    }
+
+    @Delete(':id/share')
+    @ApiOperation({ summary: 'Stop sharing: the link stops working' })
+    stopShare(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
+        return this.shares.stop(actor(m), id);
     }
 
     @Post(':id/participants')
@@ -154,5 +180,18 @@ export class MessagesController {
     @Get(':id/interactions')
     interactions(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.messages.interactionResponses(actor(m), id);
+    }
+}
+
+/** Anonymous, read-only view of a shared conversation. The token in the URL is the only credential. */
+@ApiTags('Shared conversations')
+@Controller('shared-conversations')
+export class SharedConversationsController {
+    constructor(private readonly shares: ConversationSharesService) { }
+
+    @Get(':token')
+    @Throttle({ default: { limit: 120, ttl: 60_000 } })
+    read(@Param('token') token: string, @Query(new ZodValidationPipe(SharedConversationQuerySchema)) q: SharedConversationQuery) {
+        return this.shares.readPublic(token, q);
     }
 }

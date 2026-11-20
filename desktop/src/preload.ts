@@ -18,6 +18,7 @@ contextBridge.exposeInMainWorld('agentspaceDesktop', {
     version: info.version,
     os: info.os,
     deviceName: info.deviceName,
+    setTheme: (t: { dark: boolean; color: string; symbolColor: string }) => ipcRenderer.send('window:theme', t),
     getRefreshToken: () => ipcRenderer.invoke('token:get'),
     setRefreshToken: (token: string | null) => ipcRenderer.invoke('token:set', token),
     pickFiles: (options: { accept?: string; multiple?: boolean }) => ipcRenderer.invoke('files:pick', options ?? {}),

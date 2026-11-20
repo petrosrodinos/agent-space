@@ -1,6 +1,6 @@
 import type { FC } from "react";
 import { Link } from "react-router-dom";
-import { Archive, MoreHorizontal, Pin, Settings2, Star, Trash2 } from "lucide-react";
+import { Archive, Eraser, MoreHorizontal, Pin, Settings2, Share2, Star, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import type { Conversation } from "@/features/conversations/interfaces/conversations.interfaces";
@@ -12,11 +12,13 @@ export interface ConversationMenuProps {
   onPinned: () => void;
   onFavourite: () => void;
   onArchive: () => void;
+  onClear: () => void;
+  onShare: () => void;
   onDelete: () => void;
 }
 
 /** The conversation's "more" menu: a round ⋯ button at the top of the side panel, next to its close button. */
-export const ConversationMenu: FC<ConversationMenuProps> = ({ conversation: c, onPinned, onFavourite, onArchive, onDelete }) => {
+export const ConversationMenu: FC<ConversationMenuProps> = ({ conversation: c, onPinned, onFavourite, onArchive, onClear, onShare, onDelete }) => {
   const lead = c.bots[0];
   return (
     <DropdownMenu>
@@ -32,6 +34,9 @@ export const ConversationMenu: FC<ConversationMenuProps> = ({ conversation: c, o
         <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onFavourite}>
           <Star className="h-4 w-4" /> {c.me?.is_favourite ? "Remove from favourites" : "Add to favourites"}
         </DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onShare}>
+          <Share2 className="h-4 w-4" /> Share conversation
+        </DropdownMenuItem>
         {lead && c.type === ConversationTypes.DIRECT && (
           <DropdownMenuItem asChild className="gap-2 rounded-sm">
             <Link to={Routes.bots.detail(lead.id)}>
@@ -42,6 +47,9 @@ export const ConversationMenu: FC<ConversationMenuProps> = ({ conversation: c, o
         <DropdownMenuSeparator />
         <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onArchive}>
           <Archive className="h-4 w-4" /> {c.me?.is_archived ? "Unarchive" : "Archive"}
+        </DropdownMenuItem>
+        <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onClear}>
+          <Eraser className="h-4 w-4" /> Clear conversation
         </DropdownMenuItem>
         <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={onDelete}>
           <Trash2 className="h-4 w-4" /> Delete conversation

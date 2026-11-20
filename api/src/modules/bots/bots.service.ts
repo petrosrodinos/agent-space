@@ -208,6 +208,8 @@ export class BotsService {
         if (bot.is_starter) throw new ForbiddenException('Your starter bot can\'t be deleted. You can rename and reconfigure it instead.');
         await this.prisma.bot.update({ where: { id }, data: { deleted_at: new Date(), is_archived: true } });
         await this.prisma.userSettings.updateMany({ where: { default_bot_id: id }, data: { default_bot_id: null } });
+        // Direct chats with this bot go away with it, so they leave every member's sidebar.
+        await this.prisma.conversation.updateMany({ where: { type: 'DIRECT', deleted_at: null, participants: { some: { bot_id: id } } }, data: { deleted_at: new Date() } });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'bot.deleted', target_type: 'bot', target_id: id });
         return { ok: true };
     }

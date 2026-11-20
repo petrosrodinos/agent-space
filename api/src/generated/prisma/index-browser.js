@@ -671,6 +671,17 @@ exports.Prisma.ConversationScalarFieldEnum = {
   updated_at: 'updated_at'
 };
 
+exports.Prisma.ConversationShareScalarFieldEnum = {
+  id: 'id',
+  conversation_id: 'conversation_id',
+  created_by_id: 'created_by_id',
+  token: 'token',
+  mode: 'mode',
+  cutoff_at: 'cutoff_at',
+  created_at: 'created_at',
+  updated_at: 'updated_at'
+};
+
 exports.Prisma.ConversationParticipantScalarFieldEnum = {
   id: 'id',
   conversation_id: 'conversation_id',
@@ -1951,6 +1962,11 @@ exports.ConversationType = exports.$Enums.ConversationType = {
   GROUP: 'GROUP'
 };
 
+exports.ConversationShareMode = exports.$Enums.ConversationShareMode = {
+  SNAPSHOT: 'SNAPSHOT',
+  LIVE: 'LIVE'
+};
+
 exports.MessageAuthorType = exports.$Enums.MessageAuthorType = {
   USER: 'USER',
   BOT: 'BOT',
@@ -2338,6 +2354,7 @@ exports.Prisma.ModelName = {
   Memory: 'Memory',
   ConversationFolder: 'ConversationFolder',
   Conversation: 'Conversation',
+  ConversationShare: 'ConversationShare',
   ConversationParticipant: 'ConversationParticipant',
   Message: 'Message',
   MessageFile: 'MessageFile',

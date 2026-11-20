@@ -122,6 +122,8 @@ export interface DesktopCapability {
 }
 
 export interface Platform {
+  /** Themes the native chrome (desktop title bar, phone status/navigation bars) to match light/dark. */
+  setChromeTheme?(dark: boolean): void;
   is(kind: PlatformKind): boolean;
   supports(cap: CapabilityName): boolean;
   storage: StorageCapability;

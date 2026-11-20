@@ -81,3 +81,15 @@ export const ConversationListSchema = z.object({
     search: z.string().trim().max(200).optional(),
 });
 export type ConversationListQuery = z.infer<typeof ConversationListSchema>;
+
+export class SaveShareDto {
+    @ApiProperty({ enum: ['SNAPSHOT', 'LIVE'], description: 'SNAPSHOT: only messages that exist now. LIVE: new messages show up for viewers too.' }) @IsIn(['SNAPSHOT', 'LIVE']) mode: 'SNAPSHOT' | 'LIVE';
+    @ApiPropertyOptional({ description: 'SNAPSHOT only: move the cut-off to now so messages sent since sharing become visible' }) @IsOptional() @IsBoolean() refresh?: boolean;
+}
+
+export const SharedConversationQuerySchema = z.object({
+    before: z.string().datetime().optional(),
+    since: z.string().datetime().optional(),
+    limit: z.coerce.number().int().min(1).max(200).default(100),
+});
+export type SharedConversationQuery = z.infer<typeof SharedConversationQuerySchema>;

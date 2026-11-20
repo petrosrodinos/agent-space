@@ -63,11 +63,15 @@ export const ApiRoutes = {
     one: (id: string) => `/conversations/${id}`,
     me: (id: string) => `/conversations/${id}/me`,
     read: (id: string) => `/conversations/${id}/read`,
+    clear: (id: string) => `/conversations/${id}/clear`,
+    share: (id: string) => `/conversations/${id}/share`,
     participants: (id: string) => `/conversations/${id}/participants`,
     participant: (id: string, pid: string) => `/conversations/${id}/participants/${pid}`,
     messages: (id: string) => `/conversations/${id}/messages`,
     pinned: (id: string) => `/conversations/${id}/pinned`,
   },
+  /** Public, no sign-in: the read-only view behind a shared conversation link. */
+  shared_conversations: { one: (token: string) => `/shared-conversations/${token}` },
   messages: {
     search: "/messages/search",
     one: (id: string) => `/messages/${id}`,

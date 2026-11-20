@@ -13,6 +13,9 @@ export const Routes = {
   },
   invite: (token: string) => `/invite/${token}`,
   invite_pattern: "/invite/:token",
+  /** Public read-only view of a shared conversation (no sign-in). */
+  shared: (token: string) => `/s/${token}`,
+  shared_pattern: "/s/:token",
   chat: {
     root: "/c",
     conversation: (id: string) => `/c/${id}`,

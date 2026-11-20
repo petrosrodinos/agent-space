@@ -11,9 +11,10 @@ import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
+import { ShareConversationDialog } from "../../components/share-conversation-dialog";
 import { Markdown } from "@/components/ui/markdown";
 import {
-  useConversation, useConversationSearch, useDeleteConversation, useDeleteMessage, useEditMessage, useMarkRead, useMessages, usePinned, useReact, useRetryMessage, useSendMessage,
+  useClearConversation, useConversation, useConversationSearch, useDeleteConversation, useDeleteMessage, useEditMessage, useMarkRead, useMessages, usePinned, useReact, useRetryMessage, useSendMessage,
   useStopRun, useTogglePin, useUpdateMyConversation,
 } from "@/features/conversations/hooks/use-conversations";
 import { useConversationStream, type RunStatusMap } from "@/features/realtime/hooks/use-realtime";
@@ -98,6 +99,9 @@ const ConversationPage: FC = () => {
   const markRead = useMarkRead();
   const updateMine = useUpdateMyConversation();
   const deleteConv = useDeleteConversation();
+  const clearConv = useClearConversation();
+  const [confirmClear, setConfirmClear] = useState(false);
+  const [shareOpen, setShareOpen] = useState(false);
 
   const isDesktop = useMediaQuery("(min-width: 1200px)");
   const isPhone = !useMediaQuery("(min-width: 768px)");
@@ -268,6 +272,8 @@ const ConversationPage: FC = () => {
       onPinned={() => setPinnedOpen(true)}
       onFavourite={() => updateMine.mutate({ id: conversation.id, is_favourite: !conversation.me?.is_favourite })}
       onArchive={() => updateMine.mutate({ id: conversation.id, is_archived: !conversation.me?.is_archived }, { onSuccess: () => navigate(Routes.chat.root) })}
+      onClear={() => setConfirmClear(true)}
+      onShare={() => setShareOpen(true)}
       onDelete={() => setConfirmDelete(true)}
     />
   );
@@ -473,6 +479,17 @@ const ConversationPage: FC = () => {
         </DialogContent>
       </Dialog>
 
+      {conversation && <ShareConversationDialog open={shareOpen} onOpenChange={setShareOpen} conversationId={conversation.id} conversationName={conversation.name} />}
+      <ConfirmationDialog
+        isOpen={confirmClear}
+        onClose={() => setConfirmClear(false)}
+        title="Clear this conversation?"
+        description="All messages and files are removed. The conversation and its bot stay."
+        confirmText="Clear"
+        variant="destructive"
+        isLoading={clearConv.isPending}
+        onConfirm={() => clearConv.mutate(conversationId, { onSuccess: () => setConfirmClear(false) })}
+      />
       <ConfirmationDialog
         isOpen={confirmDelete}
         onClose={() => setConfirmDelete(false)}

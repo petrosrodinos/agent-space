@@ -184,8 +184,14 @@ export type ConversationFolder = $Result.DefaultSelection<Prisma.$ConversationFo
  */
 export type Conversation = $Result.DefaultSelection<Prisma.$ConversationPayload>
 /**
- * Model ConversationParticipant
+ * Model ConversationShare
  * A user or a bot in a conversation. Exactly one of user_id / bot_id is set.
+ * A public, read-only link to a conversation. One per conversation; stopping the share deletes the row, which kills the link.
+ */
+export type ConversationShare = $Result.DefaultSelection<Prisma.$ConversationSharePayload>
+/**
+ * Model ConversationParticipant
+ * 
  */
 export type ConversationParticipant = $Result.DefaultSelection<Prisma.$ConversationParticipantPayload>
 /**
@@ -1097,6 +1103,14 @@ export const ModelCostTier: {
 export type ModelCostTier = (typeof ModelCostTier)[keyof typeof ModelCostTier]
 
 
+export const ConversationShareMode: {
+  SNAPSHOT: 'SNAPSHOT',
+  LIVE: 'LIVE'
+};
+
+export type ConversationShareMode = (typeof ConversationShareMode)[keyof typeof ConversationShareMode]
+
+
 export const ConversationType: {
   DIRECT: 'DIRECT',
   SHARED_BOT: 'SHARED_BOT',
@@ -1925,6 +1939,10 @@ export type ModelCostTier = $Enums.ModelCostTier
 
 export const ModelCostTier: typeof $Enums.ModelCostTier
 
+export type ConversationShareMode = $Enums.ConversationShareMode
+
+export const ConversationShareMode: typeof $Enums.ConversationShareMode
+
 export type ConversationType = $Enums.ConversationType
 
 export const ConversationType: typeof $Enums.ConversationType
@@ -2589,6 +2607,16 @@ export class PrismaClient<
     * ```
     */
   get conversation(): Prisma.ConversationDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.conversationShare`: Exposes CRUD operations for the **ConversationShare** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more ConversationShares
+    * const conversationShares = await prisma.conversationShare.findMany()
+    * ```
+    */
+  get conversationShare(): Prisma.ConversationShareDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.conversationParticipant`: Exposes CRUD operations for the **ConversationParticipant** model.
@@ -3580,6 +3608,7 @@ export namespace Prisma {
     Memory: 'Memory',
     ConversationFolder: 'ConversationFolder',
     Conversation: 'Conversation',
+    ConversationShare: 'ConversationShare',
     ConversationParticipant: 'ConversationParticipant',
     Message: 'Message',
     MessageFile: 'MessageFile',
@@ -3646,7 +3675,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationShare" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -6163,6 +6192,80 @@ export namespace Prisma {
           count: {
             args: Prisma.ConversationCountArgs<ExtArgs>
             result: $Utils.Optional<ConversationCountAggregateOutputType> | number
+          }
+        }
+      }
+      ConversationShare: {
+        payload: Prisma.$ConversationSharePayload<ExtArgs>
+        fields: Prisma.ConversationShareFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.ConversationShareFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.ConversationShareFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          findFirst: {
+            args: Prisma.ConversationShareFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.ConversationShareFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          findMany: {
+            args: Prisma.ConversationShareFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>[]
+          }
+          create: {
+            args: Prisma.ConversationShareCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          createMany: {
+            args: Prisma.ConversationShareCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.ConversationShareCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>[]
+          }
+          delete: {
+            args: Prisma.ConversationShareDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          update: {
+            args: Prisma.ConversationShareUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          deleteMany: {
+            args: Prisma.ConversationShareDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.ConversationShareUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.ConversationShareUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>[]
+          }
+          upsert: {
+            args: Prisma.ConversationShareUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$ConversationSharePayload>
+          }
+          aggregate: {
+            args: Prisma.ConversationShareAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateConversationShare>
+          }
+          groupBy: {
+            args: Prisma.ConversationShareGroupByArgs<ExtArgs>
+            result: $Utils.Optional<ConversationShareGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.ConversationShareCountArgs<ExtArgs>
+            result: $Utils.Optional<ConversationShareCountAggregateOutputType> | number
           }
         }
       }
@@ -10097,6 +10200,7 @@ export namespace Prisma {
     memory?: MemoryOmit
     conversationFolder?: ConversationFolderOmit
     conversation?: ConversationOmit
+    conversationShare?: ConversationShareOmit
     conversationParticipant?: ConversationParticipantOmit
     message?: MessageOmit
     messageFile?: MessageFileOmit
@@ -10242,6 +10346,7 @@ export namespace Prisma {
     bot_connection_defaults: number
     tool_permissions: number
     conversations_created: number
+    conversation_shares: number
     conversation_folders: number
     participations: number
     messages: number
@@ -10292,6 +10397,7 @@ export namespace Prisma {
     bot_connection_defaults?: boolean | UserCountOutputTypeCountBot_connection_defaultsArgs
     tool_permissions?: boolean | UserCountOutputTypeCountTool_permissionsArgs
     conversations_created?: boolean | UserCountOutputTypeCountConversations_createdArgs
+    conversation_shares?: boolean | UserCountOutputTypeCountConversation_sharesArgs
     conversation_folders?: boolean | UserCountOutputTypeCountConversation_foldersArgs
     participations?: boolean | UserCountOutputTypeCountParticipationsArgs
     messages?: boolean | UserCountOutputTypeCountMessagesArgs
@@ -10434,6 +10540,13 @@ export namespace Prisma {
    */
   export type UserCountOutputTypeCountConversations_createdArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: ConversationWhereInput
+  }
+
+  /**
+   * UserCountOutputType without action
+   */
+  export type UserCountOutputTypeCountConversation_sharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationShareWhereInput
   }
 
   /**
@@ -12880,6 +12993,7 @@ export namespace Prisma {
     bot_connection_defaults?: boolean | User$bot_connection_defaultsArgs<ExtArgs>
     tool_permissions?: boolean | User$tool_permissionsArgs<ExtArgs>
     conversations_created?: boolean | User$conversations_createdArgs<ExtArgs>
+    conversation_shares?: boolean | User$conversation_sharesArgs<ExtArgs>
     conversation_folders?: boolean | User$conversation_foldersArgs<ExtArgs>
     participations?: boolean | User$participationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
@@ -12999,6 +13113,7 @@ export namespace Prisma {
     bot_connection_defaults?: boolean | User$bot_connection_defaultsArgs<ExtArgs>
     tool_permissions?: boolean | User$tool_permissionsArgs<ExtArgs>
     conversations_created?: boolean | User$conversations_createdArgs<ExtArgs>
+    conversation_shares?: boolean | User$conversation_sharesArgs<ExtArgs>
     conversation_folders?: boolean | User$conversation_foldersArgs<ExtArgs>
     participations?: boolean | User$participationsArgs<ExtArgs>
     messages?: boolean | User$messagesArgs<ExtArgs>
@@ -13060,6 +13175,7 @@ export namespace Prisma {
       bot_connection_defaults: Prisma.$UserServiceDefaultPayload<ExtArgs>[]
       tool_permissions: Prisma.$UserToolPermissionPayload<ExtArgs>[]
       conversations_created: Prisma.$ConversationPayload<ExtArgs>[]
+      conversation_shares: Prisma.$ConversationSharePayload<ExtArgs>[]
       conversation_folders: Prisma.$ConversationFolderPayload<ExtArgs>[]
       participations: Prisma.$ConversationParticipantPayload<ExtArgs>[]
       messages: Prisma.$MessagePayload<ExtArgs>[]
@@ -13523,6 +13639,7 @@ export namespace Prisma {
     bot_connection_defaults<T extends User$bot_connection_defaultsArgs<ExtArgs> = {}>(args?: Subset<T, User$bot_connection_defaultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserServiceDefaultPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     tool_permissions<T extends User$tool_permissionsArgs<ExtArgs> = {}>(args?: Subset<T, User$tool_permissionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserToolPermissionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversations_created<T extends User$conversations_createdArgs<ExtArgs> = {}>(args?: Subset<T, User$conversations_createdArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    conversation_shares<T extends User$conversation_sharesArgs<ExtArgs> = {}>(args?: Subset<T, User$conversation_sharesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     conversation_folders<T extends User$conversation_foldersArgs<ExtArgs> = {}>(args?: Subset<T, User$conversation_foldersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationFolderPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     participations<T extends User$participationsArgs<ExtArgs> = {}>(args?: Subset<T, User$participationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationParticipantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     messages<T extends User$messagesArgs<ExtArgs> = {}>(args?: Subset<T, User$messagesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$MessagePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -14375,6 +14492,30 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: ConversationScalarFieldEnum | ConversationScalarFieldEnum[]
+  }
+
+  /**
+   * User.conversation_shares
+   */
+  export type User$conversation_sharesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    where?: ConversationShareWhereInput
+    orderBy?: ConversationShareOrderByWithRelationInput | ConversationShareOrderByWithRelationInput[]
+    cursor?: ConversationShareWhereUniqueInput
+    take?: number
+    skip?: number
+    distinct?: ConversationShareScalarFieldEnum | ConversationShareScalarFieldEnum[]
   }
 
   /**
@@ -55899,6 +56040,7 @@ export namespace Prisma {
     automations_source?: boolean | Conversation$automations_sourceArgs<ExtArgs>
     saved_widgets?: boolean | Conversation$saved_widgetsArgs<ExtArgs>
     channel_links?: boolean | Conversation$channel_linksArgs<ExtArgs>
+    share?: boolean | Conversation$shareArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["conversation"]>
 
@@ -55976,6 +56118,7 @@ export namespace Prisma {
     automations_source?: boolean | Conversation$automations_sourceArgs<ExtArgs>
     saved_widgets?: boolean | Conversation$saved_widgetsArgs<ExtArgs>
     channel_links?: boolean | Conversation$channel_linksArgs<ExtArgs>
+    share?: boolean | Conversation$shareArgs<ExtArgs>
     _count?: boolean | ConversationCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ConversationIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -56007,6 +56150,7 @@ export namespace Prisma {
       automations_source: Prisma.$AutomationPayload<ExtArgs>[]
       saved_widgets: Prisma.$SavedWidgetPayload<ExtArgs>[]
       channel_links: Prisma.$ChannelLinkPayload<ExtArgs>[]
+      share: Prisma.$ConversationSharePayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -56432,6 +56576,7 @@ export namespace Prisma {
     automations_source<T extends Conversation$automations_sourceArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$automations_sourceArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     saved_widgets<T extends Conversation$saved_widgetsArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$saved_widgetsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$SavedWidgetPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     channel_links<T extends Conversation$channel_linksArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$channel_linksArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ChannelLinkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    share<T extends Conversation$shareArgs<ExtArgs> = {}>(args?: Subset<T, Conversation$shareArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -57202,6 +57347,25 @@ export namespace Prisma {
   }
 
   /**
+   * Conversation.share
+   */
+  export type Conversation$shareArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    where?: ConversationShareWhereInput
+  }
+
+  /**
    * Conversation without action
    */
   export type ConversationDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -57217,6 +57381,1141 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: ConversationInclude<ExtArgs> | null
+  }
+
+
+  /**
+   * Model ConversationShare
+   */
+
+  export type AggregateConversationShare = {
+    _count: ConversationShareCountAggregateOutputType | null
+    _min: ConversationShareMinAggregateOutputType | null
+    _max: ConversationShareMaxAggregateOutputType | null
+  }
+
+  export type ConversationShareMinAggregateOutputType = {
+    id: string | null
+    conversation_id: string | null
+    created_by_id: string | null
+    token: string | null
+    mode: $Enums.ConversationShareMode | null
+    cutoff_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ConversationShareMaxAggregateOutputType = {
+    id: string | null
+    conversation_id: string | null
+    created_by_id: string | null
+    token: string | null
+    mode: $Enums.ConversationShareMode | null
+    cutoff_at: Date | null
+    created_at: Date | null
+    updated_at: Date | null
+  }
+
+  export type ConversationShareCountAggregateOutputType = {
+    id: number
+    conversation_id: number
+    created_by_id: number
+    token: number
+    mode: number
+    cutoff_at: number
+    created_at: number
+    updated_at: number
+    _all: number
+  }
+
+
+  export type ConversationShareMinAggregateInputType = {
+    id?: true
+    conversation_id?: true
+    created_by_id?: true
+    token?: true
+    mode?: true
+    cutoff_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ConversationShareMaxAggregateInputType = {
+    id?: true
+    conversation_id?: true
+    created_by_id?: true
+    token?: true
+    mode?: true
+    cutoff_at?: true
+    created_at?: true
+    updated_at?: true
+  }
+
+  export type ConversationShareCountAggregateInputType = {
+    id?: true
+    conversation_id?: true
+    created_by_id?: true
+    token?: true
+    mode?: true
+    cutoff_at?: true
+    created_at?: true
+    updated_at?: true
+    _all?: true
+  }
+
+  export type ConversationShareAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConversationShare to aggregate.
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationShares to fetch.
+     */
+    orderBy?: ConversationShareOrderByWithRelationInput | ConversationShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: ConversationShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned ConversationShares
+    **/
+    _count?: true | ConversationShareCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: ConversationShareMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: ConversationShareMaxAggregateInputType
+  }
+
+  export type GetConversationShareAggregateType<T extends ConversationShareAggregateArgs> = {
+        [P in keyof T & keyof AggregateConversationShare]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateConversationShare[P]>
+      : GetScalarType<T[P], AggregateConversationShare[P]>
+  }
+
+
+
+
+  export type ConversationShareGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: ConversationShareWhereInput
+    orderBy?: ConversationShareOrderByWithAggregationInput | ConversationShareOrderByWithAggregationInput[]
+    by: ConversationShareScalarFieldEnum[] | ConversationShareScalarFieldEnum
+    having?: ConversationShareScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: ConversationShareCountAggregateInputType | true
+    _min?: ConversationShareMinAggregateInputType
+    _max?: ConversationShareMaxAggregateInputType
+  }
+
+  export type ConversationShareGroupByOutputType = {
+    id: string
+    conversation_id: string
+    created_by_id: string | null
+    token: string
+    mode: $Enums.ConversationShareMode
+    cutoff_at: Date
+    created_at: Date
+    updated_at: Date
+    _count: ConversationShareCountAggregateOutputType | null
+    _min: ConversationShareMinAggregateOutputType | null
+    _max: ConversationShareMaxAggregateOutputType | null
+  }
+
+  type GetConversationShareGroupByPayload<T extends ConversationShareGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<ConversationShareGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof ConversationShareGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], ConversationShareGroupByOutputType[P]>
+            : GetScalarType<T[P], ConversationShareGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type ConversationShareSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversation_id?: boolean
+    created_by_id?: boolean
+    token?: boolean
+    mode?: boolean
+    cutoff_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }, ExtArgs["result"]["conversationShare"]>
+
+  export type ConversationShareSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversation_id?: boolean
+    created_by_id?: boolean
+    token?: boolean
+    mode?: boolean
+    cutoff_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }, ExtArgs["result"]["conversationShare"]>
+
+  export type ConversationShareSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    id?: boolean
+    conversation_id?: boolean
+    created_by_id?: boolean
+    token?: boolean
+    mode?: boolean
+    cutoff_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }, ExtArgs["result"]["conversationShare"]>
+
+  export type ConversationShareSelectScalar = {
+    id?: boolean
+    conversation_id?: boolean
+    created_by_id?: boolean
+    token?: boolean
+    mode?: boolean
+    cutoff_at?: boolean
+    created_at?: boolean
+    updated_at?: boolean
+  }
+
+  export type ConversationShareOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversation_id" | "created_by_id" | "token" | "mode" | "cutoff_at" | "created_at" | "updated_at", ExtArgs["result"]["conversationShare"]>
+  export type ConversationShareInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }
+  export type ConversationShareIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }
+  export type ConversationShareIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    conversation?: boolean | ConversationDefaultArgs<ExtArgs>
+    created_by?: boolean | ConversationShare$created_byArgs<ExtArgs>
+  }
+
+  export type $ConversationSharePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "ConversationShare"
+    objects: {
+      conversation: Prisma.$ConversationPayload<ExtArgs>
+      created_by: Prisma.$UserPayload<ExtArgs> | null
+    }
+    scalars: $Extensions.GetPayloadResult<{
+      id: string
+      conversation_id: string
+      created_by_id: string | null
+      /**
+       * Unguessable URL token (the link is the credential).
+       */
+      token: string
+      mode: $Enums.ConversationShareMode
+      /**
+       * SNAPSHOT mode: only messages created at or before this moment are visible.
+       */
+      cutoff_at: Date
+      created_at: Date
+      updated_at: Date
+    }, ExtArgs["result"]["conversationShare"]>
+    composites: {}
+  }
+
+  type ConversationShareGetPayload<S extends boolean | null | undefined | ConversationShareDefaultArgs> = $Result.GetResult<Prisma.$ConversationSharePayload, S>
+
+  type ConversationShareCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<ConversationShareFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: ConversationShareCountAggregateInputType | true
+    }
+
+  export interface ConversationShareDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['ConversationShare'], meta: { name: 'ConversationShare' } }
+    /**
+     * Find zero or one ConversationShare that matches the filter.
+     * @param {ConversationShareFindUniqueArgs} args - Arguments to find a ConversationShare
+     * @example
+     * // Get one ConversationShare
+     * const conversationShare = await prisma.conversationShare.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends ConversationShareFindUniqueArgs>(args: SelectSubset<T, ConversationShareFindUniqueArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find one ConversationShare that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {ConversationShareFindUniqueOrThrowArgs} args - Arguments to find a ConversationShare
+     * @example
+     * // Get one ConversationShare
+     * const conversationShare = await prisma.conversationShare.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends ConversationShareFindUniqueOrThrowArgs>(args: SelectSubset<T, ConversationShareFindUniqueOrThrowArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConversationShare that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareFindFirstArgs} args - Arguments to find a ConversationShare
+     * @example
+     * // Get one ConversationShare
+     * const conversationShare = await prisma.conversationShare.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends ConversationShareFindFirstArgs>(args?: SelectSubset<T, ConversationShareFindFirstArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find the first ConversationShare that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareFindFirstOrThrowArgs} args - Arguments to find a ConversationShare
+     * @example
+     * // Get one ConversationShare
+     * const conversationShare = await prisma.conversationShare.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends ConversationShareFindFirstOrThrowArgs>(args?: SelectSubset<T, ConversationShareFindFirstOrThrowArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Find zero or more ConversationShares that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all ConversationShares
+     * const conversationShares = await prisma.conversationShare.findMany()
+     * 
+     * // Get first 10 ConversationShares
+     * const conversationShares = await prisma.conversationShare.findMany({ take: 10 })
+     * 
+     * // Only select the `id`
+     * const conversationShareWithIdOnly = await prisma.conversationShare.findMany({ select: { id: true } })
+     * 
+     */
+    findMany<T extends ConversationShareFindManyArgs>(args?: SelectSubset<T, ConversationShareFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+
+    /**
+     * Create a ConversationShare.
+     * @param {ConversationShareCreateArgs} args - Arguments to create a ConversationShare.
+     * @example
+     * // Create one ConversationShare
+     * const ConversationShare = await prisma.conversationShare.create({
+     *   data: {
+     *     // ... data to create a ConversationShare
+     *   }
+     * })
+     * 
+     */
+    create<T extends ConversationShareCreateArgs>(args: SelectSubset<T, ConversationShareCreateArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Create many ConversationShares.
+     * @param {ConversationShareCreateManyArgs} args - Arguments to create many ConversationShares.
+     * @example
+     * // Create many ConversationShares
+     * const conversationShare = await prisma.conversationShare.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends ConversationShareCreateManyArgs>(args?: SelectSubset<T, ConversationShareCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many ConversationShares and returns the data saved in the database.
+     * @param {ConversationShareCreateManyAndReturnArgs} args - Arguments to create many ConversationShares.
+     * @example
+     * // Create many ConversationShares
+     * const conversationShare = await prisma.conversationShare.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many ConversationShares and only return the `id`
+     * const conversationShareWithIdOnly = await prisma.conversationShare.createManyAndReturn({
+     *   select: { id: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends ConversationShareCreateManyAndReturnArgs>(args?: SelectSubset<T, ConversationShareCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Delete a ConversationShare.
+     * @param {ConversationShareDeleteArgs} args - Arguments to delete one ConversationShare.
+     * @example
+     * // Delete one ConversationShare
+     * const ConversationShare = await prisma.conversationShare.delete({
+     *   where: {
+     *     // ... filter to delete one ConversationShare
+     *   }
+     * })
+     * 
+     */
+    delete<T extends ConversationShareDeleteArgs>(args: SelectSubset<T, ConversationShareDeleteArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Update one ConversationShare.
+     * @param {ConversationShareUpdateArgs} args - Arguments to update one ConversationShare.
+     * @example
+     * // Update one ConversationShare
+     * const conversationShare = await prisma.conversationShare.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends ConversationShareUpdateArgs>(args: SelectSubset<T, ConversationShareUpdateArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+    /**
+     * Delete zero or more ConversationShares.
+     * @param {ConversationShareDeleteManyArgs} args - Arguments to filter ConversationShares to delete.
+     * @example
+     * // Delete a few ConversationShares
+     * const { count } = await prisma.conversationShare.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends ConversationShareDeleteManyArgs>(args?: SelectSubset<T, ConversationShareDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConversationShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many ConversationShares
+     * const conversationShare = await prisma.conversationShare.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends ConversationShareUpdateManyArgs>(args: SelectSubset<T, ConversationShareUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more ConversationShares and returns the data updated in the database.
+     * @param {ConversationShareUpdateManyAndReturnArgs} args - Arguments to update many ConversationShares.
+     * @example
+     * // Update many ConversationShares
+     * const conversationShare = await prisma.conversationShare.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more ConversationShares and only return the `id`
+     * const conversationShareWithIdOnly = await prisma.conversationShare.updateManyAndReturn({
+     *   select: { id: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends ConversationShareUpdateManyAndReturnArgs>(args: SelectSubset<T, ConversationShareUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+
+    /**
+     * Create or update one ConversationShare.
+     * @param {ConversationShareUpsertArgs} args - Arguments to update or create a ConversationShare.
+     * @example
+     * // Update or create a ConversationShare
+     * const conversationShare = await prisma.conversationShare.upsert({
+     *   create: {
+     *     // ... data to create a ConversationShare
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the ConversationShare we want to update
+     *   }
+     * })
+     */
+    upsert<T extends ConversationShareUpsertArgs>(args: SelectSubset<T, ConversationShareUpsertArgs<ExtArgs>>): Prisma__ConversationShareClient<$Result.GetResult<Prisma.$ConversationSharePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+
+
+    /**
+     * Count the number of ConversationShares.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareCountArgs} args - Arguments to filter ConversationShares to count.
+     * @example
+     * // Count the number of ConversationShares
+     * const count = await prisma.conversationShare.count({
+     *   where: {
+     *     // ... the filter for the ConversationShares we want to count
+     *   }
+     * })
+    **/
+    count<T extends ConversationShareCountArgs>(
+      args?: Subset<T, ConversationShareCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], ConversationShareCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a ConversationShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends ConversationShareAggregateArgs>(args: Subset<T, ConversationShareAggregateArgs>): Prisma.PrismaPromise<GetConversationShareAggregateType<T>>
+
+    /**
+     * Group by ConversationShare.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {ConversationShareGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends ConversationShareGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: ConversationShareGroupByArgs['orderBy'] }
+        : { orderBy?: ConversationShareGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, ConversationShareGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetConversationShareGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the ConversationShare model
+   */
+  readonly fields: ConversationShareFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for ConversationShare.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__ConversationShareClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    conversation<T extends ConversationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ConversationDefaultArgs<ExtArgs>>): Prisma__ConversationClient<$Result.GetResult<Prisma.$ConversationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+    created_by<T extends ConversationShare$created_byArgs<ExtArgs> = {}>(args?: Subset<T, ConversationShare$created_byArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the ConversationShare model
+   */
+  interface ConversationShareFieldRefs {
+    readonly id: FieldRef<"ConversationShare", 'String'>
+    readonly conversation_id: FieldRef<"ConversationShare", 'String'>
+    readonly created_by_id: FieldRef<"ConversationShare", 'String'>
+    readonly token: FieldRef<"ConversationShare", 'String'>
+    readonly mode: FieldRef<"ConversationShare", 'ConversationShareMode'>
+    readonly cutoff_at: FieldRef<"ConversationShare", 'DateTime'>
+    readonly created_at: FieldRef<"ConversationShare", 'DateTime'>
+    readonly updated_at: FieldRef<"ConversationShare", 'DateTime'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * ConversationShare findUnique
+   */
+  export type ConversationShareFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationShare to fetch.
+     */
+    where: ConversationShareWhereUniqueInput
+  }
+
+  /**
+   * ConversationShare findUniqueOrThrow
+   */
+  export type ConversationShareFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationShare to fetch.
+     */
+    where: ConversationShareWhereUniqueInput
+  }
+
+  /**
+   * ConversationShare findFirst
+   */
+  export type ConversationShareFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationShare to fetch.
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationShares to fetch.
+     */
+    orderBy?: ConversationShareOrderByWithRelationInput | ConversationShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConversationShares.
+     */
+    cursor?: ConversationShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConversationShares.
+     */
+    distinct?: ConversationShareScalarFieldEnum | ConversationShareScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationShare findFirstOrThrow
+   */
+  export type ConversationShareFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationShare to fetch.
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationShares to fetch.
+     */
+    orderBy?: ConversationShareOrderByWithRelationInput | ConversationShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for ConversationShares.
+     */
+    cursor?: ConversationShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConversationShares.
+     */
+    distinct?: ConversationShareScalarFieldEnum | ConversationShareScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationShare findMany
+   */
+  export type ConversationShareFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter, which ConversationShares to fetch.
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of ConversationShares to fetch.
+     */
+    orderBy?: ConversationShareOrderByWithRelationInput | ConversationShareOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing ConversationShares.
+     */
+    cursor?: ConversationShareWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` ConversationShares from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` ConversationShares.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of ConversationShares.
+     */
+    distinct?: ConversationShareScalarFieldEnum | ConversationShareScalarFieldEnum[]
+  }
+
+  /**
+   * ConversationShare create
+   */
+  export type ConversationShareCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * The data needed to create a ConversationShare.
+     */
+    data: XOR<ConversationShareCreateInput, ConversationShareUncheckedCreateInput>
+  }
+
+  /**
+   * ConversationShare createMany
+   */
+  export type ConversationShareCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many ConversationShares.
+     */
+    data: ConversationShareCreateManyInput | ConversationShareCreateManyInput[]
+    skipDuplicates?: boolean
+  }
+
+  /**
+   * ConversationShare createManyAndReturn
+   */
+  export type ConversationShareCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * The data used to create many ConversationShares.
+     */
+    data: ConversationShareCreateManyInput | ConversationShareCreateManyInput[]
+    skipDuplicates?: boolean
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareIncludeCreateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConversationShare update
+   */
+  export type ConversationShareUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * The data needed to update a ConversationShare.
+     */
+    data: XOR<ConversationShareUpdateInput, ConversationShareUncheckedUpdateInput>
+    /**
+     * Choose, which ConversationShare to update.
+     */
+    where: ConversationShareWhereUniqueInput
+  }
+
+  /**
+   * ConversationShare updateMany
+   */
+  export type ConversationShareUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update ConversationShares.
+     */
+    data: XOR<ConversationShareUpdateManyMutationInput, ConversationShareUncheckedUpdateManyInput>
+    /**
+     * Filter which ConversationShares to update
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * Limit how many ConversationShares to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConversationShare updateManyAndReturn
+   */
+  export type ConversationShareUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * The data used to update ConversationShares.
+     */
+    data: XOR<ConversationShareUpdateManyMutationInput, ConversationShareUncheckedUpdateManyInput>
+    /**
+     * Filter which ConversationShares to update
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * Limit how many ConversationShares to update.
+     */
+    limit?: number
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareIncludeUpdateManyAndReturn<ExtArgs> | null
+  }
+
+  /**
+   * ConversationShare upsert
+   */
+  export type ConversationShareUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * The filter to search for the ConversationShare to update in case it exists.
+     */
+    where: ConversationShareWhereUniqueInput
+    /**
+     * In case the ConversationShare found by the `where` argument doesn't exist, create a new ConversationShare with this data.
+     */
+    create: XOR<ConversationShareCreateInput, ConversationShareUncheckedCreateInput>
+    /**
+     * In case the ConversationShare was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<ConversationShareUpdateInput, ConversationShareUncheckedUpdateInput>
+  }
+
+  /**
+   * ConversationShare delete
+   */
+  export type ConversationShareDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
+    /**
+     * Filter which ConversationShare to delete.
+     */
+    where: ConversationShareWhereUniqueInput
+  }
+
+  /**
+   * ConversationShare deleteMany
+   */
+  export type ConversationShareDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which ConversationShares to delete
+     */
+    where?: ConversationShareWhereInput
+    /**
+     * Limit how many ConversationShares to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * ConversationShare.created_by
+   */
+  export type ConversationShare$created_byArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the User
+     */
+    select?: UserSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the User
+     */
+    omit?: UserOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: UserInclude<ExtArgs> | null
+    where?: UserWhereInput
+  }
+
+  /**
+   * ConversationShare without action
+   */
+  export type ConversationShareDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the ConversationShare
+     */
+    select?: ConversationShareSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the ConversationShare
+     */
+    omit?: ConversationShareOmit<ExtArgs> | null
+    /**
+     * Choose, which related nodes to fetch as well
+     */
+    include?: ConversationShareInclude<ExtArgs> | null
   }
 
 
@@ -122226,6 +123525,20 @@ export namespace Prisma {
   export type ConversationScalarFieldEnum = (typeof ConversationScalarFieldEnum)[keyof typeof ConversationScalarFieldEnum]
 
 
+  export const ConversationShareScalarFieldEnum: {
+    id: 'id',
+    conversation_id: 'conversation_id',
+    created_by_id: 'created_by_id',
+    token: 'token',
+    mode: 'mode',
+    cutoff_at: 'cutoff_at',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
+  };
+
+  export type ConversationShareScalarFieldEnum = (typeof ConversationShareScalarFieldEnum)[keyof typeof ConversationShareScalarFieldEnum]
+
+
   export const ConversationParticipantScalarFieldEnum: {
     id: 'id',
     conversation_id: 'conversation_id',
@@ -124355,6 +125668,20 @@ export namespace Prisma {
 
 
   /**
+   * Reference to a field of type 'ConversationShareMode'
+   */
+  export type EnumConversationShareModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationShareMode'>
+    
+
+
+  /**
+   * Reference to a field of type 'ConversationShareMode[]'
+   */
+  export type ListEnumConversationShareModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ConversationShareMode[]'>
+    
+
+
+  /**
    * Reference to a field of type 'MessageAuthorType'
    */
   export type EnumMessageAuthorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MessageAuthorType'>
@@ -125053,6 +126380,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultListRelationFilter
     tool_permissions?: UserToolPermissionListRelationFilter
     conversations_created?: ConversationListRelationFilter
+    conversation_shares?: ConversationShareListRelationFilter
     conversation_folders?: ConversationFolderListRelationFilter
     participations?: ConversationParticipantListRelationFilter
     messages?: MessageListRelationFilter
@@ -125123,6 +126451,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultOrderByRelationAggregateInput
     tool_permissions?: UserToolPermissionOrderByRelationAggregateInput
     conversations_created?: ConversationOrderByRelationAggregateInput
+    conversation_shares?: ConversationShareOrderByRelationAggregateInput
     conversation_folders?: ConversationFolderOrderByRelationAggregateInput
     participations?: ConversationParticipantOrderByRelationAggregateInput
     messages?: MessageOrderByRelationAggregateInput
@@ -125196,6 +126525,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultListRelationFilter
     tool_permissions?: UserToolPermissionListRelationFilter
     conversations_created?: ConversationListRelationFilter
+    conversation_shares?: ConversationShareListRelationFilter
     conversation_folders?: ConversationFolderListRelationFilter
     participations?: ConversationParticipantListRelationFilter
     messages?: MessageListRelationFilter
@@ -128715,6 +130045,7 @@ export namespace Prisma {
     automations_source?: AutomationListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
     channel_links?: ChannelLinkListRelationFilter
+    share?: XOR<ConversationShareNullableScalarRelationFilter, ConversationShareWhereInput> | null
   }
 
   export type ConversationOrderByWithRelationInput = {
@@ -128747,6 +130078,7 @@ export namespace Prisma {
     automations_source?: AutomationOrderByRelationAggregateInput
     saved_widgets?: SavedWidgetOrderByRelationAggregateInput
     channel_links?: ChannelLinkOrderByRelationAggregateInput
+    share?: ConversationShareOrderByWithRelationInput
   }
 
   export type ConversationWhereUniqueInput = Prisma.AtLeast<{
@@ -128782,6 +130114,7 @@ export namespace Prisma {
     automations_source?: AutomationListRelationFilter
     saved_widgets?: SavedWidgetListRelationFilter
     channel_links?: ChannelLinkListRelationFilter
+    share?: XOR<ConversationShareNullableScalarRelationFilter, ConversationShareWhereInput> | null
   }, "id">
 
   export type ConversationOrderByWithAggregationInput = {
@@ -128824,6 +130157,79 @@ export namespace Prisma {
     deleted_at?: DateTimeNullableWithAggregatesFilter<"Conversation"> | Date | string | null
     created_at?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
     updated_at?: DateTimeWithAggregatesFilter<"Conversation"> | Date | string
+  }
+
+  export type ConversationShareWhereInput = {
+    AND?: ConversationShareWhereInput | ConversationShareWhereInput[]
+    OR?: ConversationShareWhereInput[]
+    NOT?: ConversationShareWhereInput | ConversationShareWhereInput[]
+    id?: StringFilter<"ConversationShare"> | string
+    conversation_id?: StringFilter<"ConversationShare"> | string
+    created_by_id?: StringNullableFilter<"ConversationShare"> | string | null
+    token?: StringFilter<"ConversationShare"> | string
+    mode?: EnumConversationShareModeFilter<"ConversationShare"> | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    created_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    updated_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
+    created_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }
+
+  export type ConversationShareOrderByWithRelationInput = {
+    id?: SortOrder
+    conversation_id?: SortOrder
+    created_by_id?: SortOrderInput | SortOrder
+    token?: SortOrder
+    mode?: SortOrder
+    cutoff_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    conversation?: ConversationOrderByWithRelationInput
+    created_by?: UserOrderByWithRelationInput
+  }
+
+  export type ConversationShareWhereUniqueInput = Prisma.AtLeast<{
+    id?: string
+    conversation_id?: string
+    token?: string
+    AND?: ConversationShareWhereInput | ConversationShareWhereInput[]
+    OR?: ConversationShareWhereInput[]
+    NOT?: ConversationShareWhereInput | ConversationShareWhereInput[]
+    created_by_id?: StringNullableFilter<"ConversationShare"> | string | null
+    mode?: EnumConversationShareModeFilter<"ConversationShare"> | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    created_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    updated_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
+    created_by?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
+  }, "id" | "conversation_id" | "token">
+
+  export type ConversationShareOrderByWithAggregationInput = {
+    id?: SortOrder
+    conversation_id?: SortOrder
+    created_by_id?: SortOrderInput | SortOrder
+    token?: SortOrder
+    mode?: SortOrder
+    cutoff_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+    _count?: ConversationShareCountOrderByAggregateInput
+    _max?: ConversationShareMaxOrderByAggregateInput
+    _min?: ConversationShareMinOrderByAggregateInput
+  }
+
+  export type ConversationShareScalarWhereWithAggregatesInput = {
+    AND?: ConversationShareScalarWhereWithAggregatesInput | ConversationShareScalarWhereWithAggregatesInput[]
+    OR?: ConversationShareScalarWhereWithAggregatesInput[]
+    NOT?: ConversationShareScalarWhereWithAggregatesInput | ConversationShareScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"ConversationShare"> | string
+    conversation_id?: StringWithAggregatesFilter<"ConversationShare"> | string
+    created_by_id?: StringNullableWithAggregatesFilter<"ConversationShare"> | string | null
+    token?: StringWithAggregatesFilter<"ConversationShare"> | string
+    mode?: EnumConversationShareModeWithAggregatesFilter<"ConversationShare"> | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeWithAggregatesFilter<"ConversationShare"> | Date | string
+    created_at?: DateTimeWithAggregatesFilter<"ConversationShare"> | Date | string
+    updated_at?: DateTimeWithAggregatesFilter<"ConversationShare"> | Date | string
   }
 
   export type ConversationParticipantWhereInput = {
@@ -134089,6 +135495,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -134158,6 +135565,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -134227,6 +135635,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -134296,6 +135705,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -138271,6 +139681,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateInput = {
@@ -138300,6 +139711,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUpdateInput = {
@@ -138329,6 +139741,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateInput = {
@@ -138358,6 +139771,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationCreateManyInput = {
@@ -138404,6 +139818,81 @@ export namespace Prisma {
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationShareCreateInput = {
+    id?: string
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    conversation: ConversationCreateNestedOneWithoutShareInput
+    created_by?: UserCreateNestedOneWithoutConversation_sharesInput
+  }
+
+  export type ConversationShareUncheckedCreateInput = {
+    id?: string
+    conversation_id: string
+    created_by_id?: string | null
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ConversationShareUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    conversation?: ConversationUpdateOneRequiredWithoutShareNestedInput
+    created_by?: UserUpdateOneWithoutConversation_sharesNestedInput
+  }
+
+  export type ConversationShareUncheckedUpdateInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationShareCreateManyInput = {
+    id?: string
+    conversation_id: string
+    created_by_id?: string | null
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ConversationShareUpdateManyMutationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationShareUncheckedUpdateManyInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -144121,6 +145610,12 @@ export namespace Prisma {
     none?: ConversationWhereInput
   }
 
+  export type ConversationShareListRelationFilter = {
+    every?: ConversationShareWhereInput
+    some?: ConversationShareWhereInput
+    none?: ConversationShareWhereInput
+  }
+
   export type ConversationFolderListRelationFilter = {
     every?: ConversationFolderWhereInput
     some?: ConversationFolderWhereInput
@@ -144367,6 +145862,10 @@ export namespace Prisma {
   }
 
   export type ConversationOrderByRelationAggregateInput = {
+    _count?: SortOrder
+  }
+
+  export type ConversationShareOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -148146,6 +149645,11 @@ export namespace Prisma {
     not?: NestedEnumConversationTypeFilter<$PrismaModel> | $Enums.ConversationType
   }
 
+  export type ConversationShareNullableScalarRelationFilter = {
+    is?: ConversationShareWhereInput | null
+    isNot?: ConversationShareWhereInput | null
+  }
+
   export type ConversationCountOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
@@ -148215,9 +149719,59 @@ export namespace Prisma {
     _max?: NestedEnumConversationTypeFilter<$PrismaModel>
   }
 
+  export type EnumConversationShareModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConversationShareMode | EnumConversationShareModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumConversationShareModeFilter<$PrismaModel> | $Enums.ConversationShareMode
+  }
+
   export type ConversationScalarRelationFilter = {
     is?: ConversationWhereInput
     isNot?: ConversationWhereInput
+  }
+
+  export type ConversationShareCountOrderByAggregateInput = {
+    id?: SortOrder
+    conversation_id?: SortOrder
+    created_by_id?: SortOrder
+    token?: SortOrder
+    mode?: SortOrder
+    cutoff_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ConversationShareMaxOrderByAggregateInput = {
+    id?: SortOrder
+    conversation_id?: SortOrder
+    created_by_id?: SortOrder
+    token?: SortOrder
+    mode?: SortOrder
+    cutoff_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type ConversationShareMinOrderByAggregateInput = {
+    id?: SortOrder
+    conversation_id?: SortOrder
+    created_by_id?: SortOrder
+    token?: SortOrder
+    mode?: SortOrder
+    cutoff_at?: SortOrder
+    created_at?: SortOrder
+    updated_at?: SortOrder
+  }
+
+  export type EnumConversationShareModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConversationShareMode | EnumConversationShareModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumConversationShareModeWithAggregatesFilter<$PrismaModel> | $Enums.ConversationShareMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumConversationShareModeFilter<$PrismaModel>
+    _max?: NestedEnumConversationShareModeFilter<$PrismaModel>
   }
 
   export type ConversationFolderNullableScalarRelationFilter = {
@@ -152099,6 +153653,13 @@ export namespace Prisma {
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
   }
 
+  export type ConversationShareCreateNestedManyWithoutCreated_byInput = {
+    create?: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput> | ConversationShareCreateWithoutCreated_byInput[] | ConversationShareUncheckedCreateWithoutCreated_byInput[]
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutCreated_byInput | ConversationShareCreateOrConnectWithoutCreated_byInput[]
+    createMany?: ConversationShareCreateManyCreated_byInputEnvelope
+    connect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+  }
+
   export type ConversationFolderCreateNestedManyWithoutUserInput = {
     create?: XOR<ConversationFolderCreateWithoutUserInput, ConversationFolderUncheckedCreateWithoutUserInput> | ConversationFolderCreateWithoutUserInput[] | ConversationFolderUncheckedCreateWithoutUserInput[]
     connectOrCreate?: ConversationFolderCreateOrConnectWithoutUserInput | ConversationFolderCreateOrConnectWithoutUserInput[]
@@ -152432,6 +153993,13 @@ export namespace Prisma {
     connectOrCreate?: ConversationCreateOrConnectWithoutCreated_byInput | ConversationCreateOrConnectWithoutCreated_byInput[]
     createMany?: ConversationCreateManyCreated_byInputEnvelope
     connect?: ConversationWhereUniqueInput | ConversationWhereUniqueInput[]
+  }
+
+  export type ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput = {
+    create?: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput> | ConversationShareCreateWithoutCreated_byInput[] | ConversationShareUncheckedCreateWithoutCreated_byInput[]
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutCreated_byInput | ConversationShareCreateOrConnectWithoutCreated_byInput[]
+    createMany?: ConversationShareCreateManyCreated_byInputEnvelope
+    connect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
   }
 
   export type ConversationFolderUncheckedCreateNestedManyWithoutUserInput = {
@@ -152903,6 +154471,20 @@ export namespace Prisma {
     update?: ConversationUpdateWithWhereUniqueWithoutCreated_byInput | ConversationUpdateWithWhereUniqueWithoutCreated_byInput[]
     updateMany?: ConversationUpdateManyWithWhereWithoutCreated_byInput | ConversationUpdateManyWithWhereWithoutCreated_byInput[]
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type ConversationShareUpdateManyWithoutCreated_byNestedInput = {
+    create?: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput> | ConversationShareCreateWithoutCreated_byInput[] | ConversationShareUncheckedCreateWithoutCreated_byInput[]
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutCreated_byInput | ConversationShareCreateOrConnectWithoutCreated_byInput[]
+    upsert?: ConversationShareUpsertWithWhereUniqueWithoutCreated_byInput | ConversationShareUpsertWithWhereUniqueWithoutCreated_byInput[]
+    createMany?: ConversationShareCreateManyCreated_byInputEnvelope
+    set?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    disconnect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    delete?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    connect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    update?: ConversationShareUpdateWithWhereUniqueWithoutCreated_byInput | ConversationShareUpdateWithWhereUniqueWithoutCreated_byInput[]
+    updateMany?: ConversationShareUpdateManyWithWhereWithoutCreated_byInput | ConversationShareUpdateManyWithWhereWithoutCreated_byInput[]
+    deleteMany?: ConversationShareScalarWhereInput | ConversationShareScalarWhereInput[]
   }
 
   export type ConversationFolderUpdateManyWithoutUserNestedInput = {
@@ -153571,6 +155153,20 @@ export namespace Prisma {
     update?: ConversationUpdateWithWhereUniqueWithoutCreated_byInput | ConversationUpdateWithWhereUniqueWithoutCreated_byInput[]
     updateMany?: ConversationUpdateManyWithWhereWithoutCreated_byInput | ConversationUpdateManyWithWhereWithoutCreated_byInput[]
     deleteMany?: ConversationScalarWhereInput | ConversationScalarWhereInput[]
+  }
+
+  export type ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput = {
+    create?: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput> | ConversationShareCreateWithoutCreated_byInput[] | ConversationShareUncheckedCreateWithoutCreated_byInput[]
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutCreated_byInput | ConversationShareCreateOrConnectWithoutCreated_byInput[]
+    upsert?: ConversationShareUpsertWithWhereUniqueWithoutCreated_byInput | ConversationShareUpsertWithWhereUniqueWithoutCreated_byInput[]
+    createMany?: ConversationShareCreateManyCreated_byInputEnvelope
+    set?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    disconnect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    delete?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    connect?: ConversationShareWhereUniqueInput | ConversationShareWhereUniqueInput[]
+    update?: ConversationShareUpdateWithWhereUniqueWithoutCreated_byInput | ConversationShareUpdateWithWhereUniqueWithoutCreated_byInput[]
+    updateMany?: ConversationShareUpdateManyWithWhereWithoutCreated_byInput | ConversationShareUpdateManyWithWhereWithoutCreated_byInput[]
+    deleteMany?: ConversationShareScalarWhereInput | ConversationShareScalarWhereInput[]
   }
 
   export type ConversationFolderUncheckedUpdateManyWithoutUserNestedInput = {
@@ -158860,6 +160456,12 @@ export namespace Prisma {
     connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
   }
 
+  export type ConversationShareCreateNestedOneWithoutConversationInput = {
+    create?: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutConversationInput
+    connect?: ConversationShareWhereUniqueInput
+  }
+
   export type ConversationParticipantUncheckedCreateNestedManyWithoutConversationInput = {
     create?: XOR<ConversationParticipantCreateWithoutConversationInput, ConversationParticipantUncheckedCreateWithoutConversationInput> | ConversationParticipantCreateWithoutConversationInput[] | ConversationParticipantUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: ConversationParticipantCreateOrConnectWithoutConversationInput | ConversationParticipantCreateOrConnectWithoutConversationInput[]
@@ -158942,6 +160544,12 @@ export namespace Prisma {
     connectOrCreate?: ChannelLinkCreateOrConnectWithoutConversationInput | ChannelLinkCreateOrConnectWithoutConversationInput[]
     createMany?: ChannelLinkCreateManyConversationInputEnvelope
     connect?: ChannelLinkWhereUniqueInput | ChannelLinkWhereUniqueInput[]
+  }
+
+  export type ConversationShareUncheckedCreateNestedOneWithoutConversationInput = {
+    create?: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutConversationInput
+    connect?: ConversationShareWhereUniqueInput
   }
 
   export type EnumConversationTypeFieldUpdateOperationsInput = {
@@ -159144,6 +160752,16 @@ export namespace Prisma {
     deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
   }
 
+  export type ConversationShareUpdateOneWithoutConversationNestedInput = {
+    create?: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutConversationInput
+    upsert?: ConversationShareUpsertWithoutConversationInput
+    disconnect?: ConversationShareWhereInput | boolean
+    delete?: ConversationShareWhereInput | boolean
+    connect?: ConversationShareWhereUniqueInput
+    update?: XOR<XOR<ConversationShareUpdateToOneWithWhereWithoutConversationInput, ConversationShareUpdateWithoutConversationInput>, ConversationShareUncheckedUpdateWithoutConversationInput>
+  }
+
   export type ConversationParticipantUncheckedUpdateManyWithoutConversationNestedInput = {
     create?: XOR<ConversationParticipantCreateWithoutConversationInput, ConversationParticipantUncheckedCreateWithoutConversationInput> | ConversationParticipantCreateWithoutConversationInput[] | ConversationParticipantUncheckedCreateWithoutConversationInput[]
     connectOrCreate?: ConversationParticipantCreateOrConnectWithoutConversationInput | ConversationParticipantCreateOrConnectWithoutConversationInput[]
@@ -159310,6 +160928,50 @@ export namespace Prisma {
     update?: ChannelLinkUpdateWithWhereUniqueWithoutConversationInput | ChannelLinkUpdateWithWhereUniqueWithoutConversationInput[]
     updateMany?: ChannelLinkUpdateManyWithWhereWithoutConversationInput | ChannelLinkUpdateManyWithWhereWithoutConversationInput[]
     deleteMany?: ChannelLinkScalarWhereInput | ChannelLinkScalarWhereInput[]
+  }
+
+  export type ConversationShareUncheckedUpdateOneWithoutConversationNestedInput = {
+    create?: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+    connectOrCreate?: ConversationShareCreateOrConnectWithoutConversationInput
+    upsert?: ConversationShareUpsertWithoutConversationInput
+    disconnect?: ConversationShareWhereInput | boolean
+    delete?: ConversationShareWhereInput | boolean
+    connect?: ConversationShareWhereUniqueInput
+    update?: XOR<XOR<ConversationShareUpdateToOneWithWhereWithoutConversationInput, ConversationShareUpdateWithoutConversationInput>, ConversationShareUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type ConversationCreateNestedOneWithoutShareInput = {
+    create?: XOR<ConversationCreateWithoutShareInput, ConversationUncheckedCreateWithoutShareInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutShareInput
+    connect?: ConversationWhereUniqueInput
+  }
+
+  export type UserCreateNestedOneWithoutConversation_sharesInput = {
+    create?: XOR<UserCreateWithoutConversation_sharesInput, UserUncheckedCreateWithoutConversation_sharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConversation_sharesInput
+    connect?: UserWhereUniqueInput
+  }
+
+  export type EnumConversationShareModeFieldUpdateOperationsInput = {
+    set?: $Enums.ConversationShareMode
+  }
+
+  export type ConversationUpdateOneRequiredWithoutShareNestedInput = {
+    create?: XOR<ConversationCreateWithoutShareInput, ConversationUncheckedCreateWithoutShareInput>
+    connectOrCreate?: ConversationCreateOrConnectWithoutShareInput
+    upsert?: ConversationUpsertWithoutShareInput
+    connect?: ConversationWhereUniqueInput
+    update?: XOR<XOR<ConversationUpdateToOneWithWhereWithoutShareInput, ConversationUpdateWithoutShareInput>, ConversationUncheckedUpdateWithoutShareInput>
+  }
+
+  export type UserUpdateOneWithoutConversation_sharesNestedInput = {
+    create?: XOR<UserCreateWithoutConversation_sharesInput, UserUncheckedCreateWithoutConversation_sharesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutConversation_sharesInput
+    upsert?: UserUpsertWithoutConversation_sharesInput
+    disconnect?: UserWhereInput | boolean
+    delete?: UserWhereInput | boolean
+    connect?: UserWhereUniqueInput
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutConversation_sharesInput, UserUpdateWithoutConversation_sharesInput>, UserUncheckedUpdateWithoutConversation_sharesInput>
   }
 
   export type ConversationCreateNestedOneWithoutParticipantsInput = {
@@ -166780,6 +168442,23 @@ export namespace Prisma {
     _max?: NestedEnumConversationTypeFilter<$PrismaModel>
   }
 
+  export type NestedEnumConversationShareModeFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConversationShareMode | EnumConversationShareModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumConversationShareModeFilter<$PrismaModel> | $Enums.ConversationShareMode
+  }
+
+  export type NestedEnumConversationShareModeWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: $Enums.ConversationShareMode | EnumConversationShareModeFieldRefInput<$PrismaModel>
+    in?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    notIn?: $Enums.ConversationShareMode[] | ListEnumConversationShareModeFieldRefInput<$PrismaModel>
+    not?: NestedEnumConversationShareModeWithAggregatesFilter<$PrismaModel> | $Enums.ConversationShareMode
+    _count?: NestedIntFilter<$PrismaModel>
+    _min?: NestedEnumConversationShareModeFilter<$PrismaModel>
+    _max?: NestedEnumConversationShareModeFilter<$PrismaModel>
+  }
+
   export type NestedEnumMessageAuthorTypeFilter<$PrismaModel = never> = {
     equals?: $Enums.MessageAuthorType | EnumMessageAuthorTypeFieldRefInput<$PrismaModel>
     in?: $Enums.MessageAuthorType[] | ListEnumMessageAuthorTypeFieldRefInput<$PrismaModel>
@@ -168545,6 +170224,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutCreated_byInput = {
@@ -168573,6 +170253,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutCreated_byInput = {
@@ -168582,6 +170263,36 @@ export namespace Prisma {
 
   export type ConversationCreateManyCreated_byInputEnvelope = {
     data: ConversationCreateManyCreated_byInput | ConversationCreateManyCreated_byInput[]
+    skipDuplicates?: boolean
+  }
+
+  export type ConversationShareCreateWithoutCreated_byInput = {
+    id?: string
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    conversation: ConversationCreateNestedOneWithoutShareInput
+  }
+
+  export type ConversationShareUncheckedCreateWithoutCreated_byInput = {
+    id?: string
+    conversation_id: string
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ConversationShareCreateOrConnectWithoutCreated_byInput = {
+    where: ConversationShareWhereUniqueInput
+    create: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput>
+  }
+
+  export type ConversationShareCreateManyCreated_byInputEnvelope = {
+    data: ConversationShareCreateManyCreated_byInput | ConversationShareCreateManyCreated_byInput[]
     skipDuplicates?: boolean
   }
 
@@ -170894,6 +172605,36 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"Conversation"> | Date | string
   }
 
+  export type ConversationShareUpsertWithWhereUniqueWithoutCreated_byInput = {
+    where: ConversationShareWhereUniqueInput
+    update: XOR<ConversationShareUpdateWithoutCreated_byInput, ConversationShareUncheckedUpdateWithoutCreated_byInput>
+    create: XOR<ConversationShareCreateWithoutCreated_byInput, ConversationShareUncheckedCreateWithoutCreated_byInput>
+  }
+
+  export type ConversationShareUpdateWithWhereUniqueWithoutCreated_byInput = {
+    where: ConversationShareWhereUniqueInput
+    data: XOR<ConversationShareUpdateWithoutCreated_byInput, ConversationShareUncheckedUpdateWithoutCreated_byInput>
+  }
+
+  export type ConversationShareUpdateManyWithWhereWithoutCreated_byInput = {
+    where: ConversationShareScalarWhereInput
+    data: XOR<ConversationShareUpdateManyMutationInput, ConversationShareUncheckedUpdateManyWithoutCreated_byInput>
+  }
+
+  export type ConversationShareScalarWhereInput = {
+    AND?: ConversationShareScalarWhereInput | ConversationShareScalarWhereInput[]
+    OR?: ConversationShareScalarWhereInput[]
+    NOT?: ConversationShareScalarWhereInput | ConversationShareScalarWhereInput[]
+    id?: StringFilter<"ConversationShare"> | string
+    conversation_id?: StringFilter<"ConversationShare"> | string
+    created_by_id?: StringNullableFilter<"ConversationShare"> | string | null
+    token?: StringFilter<"ConversationShare"> | string
+    mode?: EnumConversationShareModeFilter<"ConversationShare"> | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    created_at?: DateTimeFilter<"ConversationShare"> | Date | string
+    updated_at?: DateTimeFilter<"ConversationShare"> | Date | string
+  }
+
   export type ConversationFolderUpsertWithWhereUniqueWithoutUserInput = {
     where: ConversationFolderWhereUniqueInput
     update: XOR<ConversationFolderUpdateWithoutUserInput, ConversationFolderUncheckedUpdateWithoutUserInput>
@@ -172114,6 +173855,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -172182,6 +173924,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -172266,6 +174009,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -172334,6 +174078,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -172402,6 +174147,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -172470,6 +174216,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -172609,6 +174356,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -172677,6 +174425,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -172806,6 +174555,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -172874,6 +174624,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -172958,6 +174709,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -173026,6 +174778,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -173094,6 +174847,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -173162,6 +174916,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -173472,6 +175227,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -173540,6 +175296,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -174006,6 +175763,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -174074,6 +175832,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -174238,6 +175997,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -174306,6 +176066,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -174390,6 +176151,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -174458,6 +176220,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -174701,6 +176464,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -174769,6 +176533,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -175002,6 +176767,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -175070,6 +176836,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -175154,6 +176921,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -175222,6 +176990,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -175290,6 +177059,7 @@ export namespace Prisma {
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -175358,6 +177128,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -175618,6 +177389,7 @@ export namespace Prisma {
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -175686,6 +177458,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -175942,6 +177715,7 @@ export namespace Prisma {
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -176010,6 +177784,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -176197,6 +177972,7 @@ export namespace Prisma {
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -176265,6 +178041,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -176519,6 +178296,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -176587,6 +178365,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -177110,6 +178889,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutOrganizationInput = {
@@ -177138,6 +178918,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutOrganizationInput = {
@@ -178676,6 +180457,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -178744,6 +180526,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -180078,6 +181861,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -180146,6 +181930,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -180339,6 +182124,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -180407,6 +182193,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -180578,6 +182365,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -180646,6 +182434,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -180719,6 +182508,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -180787,6 +182577,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -180980,6 +182771,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -181048,6 +182840,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -181127,6 +182920,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -181195,6 +182989,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -183597,6 +185392,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -183665,6 +185461,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -184512,6 +186309,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutLead_botInput = {
@@ -184540,6 +186338,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutLead_botInput = {
@@ -185577,6 +187376,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -185645,6 +187445,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -189106,6 +190907,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -189174,6 +190976,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -189669,6 +191472,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -189737,6 +191541,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -189990,6 +191795,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -190058,6 +191864,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -190193,6 +192000,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -190261,6 +192069,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -190591,6 +192400,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -190659,6 +192469,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -190724,6 +192535,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutMemoriesInput = {
@@ -190752,6 +192564,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutMemoriesInput = {
@@ -191078,6 +192891,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -191146,6 +192960,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -191217,6 +193032,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMemoriesInput = {
@@ -191245,6 +193061,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type OrganizationCreateWithoutFoldersInput = {
@@ -191384,6 +193201,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
@@ -191452,6 +193270,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
@@ -191683,6 +193502,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
@@ -191751,6 +193571,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
@@ -192096,6 +193917,7 @@ export namespace Prisma {
     bots_created?: BotCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -192164,6 +193986,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -192970,6 +194793,31 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
+  export type ConversationShareCreateWithoutConversationInput = {
+    id?: string
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+    created_by?: UserCreateNestedOneWithoutConversation_sharesInput
+  }
+
+  export type ConversationShareUncheckedCreateWithoutConversationInput = {
+    id?: string
+    created_by_id?: string | null
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ConversationShareCreateOrConnectWithoutConversationInput = {
+    where: ConversationShareWhereUniqueInput
+    create: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+  }
+
   export type OrganizationUpsertWithoutConversationsInput = {
     update: XOR<OrganizationUpdateWithoutConversationsInput, OrganizationUncheckedUpdateWithoutConversationsInput>
     create: XOR<OrganizationCreateWithoutConversationsInput, OrganizationUncheckedCreateWithoutConversationsInput>
@@ -193288,6 +195136,7 @@ export namespace Prisma {
     bots_created?: BotUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -193356,6 +195205,7 @@ export namespace Prisma {
     bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -193583,6 +195433,461 @@ export namespace Prisma {
     data: XOR<ChannelLinkUpdateManyMutationInput, ChannelLinkUncheckedUpdateManyWithoutConversationInput>
   }
 
+  export type ConversationShareUpsertWithoutConversationInput = {
+    update: XOR<ConversationShareUpdateWithoutConversationInput, ConversationShareUncheckedUpdateWithoutConversationInput>
+    create: XOR<ConversationShareCreateWithoutConversationInput, ConversationShareUncheckedCreateWithoutConversationInput>
+    where?: ConversationShareWhereInput
+  }
+
+  export type ConversationShareUpdateToOneWithWhereWithoutConversationInput = {
+    where?: ConversationShareWhereInput
+    data: XOR<ConversationShareUpdateWithoutConversationInput, ConversationShareUncheckedUpdateWithoutConversationInput>
+  }
+
+  export type ConversationShareUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_by?: UserUpdateOneWithoutConversation_sharesNestedInput
+  }
+
+  export type ConversationShareUncheckedUpdateWithoutConversationInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationCreateWithoutShareInput = {
+    id?: string
+    type: $Enums.ConversationType
+    name?: string | null
+    emoji?: string | null
+    color?: string | null
+    is_temporary?: boolean
+    last_message_at?: Date | string | null
+    message_count?: number
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    organization: OrganizationCreateNestedOneWithoutConversationsInput
+    lead_bot?: BotCreateNestedOneWithoutLead_conversationsInput
+    created_by?: UserCreateNestedOneWithoutConversations_createdInput
+    participants?: ConversationParticipantCreateNestedManyWithoutConversationInput
+    messages?: MessageCreateNestedManyWithoutConversationInput
+    runs?: RunCreateNestedManyWithoutConversationInput
+    approvals?: ApprovalCreateNestedManyWithoutConversationInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutConversationInput
+    memories?: MemoryCreateNestedManyWithoutSource_conversationInput
+    artifacts?: ArtifactCreateNestedManyWithoutConversationInput
+    files?: FileCreateNestedManyWithoutConversationInput
+    automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
+    automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationUncheckedCreateWithoutShareInput = {
+    id?: string
+    organization_id: string
+    type: $Enums.ConversationType
+    name?: string | null
+    emoji?: string | null
+    color?: string | null
+    lead_bot_id?: string | null
+    created_by_id?: string | null
+    is_temporary?: boolean
+    last_message_at?: Date | string | null
+    message_count?: number
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    participants?: ConversationParticipantUncheckedCreateNestedManyWithoutConversationInput
+    messages?: MessageUncheckedCreateNestedManyWithoutConversationInput
+    runs?: RunUncheckedCreateNestedManyWithoutConversationInput
+    approvals?: ApprovalUncheckedCreateNestedManyWithoutConversationInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutConversationInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutSource_conversationInput
+    artifacts?: ArtifactUncheckedCreateNestedManyWithoutConversationInput
+    files?: FileUncheckedCreateNestedManyWithoutConversationInput
+    automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
+    automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+  }
+
+  export type ConversationCreateOrConnectWithoutShareInput = {
+    where: ConversationWhereUniqueInput
+    create: XOR<ConversationCreateWithoutShareInput, ConversationUncheckedCreateWithoutShareInput>
+  }
+
+  export type UserCreateWithoutConversation_sharesInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    avatar?: FileCreateNestedOneWithoutUser_avatarInput
+    settings?: UserSettingsCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityCreateNestedManyWithoutUserInput
+    sessions?: SessionCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenCreateNestedManyWithoutUserInput
+    devices?: DeviceCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantCreateNestedManyWithoutUserInput
+    messages?: MessageCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantCreateNestedManyWithoutUserInput
+    runs?: RunCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionCreateNestedManyWithoutUserInput
+    memories?: MemoryCreateNestedManyWithoutUserInput
+    skills_owned?: SkillCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportCreateNestedManyWithoutReporterInput
+    connections?: ConnectionCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
+    automations?: AutomationCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
+  }
+
+  export type UserUncheckedCreateWithoutConversation_sharesInput = {
+    id?: string
+    email: string
+    phone?: string | null
+    password: string
+    role?: $Enums.AuthRole
+    name?: string | null
+    avatar_file_id?: string | null
+    job_title?: string | null
+    about_me?: string | null
+    timezone?: string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: Date | string | null
+    two_factor_enabled?: boolean
+    two_factor_secret?: string | null
+    last_active_at?: Date | string | null
+    deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+    settings?: UserSettingsUncheckedCreateNestedOneWithoutUserInput
+    identities?: AuthIdentityUncheckedCreateNestedManyWithoutUserInput
+    sessions?: SessionUncheckedCreateNestedManyWithoutUserInput
+    password_reset_tokens?: PasswordResetTokenUncheckedCreateNestedManyWithoutUserInput
+    devices?: DeviceUncheckedCreateNestedManyWithoutUserInput
+    device_places?: DevicePlaceUncheckedCreateNestedManyWithoutUserInput
+    notification_prefs?: NotificationPreferenceUncheckedCreateNestedManyWithoutUserInput
+    memberships?: OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+    owned_organizations?: OrganizationUncheckedCreateNestedManyWithoutCreated_byInput
+    invitations_sent?: InvitationUncheckedCreateNestedManyWithoutInvited_byInput
+    invitations_accepted?: InvitationUncheckedCreateNestedManyWithoutAccepted_byInput
+    bots_created?: BotUncheckedCreateNestedManyWithoutCreated_byInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
+    tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
+    conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
+    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
+    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
+    pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
+    reactions?: MessageReactionUncheckedCreateNestedManyWithoutUserInput
+    saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutUserInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutUserInput
+    runs?: RunUncheckedCreateNestedManyWithoutUserInput
+    approvals_resolved?: ApprovalUncheckedCreateNestedManyWithoutResolved_byInput
+    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutUserInput
+    memories?: MemoryUncheckedCreateNestedManyWithoutUserInput
+    skills_owned?: SkillUncheckedCreateNestedManyWithoutOwnerInput
+    skill_versions?: SkillVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    skill_shares?: SkillShareUncheckedCreateNestedManyWithoutUserInput
+    artifacts_owned?: ArtifactUncheckedCreateNestedManyWithoutOwnerInput
+    artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutCreated_byInput
+    artifact_shares?: ArtifactShareUncheckedCreateNestedManyWithoutUserInput
+    artifact_comments?: ArtifactCommentUncheckedCreateNestedManyWithoutAuthorInput
+    artifact_reports?: ArtifactReportUncheckedCreateNestedManyWithoutReporterInput
+    connections?: ConnectionUncheckedCreateNestedManyWithoutOwnerInput
+    credentials?: CredentialUncheckedCreateNestedManyWithoutOwnerInput
+    credential_events?: CredentialEventUncheckedCreateNestedManyWithoutActor_userInput
+    tool_servers?: ToolServerUncheckedCreateNestedManyWithoutOwnerInput
+    files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
+    computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
+    automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
+    notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
+    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
+    data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
+    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
+    knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
+    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
+  }
+
+  export type UserCreateOrConnectWithoutConversation_sharesInput = {
+    where: UserWhereUniqueInput
+    create: XOR<UserCreateWithoutConversation_sharesInput, UserUncheckedCreateWithoutConversation_sharesInput>
+  }
+
+  export type ConversationUpsertWithoutShareInput = {
+    update: XOR<ConversationUpdateWithoutShareInput, ConversationUncheckedUpdateWithoutShareInput>
+    create: XOR<ConversationCreateWithoutShareInput, ConversationUncheckedCreateWithoutShareInput>
+    where?: ConversationWhereInput
+  }
+
+  export type ConversationUpdateToOneWithWhereWithoutShareInput = {
+    where?: ConversationWhereInput
+    data: XOR<ConversationUpdateWithoutShareInput, ConversationUncheckedUpdateWithoutShareInput>
+  }
+
+  export type ConversationUpdateWithoutShareInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    type?: EnumConversationTypeFieldUpdateOperationsInput | $Enums.ConversationType
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    emoji?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    is_temporary?: BoolFieldUpdateOperationsInput | boolean
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message_count?: IntFieldUpdateOperationsInput | number
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    organization?: OrganizationUpdateOneRequiredWithoutConversationsNestedInput
+    lead_bot?: BotUpdateOneWithoutLead_conversationsNestedInput
+    created_by?: UserUpdateOneWithoutConversations_createdNestedInput
+    participants?: ConversationParticipantUpdateManyWithoutConversationNestedInput
+    messages?: MessageUpdateManyWithoutConversationNestedInput
+    runs?: RunUpdateManyWithoutConversationNestedInput
+    approvals?: ApprovalUpdateManyWithoutConversationNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutConversationNestedInput
+    memories?: MemoryUpdateManyWithoutSource_conversationNestedInput
+    artifacts?: ArtifactUpdateManyWithoutConversationNestedInput
+    files?: FileUpdateManyWithoutConversationNestedInput
+    automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
+    automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+  }
+
+  export type ConversationUncheckedUpdateWithoutShareInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    organization_id?: StringFieldUpdateOperationsInput | string
+    type?: EnumConversationTypeFieldUpdateOperationsInput | $Enums.ConversationType
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    emoji?: NullableStringFieldUpdateOperationsInput | string | null
+    color?: NullableStringFieldUpdateOperationsInput | string | null
+    lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
+    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
+    is_temporary?: BoolFieldUpdateOperationsInput | boolean
+    last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    message_count?: IntFieldUpdateOperationsInput | number
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    participants?: ConversationParticipantUncheckedUpdateManyWithoutConversationNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutConversationNestedInput
+    runs?: RunUncheckedUpdateManyWithoutConversationNestedInput
+    approvals?: ApprovalUncheckedUpdateManyWithoutConversationNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutConversationNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutSource_conversationNestedInput
+    artifacts?: ArtifactUncheckedUpdateManyWithoutConversationNestedInput
+    files?: FileUncheckedUpdateManyWithoutConversationNestedInput
+    automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
+    automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+  }
+
+  export type UserUpsertWithoutConversation_sharesInput = {
+    update: XOR<UserUpdateWithoutConversation_sharesInput, UserUncheckedUpdateWithoutConversation_sharesInput>
+    create: XOR<UserCreateWithoutConversation_sharesInput, UserUncheckedCreateWithoutConversation_sharesInput>
+    where?: UserWhereInput
+  }
+
+  export type UserUpdateToOneWithWhereWithoutConversation_sharesInput = {
+    where?: UserWhereInput
+    data: XOR<UserUpdateWithoutConversation_sharesInput, UserUncheckedUpdateWithoutConversation_sharesInput>
+  }
+
+  export type UserUpdateWithoutConversation_sharesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    avatar?: FileUpdateOneWithoutUser_avatarNestedInput
+    settings?: UserSettingsUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUpdateManyWithoutUserNestedInput
+    sessions?: SessionUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUpdateManyWithoutUserNestedInput
+    devices?: DeviceUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
+    messages?: MessageUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUpdateManyWithoutUserNestedInput
+    runs?: RunUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUpdateManyWithoutUserNestedInput
+    memories?: MemoryUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
+    automations?: AutomationUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
+  }
+
+  export type UserUncheckedUpdateWithoutConversation_sharesInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    email?: StringFieldUpdateOperationsInput | string
+    phone?: NullableStringFieldUpdateOperationsInput | string | null
+    password?: StringFieldUpdateOperationsInput | string
+    role?: EnumAuthRoleFieldUpdateOperationsInput | $Enums.AuthRole
+    name?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_file_id?: NullableStringFieldUpdateOperationsInput | string | null
+    job_title?: NullableStringFieldUpdateOperationsInput | string | null
+    about_me?: NullableStringFieldUpdateOperationsInput | string | null
+    timezone?: StringFieldUpdateOperationsInput | string
+    working_hours?: NullableJsonNullValueInput | InputJsonValue
+    email_verified_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    two_factor_enabled?: BoolFieldUpdateOperationsInput | boolean
+    two_factor_secret?: NullableStringFieldUpdateOperationsInput | string | null
+    last_active_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    settings?: UserSettingsUncheckedUpdateOneWithoutUserNestedInput
+    identities?: AuthIdentityUncheckedUpdateManyWithoutUserNestedInput
+    sessions?: SessionUncheckedUpdateManyWithoutUserNestedInput
+    password_reset_tokens?: PasswordResetTokenUncheckedUpdateManyWithoutUserNestedInput
+    devices?: DeviceUncheckedUpdateManyWithoutUserNestedInput
+    device_places?: DevicePlaceUncheckedUpdateManyWithoutUserNestedInput
+    notification_prefs?: NotificationPreferenceUncheckedUpdateManyWithoutUserNestedInput
+    memberships?: OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
+    owned_organizations?: OrganizationUncheckedUpdateManyWithoutCreated_byNestedInput
+    invitations_sent?: InvitationUncheckedUpdateManyWithoutInvited_byNestedInput
+    invitations_accepted?: InvitationUncheckedUpdateManyWithoutAccepted_byNestedInput
+    bots_created?: BotUncheckedUpdateManyWithoutCreated_byNestedInput
+    bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
+    tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
+    conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
+    participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
+    messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
+    pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
+    reactions?: MessageReactionUncheckedUpdateManyWithoutUserNestedInput
+    saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutUserNestedInput
+    artifact_data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutUserNestedInput
+    runs?: RunUncheckedUpdateManyWithoutUserNestedInput
+    approvals_resolved?: ApprovalUncheckedUpdateManyWithoutResolved_byNestedInput
+    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutUserNestedInput
+    memories?: MemoryUncheckedUpdateManyWithoutUserNestedInput
+    skills_owned?: SkillUncheckedUpdateManyWithoutOwnerNestedInput
+    skill_versions?: SkillVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    skill_shares?: SkillShareUncheckedUpdateManyWithoutUserNestedInput
+    artifacts_owned?: ArtifactUncheckedUpdateManyWithoutOwnerNestedInput
+    artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutCreated_byNestedInput
+    artifact_shares?: ArtifactShareUncheckedUpdateManyWithoutUserNestedInput
+    artifact_comments?: ArtifactCommentUncheckedUpdateManyWithoutAuthorNestedInput
+    artifact_reports?: ArtifactReportUncheckedUpdateManyWithoutReporterNestedInput
+    connections?: ConnectionUncheckedUpdateManyWithoutOwnerNestedInput
+    credentials?: CredentialUncheckedUpdateManyWithoutOwnerNestedInput
+    credential_events?: CredentialEventUncheckedUpdateManyWithoutActor_userNestedInput
+    tool_servers?: ToolServerUncheckedUpdateManyWithoutOwnerNestedInput
+    files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
+    computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
+    automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
+    notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
+    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
+    data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
+    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
+    knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
+    channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
+  }
+
   export type ConversationCreateWithoutParticipantsInput = {
     id?: string
     type: $Enums.ConversationType
@@ -193609,6 +195914,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutParticipantsInput = {
@@ -193637,6 +195943,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutParticipantsInput = {
@@ -193678,6 +195985,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
@@ -193746,6 +196054,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
@@ -194006,6 +196315,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutParticipantsInput = {
@@ -194034,6 +196344,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutParticipationsInput = {
@@ -194081,6 +196392,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
@@ -194149,6 +196461,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
@@ -194508,6 +196821,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutMessagesInput = {
@@ -194536,6 +196850,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutMessagesInput = {
@@ -194577,6 +196892,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     pinned_messages?: MessageCreateNestedManyWithoutPinned_byInput
@@ -194645,6 +196961,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     pinned_messages?: MessageUncheckedCreateNestedManyWithoutPinned_byInput
@@ -195467,6 +197784,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -195535,6 +197853,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -196088,6 +198407,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutMessagesInput = {
@@ -196116,6 +198436,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutMessagesInput = {
@@ -196163,6 +198484,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     pinned_messages?: MessageUpdateManyWithoutPinned_byNestedInput
@@ -196231,6 +198553,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     pinned_messages?: MessageUncheckedUpdateManyWithoutPinned_byNestedInput
@@ -196879,6 +199202,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -196947,6 +199271,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -197584,6 +199909,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -197652,6 +199978,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -197823,6 +200150,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -197891,6 +200219,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -198538,6 +200867,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -198606,6 +200936,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -198671,6 +201002,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutSaved_widgetsInput = {
@@ -198699,6 +201031,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutSaved_widgetsInput = {
@@ -198941,6 +201274,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -199009,6 +201343,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -199080,6 +201415,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutSaved_widgetsInput = {
@@ -199108,6 +201444,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutSaved_widgetsInput = {
@@ -199326,6 +201663,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutRunsInput = {
@@ -199354,6 +201692,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutRunsInput = {
@@ -199554,6 +201893,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -199622,6 +201962,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -200928,6 +203269,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutRunsInput = {
@@ -200956,6 +203298,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type BotUpsertWithoutRunsInput = {
@@ -201168,6 +203511,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -201236,6 +203580,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -202834,6 +205179,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutApprovalsInput = {
@@ -202862,6 +205208,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutApprovalsInput = {
@@ -203143,6 +205490,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -203211,6 +205559,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -203491,6 +205840,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutApprovalsInput = {
@@ -203519,6 +205869,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutApprovalsInput = {
@@ -203818,6 +206169,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -203886,6 +206238,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -204049,6 +206402,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutVoice_sessionsInput = {
@@ -204077,6 +206431,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutVoice_sessionsInput = {
@@ -204118,6 +206473,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -204186,6 +206542,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -204624,6 +206981,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutVoice_sessionsInput = {
@@ -204652,6 +207010,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type UserUpsertWithoutVoice_sessionsInput = {
@@ -204699,6 +207058,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -204767,6 +207127,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -205119,6 +207480,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -205187,6 +207549,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -205780,6 +208143,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -205848,6 +208212,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -206152,6 +208517,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -206220,6 +208586,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -206377,6 +208744,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -206445,6 +208813,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -206580,6 +208949,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -206648,6 +209018,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -206805,6 +209176,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -206873,6 +209245,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -207696,6 +210069,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -207764,6 +210138,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -207829,6 +210204,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutArtifactsInput = {
@@ -207857,6 +210233,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutArtifactsInput = {
@@ -208664,6 +211041,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -208732,6 +211110,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -208803,6 +211182,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutArtifactsInput = {
@@ -208831,6 +211211,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type MessageUpsertWithoutArtifactsInput = {
@@ -209375,6 +211756,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -209443,6 +211825,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -209871,6 +212254,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -209939,6 +212323,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -210363,6 +212748,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -210431,6 +212817,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -210604,6 +212991,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -210672,6 +213060,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -210823,6 +213212,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -210891,6 +213281,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -211294,6 +213685,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -211362,6 +213754,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -211905,6 +214298,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -211973,6 +214367,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -212146,6 +214541,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -212214,6 +214610,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -212365,6 +214762,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -212433,6 +214831,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -212606,6 +215005,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -212674,6 +215074,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -212845,6 +215246,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -212913,6 +215315,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -213524,6 +215927,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -213592,6 +215996,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -214562,6 +216967,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -214630,6 +217036,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -215150,6 +217557,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -215218,6 +217626,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -215672,6 +218081,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -215740,6 +218150,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -215891,6 +218302,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -215959,6 +218371,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -216130,6 +218543,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -216198,6 +218612,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -216545,6 +218960,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -216613,6 +219029,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -216946,6 +219363,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -217014,6 +219432,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -217079,6 +219498,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutFilesInput = {
@@ -217107,6 +219527,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutFilesInput = {
@@ -217514,6 +219935,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -217582,6 +220004,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -218146,6 +220569,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -218214,6 +220638,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -218285,6 +220710,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutFilesInput = {
@@ -218313,6 +220739,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type SkillFileUpsertWithWhereUniqueWithoutFileInput = {
@@ -218748,6 +221175,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -218816,6 +221244,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -220086,6 +222515,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -220154,6 +222584,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -220541,6 +222972,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -220609,6 +223041,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -221559,6 +223992,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -221627,6 +224061,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -221945,6 +224380,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutAutomations_sourceInput = {
@@ -221973,6 +224409,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutAutomations_sourceInput = {
@@ -222006,6 +224443,7 @@ export namespace Prisma {
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutAutomations_resultsInput = {
@@ -222034,6 +224472,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutAutomations_resultsInput = {
@@ -222423,6 +224862,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -222491,6 +224931,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -222833,6 +225274,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutAutomations_sourceInput = {
@@ -222861,6 +225303,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUpsertWithoutAutomations_resultsInput = {
@@ -222900,6 +225343,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutAutomations_resultsInput = {
@@ -222928,6 +225372,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type AutomationConnectionUpsertWithWhereUniqueWithoutAutomationInput = {
@@ -224755,6 +227200,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -224823,6 +227269,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -225050,6 +227497,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -225118,6 +227566,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -225493,6 +227942,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -225561,6 +228011,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -226140,6 +228591,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -226208,6 +228660,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -227961,6 +230414,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -228029,6 +230483,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -228598,6 +231053,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -228666,6 +231122,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -229237,6 +231694,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -229305,6 +231763,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -229575,6 +232034,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -229643,6 +232103,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -229897,6 +232358,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionCreateNestedManyWithoutUserInput
     conversations_created?: ConversationCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantCreateNestedManyWithoutUserInput
     messages?: MessageCreateNestedManyWithoutAuthor_userInput
@@ -229965,6 +232427,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedCreateNestedManyWithoutUserInput
     tool_permissions?: UserToolPermissionUncheckedCreateNestedManyWithoutUserInput
     conversations_created?: ConversationUncheckedCreateNestedManyWithoutCreated_byInput
+    conversation_shares?: ConversationShareUncheckedCreateNestedManyWithoutCreated_byInput
     conversation_folders?: ConversationFolderUncheckedCreateNestedManyWithoutUserInput
     participations?: ConversationParticipantUncheckedCreateNestedManyWithoutUserInput
     messages?: MessageUncheckedCreateNestedManyWithoutAuthor_userInput
@@ -230189,6 +232652,7 @@ export namespace Prisma {
     automations_results?: AutomationCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetCreateNestedManyWithoutConversationInput
+    share?: ConversationShareCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationUncheckedCreateWithoutChannel_linksInput = {
@@ -230217,6 +232681,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedCreateNestedManyWithoutResults_conversationInput
     automations_source?: AutomationUncheckedCreateNestedManyWithoutSource_conversationInput
     saved_widgets?: SavedWidgetUncheckedCreateNestedManyWithoutConversationInput
+    share?: ConversationShareUncheckedCreateNestedOneWithoutConversationInput
   }
 
   export type ConversationCreateOrConnectWithoutChannel_linksInput = {
@@ -230378,6 +232843,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUpdateManyWithoutUserNestedInput
     messages?: MessageUpdateManyWithoutAuthor_userNestedInput
@@ -230446,6 +232912,7 @@ export namespace Prisma {
     bot_connection_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutUserNestedInput
     tool_permissions?: UserToolPermissionUncheckedUpdateManyWithoutUserNestedInput
     conversations_created?: ConversationUncheckedUpdateManyWithoutCreated_byNestedInput
+    conversation_shares?: ConversationShareUncheckedUpdateManyWithoutCreated_byNestedInput
     conversation_folders?: ConversationFolderUncheckedUpdateManyWithoutUserNestedInput
     participations?: ConversationParticipantUncheckedUpdateManyWithoutUserNestedInput
     messages?: MessageUncheckedUpdateManyWithoutAuthor_userNestedInput
@@ -230682,6 +233149,7 @@ export namespace Prisma {
     automations_results?: AutomationUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutChannel_linksInput = {
@@ -230710,6 +233178,7 @@ export namespace Prisma {
     automations_results?: AutomationUncheckedUpdateManyWithoutResults_conversationNestedInput
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type AuthIdentityCreateManyUserInput = {
@@ -230914,6 +233383,16 @@ export namespace Prisma {
     last_message_at?: Date | string | null
     message_count?: number
     deleted_at?: Date | string | null
+    created_at?: Date | string
+    updated_at?: Date | string
+  }
+
+  export type ConversationShareCreateManyCreated_byInput = {
+    id?: string
+    conversation_id: string
+    token: string
+    mode?: $Enums.ConversationShareMode
+    cutoff_at: Date | string
     created_at?: Date | string
     updated_at?: Date | string
   }
@@ -232206,6 +234685,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutCreated_byInput = {
@@ -232234,6 +234714,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutCreated_byInput = {
@@ -232248,6 +234729,36 @@ export namespace Prisma {
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationShareUpdateWithoutCreated_byInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    conversation?: ConversationUpdateOneRequiredWithoutShareNestedInput
+  }
+
+  export type ConversationShareUncheckedUpdateWithoutCreated_byInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
+    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type ConversationShareUncheckedUpdateManyWithoutCreated_byInput = {
+    id?: StringFieldUpdateOperationsInput | string
+    conversation_id?: StringFieldUpdateOperationsInput | string
+    token?: StringFieldUpdateOperationsInput | string
+    mode?: EnumConversationShareModeFieldUpdateOperationsInput | $Enums.ConversationShareMode
+    cutoff_at?: DateTimeFieldUpdateOperationsInput | Date | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
@@ -235501,6 +238012,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutOrganizationInput = {
@@ -235529,6 +238041,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutOrganizationInput = {
@@ -239319,6 +241832,7 @@ export namespace Prisma {
     automations_source?: AutomationUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateWithoutLead_botInput = {
@@ -239347,6 +241861,7 @@ export namespace Prisma {
     automations_source?: AutomationUncheckedUpdateManyWithoutSource_conversationNestedInput
     saved_widgets?: SavedWidgetUncheckedUpdateManyWithoutConversationNestedInput
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutConversationNestedInput
+    share?: ConversationShareUncheckedUpdateOneWithoutConversationNestedInput
   }
 
   export type ConversationUncheckedUpdateManyWithoutLead_botInput = {

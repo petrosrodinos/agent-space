@@ -1,5 +1,5 @@
 import { useCallback, type FC } from "react";
-import { Camera, Eye, MonitorUp, SwitchCamera, Video, VideoOff } from "lucide-react";
+import { Camera, Eye, MonitorUp, SwitchCamera, Video, VideoOff, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import type { VoiceVisual } from "@/features/voice/hooks/use-voice-visual";
@@ -51,7 +51,8 @@ export const VoiceVisualPreview: FC<{ visual: VoiceVisual }> = ({ visual }) => {
           <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-error" /> Live
         </span>
       </div>
-      <p className="min-w-0 flex-1 text-xs text-muted-foreground">{label} on — the bot sees a picture when you speak.</p>
+      <p className="hidden min-w-0 flex-1 text-xs text-muted-foreground sm:block">{label} on — the bot sees a picture when you speak.</p>
+      <span className="flex-1 sm:hidden" />
       {visual.kind === VisualKinds.CAMERA && platform.is("android") && (
         <Button type="button" variant="ghost" size="icon" className="h-9 w-9" onClick={visual.flipCamera} aria-label="Switch camera">
           <SwitchCamera />
@@ -62,6 +63,9 @@ export const VoiceVisualPreview: FC<{ visual: VoiceVisual }> = ({ visual }) => {
       </Button>
       <Button type="button" variant="ghost" size="icon" className="h-9 w-9" onClick={visual.snapshot} aria-label="Snapshot: post this picture in the chat" title="Snapshot">
         <Camera />
+      </Button>
+      <Button type="button" variant="ghost" size="icon" className="h-9 w-9" onClick={visual.stop} aria-label={`Turn ${label.toLowerCase()} off`} title={`Turn ${label.toLowerCase()} off`}>
+        <X />
       </Button>
     </div>
   );

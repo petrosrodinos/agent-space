@@ -10,6 +10,7 @@ import { realtime } from "../services/realtime.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { RealtimeStreams, UserEventTypes, ConversationEventTypes } from "../interfaces/realtime.interfaces";
 import { NotificationEvents } from "@/features/notifications/interfaces/notifications.interfaces";
+import { isDesktopNotificationsOn } from "@/features/notifications/hooks/use-notifications";
 import { RunStatuses } from "@/features/tasks/interfaces/tasks.interfaces";
 
 /** Connects once per signed-in session and reacts to user-stream events (sidebar, tasks, approvals, notifications). */
@@ -59,7 +60,7 @@ export function useRealtimeConnection() {
           const onConversation = n.link_path && window.location.pathname === n.link_path;
           if (!onConversation && n.event !== NotificationEvents.NEW_MESSAGE) {
             toast({ title: n.title, description: n.body ?? undefined, duration: 5000 });
-            if (!platform.lifecycle.isVisible()) platform.notifications.show(n.title, { body: n.body ?? undefined, onClick: () => n.link_path && navigateRef.current(n.link_path) });
+            if (!platform.lifecycle.isVisible() && (!platform.is("desktop") || isDesktopNotificationsOn())) platform.notifications.show(n.title, { body: n.body ?? undefined, onClick: () => n.link_path && navigateRef.current(n.link_path) });
           }
           break;
         }

@@ -1,6 +1,7 @@
 import { useState, type FC } from "react";
-import { Keyboard, Loader2, LogOut, Maximize2, Mic, MicOff, Minimize2, SendHorizontal, Square } from "lucide-react";
+import { Keyboard, Loader2, LogOut, Maximize2, Mic, MicOff, Minimize2, MoreHorizontal, SendHorizontal, Square } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { BotAvatar } from "@/components/ui/bot-avatar";
 import { Input } from "@/components/ui/input";
 import type { VoiceSession } from "@/features/voice/hooks/use-voice-session";
@@ -45,7 +46,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
   const spinning = voice.phase === VoicePhases.CONNECTING || voice.phase === VoicePhases.RECONNECTING || voice.phase === VoicePhases.WORKING;
 
   const controls = (
-    <div className="flex items-center gap-1.5">
+    <div className="flex items-center justify-center gap-1.5">
       {!ptt && (
         <Button type="button" variant={voice.muted ? "default" : "outline"} size="icon" className="h-10 w-10" onClick={voice.toggleMute} aria-label={voice.muted ? "Unmute mic" : "Mute mic"} aria-pressed={voice.muted}>
           {voice.muted ? <MicOff /> : <Mic />}
@@ -55,12 +56,25 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
         <Square className="!h-4 !w-4 fill-current" />
       </Button>
       <VoiceVisualButtons visual={visual} disabled={voice.phase === VoicePhases.CONNECTING} />
-      <Button type="button" variant={typing ? "default" : "outline"} size="icon" className="h-10 w-10" onClick={() => setTyping((t) => !t)} aria-label="Keyboard" aria-pressed={typing}>
+      <Button type="button" variant={typing ? "default" : "outline"} size="icon" className="hidden h-10 w-10 sm:inline-flex" onClick={() => setTyping((t) => !t)} aria-label="Keyboard" aria-pressed={typing}>
         <Keyboard />
       </Button>
-      <Button type="button" variant="outline" size="icon" className="h-10 w-10 sm:hidden" onClick={() => setFull((f) => !f)} aria-label={full ? "Leave full screen" : "Full screen voice view"}>
-        {full ? <Minimize2 /> : <Maximize2 />}
-      </Button>
+      {/* Phones: Keyboard and Full screen live in a "More" menu to keep the row short. */}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button type="button" variant="outline" size="icon" className="h-10 w-10 sm:hidden" aria-label="More voice options">
+            <MoreHorizontal />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end">
+          <DropdownMenuItem onSelect={() => setTyping((t) => !t)}>
+            <Keyboard /> {typing ? "Hide keyboard" : "Type a message"}
+          </DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => setFull((f) => !f)}>
+            {full ? <Minimize2 /> : <Maximize2 />} {full ? "Leave full screen" : "Full screen"}
+          </DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
       <Button type="button" variant="destructive" size="sm" className="h-10" onClick={() => void voice.stop()} aria-label="Exit voice mode">
         <LogOut /> <span className="hidden sm:inline">Exit</span>
       </Button>

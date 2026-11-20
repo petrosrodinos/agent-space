@@ -21,7 +21,13 @@ export function Toaster() {
         return (
           <Toast key={id} variant={variant} {...props}>
             {Icon && <Icon className="mt-0.5 h-5 w-5 flex-none" />}
-            <div className="grid flex-1 gap-1">
+            {/* Text is selectable with the mouse; Radix's swipe-to-dismiss captures the pointer and would block selecting, so mouse presses here don't start a swipe (touch swipes still work). */}
+            <div
+              className="grid flex-1 cursor-text select-text gap-1"
+              onPointerDown={(e) => {
+                if (e.pointerType === "mouse") e.stopPropagation();
+              }}
+            >
               {title && <ToastTitle>{title}</ToastTitle>}
               {description && <ToastDescription>{description}</ToastDescription>}
             </div>

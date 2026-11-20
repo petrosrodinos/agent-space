@@ -1,5 +1,5 @@
 import { useState, type FC, type ReactNode } from "react";
-import { Crown, Plus, UserMinus, X } from "lucide-react";
+import { ChevronRight, Crown, Plus, UserMinus, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,8 +15,10 @@ import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { ConversationTypeOptions } from "@/config/constants/dropdowns/shared/status.options";
 import { BotEmojiSuggestions } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
+import { ColorSwatches } from "@/pages/bots/components/bot-pickers";
+import { BotPanel } from "./bot-panel";
 
-/** Side panel: name/emoji, people and bots (add/remove), lead bot (§7.1, §7.2). */
+/** Side panel: name/emoji/colour, people and bots (add/remove), lead bot (§7.1, §7.2). */
 export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose?: () => void; menu?: ReactNode }> = ({ conversation: c, meId, onClose, menu }) => {
   const update = useUpdateConversation();
   const add = useAddParticipants();
@@ -28,7 +30,13 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
   const { data: members } = useMembers();
   const [pickBots, setPickBots] = useState<string[]>([]);
   const [pickUsers, setPickUsers] = useState<string[]>([]);
+  const [viewBotId, setViewBotId] = useState<string | null>(null);
   const isDirect = c.type === ConversationTypes.DIRECT;
+
+  // A bot opened from the group shows the same panel as in a direct chat.
+  if (viewBotId && c.bots.some((b) => b.id === viewBotId)) {
+    return <BotPanel botId={viewBotId} working={!!c.working_bot_ids?.includes(viewBotId)} onBack={() => setViewBotId(null)} onClose={onClose} menu={menu} />;
+  }
 
   return (
     <div className="flex h-full flex-col">
@@ -72,6 +80,10 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
                   </button>
                 ))}
               </div>
+              <div className="space-y-1.5 pt-2">
+                <Label>Colour</Label>
+                <ColorSwatches value={c.color} onChange={(color) => color !== c.color && update.mutate({ id: c.id, color })} disabled={update.isPending} />
+              </div>
             </form>
           )}
         </div>
@@ -83,15 +95,18 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
           <ul className="space-y-1">
             {c.bots.map((b) => (
               <li key={b.id} className="flex items-center gap-3 rounded-md p-1.5">
-                <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate font-bold text-ink">{b.name}</span>
-                  {c.lead_bot?.id === b.id && c.type === ConversationTypes.GROUP && (
-                    <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
-                      <Crown className="h-3 w-3" /> Lead bot
-                    </span>
-                  )}
-                </span>
+                <button type="button" onClick={() => setViewBotId(b.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-left hover:bg-surface-sunken" aria-label={`View ${b.name}`}>
+                  <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-bold text-ink">{b.name}</span>
+                    {c.lead_bot?.id === b.id && c.type === ConversationTypes.GROUP && (
+                      <span className="inline-flex items-center gap-1 text-xs font-semibold text-muted-foreground">
+                        <Crown className="h-3 w-3" /> Lead bot
+                      </span>
+                    )}
+                  </span>
+                  <ChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </button>
                 {c.type === ConversationTypes.GROUP && c.lead_bot?.id !== b.id && (
                   <Button variant="ghost" size="sm" onClick={() => update.mutate({ id: c.id, lead_bot_id: b.id })}>
                     Make lead

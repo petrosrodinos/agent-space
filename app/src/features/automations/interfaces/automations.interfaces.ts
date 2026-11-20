@@ -158,6 +158,8 @@ export interface AutomationInput {
   memory_plan?: string | null;
   uses_cloud_computer?: boolean;
   email_results?: boolean;
+  /** Conversation (direct chat or group) the results are posted in; the bot must be in it. null = direct chat with the bot. */
+  results_conversation_id?: string | null;
 }
 
 export type AutomationUpdate = Partial<Omit<AutomationInput, "bot_id">> & { bot_id?: string };

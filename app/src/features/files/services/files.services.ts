@@ -42,8 +42,11 @@ export async function uploadFile(file: File, purpose: UploadPurpose, opts: { con
       headers: { "Content-Type": file.type || "application/octet-stream" },
       onUploadProgress: (e) => opts.onProgress?.(e.total ? Math.round((e.loaded / e.total) * 100) : 0),
     });
-  } catch {
-    throw new Error(`Uploading ${file.name} failed. Please try again.`);
+  } catch (e) {
+    // Keep the real cause visible: a CORS block or network error has no response, a rejected signature has a status.
+    const status = axios.isAxiosError(e) ? e.response?.status : undefined;
+    console.error("File upload to storage failed", { status, message: (e as Error).message, protocol: upload.protocol });
+    throw new Error(`Uploading ${file.name} failed${status ? ` (storage returned ${status})` : " (could not reach storage)"}. Please try again.`);
   }
   return request<StoredFile>(() => axiosInstance.post(ApiRoutes.files.confirm(created.file.id)), "The upload could not be confirmed.");
 }

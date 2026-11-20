@@ -9,6 +9,7 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import {
+  ArrowLeft,
   Trash2,
   AlertTriangle,
   ChevronRight,
@@ -438,32 +439,45 @@ const DeleteSection: FC<{ bot: Bot }> = ({ bot }) => {
   );
 };
 
-/** Bot side panel of a direct chat (Grok-style): avatar, click-to-rename name, Activity (automations, tasks, computer, voice) and Library. */
+/**
+ * Bot side panel (Grok-style): avatar, click-to-rename name, Activity (automations, tasks, computer, voice) and Library.
+ * Shown for the bot of a direct chat, and for a bot opened from a group's details (`onBack` returns to the group).
+ */
 export const BotPanel: FC<{
   botId: string;
   working: boolean;
   onClose?: () => void;
+  onBack?: () => void;
   menu?: ReactNode;
-}> = ({ botId, working, onClose, menu }) => {
+}> = ({ botId, working, onClose, onBack, menu }) => {
   const { data: bot, isPending } = useBot(botId);
   const [tab, setTab] = useState<BotPanelTab>(BotPanelTabs.ACTIVITY);
 
   return (
     <div className="flex h-full flex-col">
-      {(menu || onClose) && (
-        <div className="flex justify-end gap-2 px-3 pt-3">
-          {menu}
-          {onClose && (
-            <Button
-              variant="outline"
-              size="icon"
-              className="group/close h-10 w-10 rounded-full transition-transform duration-200 active:scale-90"
-              onClick={onClose}
-              aria-label="Close panel"
-            >
-              <X className="transition-transform duration-200 ease-[var(--ease-bounce)] group-hover/close:rotate-90" />
+      {(menu || onClose || onBack) && (
+        <div className="flex items-center justify-between gap-2 px-3 pt-3">
+          {onBack ? (
+            <Button variant="outline" size="icon" className="h-10 w-10 rounded-full" onClick={onBack} aria-label="Back to group details">
+              <ArrowLeft />
             </Button>
+          ) : (
+            <span />
           )}
+          <div className="flex gap-2">
+            {menu}
+            {onClose && (
+              <Button
+                variant="outline"
+                size="icon"
+                className="group/close h-10 w-10 rounded-full transition-transform duration-200 active:scale-90"
+                onClick={onClose}
+                aria-label="Close panel"
+              >
+                <X className="transition-transform duration-200 ease-[var(--ease-bounce)] group-hover/close:rotate-90" />
+              </Button>
+            )}
+          </div>
         </div>
       )}
       <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-4 pb-6">

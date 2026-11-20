@@ -53,6 +53,7 @@ import {
   useUpdateSettings,
 } from "@/features/users/hooks/use-users";
 import { useOrganizationStore } from "@/stores/organization";
+import { platform } from "@/platform";
 import { ColorThemePicker } from "./color-theme-picker";
 import type { UserSettings } from "@/features/users/interfaces/users.interfaces";
 import {
@@ -62,6 +63,7 @@ import {
   useNotifications,
   useUpdateNotificationPreference,
   usePushNotifications,
+  useDesktopNotifications,
 } from "@/features/notifications/hooks/use-notifications";
 import type { NotificationChannel } from "@/features/notifications/interfaces/notifications.interfaces";
 import {
@@ -763,8 +765,25 @@ export const NotificationsSection: FC = () => {
   );
 };
 
-/** Push notifications on this device (§12). */
+/** Desktop app: system notifications while the app runs in the background. */
+const DesktopNotificationsCard: FC = () => {
+  const desktop = useDesktopNotifications();
+  return (
+    <SettingsCard title="This device">
+      <SettingRow label="Desktop notifications" description="Get notified about approvals, finished tasks and mentions while Agent Space is running in the background.">
+        <Switch checked={desktop.enabled} onCheckedChange={desktop.set} aria-label="Desktop notifications on this device" />
+      </SettingRow>
+    </SettingsCard>
+  );
+};
+
+/** This device's notifications: system notifications in the desktop app, push everywhere else (§12). */
 const PushDeviceCard: FC = () => {
+  if (platform.is("desktop")) return <DesktopNotificationsCard />;
+  return <WebPushDeviceCard />;
+};
+
+const WebPushDeviceCard: FC = () => {
   const push = usePushNotifications();
   const description = !push.supported
     ? "This browser doesn't support push notifications."

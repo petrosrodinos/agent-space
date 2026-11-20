@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useAuthStore, AuthStatuses } from "@/stores/auth";
@@ -29,6 +30,21 @@ export const useUpdateNotificationPreference = () => {
     onSuccess: (data) => qc.setQueryData([QueryKeys.NOTIFICATION_PREFERENCES], data),
     onError: (e) => toast({ title: "Could not save", description: e.message, variant: "error" }),
   });
+};
+
+const DESKTOP_NOTIFICATIONS_KEY = "desktop-notifications";
+
+/** Desktop app: whether system notifications show while the window isn't in view. On unless the user turned it off. */
+export const isDesktopNotificationsOn = () => platform.storage.get(DESKTOP_NOTIFICATIONS_KEY) !== "off";
+
+export const useDesktopNotifications = () => {
+  const [enabled, setEnabled] = useState(isDesktopNotificationsOn);
+  const set = (on: boolean) => {
+    platform.storage.set(DESKTOP_NOTIFICATIONS_KEY, on ? "on" : "off");
+    setEnabled(on);
+    if (on) platform.notifications.show("Desktop notifications are on", { body: "You'll be notified about approvals, finished tasks and mentions." });
+  };
+  return { enabled, set };
 };
 
 /** Push on this device (§12): browser permission + Web Push subscription registered with the API. */

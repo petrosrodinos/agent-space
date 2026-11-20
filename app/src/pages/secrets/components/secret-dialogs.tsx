@@ -63,7 +63,7 @@ export const AddSecretDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () 
           </DialogHeader>
           <Form {...form}>
             <form id="add-secret" className="space-y-4" autoComplete="off" onSubmit={form.handleSubmit(submit)}>
-              <FormField control={form.control} name="kind" render={({ field }) => <FormItem><FormLabel>Type</FormLabel><SegmentedControl ariaLabel="Type of secret" value={field.value} options={ADD_KIND_OPTIONS} onChange={field.onChange} /></FormItem>} />
+              <FormField control={form.control} name="kind" render={({ field }) => <FormItem><FormLabel>Type</FormLabel><SegmentedControl fullWidth ariaLabel="Type of secret" value={field.value} options={ADD_KIND_OPTIONS} onChange={field.onChange} /></FormItem>} />
               <FormField control={form.control} name="label" render={({ field }) => <FormItem><FormLabel>Name</FormLabel><FormControl><Input placeholder={isLogin ? "Supplier portal" : isManager ? "Company 1Password" : "Mailchimp – Marketing"} {...field} /></FormControl><FormMessage /></FormItem>} />
               {isLogin ? (
                 <>

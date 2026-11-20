@@ -65,7 +65,7 @@ export const ComputerTab: FC<{ bot: Bot }> = ({ bot }) => {
               </Button>
             )}
             {running && (
-              <Button size="sm" variant="outline" loading={pause.isPending} onClick={() => pause.mutate(undefined)}>
+              <Button size="sm" variant="outline" loading={pause.isPending} onClick={() => pause.mutate(undefined, { onSuccess: () => setWatching(false) })}>
                 <Pause /> Pause
               </Button>
             )}

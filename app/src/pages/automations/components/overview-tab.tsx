@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, Mail, MessageCircle, Plug, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { AlertTriangle, Mail, Plug, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -17,6 +17,7 @@ import { Routes } from "@/routes/routes";
 import { fromCron, isCronShape, toCron, type ScheduleValue } from "../utils/schedule.utils";
 import { ScheduleEditor } from "./schedule-editor";
 import { PreApprovalDialog } from "./pre-approval-dialog";
+import { ResultsConversationPicker } from "./results-conversation-picker";
 import { AutomationStatuses, ResultDestinationKinds } from "@/features/automations/interfaces/automations.interfaces";
 import { ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
 import { DEFAULT_SKILL_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
@@ -168,12 +169,11 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
             <div>
               <dt className="eyebrow mb-1">Results go to</dt>
               <dd className="space-y-1.5">
-                {a.result_destinations.map((d) => (
+                <ResultsConversationPicker automation={a} />
+                {a.result_destinations.filter((d) => d.kind !== ResultDestinationKinds.CONVERSATION).map((d) => (
                   <div key={d.id} className="flex items-center gap-1.5">
-                    {d.kind === ResultDestinationKinds.CONVERSATION ? <MessageCircle className="h-4 w-4 text-muted-foreground" /> : d.kind === ResultDestinationKinds.EMAIL ? <Mail className="h-4 w-4 text-muted-foreground" /> : <Plug className="h-4 w-4 text-muted-foreground" />}
-                    {d.kind === ResultDestinationKinds.CONVERSATION && d.conversation_id ? (
-                      <Link to={Routes.chat.conversation(d.conversation_id)} className="font-semibold text-ink hover:underline">{a.results_conversation?.name ?? `Chat with ${a.bot.name}`}</Link>
-                    ) : d.kind === ResultDestinationKinds.EMAIL ? (
+                    {d.kind === ResultDestinationKinds.EMAIL ? <Mail className="h-4 w-4 text-muted-foreground" /> : <Plug className="h-4 w-4 text-muted-foreground" />}
+                    {d.kind === ResultDestinationKinds.EMAIL ? (
                       <span>Email{d.email ? ` to ${d.email}` : " to you"}</span>
                     ) : (
                       <span className="truncate">{d.connection?.label} {d.target}</span>

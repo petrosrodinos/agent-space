@@ -73,13 +73,19 @@ export const ComputerViewer: FC<Props> = ({ botId, initialMode = ComputerViewMod
     void open(modeRef.current === ComputerViewModes.CONTROL);
   }, [open]);
 
+  // Opening the live view resumes a paused computer, so once it is paused (or off) the view must not reopen by itself.
+  const stopped = computer?.status === ComputerStatuses.PAUSED || computer?.status === ComputerStatuses.OFF;
+  useEffect(() => {
+    if (stopped) setLive(null);
+  }, [stopped]);
+
   // Refresh the signed URL a minute before it expires, keeping the current mode.
   useEffect(() => {
-    if (!live) return;
+    if (!live || stopped) return;
     const ms = new Date(live.expires_at).getTime() - Date.now() - 60_000;
     const t = setTimeout(() => void open(live.control), Math.max(ms, 30_000));
     return () => clearTimeout(t);
-  }, [live, open]);
+  }, [live, open, stopped]);
 
   useEffect(() => {
     const onChange = () => setFullscreen(document.fullscreenElement === wrapRef.current);

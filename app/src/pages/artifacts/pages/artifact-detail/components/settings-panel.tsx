@@ -92,7 +92,10 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
             <SelectContent>
               {ArtifactTypeOptions.map((o) => (
                 <SelectItem key={o.id} value={o.id}>
-                  <o.icon className="h-4 w-4" /> {o.label}
+                  <span className="flex items-center gap-2">
+                    <o.icon className="h-4 w-4 shrink-0" />
+                    {o.label}
+                  </span>
                 </SelectItem>
               ))}
             </SelectContent>

@@ -23,6 +23,8 @@ export interface Toolkit {
   website?: string | null;
   connected_count: number;
   allowed: boolean;
+  /** A custom tool server (§8.4): its accounts are added and removed in the Connections page's tool server section. */
+  is_tool_server?: boolean;
 }
 
 /** Your permission for one tool of a connected service. AUTO_REVIEW follows the bot's approval level. */

@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import type { CreateToolServerDto, UpdateToolServerDto } from "../interfaces/tool-servers.interfaces";
-import { completeToolServerSignIn, createToolServer, deleteToolServer, getToolServers, setToolServerToken, startToolServerSignIn, testToolServer, updateToolServer } from "../services/tool-servers.services";
+import { createToolServer, deleteToolServer, getToolServers, setToolServerToken, startToolServerSignIn, testToolServer, updateToolServer } from "../services/tool-servers.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { ToolServerStatuses } from "../interfaces/tool-servers.interfaces";
 
@@ -30,7 +30,6 @@ export const useCreateToolServer = () =>
 export const useUpdateToolServer = () => useToolServerMutation(({ id, ...dto }: { id: string } & UpdateToolServerDto) => updateToolServer(id, dto), "Tool server updated", "Could not update the tool server");
 export const useSetToolServerToken = () => useToolServerMutation(({ id, token }: { id: string; token: string }) => setToolServerToken(id, token), "Access token replaced", "Could not replace the token");
 export const useStartToolServerSignIn = () => useToolServerMutation(startToolServerSignIn, null, "Could not start the sign-in");
-export const useCompleteToolServerSignIn = () => useToolServerMutation(completeToolServerSignIn, null, "Sign-in failed");
 export const useTestToolServer = () =>
   useToolServerMutation(testToolServer, (r) => (r.ok ? `Connected — ${r.tool_count} tools available` : null), "Could not test the tool server");
 export const useDeleteToolServer = () => useToolServerMutation(deleteToolServer, "Tool server removed", "Could not remove the tool server");

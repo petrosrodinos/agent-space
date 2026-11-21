@@ -6,7 +6,7 @@ import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
 import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
 import type { Actor } from '../../bots/bots.service';
 import { ToolServersService } from './tool-servers.service';
-import { CreateToolServerDto, ToolServerSignInCallbackDto, ToolServerTokenDto, UpdateToolServerDto } from './tool-server.dto';
+import { CreateToolServerDto, ToolServerSignInDto, ToolServerTokenDto, UpdateToolServerDto } from './tool-server.dto';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
 
@@ -25,15 +25,9 @@ export class ToolServersController {
 
     @Post()
     @Throttle({ default: { limit: 10, ttl: 60_000 } })
-    @ApiOperation({ summary: 'Add an MCP tool server; returns authorization_url when it uses its own sign-in' })
+    @ApiOperation({ summary: 'Add an MCP tool server (registered with Composio); returns authorization_url when it uses its own sign-in' })
     create(@CurrentMembership() m: OrgMembership, @Body() dto: CreateToolServerDto) {
         return this.servers.create(actor(m), dto);
-    }
-
-    @Post('sign-in/callback')
-    @ApiOperation({ summary: 'Finish the standard MCP sign-in with the code from the redirect' })
-    callback(@CurrentMembership() m: OrgMembership, @Body() dto: ToolServerSignInCallbackDto) {
-        return this.servers.completeSignIn(actor(m), dto.state, dto.code);
     }
 
     @Get(':id')
@@ -42,25 +36,26 @@ export class ToolServersController {
     }
 
     @Patch(':id')
+    @ApiOperation({ summary: 'Rename, share or limit to bots. The address and sign-in type cannot change.' })
     update(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateToolServerDto) {
         return this.servers.update(actor(m), id, dto);
     }
 
     @Put(':id/token')
-    @ApiOperation({ summary: 'Replace the access token (never returned)' })
+    @ApiOperation({ summary: 'Replace the access token (handed to Composio, never stored or returned)' })
     setToken(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: ToolServerTokenDto) {
         return this.servers.setToken(actor(m), id, dto.token);
     }
 
     @Post(':id/sign-in')
-    @ApiOperation({ summary: 'Start (or redo) the server\'s own sign-in; returns authorization_url' })
-    signIn(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
-        return this.servers.startSignIn(actor(m), id);
+    @ApiOperation({ summary: 'Start (or redo) the server\'s own sign-in; returns authorization_url (finishes on /connections/callback)' })
+    signIn(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: ToolServerSignInDto) {
+        return this.servers.startSignIn(actor(m), id, dto?.return_url);
     }
 
     @Post(':id/test')
     @Throttle({ default: { limit: 20, ttl: 60_000 } })
-    @ApiOperation({ summary: 'Test connection: reconnect and list tools' })
+    @ApiOperation({ summary: 'Test connection: check the sign-in and reload the tools' })
     test(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string) {
         return this.servers.test(actor(m), id);
     }

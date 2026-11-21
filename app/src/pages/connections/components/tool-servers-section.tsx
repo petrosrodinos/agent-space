@@ -1,7 +1,8 @@
 import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { Bot as BotIcon, LogIn, MoreHorizontal, Pencil, Plus, RefreshCw, Server, Trash2, Users, Wrench } from "lucide-react";
+import { Bot as BotIcon, ListChecks, LogIn, MoreHorizontal, Pencil, Plus, RefreshCw, Server, Trash2, Users, Wrench } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -26,6 +27,7 @@ import { ToolServerAuthOptions } from "@/config/constants/dropdowns/connections/
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { timeAgo } from "@/lib/date";
 import { platform } from "@/platform";
+import { Routes } from "@/routes/routes";
 import { editToolServerSchema, toolServerSchema, type EditToolServerFormValues, type ToolServerFormValues } from "../validation-schemas/tool-server.schema";
 import { SecretField } from "./secret-field";
 import { ToolServerStatuses, ToolServerAuthKinds } from "@/features/tool-servers/interfaces/tool-servers.interfaces";
@@ -81,7 +83,7 @@ export const ToolServersSection: FC<{ isAdmin: boolean; membersMayAdd: boolean }
         isOpen={!!deleting}
         onClose={() => setDeleting(null)}
         title={`Remove ${deleting?.name ?? ""}?`}
-        description="Bots will no longer be able to use its tools. Its access token or sign-in is deleted immediately."
+        description="Bots will no longer be able to use its tools. Your sign-in or access token for it is removed immediately."
         confirmText="Remove"
         variant="destructive"
         isLoading={del.isPending}
@@ -95,6 +97,7 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
   const test = useTestToolServer();
   const signIn = useStartToolServerSignIn();
   const update = useUpdateToolServer();
+  const navigate = useNavigate();
   const host = (() => {
     try {
       return new URL(s.url).host;
@@ -102,8 +105,10 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
       return s.url;
     }
   })();
-  const startSignIn = () => signIn.mutate(s.id, { onSuccess: (r) => r.authorization_url && platform.links.redirect(r.authorization_url) });
-  const needsSignIn = s.auth_kind === ToolServerAuthKinds.OAUTH && s.status === ToolServerStatuses.NEEDS_RECONNECTING;
+  const startSignIn = () =>
+    signIn.mutate({ id: s.id, return_url: platform.links.returnUrl(Routes.connections.callback) }, { onSuccess: (r) => r.authorization_url && platform.links.redirect(r.authorization_url) });
+  /** Added before tool servers moved to our connection partner: it can only be removed and added again. */
+  const legacy = !s.service_key;
 
   return (
     <div className="flex items-start gap-3 rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
@@ -121,7 +126,6 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
         </div>
         <p className="truncate text-sm text-muted-foreground">
           {host} · {getDropdownOptionLabel(ToolServerAuthOptions, s.auth_kind)}
-          {s.masked_hint ? ` ${s.masked_hint}` : ""}
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-2">
           <StatusPill tone={tone(s.status)}>{getDropdownOptionLabel(ConnectionStatusOptions, s.status)}</StatusPill>
@@ -129,7 +133,7 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
           {s.bots.length > 0 && <span className="text-xs text-muted-foreground">Only {s.bots.map((b) => b.name).join(", ")}</span>}
         </div>
         {s.status !== ToolServerStatuses.ACTIVE && s.status_message && <p className="mt-1.5 text-xs text-body">{s.status_message}</p>}
-        {s.can_manage && (needsSignIn || s.status !== ToolServerStatuses.ACTIVE) && (
+        {s.can_manage && !legacy && s.status !== ToolServerStatuses.ACTIVE && (
           <div className="mt-2 flex flex-wrap gap-2">
             {s.auth_kind === ToolServerAuthKinds.OAUTH && (
               <Button size="sm" loading={signIn.isPending} onClick={startSignIn}>
@@ -150,26 +154,35 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
-            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => test.mutate(s.id)}>
-              <RefreshCw className="h-4 w-4" /> Test connection
-            </DropdownMenuItem>
-            {s.auth_kind === ToolServerAuthKinds.OAUTH && (
-              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={startSignIn}>
-                <LogIn className="h-4 w-4" /> Sign in again
-              </DropdownMenuItem>
+            {!legacy && (
+              <>
+                {s.status === ToolServerStatuses.ACTIVE && s.service_key && (
+                  <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => navigate(Routes.connections.service(s.service_key!))}>
+                    <ListChecks className="h-4 w-4" /> Tools and permissions
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => test.mutate(s.id)}>
+                  <RefreshCw className="h-4 w-4" /> Test connection
+                </DropdownMenuItem>
+                {s.auth_kind === ToolServerAuthKinds.OAUTH && (
+                  <DropdownMenuItem className="gap-2 rounded-sm" onSelect={startSignIn}>
+                    <LogIn className="h-4 w-4" /> Sign in again
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onEdit}>
+                  <Pencil className="h-4 w-4" /> Edit
+                </DropdownMenuItem>
+                {isAdmin && (
+                  <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => update.mutate({ id: s.id, visibility: s.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
+                    <Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}
+                  </DropdownMenuItem>
+                )}
+                <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onLimit}>
+                  <BotIcon className="h-4 w-4" /> Limit to bots
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+              </>
             )}
-            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onEdit}>
-              <Pencil className="h-4 w-4" /> Edit
-            </DropdownMenuItem>
-            {isAdmin && (
-              <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => update.mutate({ id: s.id, visibility: s.visibility === Visibilities.SHARED ? Visibilities.PRIVATE : Visibilities.SHARED })}>
-                <Users className="h-4 w-4" /> {s.visibility === Visibilities.SHARED ? "Make private" : "Share with organisation"}
-              </DropdownMenuItem>
-            )}
-            <DropdownMenuItem className="gap-2 rounded-sm" onSelect={onLimit}>
-              <BotIcon className="h-4 w-4" /> Limit to bots
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
             <DropdownMenuItem className="gap-2 rounded-sm text-error focus:text-error" onSelect={onDelete}>
               <Trash2 className="h-4 w-4" /> Remove
             </DropdownMenuItem>
@@ -198,7 +211,7 @@ const AddToolServerDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () => 
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Add a tool server</DialogTitle>
-            <DialogDescription>Any server that speaks the Model Context Protocol (MCP). Tokens are stored encrypted and never shown to bots.</DialogDescription>
+            <DialogDescription>Any server on the internet that speaks the Model Context Protocol (MCP). Sign-ins and tokens are kept by our connection partner and never shown to bots.</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form
@@ -206,7 +219,14 @@ const AddToolServerDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () => 
               className="space-y-4"
               onSubmit={form.handleSubmit((v) =>
                 create.mutate(
-                  { name: v.name, url: v.url, auth_kind: v.auth_kind, token: v.auth_kind === ToolServerAuthKinds.TOKEN ? v.token : undefined, visibility: v.visibility },
+                  {
+                    name: v.name,
+                    url: v.url,
+                    auth_kind: v.auth_kind,
+                    token: v.auth_kind === ToolServerAuthKinds.TOKEN ? v.token : undefined,
+                    visibility: v.visibility,
+                    return_url: platform.links.returnUrl(Routes.connections.callback),
+                  },
                   {
                     onSuccess: (r) => {
                       form.reset();
@@ -273,9 +293,9 @@ const AddToolServerDialog: FC<{ open: boolean; isAdmin: boolean; onClose: () => 
 const EditToolServerDialog: FC<{ server: ToolServer | null; onClose: () => void }> = ({ server, onClose }) => {
   const update = useUpdateToolServer();
   const setToken = useSetToolServerToken();
-  const form = useForm<EditToolServerFormValues>({ resolver: zodResolver(editToolServerSchema), defaultValues: { name: "", url: "", token: "" } });
+  const form = useForm<EditToolServerFormValues>({ resolver: zodResolver(editToolServerSchema), defaultValues: { name: "", token: "" } });
   useEffect(() => {
-    if (server) form.reset({ name: server.name, url: server.url, token: "" });
+    if (server) form.reset({ name: server.name, token: "" });
   }, [server, form]);
   const busy = update.isPending || setToken.isPending;
   const { requestClose, dialogProps } = useUnsavedChangesGuard({ isDirty: form.formState.isDirty, disabled: busy, onClose });
@@ -285,7 +305,7 @@ const EditToolServerDialog: FC<{ server: ToolServer | null; onClose: () => void 
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <DialogTitle>Edit tool server</DialogTitle>
-            <DialogDescription>Changing the address reconnects and reloads its tools.</DialogDescription>
+            <DialogDescription>The address and sign-in type can't be changed. To use a different address, remove this server and add it again.</DialogDescription>
           </DialogHeader>
           <Form {...form}>
             <form
@@ -293,13 +313,16 @@ const EditToolServerDialog: FC<{ server: ToolServer | null; onClose: () => void 
               className="space-y-4"
               onSubmit={form.handleSubmit(async (v) => {
                 if (!server) return;
-                if (v.name !== server.name || v.url !== server.url) await update.mutateAsync({ id: server.id, name: v.name, url: v.url });
+                if (v.name !== server.name) await update.mutateAsync({ id: server.id, name: v.name });
                 if (server.auth_kind === ToolServerAuthKinds.TOKEN && v.token && v.token.length >= 4) await setToken.mutateAsync({ id: server.id, token: v.token });
                 onClose();
               })}
             >
               <FormField control={form.control} name="name" render={({ field }) => <FormItem><FormLabel>Name</FormLabel><FormControl><Input {...field} /></FormControl><FormMessage /></FormItem>} />
-              <FormField control={form.control} name="url" render={({ field }) => <FormItem><FormLabel>Server address</FormLabel><FormControl><Input type="url" inputMode="url" {...field} /></FormControl><FormMessage /></FormItem>} />
+              <FormItem>
+                <FormLabel>Server address</FormLabel>
+                <Input value={server?.url ?? ""} readOnly disabled />
+              </FormItem>
               {server?.auth_kind === ToolServerAuthKinds.TOKEN && (
                 <FormField
                   control={form.control}
@@ -307,7 +330,7 @@ const EditToolServerDialog: FC<{ server: ToolServer | null; onClose: () => void 
                   render={({ field }) => (
                     <FormItem>
                       <FormLabel>Replace access token</FormLabel>
-                      <FormControl><SecretField placeholder={server.masked_hint ? `Current: ${server.masked_hint}` : "Paste a new token"} {...field} /></FormControl>
+                      <FormControl><SecretField placeholder="Paste a new token" {...field} /></FormControl>
                       <FormDescription>Leave empty to keep the current token. It is never shown again.</FormDescription>
                       <FormMessage />
                     </FormItem>

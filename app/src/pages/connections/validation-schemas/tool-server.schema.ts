@@ -3,6 +3,7 @@ import { ToolServerAuthKinds } from "@/features/tool-servers/interfaces/tool-ser
 import { UrlProtocols } from "@/config/constants/browser.constants";
 import { Visibilities } from "@/features/connections/interfaces/connections.interfaces";
 
+/** https only: the server is reached by our connection partner over the internet, never from this device. */
 const url = z
   .string()
   .trim()
@@ -10,8 +11,7 @@ const url = z
   .max(500)
   .refine((v) => {
     try {
-      const u = new URL(v);
-      return u.protocol === UrlProtocols.HTTPS || (u.protocol === UrlProtocols.HTTP && /^(localhost|127\.0\.0\.1)$/.test(u.hostname));
+      return new URL(v).protocol === UrlProtocols.HTTPS;
     } catch {
       return false;
     }
@@ -30,7 +30,6 @@ export type ToolServerFormValues = z.infer<typeof toolServerSchema>;
 
 export const editToolServerSchema = z.object({
   name: z.string().trim().min(1, "Give it a name").max(80),
-  url,
   token: z.string().trim().max(8000).optional(),
 });
 export type EditToolServerFormValues = z.infer<typeof editToolServerSchema>;

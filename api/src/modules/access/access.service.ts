@@ -77,7 +77,8 @@ export class AccessService {
             organization_id: orgId,
             deleted_at: null,
             OR: [
-                { visibility: 'PRIVATE', owner_id: userId },
+                // "Limit to bots" applies to private connections too (e.g. a member's own custom tool server, §8.4).
+                { visibility: 'PRIVATE', owner_id: userId, ...(botId ? { OR: [{ restricted_to_bots: false }, { bot_restrictions: { some: { bot_id: botId } } }] } : {}) },
                 {
                     visibility: 'SHARED',
                     ...(botId ? { OR: [{ restricted_to_bots: false }, { bot_restrictions: { some: { bot_id: botId } } }] } : {}),

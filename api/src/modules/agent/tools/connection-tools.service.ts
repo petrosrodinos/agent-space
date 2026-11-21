@@ -3,17 +3,21 @@ import { Connection, ToolPermission } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
-import { ComposioService, ComposioTool, ComposioToolError, ToolFailureKinds } from '@/integrations/composio/composio.service';
+import { ComposioService, ComposioTool, ComposioToolError, isCustomToolkit, ToolFailureKinds } from '@/integrations/composio/composio.service';
 import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { AccessService } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
-import { classifyToolSlug } from '../approval-policy';
+import { classifyServiceTool } from '../approval-policy';
 import { undoPlanFor } from '../undo/undo.rules';
 import { assertPublicUrl } from './web.utils';
 import { obj, ToolContext, ToolDef } from './tool.types';
 
 const TOOLS_CACHE_SECONDS = 600;
 const MAX_TOOLKITS = 6;
+/** Custom tool servers (§8.4) are counted separately so they never crowd out the user's regular services. */
+const MAX_CUSTOM_TOOLKITS = 8;
+const TOOLS_PER_TOOLKIT = 20;
+const TOOLS_PER_CUSTOM_TOOLKIT = 40;
 
 /** Tools that act in the user's connected accounts (§8). Tokens never pass through us: Composio executes the call. */
 @Injectable()
@@ -47,7 +51,7 @@ export class ConnectionToolsService {
         const key = this.redis.key(RedisKeys.composioToolsCache(slug));
         const cached = await this.redis.client.get(key);
         if (cached) return JSON.parse(cached);
-        const tools = await this.composio.listTools(slug, 20);
+        const tools = await this.composio.listTools(slug, isCustomToolkit(slug) ? TOOLS_PER_CUSTOM_TOOLKIT : TOOLS_PER_TOOLKIT);
         await this.redis.client.set(key, JSON.stringify(tools), 'EX', TOOLS_CACHE_SECONDS);
         return tools;
     }
@@ -90,14 +94,19 @@ export class ConnectionToolsService {
         const out: ToolDef[] = [];
         const summary: string[] = [];
 
-        const composioConns = conns.filter((c) => c.kind === 'COMPOSIO' && c.composio_connected_account_id);
+        // Regular services, plus custom tool servers registered as Composio custom toolkits. A tool server without
+        // sign-in has no connected account: its Composio user is enough to run tools.
+        const composioConns = conns.filter(
+            (c) => (c.kind === 'COMPOSIO' && c.composio_connected_account_id) || (c.kind === 'MCP' && isCustomToolkit(c.service_key) && (c.composio_connected_account_id || c.composio_user_id)),
+        );
         const byService = new Map<string, typeof composioConns>();
         for (const c of composioConns) byService.set(c.service_key, [...(byService.get(c.service_key) ?? []), c]);
 
-        const services = [...byService.keys()].slice(0, MAX_TOOLKITS);
-        const permissions = await this.permissionsFor(ctx, services);
+        const entries = [...byService.entries()];
+        const picked = [...entries.filter(([s]) => !isCustomToolkit(s)).slice(0, MAX_TOOLKITS), ...entries.filter(([s]) => isCustomToolkit(s)).slice(0, MAX_CUSTOM_TOOLKITS)];
+        const permissions = await this.permissionsFor(ctx, picked.map(([s]) => s));
 
-        for (const [service, list] of [...byService.entries()].slice(0, MAX_TOOLKITS)) {
+        for (const [service, list] of picked) {
             let tools: ComposioTool[] = [];
             try {
                 tools = await this.toolsForToolkit(service);
@@ -140,13 +149,13 @@ export class ConnectionToolsService {
             step_type: 'CONNECTION_CALL',
             runs_on: 'server',
             title: (args) => `${verb} — ${pick(args).label}`,
-            classify: (args, ctx) => classifyToolSlug(t.slug, args ?? {}, ctx.user?.email),
+            classify: (args, ctx) => classifyServiceTool(t, args ?? {}, ctx.user?.email),
             connectionFor: (args) => pick(args).id,
             preview: async (args, ctx) => {
                 const c = pick(args);
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { account, ...rest } = args ?? {};
-                const action = classifyToolSlug(t.slug, rest, ctx.user?.email) ?? 'OTHER';
+                const action = classifyServiceTool(t, rest, ctx.user?.email) ?? 'OTHER';
                 return { title: `${verb} with ${c.label}`, action_type: action, preview: { kind: 'tool', service: c.service_name, account: c.label, account_identifier: c.account_identifier, tool: t.slug, input: rest }, requires_tap: action === 'PURCHASE_PAYMENT' };
             },
             execute: async (args, ctx) => {
@@ -156,7 +165,7 @@ export class ConnectionToolsService {
                 const log = (successful: boolean, failure?: string) =>
                     this.activity.log({ organization_id: ctx.organization_id, actor_bot_id: ctx.bot.id, on_behalf_of_id: ctx.run.user_id, action: 'connection.used', target_type: 'tool', target_id: t.slug, connection_id: c.id, run_id: ctx.run.id, metadata: { successful, failure } });
                 try {
-                    const res = await this.composio.executeTool(t.slug, c.composio_connected_account_id!, await this.composioUserIdFor(c), rest);
+                    const res = await this.composio.executeTool(t.slug, c.composio_connected_account_id, await this.composioUserIdFor(c), rest);
                     await this.prisma.connection.update({ where: { id: c.id }, data: { last_used_at: new Date() } });
                     await log(true);
                     const plan = undoPlanFor(t.slug, rest, res.data);

@@ -574,12 +574,6 @@ exports.Prisma.BotConnectionScalarFieldEnum = {
   created_at: 'created_at'
 };
 
-exports.Prisma.BotToolServerScalarFieldEnum = {
-  bot_id: 'bot_id',
-  tool_server_id: 'tool_server_id',
-  created_at: 'created_at'
-};
-
 exports.Prisma.BotCredentialScalarFieldEnum = {
   bot_id: 'bot_id',
   credential_id: 'credential_id',
@@ -1105,10 +1099,8 @@ exports.Prisma.ToolServerScalarFieldEnum = {
   name: 'name',
   url: 'url',
   auth_kind: 'auth_kind',
-  credential_id: 'credential_id',
   visibility: 'visibility',
-  status: 'status',
-  status_message: 'status_message',
+  composio_toolkit_slug: 'composio_toolkit_slug',
   tool_count: 'tool_count',
   last_listed_at: 'last_listed_at',
   deleted_at: 'deleted_at',
@@ -2154,12 +2146,6 @@ exports.ToolServerAuthKind = exports.$Enums.ToolServerAuthKind = {
   TOKEN: 'TOKEN'
 };
 
-exports.ToolServerStatus = exports.$Enums.ToolServerStatus = {
-  ACTIVE: 'ACTIVE',
-  NEEDS_RECONNECTING: 'NEEDS_RECONNECTING',
-  ERROR: 'ERROR'
-};
-
 exports.FileBucket = exports.$Enums.FileBucket = {
   FILES: 'FILES',
   ARTIFACTS: 'ARTIFACTS',
@@ -2345,7 +2331,6 @@ exports.Prisma.ModelName = {
   Bot: 'Bot',
   BotApprovalRule: 'BotApprovalRule',
   BotConnection: 'BotConnection',
-  BotToolServer: 'BotToolServer',
   BotCredential: 'BotCredential',
   BotSkill: 'BotSkill',
   KnowledgeItem: 'KnowledgeItem',

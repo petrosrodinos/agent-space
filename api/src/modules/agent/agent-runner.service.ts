@@ -21,7 +21,6 @@ import { AutomationToolsService } from './tools/automation-tools.service';
 import { ArtifactToolsService } from './tools/artifact-tools.service';
 import { KnowledgeToolsService } from './tools/knowledge-tools.service';
 import { ComputerToolsService } from './tools/computer-tools.service';
-import { McpToolsService } from './tools/mcp-tools.service';
 import { DeviceToolsService } from './tools/device-tools.service';
 import { ChannelsService } from '../channels/channels.service';
 import { UNDO_WINDOW_MS } from './undo/undo.rules';
@@ -76,7 +75,6 @@ export class AgentRunnerService {
         private readonly artifactTools: ArtifactToolsService,
         private readonly knowledgeTools: KnowledgeToolsService,
         private readonly computerTools: ComputerToolsService,
-        private readonly mcpTools: McpToolsService,
         private readonly automations: AutomationsService,
         private readonly deviceTools: DeviceToolsService,
         private readonly channels: ChannelsService,
@@ -261,18 +259,12 @@ export class AgentRunnerService {
             this.logger.warn(`Device tools unavailable: ${(e as Error).message}`);
         }
         try {
+            // Connected services and custom tool servers (§8.4) alike: both run through Composio.
             const conn = await this.connectionTools.tools(ctx);
             toolDefs = [...toolDefs, ...conn.tools];
             summary = conn.summary;
         } catch (e) {
             this.logger.warn(`Connection tools unavailable: ${(e as Error).message}`);
-        }
-        try {
-            const mcp = await this.mcpTools.tools(ctx);
-            toolDefs = [...toolDefs, ...mcp.tools];
-            summary = [...summary, ...mcp.summary];
-        } catch (e) {
-            this.logger.warn(`Custom tool servers unavailable: ${(e as Error).message}`);
         }
         return { tools: toolDefs, summary };
     }

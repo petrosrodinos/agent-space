@@ -73,6 +73,8 @@ export const ToolNamePrefixes = {
   ARTIFACT: "_artifact",
   AUTOMATION: "automation",
   MCP: "mcp_",
+  /** Custom tool servers (§8.4), run as Composio custom toolkits: CUSTOM_<SERVER>_<TOOL>. */
+  CUSTOM_TOOL_SERVER: "CUSTOM_",
 } as const;
 
 const EXACT: Record<string, LucideIcon> = {
@@ -120,7 +122,7 @@ export function toolIcon(name: string): LucideIcon {
   if (name.startsWith(ToolNamePrefixes.COMPUTER)) return Monitor;
   if (name.endsWith(ToolNamePrefixes.ARTIFACT) || name.endsWith(`${ToolNamePrefixes.ARTIFACT}s`) || name.includes(ToolNamePrefixes.ARTIFACT)) return AppWindow;
   if (name.startsWith(ToolNamePrefixes.AUTOMATION) || name.includes(`_${ToolNamePrefixes.AUTOMATION}`)) return Timer;
-  if (name.startsWith(ToolNamePrefixes.MCP)) return Wrench;
+  if (name.startsWith(ToolNamePrefixes.MCP) || name.startsWith(ToolNamePrefixes.CUSTOM_TOOL_SERVER)) return Wrench;
   // Connected-service tools (Composio slugs such as GMAIL_SEND_EMAIL).
   if (name === name.toUpperCase()) return Plug;
   return Wrench;

@@ -130,7 +130,8 @@ const ServicePage: FC = () => {
   }
 
   const { toolkit } = data;
-  const canConnect = toolkit.allowed;
+  const toolServer = !!toolkit.is_tool_server;
+  const canConnect = toolkit.allowed && !toolServer;
 
   return (
     <PageContainer>
@@ -143,7 +144,7 @@ const ServicePage: FC = () => {
               <h1 className="min-w-0 truncate font-display text-[26px] font-bold leading-tight text-ink sm:text-[30px]">{toolkit.name}</h1>
             </div>
             <div className="flex flex-wrap items-center gap-2">
-              {manageable.length ? (
+              {toolServer ? null : manageable.length ? (
                 <Button variant="outline" onClick={() => setDisconnectingAll(true)}>
                   <Unplug /> Disconnect
                 </Button>
@@ -168,16 +169,22 @@ const ServicePage: FC = () => {
               accounts.map((c) => <AccountRow key={c.id} c={c} isAdmin={isAdmin} onRename={() => setRenaming(c)} onLimit={() => setLimiting(c)} onDelete={() => setDeleting(c)} />)
             )}
             {!connectionsPending && !accounts.length && <p className="px-4 pt-3 text-sm text-muted-foreground">No {toolkit.name} account connected yet.</p>}
-            <button
-              type="button"
-              disabled={!canConnect}
-              onClick={() => setConnectOpen(true)}
-              className="flex min-h-[48px] w-full items-center gap-2 px-4 text-sm font-semibold text-body transition-colors hover:bg-surface-sunken disabled:pointer-events-none disabled:opacity-50"
-            >
-              <Plus className="h-4 w-4" /> {accounts.length ? "Add another account" : `Connect ${toolkit.name}`}
-            </button>
+            {!toolServer && (
+              <button
+                type="button"
+                disabled={!canConnect}
+                onClick={() => setConnectOpen(true)}
+                className="flex min-h-[48px] w-full items-center gap-2 px-4 text-sm font-semibold text-body transition-colors hover:bg-surface-sunken disabled:pointer-events-none disabled:opacity-50"
+              >
+                <Plus className="h-4 w-4" /> {accounts.length ? "Add another account" : `Connect ${toolkit.name}`}
+              </button>
+            )}
           </Card>
-          {!canConnect && <p className="mt-1.5 px-1 text-[13px] text-muted-foreground">Your organisation doesn't allow connecting {toolkit.name}.</p>}
+          {toolServer ? (
+            <p className="mt-1.5 px-1 text-[13px] text-muted-foreground">A custom tool server. Add, sign in to or remove it under Custom tool servers on the Connections page.</p>
+          ) : (
+            !canConnect && <p className="mt-1.5 px-1 text-[13px] text-muted-foreground">Your organisation doesn't allow connecting {toolkit.name}.</p>
+          )}
         </section>
 
         <ToolPermissionsSection

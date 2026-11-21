@@ -295,7 +295,8 @@ export class CredentialsService {
             this.prisma.botCredential.findMany({ where: { credential_id: id }, include: { bot: { select: { id: true, name: true, emoji: true } } } }),
             this.prisma.connection.findFirst({ where: { credential_id: id, deleted_at: null }, include: { bot_connections: { include: { bot: { select: { id: true, name: true, emoji: true } } } } } }),
         ]);
-        const toolServers = await this.prisma.toolServer.findMany({ where: { credential_id: id, deleted_at: null }, select: { id: true, name: true } });
+        // Only tool servers added before the move to Composio still use a stored credential (through their connection).
+        const toolServers = await this.prisma.toolServer.findMany({ where: { deleted_at: null, connection: { credential_id: id } }, select: { id: true, name: true } });
         return { bots: [...bots.map((b) => b.bot), ...(conn?.bot_connections.map((b) => b.bot) ?? [])], tool_servers: toolServers };
     }
 

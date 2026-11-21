@@ -139,11 +139,6 @@ export type BotApprovalRule = $Result.DefaultSelection<Prisma.$BotApprovalRulePa
  */
 export type BotConnection = $Result.DefaultSelection<Prisma.$BotConnectionPayload>
 /**
- * Model BotToolServer
- * 
- */
-export type BotToolServer = $Result.DefaultSelection<Prisma.$BotToolServerPayload>
-/**
  * Model BotCredential
  * §8.9 "Choose bots" — which bots may use a secret.
  */
@@ -326,7 +321,8 @@ export type Credential = $Result.DefaultSelection<Prisma.$CredentialPayload>
 export type CredentialEvent = $Result.DefaultSelection<Prisma.$CredentialEventPayload>
 /**
  * Model ToolServer
- * §8.4 — custom MCP tool server. Tools are listed from the server and cached in Redis.
+ * §8.4 — custom MCP tool server, registered with Composio as a shared custom toolkit. The user's sign-in, status and
+ * bot limits live on its Connection (kind MCP), exactly like a Composio service; tokens never reach Agent Space.
  */
 export type ToolServer = $Result.DefaultSelection<Prisma.$ToolServerPayload>
 /**
@@ -1398,15 +1394,6 @@ export const ToolServerAuthKind: {
 export type ToolServerAuthKind = (typeof ToolServerAuthKind)[keyof typeof ToolServerAuthKind]
 
 
-export const ToolServerStatus: {
-  ACTIVE: 'ACTIVE',
-  NEEDS_RECONNECTING: 'NEEDS_RECONNECTING',
-  ERROR: 'ERROR'
-};
-
-export type ToolServerStatus = (typeof ToolServerStatus)[keyof typeof ToolServerStatus]
-
-
 export const ToolRunsOn: {
   SERVER: 'SERVER',
   DEVICE: 'DEVICE'
@@ -2051,10 +2038,6 @@ export type ToolServerAuthKind = $Enums.ToolServerAuthKind
 
 export const ToolServerAuthKind: typeof $Enums.ToolServerAuthKind
 
-export type ToolServerStatus = $Enums.ToolServerStatus
-
-export const ToolServerStatus: typeof $Enums.ToolServerStatus
-
 export type ToolRunsOn = $Enums.ToolRunsOn
 
 export const ToolRunsOn: typeof $Enums.ToolRunsOn
@@ -2517,16 +2500,6 @@ export class PrismaClient<
     * ```
     */
   get botConnection(): Prisma.BotConnectionDelegate<ExtArgs, ClientOptions>;
-
-  /**
-   * `prisma.botToolServer`: Exposes CRUD operations for the **BotToolServer** model.
-    * Example usage:
-    * ```ts
-    * // Fetch zero or more BotToolServers
-    * const botToolServers = await prisma.botToolServer.findMany()
-    * ```
-    */
-  get botToolServer(): Prisma.BotToolServerDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.botCredential`: Exposes CRUD operations for the **BotCredential** model.
@@ -3599,7 +3572,6 @@ export namespace Prisma {
     Bot: 'Bot',
     BotApprovalRule: 'BotApprovalRule',
     BotConnection: 'BotConnection',
-    BotToolServer: 'BotToolServer',
     BotCredential: 'BotCredential',
     BotSkill: 'BotSkill',
     KnowledgeItem: 'KnowledgeItem',
@@ -3675,7 +3647,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationShare" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationShare" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -5526,80 +5498,6 @@ export namespace Prisma {
           count: {
             args: Prisma.BotConnectionCountArgs<ExtArgs>
             result: $Utils.Optional<BotConnectionCountAggregateOutputType> | number
-          }
-        }
-      }
-      BotToolServer: {
-        payload: Prisma.$BotToolServerPayload<ExtArgs>
-        fields: Prisma.BotToolServerFieldRefs
-        operations: {
-          findUnique: {
-            args: Prisma.BotToolServerFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload> | null
-          }
-          findUniqueOrThrow: {
-            args: Prisma.BotToolServerFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          findFirst: {
-            args: Prisma.BotToolServerFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload> | null
-          }
-          findFirstOrThrow: {
-            args: Prisma.BotToolServerFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          findMany: {
-            args: Prisma.BotToolServerFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>[]
-          }
-          create: {
-            args: Prisma.BotToolServerCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          createMany: {
-            args: Prisma.BotToolServerCreateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          createManyAndReturn: {
-            args: Prisma.BotToolServerCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>[]
-          }
-          delete: {
-            args: Prisma.BotToolServerDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          update: {
-            args: Prisma.BotToolServerUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          deleteMany: {
-            args: Prisma.BotToolServerDeleteManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateMany: {
-            args: Prisma.BotToolServerUpdateManyArgs<ExtArgs>
-            result: BatchPayload
-          }
-          updateManyAndReturn: {
-            args: Prisma.BotToolServerUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>[]
-          }
-          upsert: {
-            args: Prisma.BotToolServerUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$BotToolServerPayload>
-          }
-          aggregate: {
-            args: Prisma.BotToolServerAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateBotToolServer>
-          }
-          groupBy: {
-            args: Prisma.BotToolServerGroupByArgs<ExtArgs>
-            result: $Utils.Optional<BotToolServerGroupByOutputType>[]
-          }
-          count: {
-            args: Prisma.BotToolServerCountArgs<ExtArgs>
-            result: $Utils.Optional<BotToolServerCountAggregateOutputType> | number
           }
         }
       }
@@ -10191,7 +10089,6 @@ export namespace Prisma {
     bot?: BotOmit
     botApprovalRule?: BotApprovalRuleOmit
     botConnection?: BotConnectionOmit
-    botToolServer?: BotToolServerOmit
     botCredential?: BotCredentialOmit
     botSkill?: BotSkillOmit
     knowledgeItem?: KnowledgeItemOmit
@@ -11349,7 +11246,6 @@ export namespace Prisma {
     duplicates: number
     approval_rules: number
     bot_connections: number
-    bot_tool_servers: number
     bot_credentials: number
     bot_skills: number
     knowledge_items: number
@@ -11376,7 +11272,6 @@ export namespace Prisma {
     duplicates?: boolean | BotCountOutputTypeCountDuplicatesArgs
     approval_rules?: boolean | BotCountOutputTypeCountApproval_rulesArgs
     bot_connections?: boolean | BotCountOutputTypeCountBot_connectionsArgs
-    bot_tool_servers?: boolean | BotCountOutputTypeCountBot_tool_serversArgs
     bot_credentials?: boolean | BotCountOutputTypeCountBot_credentialsArgs
     bot_skills?: boolean | BotCountOutputTypeCountBot_skillsArgs
     knowledge_items?: boolean | BotCountOutputTypeCountKnowledge_itemsArgs
@@ -11429,13 +11324,6 @@ export namespace Prisma {
    */
   export type BotCountOutputTypeCountBot_connectionsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: BotConnectionWhereInput
-  }
-
-  /**
-   * BotCountOutputType without action
-   */
-  export type BotCountOutputTypeCountBot_tool_serversArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BotToolServerWhereInput
   }
 
   /**
@@ -12439,37 +12327,6 @@ export namespace Prisma {
    */
   export type CredentialCountOutputTypeCountEventsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: CredentialEventWhereInput
-  }
-
-
-  /**
-   * Count Type ToolServerCountOutputType
-   */
-
-  export type ToolServerCountOutputType = {
-    bots: number
-  }
-
-  export type ToolServerCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bots?: boolean | ToolServerCountOutputTypeCountBotsArgs
-  }
-
-  // Custom InputTypes
-  /**
-   * ToolServerCountOutputType without action
-   */
-  export type ToolServerCountOutputTypeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ToolServerCountOutputType
-     */
-    select?: ToolServerCountOutputTypeSelect<ExtArgs> | null
-  }
-
-  /**
-   * ToolServerCountOutputType without action
-   */
-  export type ToolServerCountOutputTypeCountBotsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BotToolServerWhereInput
   }
 
 
@@ -42576,7 +42433,6 @@ export namespace Prisma {
     image?: boolean | Bot$imageArgs<ExtArgs>
     approval_rules?: boolean | Bot$approval_rulesArgs<ExtArgs>
     bot_connections?: boolean | Bot$bot_connectionsArgs<ExtArgs>
-    bot_tool_servers?: boolean | Bot$bot_tool_serversArgs<ExtArgs>
     bot_credentials?: boolean | Bot$bot_credentialsArgs<ExtArgs>
     bot_skills?: boolean | Bot$bot_skillsArgs<ExtArgs>
     knowledge_items?: boolean | Bot$knowledge_itemsArgs<ExtArgs>
@@ -42783,7 +42639,6 @@ export namespace Prisma {
     image?: boolean | Bot$imageArgs<ExtArgs>
     approval_rules?: boolean | Bot$approval_rulesArgs<ExtArgs>
     bot_connections?: boolean | Bot$bot_connectionsArgs<ExtArgs>
-    bot_tool_servers?: boolean | Bot$bot_tool_serversArgs<ExtArgs>
     bot_credentials?: boolean | Bot$bot_credentialsArgs<ExtArgs>
     bot_skills?: boolean | Bot$bot_skillsArgs<ExtArgs>
     knowledge_items?: boolean | Bot$knowledge_itemsArgs<ExtArgs>
@@ -42836,7 +42691,6 @@ export namespace Prisma {
       image: Prisma.$FilePayload<ExtArgs> | null
       approval_rules: Prisma.$BotApprovalRulePayload<ExtArgs>[]
       bot_connections: Prisma.$BotConnectionPayload<ExtArgs>[]
-      bot_tool_servers: Prisma.$BotToolServerPayload<ExtArgs>[]
       bot_credentials: Prisma.$BotCredentialPayload<ExtArgs>[]
       bot_skills: Prisma.$BotSkillPayload<ExtArgs>[]
       knowledge_items: Prisma.$KnowledgeItemPayload<ExtArgs>[]
@@ -43316,7 +43170,6 @@ export namespace Prisma {
     image<T extends Bot$imageArgs<ExtArgs> = {}>(args?: Subset<T, Bot$imageArgs<ExtArgs>>): Prisma__FileClient<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     approval_rules<T extends Bot$approval_rulesArgs<ExtArgs> = {}>(args?: Subset<T, Bot$approval_rulesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotApprovalRulePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bot_connections<T extends Bot$bot_connectionsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$bot_connectionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotConnectionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    bot_tool_servers<T extends Bot$bot_tool_serversArgs<ExtArgs> = {}>(args?: Subset<T, Bot$bot_tool_serversArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bot_credentials<T extends Bot$bot_credentialsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$bot_credentialsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     bot_skills<T extends Bot$bot_skillsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$bot_skillsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotSkillPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     knowledge_items<T extends Bot$knowledge_itemsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$knowledge_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -43982,30 +43835,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: BotConnectionScalarFieldEnum | BotConnectionScalarFieldEnum[]
-  }
-
-  /**
-   * Bot.bot_tool_servers
-   */
-  export type Bot$bot_tool_serversArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    where?: BotToolServerWhereInput
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    cursor?: BotToolServerWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: BotToolServerScalarFieldEnum | BotToolServerScalarFieldEnum[]
   }
 
   /**
@@ -46657,1051 +46486,6 @@ export namespace Prisma {
      * Choose, which related nodes to fetch as well
      */
     include?: BotConnectionInclude<ExtArgs> | null
-  }
-
-
-  /**
-   * Model BotToolServer
-   */
-
-  export type AggregateBotToolServer = {
-    _count: BotToolServerCountAggregateOutputType | null
-    _min: BotToolServerMinAggregateOutputType | null
-    _max: BotToolServerMaxAggregateOutputType | null
-  }
-
-  export type BotToolServerMinAggregateOutputType = {
-    bot_id: string | null
-    tool_server_id: string | null
-    created_at: Date | null
-  }
-
-  export type BotToolServerMaxAggregateOutputType = {
-    bot_id: string | null
-    tool_server_id: string | null
-    created_at: Date | null
-  }
-
-  export type BotToolServerCountAggregateOutputType = {
-    bot_id: number
-    tool_server_id: number
-    created_at: number
-    _all: number
-  }
-
-
-  export type BotToolServerMinAggregateInputType = {
-    bot_id?: true
-    tool_server_id?: true
-    created_at?: true
-  }
-
-  export type BotToolServerMaxAggregateInputType = {
-    bot_id?: true
-    tool_server_id?: true
-    created_at?: true
-  }
-
-  export type BotToolServerCountAggregateInputType = {
-    bot_id?: true
-    tool_server_id?: true
-    created_at?: true
-    _all?: true
-  }
-
-  export type BotToolServerAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which BotToolServer to aggregate.
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BotToolServers to fetch.
-     */
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the start position
-     */
-    cursor?: BotToolServerWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BotToolServers from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BotToolServers.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Count returned BotToolServers
-    **/
-    _count?: true | BotToolServerCountAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the minimum value
-    **/
-    _min?: BotToolServerMinAggregateInputType
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
-     * 
-     * Select which fields to find the maximum value
-    **/
-    _max?: BotToolServerMaxAggregateInputType
-  }
-
-  export type GetBotToolServerAggregateType<T extends BotToolServerAggregateArgs> = {
-        [P in keyof T & keyof AggregateBotToolServer]: P extends '_count' | 'count'
-      ? T[P] extends true
-        ? number
-        : GetScalarType<T[P], AggregateBotToolServer[P]>
-      : GetScalarType<T[P], AggregateBotToolServer[P]>
-  }
-
-
-
-
-  export type BotToolServerGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: BotToolServerWhereInput
-    orderBy?: BotToolServerOrderByWithAggregationInput | BotToolServerOrderByWithAggregationInput[]
-    by: BotToolServerScalarFieldEnum[] | BotToolServerScalarFieldEnum
-    having?: BotToolServerScalarWhereWithAggregatesInput
-    take?: number
-    skip?: number
-    _count?: BotToolServerCountAggregateInputType | true
-    _min?: BotToolServerMinAggregateInputType
-    _max?: BotToolServerMaxAggregateInputType
-  }
-
-  export type BotToolServerGroupByOutputType = {
-    bot_id: string
-    tool_server_id: string
-    created_at: Date
-    _count: BotToolServerCountAggregateOutputType | null
-    _min: BotToolServerMinAggregateOutputType | null
-    _max: BotToolServerMaxAggregateOutputType | null
-  }
-
-  type GetBotToolServerGroupByPayload<T extends BotToolServerGroupByArgs> = Prisma.PrismaPromise<
-    Array<
-      PickEnumerable<BotToolServerGroupByOutputType, T['by']> &
-        {
-          [P in ((keyof T) & (keyof BotToolServerGroupByOutputType))]: P extends '_count'
-            ? T[P] extends boolean
-              ? number
-              : GetScalarType<T[P], BotToolServerGroupByOutputType[P]>
-            : GetScalarType<T[P], BotToolServerGroupByOutputType[P]>
-        }
-      >
-    >
-
-
-  export type BotToolServerSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    bot_id?: boolean
-    tool_server_id?: boolean
-    created_at?: boolean
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["botToolServer"]>
-
-  export type BotToolServerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    bot_id?: boolean
-    tool_server_id?: boolean
-    created_at?: boolean
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["botToolServer"]>
-
-  export type BotToolServerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
-    bot_id?: boolean
-    tool_server_id?: boolean
-    created_at?: boolean
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }, ExtArgs["result"]["botToolServer"]>
-
-  export type BotToolServerSelectScalar = {
-    bot_id?: boolean
-    tool_server_id?: boolean
-    created_at?: boolean
-  }
-
-  export type BotToolServerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"bot_id" | "tool_server_id" | "created_at", ExtArgs["result"]["botToolServer"]>
-  export type BotToolServerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }
-  export type BotToolServerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }
-  export type BotToolServerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    bot?: boolean | BotDefaultArgs<ExtArgs>
-    tool_server?: boolean | ToolServerDefaultArgs<ExtArgs>
-  }
-
-  export type $BotToolServerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "BotToolServer"
-    objects: {
-      bot: Prisma.$BotPayload<ExtArgs>
-      tool_server: Prisma.$ToolServerPayload<ExtArgs>
-    }
-    scalars: $Extensions.GetPayloadResult<{
-      bot_id: string
-      tool_server_id: string
-      created_at: Date
-    }, ExtArgs["result"]["botToolServer"]>
-    composites: {}
-  }
-
-  type BotToolServerGetPayload<S extends boolean | null | undefined | BotToolServerDefaultArgs> = $Result.GetResult<Prisma.$BotToolServerPayload, S>
-
-  type BotToolServerCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<BotToolServerFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: BotToolServerCountAggregateInputType | true
-    }
-
-  export interface BotToolServerDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['BotToolServer'], meta: { name: 'BotToolServer' } }
-    /**
-     * Find zero or one BotToolServer that matches the filter.
-     * @param {BotToolServerFindUniqueArgs} args - Arguments to find a BotToolServer
-     * @example
-     * // Get one BotToolServer
-     * const botToolServer = await prisma.botToolServer.findUnique({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUnique<T extends BotToolServerFindUniqueArgs>(args: SelectSubset<T, BotToolServerFindUniqueArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find one BotToolServer that matches the filter or throw an error with `error.code='P2025'`
-     * if no matches were found.
-     * @param {BotToolServerFindUniqueOrThrowArgs} args - Arguments to find a BotToolServer
-     * @example
-     * // Get one BotToolServer
-     * const botToolServer = await prisma.botToolServer.findUniqueOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findUniqueOrThrow<T extends BotToolServerFindUniqueOrThrowArgs>(args: SelectSubset<T, BotToolServerFindUniqueOrThrowArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first BotToolServer that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerFindFirstArgs} args - Arguments to find a BotToolServer
-     * @example
-     * // Get one BotToolServer
-     * const botToolServer = await prisma.botToolServer.findFirst({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirst<T extends BotToolServerFindFirstArgs>(args?: SelectSubset<T, BotToolServerFindFirstArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find the first BotToolServer that matches the filter or
-     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerFindFirstOrThrowArgs} args - Arguments to find a BotToolServer
-     * @example
-     * // Get one BotToolServer
-     * const botToolServer = await prisma.botToolServer.findFirstOrThrow({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     */
-    findFirstOrThrow<T extends BotToolServerFindFirstOrThrowArgs>(args?: SelectSubset<T, BotToolServerFindFirstOrThrowArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Find zero or more BotToolServers that matches the filter.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerFindManyArgs} args - Arguments to filter and select certain fields only.
-     * @example
-     * // Get all BotToolServers
-     * const botToolServers = await prisma.botToolServer.findMany()
-     * 
-     * // Get first 10 BotToolServers
-     * const botToolServers = await prisma.botToolServer.findMany({ take: 10 })
-     * 
-     * // Only select the `bot_id`
-     * const botToolServerWithBot_idOnly = await prisma.botToolServer.findMany({ select: { bot_id: true } })
-     * 
-     */
-    findMany<T extends BotToolServerFindManyArgs>(args?: SelectSubset<T, BotToolServerFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
-
-    /**
-     * Create a BotToolServer.
-     * @param {BotToolServerCreateArgs} args - Arguments to create a BotToolServer.
-     * @example
-     * // Create one BotToolServer
-     * const BotToolServer = await prisma.botToolServer.create({
-     *   data: {
-     *     // ... data to create a BotToolServer
-     *   }
-     * })
-     * 
-     */
-    create<T extends BotToolServerCreateArgs>(args: SelectSubset<T, BotToolServerCreateArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Create many BotToolServers.
-     * @param {BotToolServerCreateManyArgs} args - Arguments to create many BotToolServers.
-     * @example
-     * // Create many BotToolServers
-     * const botToolServer = await prisma.botToolServer.createMany({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     *     
-     */
-    createMany<T extends BotToolServerCreateManyArgs>(args?: SelectSubset<T, BotToolServerCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Create many BotToolServers and returns the data saved in the database.
-     * @param {BotToolServerCreateManyAndReturnArgs} args - Arguments to create many BotToolServers.
-     * @example
-     * // Create many BotToolServers
-     * const botToolServer = await prisma.botToolServer.createManyAndReturn({
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Create many BotToolServers and only return the `bot_id`
-     * const botToolServerWithBot_idOnly = await prisma.botToolServer.createManyAndReturn({
-     *   select: { bot_id: true },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    createManyAndReturn<T extends BotToolServerCreateManyAndReturnArgs>(args?: SelectSubset<T, BotToolServerCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Delete a BotToolServer.
-     * @param {BotToolServerDeleteArgs} args - Arguments to delete one BotToolServer.
-     * @example
-     * // Delete one BotToolServer
-     * const BotToolServer = await prisma.botToolServer.delete({
-     *   where: {
-     *     // ... filter to delete one BotToolServer
-     *   }
-     * })
-     * 
-     */
-    delete<T extends BotToolServerDeleteArgs>(args: SelectSubset<T, BotToolServerDeleteArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Update one BotToolServer.
-     * @param {BotToolServerUpdateArgs} args - Arguments to update one BotToolServer.
-     * @example
-     * // Update one BotToolServer
-     * const botToolServer = await prisma.botToolServer.update({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    update<T extends BotToolServerUpdateArgs>(args: SelectSubset<T, BotToolServerUpdateArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-    /**
-     * Delete zero or more BotToolServers.
-     * @param {BotToolServerDeleteManyArgs} args - Arguments to filter BotToolServers to delete.
-     * @example
-     * // Delete a few BotToolServers
-     * const { count } = await prisma.botToolServer.deleteMany({
-     *   where: {
-     *     // ... provide filter here
-     *   }
-     * })
-     * 
-     */
-    deleteMany<T extends BotToolServerDeleteManyArgs>(args?: SelectSubset<T, BotToolServerDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more BotToolServers.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerUpdateManyArgs} args - Arguments to update one or more rows.
-     * @example
-     * // Update many BotToolServers
-     * const botToolServer = await prisma.botToolServer.updateMany({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: {
-     *     // ... provide data here
-     *   }
-     * })
-     * 
-     */
-    updateMany<T extends BotToolServerUpdateManyArgs>(args: SelectSubset<T, BotToolServerUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
-
-    /**
-     * Update zero or more BotToolServers and returns the data updated in the database.
-     * @param {BotToolServerUpdateManyAndReturnArgs} args - Arguments to update many BotToolServers.
-     * @example
-     * // Update many BotToolServers
-     * const botToolServer = await prisma.botToolServer.updateManyAndReturn({
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * 
-     * // Update zero or more BotToolServers and only return the `bot_id`
-     * const botToolServerWithBot_idOnly = await prisma.botToolServer.updateManyAndReturn({
-     *   select: { bot_id: true },
-     *   where: {
-     *     // ... provide filter here
-     *   },
-     *   data: [
-     *     // ... provide data here
-     *   ]
-     * })
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * 
-     */
-    updateManyAndReturn<T extends BotToolServerUpdateManyAndReturnArgs>(args: SelectSubset<T, BotToolServerUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
-
-    /**
-     * Create or update one BotToolServer.
-     * @param {BotToolServerUpsertArgs} args - Arguments to update or create a BotToolServer.
-     * @example
-     * // Update or create a BotToolServer
-     * const botToolServer = await prisma.botToolServer.upsert({
-     *   create: {
-     *     // ... data to create a BotToolServer
-     *   },
-     *   update: {
-     *     // ... in case it already exists, update
-     *   },
-     *   where: {
-     *     // ... the filter for the BotToolServer we want to update
-     *   }
-     * })
-     */
-    upsert<T extends BotToolServerUpsertArgs>(args: SelectSubset<T, BotToolServerUpsertArgs<ExtArgs>>): Prisma__BotToolServerClient<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
-
-
-    /**
-     * Count the number of BotToolServers.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerCountArgs} args - Arguments to filter BotToolServers to count.
-     * @example
-     * // Count the number of BotToolServers
-     * const count = await prisma.botToolServer.count({
-     *   where: {
-     *     // ... the filter for the BotToolServers we want to count
-     *   }
-     * })
-    **/
-    count<T extends BotToolServerCountArgs>(
-      args?: Subset<T, BotToolServerCountArgs>,
-    ): Prisma.PrismaPromise<
-      T extends $Utils.Record<'select', any>
-        ? T['select'] extends true
-          ? number
-          : GetScalarType<T['select'], BotToolServerCountAggregateOutputType>
-        : number
-    >
-
-    /**
-     * Allows you to perform aggregations operations on a BotToolServer.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
-     * @example
-     * // Ordered by age ascending
-     * // Where email contains prisma.io
-     * // Limited to the 10 users
-     * const aggregations = await prisma.user.aggregate({
-     *   _avg: {
-     *     age: true,
-     *   },
-     *   where: {
-     *     email: {
-     *       contains: "prisma.io",
-     *     },
-     *   },
-     *   orderBy: {
-     *     age: "asc",
-     *   },
-     *   take: 10,
-     * })
-    **/
-    aggregate<T extends BotToolServerAggregateArgs>(args: Subset<T, BotToolServerAggregateArgs>): Prisma.PrismaPromise<GetBotToolServerAggregateType<T>>
-
-    /**
-     * Group by BotToolServer.
-     * Note, that providing `undefined` is treated as the value not being there.
-     * Read more here: https://pris.ly/d/null-undefined
-     * @param {BotToolServerGroupByArgs} args - Group by arguments.
-     * @example
-     * // Group by city, order by createdAt, get count
-     * const result = await prisma.user.groupBy({
-     *   by: ['city', 'createdAt'],
-     *   orderBy: {
-     *     createdAt: true
-     *   },
-     *   _count: {
-     *     _all: true
-     *   },
-     * })
-     * 
-    **/
-    groupBy<
-      T extends BotToolServerGroupByArgs,
-      HasSelectOrTake extends Or<
-        Extends<'skip', Keys<T>>,
-        Extends<'take', Keys<T>>
-      >,
-      OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: BotToolServerGroupByArgs['orderBy'] }
-        : { orderBy?: BotToolServerGroupByArgs['orderBy'] },
-      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
-      ByFields extends MaybeTupleToUnion<T['by']>,
-      ByValid extends Has<ByFields, OrderFields>,
-      HavingFields extends GetHavingFields<T['having']>,
-      HavingValid extends Has<ByFields, HavingFields>,
-      ByEmpty extends T['by'] extends never[] ? True : False,
-      InputErrors extends ByEmpty extends True
-      ? `Error: "by" must not be empty.`
-      : HavingValid extends False
-      ? {
-          [P in HavingFields]: P extends ByFields
-            ? never
-            : P extends string
-            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
-            : [
-                Error,
-                'Field ',
-                P,
-                ` in "having" needs to be provided in "by"`,
-              ]
-        }[HavingFields]
-      : 'take' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "take", you also need to provide "orderBy"'
-      : 'skip' extends Keys<T>
-      ? 'orderBy' extends Keys<T>
-        ? ByValid extends True
-          ? {}
-          : {
-              [P in OrderFields]: P extends ByFields
-                ? never
-                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-            }[OrderFields]
-        : 'Error: If you provide "skip", you also need to provide "orderBy"'
-      : ByValid extends True
-      ? {}
-      : {
-          [P in OrderFields]: P extends ByFields
-            ? never
-            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
-        }[OrderFields]
-    >(args: SubsetIntersection<T, BotToolServerGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetBotToolServerGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
-  /**
-   * Fields of the BotToolServer model
-   */
-  readonly fields: BotToolServerFieldRefs;
-  }
-
-  /**
-   * The delegate class that acts as a "Promise-like" for BotToolServer.
-   * Why is this prefixed with `Prisma__`?
-   * Because we want to prevent naming conflicts as mentioned in
-   * https://github.com/prisma/prisma-client-js/issues/707
-   */
-  export interface Prisma__BotToolServerClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
-    readonly [Symbol.toStringTag]: "PrismaPromise"
-    bot<T extends BotDefaultArgs<ExtArgs> = {}>(args?: Subset<T, BotDefaultArgs<ExtArgs>>): Prisma__BotClient<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    tool_server<T extends ToolServerDefaultArgs<ExtArgs> = {}>(args?: Subset<T, ToolServerDefaultArgs<ExtArgs>>): Prisma__ToolServerClient<$Result.GetResult<Prisma.$ToolServerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    /**
-     * Attaches callbacks for the resolution and/or rejection of the Promise.
-     * @param onfulfilled The callback to execute when the Promise is resolved.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of which ever callback is executed.
-     */
-    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
-    /**
-     * Attaches a callback for only the rejection of the Promise.
-     * @param onrejected The callback to execute when the Promise is rejected.
-     * @returns A Promise for the completion of the callback.
-     */
-    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
-    /**
-     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
-     * resolved value cannot be modified from the callback.
-     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
-     * @returns A Promise for the completion of the callback.
-     */
-    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
-  }
-
-
-
-
-  /**
-   * Fields of the BotToolServer model
-   */
-  interface BotToolServerFieldRefs {
-    readonly bot_id: FieldRef<"BotToolServer", 'String'>
-    readonly tool_server_id: FieldRef<"BotToolServer", 'String'>
-    readonly created_at: FieldRef<"BotToolServer", 'DateTime'>
-  }
-    
-
-  // Custom InputTypes
-  /**
-   * BotToolServer findUnique
-   */
-  export type BotToolServerFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter, which BotToolServer to fetch.
-     */
-    where: BotToolServerWhereUniqueInput
-  }
-
-  /**
-   * BotToolServer findUniqueOrThrow
-   */
-  export type BotToolServerFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter, which BotToolServer to fetch.
-     */
-    where: BotToolServerWhereUniqueInput
-  }
-
-  /**
-   * BotToolServer findFirst
-   */
-  export type BotToolServerFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter, which BotToolServer to fetch.
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BotToolServers to fetch.
-     */
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for BotToolServers.
-     */
-    cursor?: BotToolServerWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BotToolServers from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BotToolServers.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of BotToolServers.
-     */
-    distinct?: BotToolServerScalarFieldEnum | BotToolServerScalarFieldEnum[]
-  }
-
-  /**
-   * BotToolServer findFirstOrThrow
-   */
-  export type BotToolServerFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter, which BotToolServer to fetch.
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BotToolServers to fetch.
-     */
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for searching for BotToolServers.
-     */
-    cursor?: BotToolServerWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BotToolServers from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BotToolServers.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of BotToolServers.
-     */
-    distinct?: BotToolServerScalarFieldEnum | BotToolServerScalarFieldEnum[]
-  }
-
-  /**
-   * BotToolServer findMany
-   */
-  export type BotToolServerFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter, which BotToolServers to fetch.
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
-     * 
-     * Determine the order of BotToolServers to fetch.
-     */
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
-     * 
-     * Sets the position for listing BotToolServers.
-     */
-    cursor?: BotToolServerWhereUniqueInput
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Take `±n` BotToolServers from the position of the cursor.
-     */
-    take?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
-     * 
-     * Skip the first `n` BotToolServers.
-     */
-    skip?: number
-    /**
-     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
-     * 
-     * Filter by unique combinations of BotToolServers.
-     */
-    distinct?: BotToolServerScalarFieldEnum | BotToolServerScalarFieldEnum[]
-  }
-
-  /**
-   * BotToolServer create
-   */
-  export type BotToolServerCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * The data needed to create a BotToolServer.
-     */
-    data: XOR<BotToolServerCreateInput, BotToolServerUncheckedCreateInput>
-  }
-
-  /**
-   * BotToolServer createMany
-   */
-  export type BotToolServerCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to create many BotToolServers.
-     */
-    data: BotToolServerCreateManyInput | BotToolServerCreateManyInput[]
-    skipDuplicates?: boolean
-  }
-
-  /**
-   * BotToolServer createManyAndReturn
-   */
-  export type BotToolServerCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelectCreateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * The data used to create many BotToolServers.
-     */
-    data: BotToolServerCreateManyInput | BotToolServerCreateManyInput[]
-    skipDuplicates?: boolean
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerIncludeCreateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * BotToolServer update
-   */
-  export type BotToolServerUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * The data needed to update a BotToolServer.
-     */
-    data: XOR<BotToolServerUpdateInput, BotToolServerUncheckedUpdateInput>
-    /**
-     * Choose, which BotToolServer to update.
-     */
-    where: BotToolServerWhereUniqueInput
-  }
-
-  /**
-   * BotToolServer updateMany
-   */
-  export type BotToolServerUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * The data used to update BotToolServers.
-     */
-    data: XOR<BotToolServerUpdateManyMutationInput, BotToolServerUncheckedUpdateManyInput>
-    /**
-     * Filter which BotToolServers to update
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * Limit how many BotToolServers to update.
-     */
-    limit?: number
-  }
-
-  /**
-   * BotToolServer updateManyAndReturn
-   */
-  export type BotToolServerUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelectUpdateManyAndReturn<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * The data used to update BotToolServers.
-     */
-    data: XOR<BotToolServerUpdateManyMutationInput, BotToolServerUncheckedUpdateManyInput>
-    /**
-     * Filter which BotToolServers to update
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * Limit how many BotToolServers to update.
-     */
-    limit?: number
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerIncludeUpdateManyAndReturn<ExtArgs> | null
-  }
-
-  /**
-   * BotToolServer upsert
-   */
-  export type BotToolServerUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * The filter to search for the BotToolServer to update in case it exists.
-     */
-    where: BotToolServerWhereUniqueInput
-    /**
-     * In case the BotToolServer found by the `where` argument doesn't exist, create a new BotToolServer with this data.
-     */
-    create: XOR<BotToolServerCreateInput, BotToolServerUncheckedCreateInput>
-    /**
-     * In case the BotToolServer was found with the provided `where` argument, update it with this data.
-     */
-    update: XOR<BotToolServerUpdateInput, BotToolServerUncheckedUpdateInput>
-  }
-
-  /**
-   * BotToolServer delete
-   */
-  export type BotToolServerDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    /**
-     * Filter which BotToolServer to delete.
-     */
-    where: BotToolServerWhereUniqueInput
-  }
-
-  /**
-   * BotToolServer deleteMany
-   */
-  export type BotToolServerDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Filter which BotToolServers to delete
-     */
-    where?: BotToolServerWhereInput
-    /**
-     * Limit how many BotToolServers to delete.
-     */
-    limit?: number
-  }
-
-  /**
-   * BotToolServer without action
-   */
-  export type BotToolServerDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
   }
 
 
@@ -90970,7 +89754,6 @@ export namespace Prisma {
     owner?: boolean | Credential$ownerArgs<ExtArgs>
     last_used_bot?: boolean | Credential$last_used_botArgs<ExtArgs>
     connection?: boolean | Credential$connectionArgs<ExtArgs>
-    tool_server?: boolean | Credential$tool_serverArgs<ExtArgs>
     bots?: boolean | Credential$botsArgs<ExtArgs>
     events?: boolean | Credential$eventsArgs<ExtArgs>
     _count?: boolean | CredentialCountOutputTypeDefaultArgs<ExtArgs>
@@ -91063,7 +89846,6 @@ export namespace Prisma {
     owner?: boolean | Credential$ownerArgs<ExtArgs>
     last_used_bot?: boolean | Credential$last_used_botArgs<ExtArgs>
     connection?: boolean | Credential$connectionArgs<ExtArgs>
-    tool_server?: boolean | Credential$tool_serverArgs<ExtArgs>
     bots?: boolean | Credential$botsArgs<ExtArgs>
     events?: boolean | Credential$eventsArgs<ExtArgs>
     _count?: boolean | CredentialCountOutputTypeDefaultArgs<ExtArgs>
@@ -91086,7 +89868,6 @@ export namespace Prisma {
       owner: Prisma.$UserPayload<ExtArgs> | null
       last_used_bot: Prisma.$BotPayload<ExtArgs> | null
       connection: Prisma.$ConnectionPayload<ExtArgs> | null
-      tool_server: Prisma.$ToolServerPayload<ExtArgs> | null
       bots: Prisma.$BotCredentialPayload<ExtArgs>[]
       events: Prisma.$CredentialEventPayload<ExtArgs>[]
     }
@@ -91514,7 +90295,6 @@ export namespace Prisma {
     owner<T extends Credential$ownerArgs<ExtArgs> = {}>(args?: Subset<T, Credential$ownerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     last_used_bot<T extends Credential$last_used_botArgs<ExtArgs> = {}>(args?: Subset<T, Credential$last_used_botArgs<ExtArgs>>): Prisma__BotClient<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     connection<T extends Credential$connectionArgs<ExtArgs> = {}>(args?: Subset<T, Credential$connectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    tool_server<T extends Credential$tool_serverArgs<ExtArgs> = {}>(args?: Subset<T, Credential$tool_serverArgs<ExtArgs>>): Prisma__ToolServerClient<$Result.GetResult<Prisma.$ToolServerPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     bots<T extends Credential$botsArgs<ExtArgs> = {}>(args?: Subset<T, Credential$botsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotCredentialPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     events<T extends Credential$eventsArgs<ExtArgs> = {}>(args?: Subset<T, Credential$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CredentialEventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
@@ -92023,25 +90803,6 @@ export namespace Prisma {
      */
     include?: ConnectionInclude<ExtArgs> | null
     where?: ConnectionWhereInput
-  }
-
-  /**
-   * Credential.tool_server
-   */
-  export type Credential$tool_serverArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the ToolServer
-     */
-    select?: ToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the ToolServer
-     */
-    omit?: ToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ToolServerInclude<ExtArgs> | null
-    where?: ToolServerWhereInput
   }
 
   /**
@@ -93276,10 +92037,8 @@ export namespace Prisma {
     name: string | null
     url: string | null
     auth_kind: $Enums.ToolServerAuthKind | null
-    credential_id: string | null
     visibility: $Enums.Visibility | null
-    status: $Enums.ToolServerStatus | null
-    status_message: string | null
+    composio_toolkit_slug: string | null
     tool_count: number | null
     last_listed_at: Date | null
     deleted_at: Date | null
@@ -93294,10 +92053,8 @@ export namespace Prisma {
     name: string | null
     url: string | null
     auth_kind: $Enums.ToolServerAuthKind | null
-    credential_id: string | null
     visibility: $Enums.Visibility | null
-    status: $Enums.ToolServerStatus | null
-    status_message: string | null
+    composio_toolkit_slug: string | null
     tool_count: number | null
     last_listed_at: Date | null
     deleted_at: Date | null
@@ -93312,10 +92069,8 @@ export namespace Prisma {
     name: number
     url: number
     auth_kind: number
-    credential_id: number
     visibility: number
-    status: number
-    status_message: number
+    composio_toolkit_slug: number
     tool_count: number
     last_listed_at: number
     deleted_at: number
@@ -93340,10 +92095,8 @@ export namespace Prisma {
     name?: true
     url?: true
     auth_kind?: true
-    credential_id?: true
     visibility?: true
-    status?: true
-    status_message?: true
+    composio_toolkit_slug?: true
     tool_count?: true
     last_listed_at?: true
     deleted_at?: true
@@ -93358,10 +92111,8 @@ export namespace Prisma {
     name?: true
     url?: true
     auth_kind?: true
-    credential_id?: true
     visibility?: true
-    status?: true
-    status_message?: true
+    composio_toolkit_slug?: true
     tool_count?: true
     last_listed_at?: true
     deleted_at?: true
@@ -93376,10 +92127,8 @@ export namespace Prisma {
     name?: true
     url?: true
     auth_kind?: true
-    credential_id?: true
     visibility?: true
-    status?: true
-    status_message?: true
+    composio_toolkit_slug?: true
     tool_count?: true
     last_listed_at?: true
     deleted_at?: true
@@ -93481,10 +92230,8 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind: $Enums.ToolServerAuthKind
-    credential_id: string | null
     visibility: $Enums.Visibility
-    status: $Enums.ToolServerStatus
-    status_message: string | null
+    composio_toolkit_slug: string | null
     tool_count: number
     last_listed_at: Date | null
     deleted_at: Date | null
@@ -93518,10 +92265,8 @@ export namespace Prisma {
     name?: boolean
     url?: boolean
     auth_kind?: boolean
-    credential_id?: boolean
     visibility?: boolean
-    status?: boolean
-    status_message?: boolean
+    composio_toolkit_slug?: boolean
     tool_count?: boolean
     last_listed_at?: boolean
     deleted_at?: boolean
@@ -93529,10 +92274,7 @@ export namespace Prisma {
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
     connection?: boolean | ToolServer$connectionArgs<ExtArgs>
-    bots?: boolean | ToolServer$botsArgs<ExtArgs>
-    _count?: boolean | ToolServerCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["toolServer"]>
 
   export type ToolServerSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -93542,10 +92284,8 @@ export namespace Prisma {
     name?: boolean
     url?: boolean
     auth_kind?: boolean
-    credential_id?: boolean
     visibility?: boolean
-    status?: boolean
-    status_message?: boolean
+    composio_toolkit_slug?: boolean
     tool_count?: boolean
     last_listed_at?: boolean
     deleted_at?: boolean
@@ -93553,7 +92293,6 @@ export namespace Prisma {
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
   }, ExtArgs["result"]["toolServer"]>
 
   export type ToolServerSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
@@ -93563,10 +92302,8 @@ export namespace Prisma {
     name?: boolean
     url?: boolean
     auth_kind?: boolean
-    credential_id?: boolean
     visibility?: boolean
-    status?: boolean
-    status_message?: boolean
+    composio_toolkit_slug?: boolean
     tool_count?: boolean
     last_listed_at?: boolean
     deleted_at?: boolean
@@ -93574,7 +92311,6 @@ export namespace Prisma {
     updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
   }, ExtArgs["result"]["toolServer"]>
 
   export type ToolServerSelectScalar = {
@@ -93584,10 +92320,8 @@ export namespace Prisma {
     name?: boolean
     url?: boolean
     auth_kind?: boolean
-    credential_id?: boolean
     visibility?: boolean
-    status?: boolean
-    status_message?: boolean
+    composio_toolkit_slug?: boolean
     tool_count?: boolean
     last_listed_at?: boolean
     deleted_at?: boolean
@@ -93595,24 +92329,19 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type ToolServerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_id" | "name" | "url" | "auth_kind" | "credential_id" | "visibility" | "status" | "status_message" | "tool_count" | "last_listed_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["toolServer"]>
+  export type ToolServerOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "owner_id" | "name" | "url" | "auth_kind" | "visibility" | "composio_toolkit_slug" | "tool_count" | "last_listed_at" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["toolServer"]>
   export type ToolServerInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
     connection?: boolean | ToolServer$connectionArgs<ExtArgs>
-    bots?: boolean | ToolServer$botsArgs<ExtArgs>
-    _count?: boolean | ToolServerCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type ToolServerIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
   }
   export type ToolServerIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     owner?: boolean | ToolServer$ownerArgs<ExtArgs>
-    credential?: boolean | ToolServer$credentialArgs<ExtArgs>
   }
 
   export type $ToolServerPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -93620,9 +92349,7 @@ export namespace Prisma {
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       owner: Prisma.$UserPayload<ExtArgs> | null
-      credential: Prisma.$CredentialPayload<ExtArgs> | null
       connection: Prisma.$ConnectionPayload<ExtArgs> | null
-      bots: Prisma.$BotToolServerPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -93631,10 +92358,11 @@ export namespace Prisma {
       name: string
       url: string
       auth_kind: $Enums.ToolServerAuthKind
-      credential_id: string | null
       visibility: $Enums.Visibility
-      status: $Enums.ToolServerStatus
-      status_message: string | null
+      /**
+       * Composio custom toolkit slug (CUSTOM_*). Null for servers added before the move to Composio: they must be added again.
+       */
+      composio_toolkit_slug: string | null
       tool_count: number
       last_listed_at: Date | null
       deleted_at: Date | null
@@ -94036,9 +92764,7 @@ export namespace Prisma {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
     owner<T extends ToolServer$ownerArgs<ExtArgs> = {}>(args?: Subset<T, ToolServer$ownerArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    credential<T extends ToolServer$credentialArgs<ExtArgs> = {}>(args?: Subset<T, ToolServer$credentialArgs<ExtArgs>>): Prisma__CredentialClient<$Result.GetResult<Prisma.$CredentialPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     connection<T extends ToolServer$connectionArgs<ExtArgs> = {}>(args?: Subset<T, ToolServer$connectionArgs<ExtArgs>>): Prisma__ConnectionClient<$Result.GetResult<Prisma.$ConnectionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    bots<T extends ToolServer$botsArgs<ExtArgs> = {}>(args?: Subset<T, ToolServer$botsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$BotToolServerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -94074,10 +92800,8 @@ export namespace Prisma {
     readonly name: FieldRef<"ToolServer", 'String'>
     readonly url: FieldRef<"ToolServer", 'String'>
     readonly auth_kind: FieldRef<"ToolServer", 'ToolServerAuthKind'>
-    readonly credential_id: FieldRef<"ToolServer", 'String'>
     readonly visibility: FieldRef<"ToolServer", 'Visibility'>
-    readonly status: FieldRef<"ToolServer", 'ToolServerStatus'>
-    readonly status_message: FieldRef<"ToolServer", 'String'>
+    readonly composio_toolkit_slug: FieldRef<"ToolServer", 'String'>
     readonly tool_count: FieldRef<"ToolServer", 'Int'>
     readonly last_listed_at: FieldRef<"ToolServer", 'DateTime'>
     readonly deleted_at: FieldRef<"ToolServer", 'DateTime'>
@@ -94503,25 +93227,6 @@ export namespace Prisma {
   }
 
   /**
-   * ToolServer.credential
-   */
-  export type ToolServer$credentialArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Credential
-     */
-    select?: CredentialSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Credential
-     */
-    omit?: CredentialOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: CredentialInclude<ExtArgs> | null
-    where?: CredentialWhereInput
-  }
-
-  /**
    * ToolServer.connection
    */
   export type ToolServer$connectionArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -94538,30 +93243,6 @@ export namespace Prisma {
      */
     include?: ConnectionInclude<ExtArgs> | null
     where?: ConnectionWhereInput
-  }
-
-  /**
-   * ToolServer.bots
-   */
-  export type ToolServer$botsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the BotToolServer
-     */
-    select?: BotToolServerSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the BotToolServer
-     */
-    omit?: BotToolServerOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: BotToolServerInclude<ExtArgs> | null
-    where?: BotToolServerWhereInput
-    orderBy?: BotToolServerOrderByWithRelationInput | BotToolServerOrderByWithRelationInput[]
-    cursor?: BotToolServerWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: BotToolServerScalarFieldEnum | BotToolServerScalarFieldEnum[]
   }
 
   /**
@@ -123401,15 +122082,6 @@ export namespace Prisma {
   export type BotConnectionScalarFieldEnum = (typeof BotConnectionScalarFieldEnum)[keyof typeof BotConnectionScalarFieldEnum]
 
 
-  export const BotToolServerScalarFieldEnum: {
-    bot_id: 'bot_id',
-    tool_server_id: 'tool_server_id',
-    created_at: 'created_at'
-  };
-
-  export type BotToolServerScalarFieldEnum = (typeof BotToolServerScalarFieldEnum)[keyof typeof BotToolServerScalarFieldEnum]
-
-
   export const BotCredentialScalarFieldEnum: {
     bot_id: 'bot_id',
     credential_id: 'credential_id',
@@ -124043,10 +122715,8 @@ export namespace Prisma {
     name: 'name',
     url: 'url',
     auth_kind: 'auth_kind',
-    credential_id: 'credential_id',
     visibility: 'visibility',
-    status: 'status',
-    status_message: 'status_message',
+    composio_toolkit_slug: 'composio_toolkit_slug',
     tool_count: 'tool_count',
     last_listed_at: 'last_listed_at',
     deleted_at: 'deleted_at',
@@ -126014,20 +124684,6 @@ export namespace Prisma {
    * Reference to a field of type 'ToolServerAuthKind[]'
    */
   export type ListEnumToolServerAuthKindFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ToolServerAuthKind[]'>
-    
-
-
-  /**
-   * Reference to a field of type 'ToolServerStatus'
-   */
-  export type EnumToolServerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ToolServerStatus'>
-    
-
-
-  /**
-   * Reference to a field of type 'ToolServerStatus[]'
-   */
-  export type ListEnumToolServerStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ToolServerStatus[]'>
     
 
 
@@ -129018,7 +127674,6 @@ export namespace Prisma {
     image?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     approval_rules?: BotApprovalRuleListRelationFilter
     bot_connections?: BotConnectionListRelationFilter
-    bot_tool_servers?: BotToolServerListRelationFilter
     bot_credentials?: BotCredentialListRelationFilter
     bot_skills?: BotSkillListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
@@ -129102,7 +127757,6 @@ export namespace Prisma {
     image?: FileOrderByWithRelationInput
     approval_rules?: BotApprovalRuleOrderByRelationAggregateInput
     bot_connections?: BotConnectionOrderByRelationAggregateInput
-    bot_tool_servers?: BotToolServerOrderByRelationAggregateInput
     bot_credentials?: BotCredentialOrderByRelationAggregateInput
     bot_skills?: BotSkillOrderByRelationAggregateInput
     knowledge_items?: KnowledgeItemOrderByRelationAggregateInput
@@ -129189,7 +127843,6 @@ export namespace Prisma {
     image?: XOR<FileNullableScalarRelationFilter, FileWhereInput> | null
     approval_rules?: BotApprovalRuleListRelationFilter
     bot_connections?: BotConnectionListRelationFilter
-    bot_tool_servers?: BotToolServerListRelationFilter
     bot_credentials?: BotCredentialListRelationFilter
     bot_skills?: BotSkillListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
@@ -129440,55 +128093,6 @@ export namespace Prisma {
     connection_id?: StringWithAggregatesFilter<"BotConnection"> | string
     is_default_for_service?: BoolWithAggregatesFilter<"BotConnection"> | boolean
     created_at?: DateTimeWithAggregatesFilter<"BotConnection"> | Date | string
-  }
-
-  export type BotToolServerWhereInput = {
-    AND?: BotToolServerWhereInput | BotToolServerWhereInput[]
-    OR?: BotToolServerWhereInput[]
-    NOT?: BotToolServerWhereInput | BotToolServerWhereInput[]
-    bot_id?: StringFilter<"BotToolServer"> | string
-    tool_server_id?: StringFilter<"BotToolServer"> | string
-    created_at?: DateTimeFilter<"BotToolServer"> | Date | string
-    bot?: XOR<BotScalarRelationFilter, BotWhereInput>
-    tool_server?: XOR<ToolServerScalarRelationFilter, ToolServerWhereInput>
-  }
-
-  export type BotToolServerOrderByWithRelationInput = {
-    bot_id?: SortOrder
-    tool_server_id?: SortOrder
-    created_at?: SortOrder
-    bot?: BotOrderByWithRelationInput
-    tool_server?: ToolServerOrderByWithRelationInput
-  }
-
-  export type BotToolServerWhereUniqueInput = Prisma.AtLeast<{
-    bot_id_tool_server_id?: BotToolServerBot_idTool_server_idCompoundUniqueInput
-    AND?: BotToolServerWhereInput | BotToolServerWhereInput[]
-    OR?: BotToolServerWhereInput[]
-    NOT?: BotToolServerWhereInput | BotToolServerWhereInput[]
-    bot_id?: StringFilter<"BotToolServer"> | string
-    tool_server_id?: StringFilter<"BotToolServer"> | string
-    created_at?: DateTimeFilter<"BotToolServer"> | Date | string
-    bot?: XOR<BotScalarRelationFilter, BotWhereInput>
-    tool_server?: XOR<ToolServerScalarRelationFilter, ToolServerWhereInput>
-  }, "bot_id_tool_server_id">
-
-  export type BotToolServerOrderByWithAggregationInput = {
-    bot_id?: SortOrder
-    tool_server_id?: SortOrder
-    created_at?: SortOrder
-    _count?: BotToolServerCountOrderByAggregateInput
-    _max?: BotToolServerMaxOrderByAggregateInput
-    _min?: BotToolServerMinOrderByAggregateInput
-  }
-
-  export type BotToolServerScalarWhereWithAggregatesInput = {
-    AND?: BotToolServerScalarWhereWithAggregatesInput | BotToolServerScalarWhereWithAggregatesInput[]
-    OR?: BotToolServerScalarWhereWithAggregatesInput[]
-    NOT?: BotToolServerScalarWhereWithAggregatesInput | BotToolServerScalarWhereWithAggregatesInput[]
-    bot_id?: StringWithAggregatesFilter<"BotToolServer"> | string
-    tool_server_id?: StringWithAggregatesFilter<"BotToolServer"> | string
-    created_at?: DateTimeWithAggregatesFilter<"BotToolServer"> | Date | string
   }
 
   export type BotCredentialWhereInput = {
@@ -132912,7 +131516,6 @@ export namespace Prisma {
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     last_used_bot?: XOR<BotNullableScalarRelationFilter, BotWhereInput> | null
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    tool_server?: XOR<ToolServerNullableScalarRelationFilter, ToolServerWhereInput> | null
     bots?: BotCredentialListRelationFilter
     events?: CredentialEventListRelationFilter
   }
@@ -132944,7 +131547,6 @@ export namespace Prisma {
     owner?: UserOrderByWithRelationInput
     last_used_bot?: BotOrderByWithRelationInput
     connection?: ConnectionOrderByWithRelationInput
-    tool_server?: ToolServerOrderByWithRelationInput
     bots?: BotCredentialOrderByRelationAggregateInput
     events?: CredentialEventOrderByRelationAggregateInput
   }
@@ -132979,7 +131581,6 @@ export namespace Prisma {
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     last_used_bot?: XOR<BotNullableScalarRelationFilter, BotWhereInput> | null
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    tool_server?: XOR<ToolServerNullableScalarRelationFilter, ToolServerWhereInput> | null
     bots?: BotCredentialListRelationFilter
     events?: CredentialEventListRelationFilter
   }, "id" | "secret_resource_name">
@@ -133128,10 +131729,8 @@ export namespace Prisma {
     name?: StringFilter<"ToolServer"> | string
     url?: StringFilter<"ToolServer"> | string
     auth_kind?: EnumToolServerAuthKindFilter<"ToolServer"> | $Enums.ToolServerAuthKind
-    credential_id?: StringNullableFilter<"ToolServer"> | string | null
     visibility?: EnumVisibilityFilter<"ToolServer"> | $Enums.Visibility
-    status?: EnumToolServerStatusFilter<"ToolServer"> | $Enums.ToolServerStatus
-    status_message?: StringNullableFilter<"ToolServer"> | string | null
+    composio_toolkit_slug?: StringNullableFilter<"ToolServer"> | string | null
     tool_count?: IntFilter<"ToolServer"> | number
     last_listed_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
@@ -133139,9 +131738,7 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"ToolServer"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    credential?: XOR<CredentialNullableScalarRelationFilter, CredentialWhereInput> | null
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    bots?: BotToolServerListRelationFilter
   }
 
   export type ToolServerOrderByWithRelationInput = {
@@ -133151,10 +131748,8 @@ export namespace Prisma {
     name?: SortOrder
     url?: SortOrder
     auth_kind?: SortOrder
-    credential_id?: SortOrderInput | SortOrder
     visibility?: SortOrder
-    status?: SortOrder
-    status_message?: SortOrderInput | SortOrder
+    composio_toolkit_slug?: SortOrderInput | SortOrder
     tool_count?: SortOrder
     last_listed_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
@@ -133162,14 +131757,11 @@ export namespace Prisma {
     updated_at?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     owner?: UserOrderByWithRelationInput
-    credential?: CredentialOrderByWithRelationInput
     connection?: ConnectionOrderByWithRelationInput
-    bots?: BotToolServerOrderByRelationAggregateInput
   }
 
   export type ToolServerWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    credential_id?: string
     AND?: ToolServerWhereInput | ToolServerWhereInput[]
     OR?: ToolServerWhereInput[]
     NOT?: ToolServerWhereInput | ToolServerWhereInput[]
@@ -133179,8 +131771,7 @@ export namespace Prisma {
     url?: StringFilter<"ToolServer"> | string
     auth_kind?: EnumToolServerAuthKindFilter<"ToolServer"> | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFilter<"ToolServer"> | $Enums.Visibility
-    status?: EnumToolServerStatusFilter<"ToolServer"> | $Enums.ToolServerStatus
-    status_message?: StringNullableFilter<"ToolServer"> | string | null
+    composio_toolkit_slug?: StringNullableFilter<"ToolServer"> | string | null
     tool_count?: IntFilter<"ToolServer"> | number
     last_listed_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
@@ -133188,10 +131779,8 @@ export namespace Prisma {
     updated_at?: DateTimeFilter<"ToolServer"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     owner?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
-    credential?: XOR<CredentialNullableScalarRelationFilter, CredentialWhereInput> | null
     connection?: XOR<ConnectionNullableScalarRelationFilter, ConnectionWhereInput> | null
-    bots?: BotToolServerListRelationFilter
-  }, "id" | "credential_id">
+  }, "id">
 
   export type ToolServerOrderByWithAggregationInput = {
     id?: SortOrder
@@ -133200,10 +131789,8 @@ export namespace Prisma {
     name?: SortOrder
     url?: SortOrder
     auth_kind?: SortOrder
-    credential_id?: SortOrderInput | SortOrder
     visibility?: SortOrder
-    status?: SortOrder
-    status_message?: SortOrderInput | SortOrder
+    composio_toolkit_slug?: SortOrderInput | SortOrder
     tool_count?: SortOrder
     last_listed_at?: SortOrderInput | SortOrder
     deleted_at?: SortOrderInput | SortOrder
@@ -133226,10 +131813,8 @@ export namespace Prisma {
     name?: StringWithAggregatesFilter<"ToolServer"> | string
     url?: StringWithAggregatesFilter<"ToolServer"> | string
     auth_kind?: EnumToolServerAuthKindWithAggregatesFilter<"ToolServer"> | $Enums.ToolServerAuthKind
-    credential_id?: StringNullableWithAggregatesFilter<"ToolServer"> | string | null
     visibility?: EnumVisibilityWithAggregatesFilter<"ToolServer"> | $Enums.Visibility
-    status?: EnumToolServerStatusWithAggregatesFilter<"ToolServer"> | $Enums.ToolServerStatus
-    status_message?: StringNullableWithAggregatesFilter<"ToolServer"> | string | null
+    composio_toolkit_slug?: StringNullableWithAggregatesFilter<"ToolServer"> | string | null
     tool_count?: IntWithAggregatesFilter<"ToolServer"> | number
     last_listed_at?: DateTimeNullableWithAggregatesFilter<"ToolServer"> | Date | string | null
     deleted_at?: DateTimeNullableWithAggregatesFilter<"ToolServer"> | Date | string | null
@@ -138581,7 +137166,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -138659,7 +137243,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -138737,7 +137320,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -138815,7 +137397,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -139098,46 +137679,6 @@ export namespace Prisma {
     bot_id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     is_default_for_service?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerCreateInput = {
-    created_at?: Date | string
-    bot: BotCreateNestedOneWithoutBot_tool_serversInput
-    tool_server: ToolServerCreateNestedOneWithoutBotsInput
-  }
-
-  export type BotToolServerUncheckedCreateInput = {
-    bot_id: string
-    tool_server_id: string
-    created_at?: Date | string
-  }
-
-  export type BotToolServerUpdateInput = {
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    bot?: BotUpdateOneRequiredWithoutBot_tool_serversNestedInput
-    tool_server?: ToolServerUpdateOneRequiredWithoutBotsNestedInput
-  }
-
-  export type BotToolServerUncheckedUpdateInput = {
-    bot_id?: StringFieldUpdateOperationsInput | string
-    tool_server_id?: StringFieldUpdateOperationsInput | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerCreateManyInput = {
-    bot_id: string
-    tool_server_id: string
-    created_at?: Date | string
-  }
-
-  export type BotToolServerUpdateManyMutationInput = {
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerUncheckedUpdateManyInput = {
-    bot_id?: StringFieldUpdateOperationsInput | string
-    tool_server_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -142704,7 +141245,6 @@ export namespace Prisma {
     owner?: UserCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
@@ -142733,7 +141273,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
@@ -142762,7 +141301,6 @@ export namespace Prisma {
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
@@ -142791,7 +141329,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
@@ -142956,8 +141493,7 @@ export namespace Prisma {
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -142965,9 +141501,7 @@ export namespace Prisma {
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutTool_serversInput
     owner?: UserCreateNestedOneWithoutTool_serversInput
-    credential?: CredentialCreateNestedOneWithoutTool_serverInput
     connection?: ConnectionCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerUncheckedCreateInput = {
@@ -142977,17 +141511,14 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerUpdateInput = {
@@ -142996,8 +141527,7 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -143005,9 +141535,7 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutTool_serversNestedInput
     owner?: UserUpdateOneWithoutTool_serversNestedInput
-    credential?: CredentialUpdateOneWithoutTool_serverNestedInput
     connection?: ConnectionUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateInput = {
@@ -143017,17 +141545,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerCreateManyInput = {
@@ -143037,10 +141562,8 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -143054,8 +141577,7 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -143070,10 +141592,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -148792,12 +147312,6 @@ export namespace Prisma {
     none?: BotConnectionWhereInput
   }
 
-  export type BotToolServerListRelationFilter = {
-    every?: BotToolServerWhereInput
-    some?: BotToolServerWhereInput
-    none?: BotToolServerWhereInput
-  }
-
   export type BotCredentialListRelationFilter = {
     every?: BotCredentialWhereInput
     some?: BotCredentialWhereInput
@@ -148832,10 +147346,6 @@ export namespace Prisma {
   }
 
   export type BotConnectionOrderByRelationAggregateInput = {
-    _count?: SortOrder
-  }
-
-  export type BotToolServerOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -149244,34 +147754,6 @@ export namespace Prisma {
     bot_id?: SortOrder
     connection_id?: SortOrder
     is_default_for_service?: SortOrder
-    created_at?: SortOrder
-  }
-
-  export type ToolServerScalarRelationFilter = {
-    is?: ToolServerWhereInput
-    isNot?: ToolServerWhereInput
-  }
-
-  export type BotToolServerBot_idTool_server_idCompoundUniqueInput = {
-    bot_id: string
-    tool_server_id: string
-  }
-
-  export type BotToolServerCountOrderByAggregateInput = {
-    bot_id?: SortOrder
-    tool_server_id?: SortOrder
-    created_at?: SortOrder
-  }
-
-  export type BotToolServerMaxOrderByAggregateInput = {
-    bot_id?: SortOrder
-    tool_server_id?: SortOrder
-    created_at?: SortOrder
-  }
-
-  export type BotToolServerMinOrderByAggregateInput = {
-    bot_id?: SortOrder
-    tool_server_id?: SortOrder
     created_at?: SortOrder
   }
 
@@ -151820,13 +150302,6 @@ export namespace Prisma {
     not?: NestedEnumToolServerAuthKindFilter<$PrismaModel> | $Enums.ToolServerAuthKind
   }
 
-  export type EnumToolServerStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ToolServerStatus | EnumToolServerStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumToolServerStatusFilter<$PrismaModel> | $Enums.ToolServerStatus
-  }
-
   export type ToolServerCountOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
@@ -151834,10 +150309,8 @@ export namespace Prisma {
     name?: SortOrder
     url?: SortOrder
     auth_kind?: SortOrder
-    credential_id?: SortOrder
     visibility?: SortOrder
-    status?: SortOrder
-    status_message?: SortOrder
+    composio_toolkit_slug?: SortOrder
     tool_count?: SortOrder
     last_listed_at?: SortOrder
     deleted_at?: SortOrder
@@ -151856,10 +150329,8 @@ export namespace Prisma {
     name?: SortOrder
     url?: SortOrder
     auth_kind?: SortOrder
-    credential_id?: SortOrder
     visibility?: SortOrder
-    status?: SortOrder
-    status_message?: SortOrder
+    composio_toolkit_slug?: SortOrder
     tool_count?: SortOrder
     last_listed_at?: SortOrder
     deleted_at?: SortOrder
@@ -151874,10 +150345,8 @@ export namespace Prisma {
     name?: SortOrder
     url?: SortOrder
     auth_kind?: SortOrder
-    credential_id?: SortOrder
     visibility?: SortOrder
-    status?: SortOrder
-    status_message?: SortOrder
+    composio_toolkit_slug?: SortOrder
     tool_count?: SortOrder
     last_listed_at?: SortOrder
     deleted_at?: SortOrder
@@ -151897,16 +150366,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumToolServerAuthKindFilter<$PrismaModel>
     _max?: NestedEnumToolServerAuthKindFilter<$PrismaModel>
-  }
-
-  export type EnumToolServerStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ToolServerStatus | EnumToolServerStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumToolServerStatusWithAggregatesFilter<$PrismaModel> | $Enums.ToolServerStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumToolServerStatusFilter<$PrismaModel>
-    _max?: NestedEnumToolServerStatusFilter<$PrismaModel>
   }
 
   export type EnumFileBucketFilter<$PrismaModel = never> = {
@@ -158744,13 +157203,6 @@ export namespace Prisma {
     connect?: BotConnectionWhereUniqueInput | BotConnectionWhereUniqueInput[]
   }
 
-  export type BotToolServerCreateNestedManyWithoutBotInput = {
-    create?: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput> | BotToolServerCreateWithoutBotInput[] | BotToolServerUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutBotInput | BotToolServerCreateOrConnectWithoutBotInput[]
-    createMany?: BotToolServerCreateManyBotInputEnvelope
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-  }
-
   export type BotCredentialCreateNestedManyWithoutBotInput = {
     create?: XOR<BotCredentialCreateWithoutBotInput, BotCredentialUncheckedCreateWithoutBotInput> | BotCredentialCreateWithoutBotInput[] | BotCredentialUncheckedCreateWithoutBotInput[]
     connectOrCreate?: BotCredentialCreateOrConnectWithoutBotInput | BotCredentialCreateOrConnectWithoutBotInput[]
@@ -158916,13 +157368,6 @@ export namespace Prisma {
     connectOrCreate?: BotConnectionCreateOrConnectWithoutBotInput | BotConnectionCreateOrConnectWithoutBotInput[]
     createMany?: BotConnectionCreateManyBotInputEnvelope
     connect?: BotConnectionWhereUniqueInput | BotConnectionWhereUniqueInput[]
-  }
-
-  export type BotToolServerUncheckedCreateNestedManyWithoutBotInput = {
-    create?: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput> | BotToolServerCreateWithoutBotInput[] | BotToolServerUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutBotInput | BotToolServerCreateOrConnectWithoutBotInput[]
-    createMany?: BotToolServerCreateManyBotInputEnvelope
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
   }
 
   export type BotCredentialUncheckedCreateNestedManyWithoutBotInput = {
@@ -159226,20 +157671,6 @@ export namespace Prisma {
     update?: BotConnectionUpdateWithWhereUniqueWithoutBotInput | BotConnectionUpdateWithWhereUniqueWithoutBotInput[]
     updateMany?: BotConnectionUpdateManyWithWhereWithoutBotInput | BotConnectionUpdateManyWithWhereWithoutBotInput[]
     deleteMany?: BotConnectionScalarWhereInput | BotConnectionScalarWhereInput[]
-  }
-
-  export type BotToolServerUpdateManyWithoutBotNestedInput = {
-    create?: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput> | BotToolServerCreateWithoutBotInput[] | BotToolServerUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutBotInput | BotToolServerCreateOrConnectWithoutBotInput[]
-    upsert?: BotToolServerUpsertWithWhereUniqueWithoutBotInput | BotToolServerUpsertWithWhereUniqueWithoutBotInput[]
-    createMany?: BotToolServerCreateManyBotInputEnvelope
-    set?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    disconnect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    delete?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    update?: BotToolServerUpdateWithWhereUniqueWithoutBotInput | BotToolServerUpdateWithWhereUniqueWithoutBotInput[]
-    updateMany?: BotToolServerUpdateManyWithWhereWithoutBotInput | BotToolServerUpdateManyWithWhereWithoutBotInput[]
-    deleteMany?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
   }
 
   export type BotCredentialUpdateManyWithoutBotNestedInput = {
@@ -159572,20 +158003,6 @@ export namespace Prisma {
     update?: BotConnectionUpdateWithWhereUniqueWithoutBotInput | BotConnectionUpdateWithWhereUniqueWithoutBotInput[]
     updateMany?: BotConnectionUpdateManyWithWhereWithoutBotInput | BotConnectionUpdateManyWithWhereWithoutBotInput[]
     deleteMany?: BotConnectionScalarWhereInput | BotConnectionScalarWhereInput[]
-  }
-
-  export type BotToolServerUncheckedUpdateManyWithoutBotNestedInput = {
-    create?: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput> | BotToolServerCreateWithoutBotInput[] | BotToolServerUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutBotInput | BotToolServerCreateOrConnectWithoutBotInput[]
-    upsert?: BotToolServerUpsertWithWhereUniqueWithoutBotInput | BotToolServerUpsertWithWhereUniqueWithoutBotInput[]
-    createMany?: BotToolServerCreateManyBotInputEnvelope
-    set?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    disconnect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    delete?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    update?: BotToolServerUpdateWithWhereUniqueWithoutBotInput | BotToolServerUpdateWithWhereUniqueWithoutBotInput[]
-    updateMany?: BotToolServerUpdateManyWithWhereWithoutBotInput | BotToolServerUpdateManyWithWhereWithoutBotInput[]
-    deleteMany?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
   }
 
   export type BotCredentialUncheckedUpdateManyWithoutBotNestedInput = {
@@ -159926,34 +158343,6 @@ export namespace Prisma {
     upsert?: ConnectionUpsertWithoutBot_connectionsInput
     connect?: ConnectionWhereUniqueInput
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutBot_connectionsInput, ConnectionUpdateWithoutBot_connectionsInput>, ConnectionUncheckedUpdateWithoutBot_connectionsInput>
-  }
-
-  export type BotCreateNestedOneWithoutBot_tool_serversInput = {
-    create?: XOR<BotCreateWithoutBot_tool_serversInput, BotUncheckedCreateWithoutBot_tool_serversInput>
-    connectOrCreate?: BotCreateOrConnectWithoutBot_tool_serversInput
-    connect?: BotWhereUniqueInput
-  }
-
-  export type ToolServerCreateNestedOneWithoutBotsInput = {
-    create?: XOR<ToolServerCreateWithoutBotsInput, ToolServerUncheckedCreateWithoutBotsInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutBotsInput
-    connect?: ToolServerWhereUniqueInput
-  }
-
-  export type BotUpdateOneRequiredWithoutBot_tool_serversNestedInput = {
-    create?: XOR<BotCreateWithoutBot_tool_serversInput, BotUncheckedCreateWithoutBot_tool_serversInput>
-    connectOrCreate?: BotCreateOrConnectWithoutBot_tool_serversInput
-    upsert?: BotUpsertWithoutBot_tool_serversInput
-    connect?: BotWhereUniqueInput
-    update?: XOR<XOR<BotUpdateToOneWithWhereWithoutBot_tool_serversInput, BotUpdateWithoutBot_tool_serversInput>, BotUncheckedUpdateWithoutBot_tool_serversInput>
-  }
-
-  export type ToolServerUpdateOneRequiredWithoutBotsNestedInput = {
-    create?: XOR<ToolServerCreateWithoutBotsInput, ToolServerUncheckedCreateWithoutBotsInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutBotsInput
-    upsert?: ToolServerUpsertWithoutBotsInput
-    connect?: ToolServerWhereUniqueInput
-    update?: XOR<XOR<ToolServerUpdateToOneWithWhereWithoutBotsInput, ToolServerUpdateWithoutBotsInput>, ToolServerUncheckedUpdateWithoutBotsInput>
   }
 
   export type BotCreateNestedOneWithoutBot_credentialsInput = {
@@ -164628,12 +163017,6 @@ export namespace Prisma {
     connect?: ConnectionWhereUniqueInput
   }
 
-  export type ToolServerCreateNestedOneWithoutCredentialInput = {
-    create?: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutCredentialInput
-    connect?: ToolServerWhereUniqueInput
-  }
-
   export type BotCredentialCreateNestedManyWithoutCredentialInput = {
     create?: XOR<BotCredentialCreateWithoutCredentialInput, BotCredentialUncheckedCreateWithoutCredentialInput> | BotCredentialCreateWithoutCredentialInput[] | BotCredentialUncheckedCreateWithoutCredentialInput[]
     connectOrCreate?: BotCredentialCreateOrConnectWithoutCredentialInput | BotCredentialCreateOrConnectWithoutCredentialInput[]
@@ -164652,12 +163035,6 @@ export namespace Prisma {
     create?: XOR<ConnectionCreateWithoutCredentialInput, ConnectionUncheckedCreateWithoutCredentialInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutCredentialInput
     connect?: ConnectionWhereUniqueInput
-  }
-
-  export type ToolServerUncheckedCreateNestedOneWithoutCredentialInput = {
-    create?: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutCredentialInput
-    connect?: ToolServerWhereUniqueInput
   }
 
   export type BotCredentialUncheckedCreateNestedManyWithoutCredentialInput = {
@@ -164724,16 +163101,6 @@ export namespace Prisma {
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutCredentialInput, ConnectionUpdateWithoutCredentialInput>, ConnectionUncheckedUpdateWithoutCredentialInput>
   }
 
-  export type ToolServerUpdateOneWithoutCredentialNestedInput = {
-    create?: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutCredentialInput
-    upsert?: ToolServerUpsertWithoutCredentialInput
-    disconnect?: ToolServerWhereInput | boolean
-    delete?: ToolServerWhereInput | boolean
-    connect?: ToolServerWhereUniqueInput
-    update?: XOR<XOR<ToolServerUpdateToOneWithWhereWithoutCredentialInput, ToolServerUpdateWithoutCredentialInput>, ToolServerUncheckedUpdateWithoutCredentialInput>
-  }
-
   export type BotCredentialUpdateManyWithoutCredentialNestedInput = {
     create?: XOR<BotCredentialCreateWithoutCredentialInput, BotCredentialUncheckedCreateWithoutCredentialInput> | BotCredentialCreateWithoutCredentialInput[] | BotCredentialUncheckedCreateWithoutCredentialInput[]
     connectOrCreate?: BotCredentialCreateOrConnectWithoutCredentialInput | BotCredentialCreateOrConnectWithoutCredentialInput[]
@@ -164770,16 +163137,6 @@ export namespace Prisma {
     delete?: ConnectionWhereInput | boolean
     connect?: ConnectionWhereUniqueInput
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutCredentialInput, ConnectionUpdateWithoutCredentialInput>, ConnectionUncheckedUpdateWithoutCredentialInput>
-  }
-
-  export type ToolServerUncheckedUpdateOneWithoutCredentialNestedInput = {
-    create?: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
-    connectOrCreate?: ToolServerCreateOrConnectWithoutCredentialInput
-    upsert?: ToolServerUpsertWithoutCredentialInput
-    disconnect?: ToolServerWhereInput | boolean
-    delete?: ToolServerWhereInput | boolean
-    connect?: ToolServerWhereUniqueInput
-    update?: XOR<XOR<ToolServerUpdateToOneWithWhereWithoutCredentialInput, ToolServerUpdateWithoutCredentialInput>, ToolServerUncheckedUpdateWithoutCredentialInput>
   }
 
   export type BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput = {
@@ -164856,23 +163213,10 @@ export namespace Prisma {
     connect?: UserWhereUniqueInput
   }
 
-  export type CredentialCreateNestedOneWithoutTool_serverInput = {
-    create?: XOR<CredentialCreateWithoutTool_serverInput, CredentialUncheckedCreateWithoutTool_serverInput>
-    connectOrCreate?: CredentialCreateOrConnectWithoutTool_serverInput
-    connect?: CredentialWhereUniqueInput
-  }
-
   export type ConnectionCreateNestedOneWithoutTool_serverInput = {
     create?: XOR<ConnectionCreateWithoutTool_serverInput, ConnectionUncheckedCreateWithoutTool_serverInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutTool_serverInput
     connect?: ConnectionWhereUniqueInput
-  }
-
-  export type BotToolServerCreateNestedManyWithoutTool_serverInput = {
-    create?: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput> | BotToolServerCreateWithoutTool_serverInput[] | BotToolServerUncheckedCreateWithoutTool_serverInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutTool_serverInput | BotToolServerCreateOrConnectWithoutTool_serverInput[]
-    createMany?: BotToolServerCreateManyTool_serverInputEnvelope
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
   }
 
   export type ConnectionUncheckedCreateNestedOneWithoutTool_serverInput = {
@@ -164881,19 +163225,8 @@ export namespace Prisma {
     connect?: ConnectionWhereUniqueInput
   }
 
-  export type BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput = {
-    create?: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput> | BotToolServerCreateWithoutTool_serverInput[] | BotToolServerUncheckedCreateWithoutTool_serverInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutTool_serverInput | BotToolServerCreateOrConnectWithoutTool_serverInput[]
-    createMany?: BotToolServerCreateManyTool_serverInputEnvelope
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-  }
-
   export type EnumToolServerAuthKindFieldUpdateOperationsInput = {
     set?: $Enums.ToolServerAuthKind
-  }
-
-  export type EnumToolServerStatusFieldUpdateOperationsInput = {
-    set?: $Enums.ToolServerStatus
   }
 
   export type OrganizationUpdateOneRequiredWithoutTool_serversNestedInput = {
@@ -164914,16 +163247,6 @@ export namespace Prisma {
     update?: XOR<XOR<UserUpdateToOneWithWhereWithoutTool_serversInput, UserUpdateWithoutTool_serversInput>, UserUncheckedUpdateWithoutTool_serversInput>
   }
 
-  export type CredentialUpdateOneWithoutTool_serverNestedInput = {
-    create?: XOR<CredentialCreateWithoutTool_serverInput, CredentialUncheckedCreateWithoutTool_serverInput>
-    connectOrCreate?: CredentialCreateOrConnectWithoutTool_serverInput
-    upsert?: CredentialUpsertWithoutTool_serverInput
-    disconnect?: CredentialWhereInput | boolean
-    delete?: CredentialWhereInput | boolean
-    connect?: CredentialWhereUniqueInput
-    update?: XOR<XOR<CredentialUpdateToOneWithWhereWithoutTool_serverInput, CredentialUpdateWithoutTool_serverInput>, CredentialUncheckedUpdateWithoutTool_serverInput>
-  }
-
   export type ConnectionUpdateOneWithoutTool_serverNestedInput = {
     create?: XOR<ConnectionCreateWithoutTool_serverInput, ConnectionUncheckedCreateWithoutTool_serverInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutTool_serverInput
@@ -164934,20 +163257,6 @@ export namespace Prisma {
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutTool_serverInput, ConnectionUpdateWithoutTool_serverInput>, ConnectionUncheckedUpdateWithoutTool_serverInput>
   }
 
-  export type BotToolServerUpdateManyWithoutTool_serverNestedInput = {
-    create?: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput> | BotToolServerCreateWithoutTool_serverInput[] | BotToolServerUncheckedCreateWithoutTool_serverInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutTool_serverInput | BotToolServerCreateOrConnectWithoutTool_serverInput[]
-    upsert?: BotToolServerUpsertWithWhereUniqueWithoutTool_serverInput | BotToolServerUpsertWithWhereUniqueWithoutTool_serverInput[]
-    createMany?: BotToolServerCreateManyTool_serverInputEnvelope
-    set?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    disconnect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    delete?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    update?: BotToolServerUpdateWithWhereUniqueWithoutTool_serverInput | BotToolServerUpdateWithWhereUniqueWithoutTool_serverInput[]
-    updateMany?: BotToolServerUpdateManyWithWhereWithoutTool_serverInput | BotToolServerUpdateManyWithWhereWithoutTool_serverInput[]
-    deleteMany?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
-  }
-
   export type ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput = {
     create?: XOR<ConnectionCreateWithoutTool_serverInput, ConnectionUncheckedCreateWithoutTool_serverInput>
     connectOrCreate?: ConnectionCreateOrConnectWithoutTool_serverInput
@@ -164956,20 +163265,6 @@ export namespace Prisma {
     delete?: ConnectionWhereInput | boolean
     connect?: ConnectionWhereUniqueInput
     update?: XOR<XOR<ConnectionUpdateToOneWithWhereWithoutTool_serverInput, ConnectionUpdateWithoutTool_serverInput>, ConnectionUncheckedUpdateWithoutTool_serverInput>
-  }
-
-  export type BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput = {
-    create?: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput> | BotToolServerCreateWithoutTool_serverInput[] | BotToolServerUncheckedCreateWithoutTool_serverInput[]
-    connectOrCreate?: BotToolServerCreateOrConnectWithoutTool_serverInput | BotToolServerCreateOrConnectWithoutTool_serverInput[]
-    upsert?: BotToolServerUpsertWithWhereUniqueWithoutTool_serverInput | BotToolServerUpsertWithWhereUniqueWithoutTool_serverInput[]
-    createMany?: BotToolServerCreateManyTool_serverInputEnvelope
-    set?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    disconnect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    delete?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    connect?: BotToolServerWhereUniqueInput | BotToolServerWhereUniqueInput[]
-    update?: BotToolServerUpdateWithWhereUniqueWithoutTool_serverInput | BotToolServerUpdateWithWhereUniqueWithoutTool_serverInput[]
-    updateMany?: BotToolServerUpdateManyWithWhereWithoutTool_serverInput | BotToolServerUpdateManyWithWhereWithoutTool_serverInput[]
-    deleteMany?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutFilesInput = {
@@ -168907,13 +167202,6 @@ export namespace Prisma {
     not?: NestedEnumToolServerAuthKindFilter<$PrismaModel> | $Enums.ToolServerAuthKind
   }
 
-  export type NestedEnumToolServerStatusFilter<$PrismaModel = never> = {
-    equals?: $Enums.ToolServerStatus | EnumToolServerStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumToolServerStatusFilter<$PrismaModel> | $Enums.ToolServerStatus
-  }
-
   export type NestedEnumToolServerAuthKindWithAggregatesFilter<$PrismaModel = never> = {
     equals?: $Enums.ToolServerAuthKind | EnumToolServerAuthKindFieldRefInput<$PrismaModel>
     in?: $Enums.ToolServerAuthKind[] | ListEnumToolServerAuthKindFieldRefInput<$PrismaModel>
@@ -168922,16 +167210,6 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedEnumToolServerAuthKindFilter<$PrismaModel>
     _max?: NestedEnumToolServerAuthKindFilter<$PrismaModel>
-  }
-
-  export type NestedEnumToolServerStatusWithAggregatesFilter<$PrismaModel = never> = {
-    equals?: $Enums.ToolServerStatus | EnumToolServerStatusFieldRefInput<$PrismaModel>
-    in?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    notIn?: $Enums.ToolServerStatus[] | ListEnumToolServerStatusFieldRefInput<$PrismaModel>
-    not?: NestedEnumToolServerStatusWithAggregatesFilter<$PrismaModel> | $Enums.ToolServerStatus
-    _count?: NestedIntFilter<$PrismaModel>
-    _min?: NestedEnumToolServerStatusFilter<$PrismaModel>
-    _max?: NestedEnumToolServerStatusFilter<$PrismaModel>
   }
 
   export type NestedEnumFileBucketFilter<$PrismaModel = never> = {
@@ -170031,7 +168309,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -170108,7 +168385,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -171317,7 +169593,6 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
@@ -171345,7 +169620,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
@@ -171398,17 +169672,14 @@ export namespace Prisma {
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutTool_serversInput
-    credential?: CredentialCreateNestedOneWithoutTool_serverInput
     connection?: ConnectionCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerUncheckedCreateWithoutOwnerInput = {
@@ -171417,17 +169688,14 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerCreateOrConnectWithoutOwnerInput = {
@@ -173438,10 +171706,8 @@ export namespace Prisma {
     name?: StringFilter<"ToolServer"> | string
     url?: StringFilter<"ToolServer"> | string
     auth_kind?: EnumToolServerAuthKindFilter<"ToolServer"> | $Enums.ToolServerAuthKind
-    credential_id?: StringNullableFilter<"ToolServer"> | string | null
     visibility?: EnumVisibilityFilter<"ToolServer"> | $Enums.Visibility
-    status?: EnumToolServerStatusFilter<"ToolServer"> | $Enums.ToolServerStatus
-    status_message?: StringNullableFilter<"ToolServer"> | string | null
+    composio_toolkit_slug?: StringNullableFilter<"ToolServer"> | string | null
     tool_count?: IntFilter<"ToolServer"> | number
     last_listed_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
     deleted_at?: DateTimeNullableFilter<"ToolServer"> | Date | string | null
@@ -176315,7 +174581,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -176392,7 +174657,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -176634,7 +174898,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -176711,7 +174974,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -178752,7 +177014,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -178829,7 +177090,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -179594,7 +177854,6 @@ export namespace Prisma {
     owner?: UserCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
@@ -179622,7 +177881,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
@@ -179643,17 +177901,14 @@ export namespace Prisma {
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     owner?: UserCreateNestedOneWithoutTool_serversInput
-    credential?: CredentialCreateNestedOneWithoutTool_serverInput
     connection?: ConnectionCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerUncheckedCreateWithoutOrganizationInput = {
@@ -179662,17 +177917,14 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerCreateOrConnectWithoutOrganizationInput = {
@@ -183193,7 +181445,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -183270,7 +181521,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -184440,7 +182690,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -184517,7 +182766,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -185606,7 +183854,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -185683,7 +183930,6 @@ export namespace Prisma {
     updated_at?: Date | string
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -185765,7 +184011,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -185842,7 +184087,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -186053,26 +184297,6 @@ export namespace Prisma {
 
   export type BotConnectionCreateManyBotInputEnvelope = {
     data: BotConnectionCreateManyBotInput | BotConnectionCreateManyBotInput[]
-    skipDuplicates?: boolean
-  }
-
-  export type BotToolServerCreateWithoutBotInput = {
-    created_at?: Date | string
-    tool_server: ToolServerCreateNestedOneWithoutBotsInput
-  }
-
-  export type BotToolServerUncheckedCreateWithoutBotInput = {
-    tool_server_id: string
-    created_at?: Date | string
-  }
-
-  export type BotToolServerCreateOrConnectWithoutBotInput = {
-    where: BotToolServerWhereUniqueInput
-    create: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput>
-  }
-
-  export type BotToolServerCreateManyBotInputEnvelope = {
-    data: BotToolServerCreateManyBotInput | BotToolServerCreateManyBotInput[]
     skipDuplicates?: boolean
   }
 
@@ -187100,7 +185324,6 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutCredentialsInput
     owner?: UserCreateNestedOneWithoutCredentialsInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
@@ -187128,7 +185351,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
@@ -187602,7 +185824,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -187679,7 +185900,6 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -187915,31 +186135,6 @@ export namespace Prisma {
     connection_id?: StringFilter<"BotConnection"> | string
     is_default_for_service?: BoolFilter<"BotConnection"> | boolean
     created_at?: DateTimeFilter<"BotConnection"> | Date | string
-  }
-
-  export type BotToolServerUpsertWithWhereUniqueWithoutBotInput = {
-    where: BotToolServerWhereUniqueInput
-    update: XOR<BotToolServerUpdateWithoutBotInput, BotToolServerUncheckedUpdateWithoutBotInput>
-    create: XOR<BotToolServerCreateWithoutBotInput, BotToolServerUncheckedCreateWithoutBotInput>
-  }
-
-  export type BotToolServerUpdateWithWhereUniqueWithoutBotInput = {
-    where: BotToolServerWhereUniqueInput
-    data: XOR<BotToolServerUpdateWithoutBotInput, BotToolServerUncheckedUpdateWithoutBotInput>
-  }
-
-  export type BotToolServerUpdateManyWithWhereWithoutBotInput = {
-    where: BotToolServerScalarWhereInput
-    data: XOR<BotToolServerUpdateManyMutationInput, BotToolServerUncheckedUpdateManyWithoutBotInput>
-  }
-
-  export type BotToolServerScalarWhereInput = {
-    AND?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
-    OR?: BotToolServerScalarWhereInput[]
-    NOT?: BotToolServerScalarWhereInput | BotToolServerScalarWhereInput[]
-    bot_id?: StringFilter<"BotToolServer"> | string
-    tool_server_id?: StringFilter<"BotToolServer"> | string
-    created_at?: DateTimeFilter<"BotToolServer"> | Date | string
   }
 
   export type BotCredentialUpsertWithWhereUniqueWithoutBotInput = {
@@ -188455,7 +186650,6 @@ export namespace Prisma {
     model?: AiModelCreateNestedOneWithoutBotsInput
     image?: FileCreateNestedOneWithoutBot_imageInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -188532,7 +186726,6 @@ export namespace Prisma {
     updated_at?: Date | string
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -188625,7 +186818,6 @@ export namespace Prisma {
     model?: AiModelUpdateOneWithoutBotsNestedInput
     image?: FileUpdateOneWithoutBot_imageNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -188702,7 +186894,6 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -188779,7 +186970,6 @@ export namespace Prisma {
     model?: AiModelCreateNestedOneWithoutBotsInput
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -188856,7 +187046,6 @@ export namespace Prisma {
     updated_at?: Date | string
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -189022,7 +187211,6 @@ export namespace Prisma {
     model?: AiModelUpdateOneWithoutBotsNestedInput
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -189099,7 +187287,6 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -189202,422 +187389,6 @@ export namespace Prisma {
     trigger_subscriptions?: AutomationTriggerSubscriptionUncheckedUpdateManyWithoutConnectionNestedInput
   }
 
-  export type BotCreateWithoutBot_tool_serversInput = {
-    id?: string
-    is_starter?: boolean
-    name: string
-    emoji?: string
-    color?: string
-    description?: string | null
-    welcome_message?: string | null
-    conversation_starters?: BotCreateconversation_startersInput | string[]
-    instructions: string
-    creativity?: $Enums.Creativity
-    style_override?: boolean
-    reply_length?: $Enums.ReplyLength | null
-    reply_tone?: $Enums.ReplyTone | null
-    reply_formatting?: $Enums.ReplyFormatting | null
-    emoji_usage?: $Enums.EmojiUsage | null
-    lock_style?: boolean
-    reply_language?: $Enums.AppLanguage | null
-    clarifying_questions?: $Enums.BotClarifyingQuestions
-    group_response?: $Enums.BotGroupResponse
-    web_search_enabled?: boolean
-    image_generation_enabled?: boolean
-    document_creation_enabled?: boolean
-    interactive_replies_mode?: $Enums.InteractiveRepliesMode
-    artifacts_enabled?: boolean
-    cloud_computer_enabled?: boolean
-    use_skills_automatically?: boolean
-    org_knowledge_enabled?: boolean
-    voice_mode_enabled?: boolean
-    voice?: string | null
-    spoken_reply_style?: $Enums.SpokenReplyStyle
-    memory_enabled?: boolean
-    memory_scope?: $Enums.MemoryScope
-    can_ask_other_bots?: boolean
-    can_be_asked?: boolean
-    is_sensitive?: boolean
-    approval_level?: $Enums.ApprovalLevel
-    max_task_duration?: $Enums.MaxTaskDuration
-    monthly_usage_limit?: Decimal | DecimalJsLike | number | string | null
-    visibility?: $Enums.BotVisibility
-    edit_policy?: $Enums.BotEditPolicy
-    is_archived?: boolean
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutBotsInput
-    created_by?: UserCreateNestedOneWithoutBots_createdInput
-    template?: BotTemplateCreateNestedOneWithoutBotsInput
-    duplicated_from?: BotCreateNestedOneWithoutDuplicatesInput
-    duplicates?: BotCreateNestedManyWithoutDuplicated_fromInput
-    model?: AiModelCreateNestedOneWithoutBotsInput
-    image?: FileCreateNestedOneWithoutBot_imageInput
-    approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
-    bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
-    bot_skills?: BotSkillCreateNestedManyWithoutBotInput
-    knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
-    memories?: MemoryCreateNestedManyWithoutBotInput
-    cloud_computer?: CloudComputerCreateNestedOneWithoutBotInput
-    participations?: ConversationParticipantCreateNestedManyWithoutBotInput
-    lead_conversations?: ConversationCreateNestedManyWithoutLead_botInput
-    messages?: MessageCreateNestedManyWithoutAuthor_botInput
-    runs?: RunCreateNestedManyWithoutBotInput
-    consultations?: RunCreateNestedManyWithoutRequested_by_botInput
-    approvals?: ApprovalCreateNestedManyWithoutBotInput
-    voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
-    automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
-    usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
-    activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
-    default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
-    connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
-    credential_last_used?: CredentialCreateNestedManyWithoutLast_used_botInput
-    artifact_comment_mentions?: ArtifactCommentCreateNestedManyWithoutMentioned_botInput
-    channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
-  }
-
-  export type BotUncheckedCreateWithoutBot_tool_serversInput = {
-    id?: string
-    organization_id: string
-    created_by_id?: string | null
-    template_id?: string | null
-    duplicated_from_id?: string | null
-    is_starter?: boolean
-    name: string
-    emoji?: string
-    color?: string
-    description?: string | null
-    image_file_id?: string | null
-    welcome_message?: string | null
-    conversation_starters?: BotCreateconversation_startersInput | string[]
-    instructions: string
-    model_id?: string | null
-    creativity?: $Enums.Creativity
-    style_override?: boolean
-    reply_length?: $Enums.ReplyLength | null
-    reply_tone?: $Enums.ReplyTone | null
-    reply_formatting?: $Enums.ReplyFormatting | null
-    emoji_usage?: $Enums.EmojiUsage | null
-    lock_style?: boolean
-    reply_language?: $Enums.AppLanguage | null
-    clarifying_questions?: $Enums.BotClarifyingQuestions
-    group_response?: $Enums.BotGroupResponse
-    web_search_enabled?: boolean
-    image_generation_enabled?: boolean
-    document_creation_enabled?: boolean
-    interactive_replies_mode?: $Enums.InteractiveRepliesMode
-    artifacts_enabled?: boolean
-    cloud_computer_enabled?: boolean
-    use_skills_automatically?: boolean
-    org_knowledge_enabled?: boolean
-    voice_mode_enabled?: boolean
-    voice?: string | null
-    spoken_reply_style?: $Enums.SpokenReplyStyle
-    memory_enabled?: boolean
-    memory_scope?: $Enums.MemoryScope
-    can_ask_other_bots?: boolean
-    can_be_asked?: boolean
-    is_sensitive?: boolean
-    approval_level?: $Enums.ApprovalLevel
-    max_task_duration?: $Enums.MaxTaskDuration
-    monthly_usage_limit?: Decimal | DecimalJsLike | number | string | null
-    visibility?: $Enums.BotVisibility
-    edit_policy?: $Enums.BotEditPolicy
-    is_archived?: boolean
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
-    approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
-    bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
-    bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
-    knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
-    memories?: MemoryUncheckedCreateNestedManyWithoutBotInput
-    cloud_computer?: CloudComputerUncheckedCreateNestedOneWithoutBotInput
-    participations?: ConversationParticipantUncheckedCreateNestedManyWithoutBotInput
-    lead_conversations?: ConversationUncheckedCreateNestedManyWithoutLead_botInput
-    messages?: MessageUncheckedCreateNestedManyWithoutAuthor_botInput
-    runs?: RunUncheckedCreateNestedManyWithoutBotInput
-    consultations?: RunUncheckedCreateNestedManyWithoutRequested_by_botInput
-    approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
-    voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
-    automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
-    usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
-    activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
-    default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
-    connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
-    credential_last_used?: CredentialUncheckedCreateNestedManyWithoutLast_used_botInput
-    artifact_comment_mentions?: ArtifactCommentUncheckedCreateNestedManyWithoutMentioned_botInput
-    channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
-  }
-
-  export type BotCreateOrConnectWithoutBot_tool_serversInput = {
-    where: BotWhereUniqueInput
-    create: XOR<BotCreateWithoutBot_tool_serversInput, BotUncheckedCreateWithoutBot_tool_serversInput>
-  }
-
-  export type ToolServerCreateWithoutBotsInput = {
-    id?: string
-    name: string
-    url: string
-    auth_kind?: $Enums.ToolServerAuthKind
-    visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
-    tool_count?: number
-    last_listed_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutTool_serversInput
-    owner?: UserCreateNestedOneWithoutTool_serversInput
-    credential?: CredentialCreateNestedOneWithoutTool_serverInput
-    connection?: ConnectionCreateNestedOneWithoutTool_serverInput
-  }
-
-  export type ToolServerUncheckedCreateWithoutBotsInput = {
-    id?: string
-    organization_id: string
-    owner_id?: string | null
-    name: string
-    url: string
-    auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
-    visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
-    tool_count?: number
-    last_listed_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    connection?: ConnectionUncheckedCreateNestedOneWithoutTool_serverInput
-  }
-
-  export type ToolServerCreateOrConnectWithoutBotsInput = {
-    where: ToolServerWhereUniqueInput
-    create: XOR<ToolServerCreateWithoutBotsInput, ToolServerUncheckedCreateWithoutBotsInput>
-  }
-
-  export type BotUpsertWithoutBot_tool_serversInput = {
-    update: XOR<BotUpdateWithoutBot_tool_serversInput, BotUncheckedUpdateWithoutBot_tool_serversInput>
-    create: XOR<BotCreateWithoutBot_tool_serversInput, BotUncheckedCreateWithoutBot_tool_serversInput>
-    where?: BotWhereInput
-  }
-
-  export type BotUpdateToOneWithWhereWithoutBot_tool_serversInput = {
-    where?: BotWhereInput
-    data: XOR<BotUpdateWithoutBot_tool_serversInput, BotUncheckedUpdateWithoutBot_tool_serversInput>
-  }
-
-  export type BotUpdateWithoutBot_tool_serversInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    is_starter?: BoolFieldUpdateOperationsInput | boolean
-    name?: StringFieldUpdateOperationsInput | string
-    emoji?: StringFieldUpdateOperationsInput | string
-    color?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
-    conversation_starters?: BotUpdateconversation_startersInput | string[]
-    instructions?: StringFieldUpdateOperationsInput | string
-    creativity?: EnumCreativityFieldUpdateOperationsInput | $Enums.Creativity
-    style_override?: BoolFieldUpdateOperationsInput | boolean
-    reply_length?: NullableEnumReplyLengthFieldUpdateOperationsInput | $Enums.ReplyLength | null
-    reply_tone?: NullableEnumReplyToneFieldUpdateOperationsInput | $Enums.ReplyTone | null
-    reply_formatting?: NullableEnumReplyFormattingFieldUpdateOperationsInput | $Enums.ReplyFormatting | null
-    emoji_usage?: NullableEnumEmojiUsageFieldUpdateOperationsInput | $Enums.EmojiUsage | null
-    lock_style?: BoolFieldUpdateOperationsInput | boolean
-    reply_language?: NullableEnumAppLanguageFieldUpdateOperationsInput | $Enums.AppLanguage | null
-    clarifying_questions?: EnumBotClarifyingQuestionsFieldUpdateOperationsInput | $Enums.BotClarifyingQuestions
-    group_response?: EnumBotGroupResponseFieldUpdateOperationsInput | $Enums.BotGroupResponse
-    web_search_enabled?: BoolFieldUpdateOperationsInput | boolean
-    image_generation_enabled?: BoolFieldUpdateOperationsInput | boolean
-    document_creation_enabled?: BoolFieldUpdateOperationsInput | boolean
-    interactive_replies_mode?: EnumInteractiveRepliesModeFieldUpdateOperationsInput | $Enums.InteractiveRepliesMode
-    artifacts_enabled?: BoolFieldUpdateOperationsInput | boolean
-    cloud_computer_enabled?: BoolFieldUpdateOperationsInput | boolean
-    use_skills_automatically?: BoolFieldUpdateOperationsInput | boolean
-    org_knowledge_enabled?: BoolFieldUpdateOperationsInput | boolean
-    voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
-    voice?: NullableStringFieldUpdateOperationsInput | string | null
-    spoken_reply_style?: EnumSpokenReplyStyleFieldUpdateOperationsInput | $Enums.SpokenReplyStyle
-    memory_enabled?: BoolFieldUpdateOperationsInput | boolean
-    memory_scope?: EnumMemoryScopeFieldUpdateOperationsInput | $Enums.MemoryScope
-    can_ask_other_bots?: BoolFieldUpdateOperationsInput | boolean
-    can_be_asked?: BoolFieldUpdateOperationsInput | boolean
-    is_sensitive?: BoolFieldUpdateOperationsInput | boolean
-    approval_level?: EnumApprovalLevelFieldUpdateOperationsInput | $Enums.ApprovalLevel
-    max_task_duration?: EnumMaxTaskDurationFieldUpdateOperationsInput | $Enums.MaxTaskDuration
-    monthly_usage_limit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    visibility?: EnumBotVisibilityFieldUpdateOperationsInput | $Enums.BotVisibility
-    edit_policy?: EnumBotEditPolicyFieldUpdateOperationsInput | $Enums.BotEditPolicy
-    is_archived?: BoolFieldUpdateOperationsInput | boolean
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutBotsNestedInput
-    created_by?: UserUpdateOneWithoutBots_createdNestedInput
-    template?: BotTemplateUpdateOneWithoutBotsNestedInput
-    duplicated_from?: BotUpdateOneWithoutDuplicatesNestedInput
-    duplicates?: BotUpdateManyWithoutDuplicated_fromNestedInput
-    model?: AiModelUpdateOneWithoutBotsNestedInput
-    image?: FileUpdateOneWithoutBot_imageNestedInput
-    approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
-    bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
-    bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
-    knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
-    memories?: MemoryUpdateManyWithoutBotNestedInput
-    cloud_computer?: CloudComputerUpdateOneWithoutBotNestedInput
-    participations?: ConversationParticipantUpdateManyWithoutBotNestedInput
-    lead_conversations?: ConversationUpdateManyWithoutLead_botNestedInput
-    messages?: MessageUpdateManyWithoutAuthor_botNestedInput
-    runs?: RunUpdateManyWithoutBotNestedInput
-    consultations?: RunUpdateManyWithoutRequested_by_botNestedInput
-    approvals?: ApprovalUpdateManyWithoutBotNestedInput
-    voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
-    automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
-    usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
-    activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
-    default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
-    connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
-    credential_last_used?: CredentialUpdateManyWithoutLast_used_botNestedInput
-    artifact_comment_mentions?: ArtifactCommentUpdateManyWithoutMentioned_botNestedInput
-    channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
-  }
-
-  export type BotUncheckedUpdateWithoutBot_tool_serversInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
-    template_id?: NullableStringFieldUpdateOperationsInput | string | null
-    duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
-    is_starter?: BoolFieldUpdateOperationsInput | boolean
-    name?: StringFieldUpdateOperationsInput | string
-    emoji?: StringFieldUpdateOperationsInput | string
-    color?: StringFieldUpdateOperationsInput | string
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
-    welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
-    conversation_starters?: BotUpdateconversation_startersInput | string[]
-    instructions?: StringFieldUpdateOperationsInput | string
-    model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    creativity?: EnumCreativityFieldUpdateOperationsInput | $Enums.Creativity
-    style_override?: BoolFieldUpdateOperationsInput | boolean
-    reply_length?: NullableEnumReplyLengthFieldUpdateOperationsInput | $Enums.ReplyLength | null
-    reply_tone?: NullableEnumReplyToneFieldUpdateOperationsInput | $Enums.ReplyTone | null
-    reply_formatting?: NullableEnumReplyFormattingFieldUpdateOperationsInput | $Enums.ReplyFormatting | null
-    emoji_usage?: NullableEnumEmojiUsageFieldUpdateOperationsInput | $Enums.EmojiUsage | null
-    lock_style?: BoolFieldUpdateOperationsInput | boolean
-    reply_language?: NullableEnumAppLanguageFieldUpdateOperationsInput | $Enums.AppLanguage | null
-    clarifying_questions?: EnumBotClarifyingQuestionsFieldUpdateOperationsInput | $Enums.BotClarifyingQuestions
-    group_response?: EnumBotGroupResponseFieldUpdateOperationsInput | $Enums.BotGroupResponse
-    web_search_enabled?: BoolFieldUpdateOperationsInput | boolean
-    image_generation_enabled?: BoolFieldUpdateOperationsInput | boolean
-    document_creation_enabled?: BoolFieldUpdateOperationsInput | boolean
-    interactive_replies_mode?: EnumInteractiveRepliesModeFieldUpdateOperationsInput | $Enums.InteractiveRepliesMode
-    artifacts_enabled?: BoolFieldUpdateOperationsInput | boolean
-    cloud_computer_enabled?: BoolFieldUpdateOperationsInput | boolean
-    use_skills_automatically?: BoolFieldUpdateOperationsInput | boolean
-    org_knowledge_enabled?: BoolFieldUpdateOperationsInput | boolean
-    voice_mode_enabled?: BoolFieldUpdateOperationsInput | boolean
-    voice?: NullableStringFieldUpdateOperationsInput | string | null
-    spoken_reply_style?: EnumSpokenReplyStyleFieldUpdateOperationsInput | $Enums.SpokenReplyStyle
-    memory_enabled?: BoolFieldUpdateOperationsInput | boolean
-    memory_scope?: EnumMemoryScopeFieldUpdateOperationsInput | $Enums.MemoryScope
-    can_ask_other_bots?: BoolFieldUpdateOperationsInput | boolean
-    can_be_asked?: BoolFieldUpdateOperationsInput | boolean
-    is_sensitive?: BoolFieldUpdateOperationsInput | boolean
-    approval_level?: EnumApprovalLevelFieldUpdateOperationsInput | $Enums.ApprovalLevel
-    max_task_duration?: EnumMaxTaskDurationFieldUpdateOperationsInput | $Enums.MaxTaskDuration
-    monthly_usage_limit?: NullableDecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string | null
-    visibility?: EnumBotVisibilityFieldUpdateOperationsInput | $Enums.BotVisibility
-    edit_policy?: EnumBotEditPolicyFieldUpdateOperationsInput | $Enums.BotEditPolicy
-    is_archived?: BoolFieldUpdateOperationsInput | boolean
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
-    approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
-    bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
-    bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
-    knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
-    memories?: MemoryUncheckedUpdateManyWithoutBotNestedInput
-    cloud_computer?: CloudComputerUncheckedUpdateOneWithoutBotNestedInput
-    participations?: ConversationParticipantUncheckedUpdateManyWithoutBotNestedInput
-    lead_conversations?: ConversationUncheckedUpdateManyWithoutLead_botNestedInput
-    messages?: MessageUncheckedUpdateManyWithoutAuthor_botNestedInput
-    runs?: RunUncheckedUpdateManyWithoutBotNestedInput
-    consultations?: RunUncheckedUpdateManyWithoutRequested_by_botNestedInput
-    approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
-    voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
-    automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
-    usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
-    activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
-    default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
-    connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
-    credential_last_used?: CredentialUncheckedUpdateManyWithoutLast_used_botNestedInput
-    artifact_comment_mentions?: ArtifactCommentUncheckedUpdateManyWithoutMentioned_botNestedInput
-    channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
-  }
-
-  export type ToolServerUpsertWithoutBotsInput = {
-    update: XOR<ToolServerUpdateWithoutBotsInput, ToolServerUncheckedUpdateWithoutBotsInput>
-    create: XOR<ToolServerCreateWithoutBotsInput, ToolServerUncheckedCreateWithoutBotsInput>
-    where?: ToolServerWhereInput
-  }
-
-  export type ToolServerUpdateToOneWithWhereWithoutBotsInput = {
-    where?: ToolServerWhereInput
-    data: XOR<ToolServerUpdateWithoutBotsInput, ToolServerUncheckedUpdateWithoutBotsInput>
-  }
-
-  export type ToolServerUpdateWithoutBotsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
-    tool_count?: IntFieldUpdateOperationsInput | number
-    last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutTool_serversNestedInput
-    owner?: UserUpdateOneWithoutTool_serversNestedInput
-    credential?: CredentialUpdateOneWithoutTool_serverNestedInput
-    connection?: ConnectionUpdateOneWithoutTool_serverNestedInput
-  }
-
-  export type ToolServerUncheckedUpdateWithoutBotsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    owner_id?: NullableStringFieldUpdateOperationsInput | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
-    tool_count?: IntFieldUpdateOperationsInput | number
-    last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    connection?: ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput
-  }
-
   export type BotCreateWithoutBot_credentialsInput = {
     id?: string
     is_starter?: boolean
@@ -189672,7 +187443,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
     memories?: MemoryCreateNestedManyWithoutBotInput
@@ -189749,7 +187519,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
     memories?: MemoryUncheckedCreateNestedManyWithoutBotInput
@@ -189801,7 +187570,6 @@ export namespace Prisma {
     owner?: UserCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
 
@@ -189829,7 +187597,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
 
@@ -189903,7 +187670,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
     memories?: MemoryUpdateManyWithoutBotNestedInput
@@ -189980,7 +187746,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutBotNestedInput
@@ -190038,7 +187803,6 @@ export namespace Prisma {
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
 
@@ -190066,7 +187830,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
 
@@ -190124,7 +187887,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
     memories?: MemoryCreateNestedManyWithoutBotInput
@@ -190201,7 +187963,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
     memories?: MemoryUncheckedCreateNestedManyWithoutBotInput
@@ -190361,7 +188122,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
     memories?: MemoryUpdateManyWithoutBotNestedInput
@@ -190438,7 +188198,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutBotNestedInput
@@ -190691,7 +188450,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     memories?: MemoryCreateNestedManyWithoutBotInput
@@ -190768,7 +188526,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     memories?: MemoryUncheckedCreateNestedManyWithoutBotInput
@@ -191244,7 +189001,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     memories?: MemoryUpdateManyWithoutBotNestedInput
@@ -191321,7 +189077,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     memories?: MemoryUncheckedUpdateManyWithoutBotNestedInput
@@ -192261,7 +190016,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -192338,7 +190092,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -192746,7 +190499,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -192823,7 +190575,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -193779,7 +191530,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -193856,7 +191606,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -194992,7 +192741,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -195069,7 +192817,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -196148,7 +193895,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -196225,7 +193971,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -196561,7 +194306,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -196638,7 +194382,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -197055,7 +194798,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -197132,7 +194874,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -198653,7 +196394,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -198730,7 +196470,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -201754,7 +199493,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -201831,7 +199569,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -202320,7 +200057,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -202397,7 +200133,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -203366,7 +201101,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -203443,7 +201177,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -203878,7 +201611,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -203955,7 +201687,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -205351,7 +203082,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -205428,7 +203158,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -206024,7 +203753,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -206101,7 +203829,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -206636,7 +204363,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -206713,7 +204439,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -207227,7 +204952,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -207304,7 +205028,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -213446,7 +211169,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -213523,7 +211245,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -213909,7 +211630,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -213986,7 +211706,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -215378,7 +213097,6 @@ export namespace Prisma {
     organization: OrganizationCreateNestedOneWithoutCredentialsInput
     owner?: UserCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
     events?: CredentialEventCreateNestedManyWithoutCredentialInput
   }
@@ -215406,7 +213124,6 @@ export namespace Prisma {
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
     events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
   }
@@ -215422,8 +213139,7 @@ export namespace Prisma {
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -215431,8 +213147,6 @@ export namespace Prisma {
     updated_at?: Date | string
     organization: OrganizationCreateNestedOneWithoutTool_serversInput
     owner?: UserCreateNestedOneWithoutTool_serversInput
-    credential?: CredentialCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerUncheckedCreateWithoutConnectionInput = {
@@ -215442,16 +213156,13 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
     created_at?: Date | string
     updated_at?: Date | string
-    bots?: BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput
   }
 
   export type ToolServerCreateOrConnectWithoutConnectionInput = {
@@ -216065,7 +213776,6 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutCredentialsNestedInput
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
@@ -216093,7 +213803,6 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
@@ -216115,8 +213824,7 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -216124,8 +213832,6 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutTool_serversNestedInput
     owner?: UserUpdateOneWithoutTool_serversNestedInput
-    credential?: CredentialUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateWithoutConnectionInput = {
@@ -216135,16 +213841,13 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    bots?: BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput
   }
 
   export type BotConnectionUpsertWithWhereUniqueWithoutConnectionInput = {
@@ -216481,7 +214184,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -216558,7 +214260,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -216730,7 +214431,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -216807,7 +214507,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -217130,7 +214829,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -217207,7 +214905,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -217306,49 +215003,6 @@ export namespace Prisma {
   export type ConnectionCreateOrConnectWithoutCredentialInput = {
     where: ConnectionWhereUniqueInput
     create: XOR<ConnectionCreateWithoutCredentialInput, ConnectionUncheckedCreateWithoutCredentialInput>
-  }
-
-  export type ToolServerCreateWithoutCredentialInput = {
-    id?: string
-    name: string
-    url: string
-    auth_kind?: $Enums.ToolServerAuthKind
-    visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
-    tool_count?: number
-    last_listed_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutTool_serversInput
-    owner?: UserCreateNestedOneWithoutTool_serversInput
-    connection?: ConnectionCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerCreateNestedManyWithoutTool_serverInput
-  }
-
-  export type ToolServerUncheckedCreateWithoutCredentialInput = {
-    id?: string
-    organization_id: string
-    owner_id?: string | null
-    name: string
-    url: string
-    auth_kind?: $Enums.ToolServerAuthKind
-    visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
-    tool_count?: number
-    last_listed_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    connection?: ConnectionUncheckedCreateNestedOneWithoutTool_serverInput
-    bots?: BotToolServerUncheckedCreateNestedManyWithoutTool_serverInput
-  }
-
-  export type ToolServerCreateOrConnectWithoutCredentialInput = {
-    where: ToolServerWhereUniqueInput
-    create: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
   }
 
   export type BotCredentialCreateWithoutCredentialInput = {
@@ -217726,7 +215380,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -217803,7 +215456,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -217905,55 +215557,6 @@ export namespace Prisma {
     trigger_subscriptions?: AutomationTriggerSubscriptionUncheckedUpdateManyWithoutConnectionNestedInput
   }
 
-  export type ToolServerUpsertWithoutCredentialInput = {
-    update: XOR<ToolServerUpdateWithoutCredentialInput, ToolServerUncheckedUpdateWithoutCredentialInput>
-    create: XOR<ToolServerCreateWithoutCredentialInput, ToolServerUncheckedCreateWithoutCredentialInput>
-    where?: ToolServerWhereInput
-  }
-
-  export type ToolServerUpdateToOneWithWhereWithoutCredentialInput = {
-    where?: ToolServerWhereInput
-    data: XOR<ToolServerUpdateWithoutCredentialInput, ToolServerUncheckedUpdateWithoutCredentialInput>
-  }
-
-  export type ToolServerUpdateWithoutCredentialInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    name?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
-    tool_count?: IntFieldUpdateOperationsInput | number
-    last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutTool_serversNestedInput
-    owner?: UserUpdateOneWithoutTool_serversNestedInput
-    connection?: ConnectionUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUpdateManyWithoutTool_serverNestedInput
-  }
-
-  export type ToolServerUncheckedUpdateWithoutCredentialInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    owner_id?: NullableStringFieldUpdateOperationsInput | string | null
-    name?: StringFieldUpdateOperationsInput | string
-    url?: StringFieldUpdateOperationsInput | string
-    auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
-    tool_count?: IntFieldUpdateOperationsInput | number
-    last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    connection?: ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput
-  }
-
   export type BotCredentialUpsertWithWhereUniqueWithoutCredentialInput = {
     where: BotCredentialWhereUniqueInput
     update: XOR<BotCredentialUpdateWithoutCredentialInput, BotCredentialUncheckedUpdateWithoutCredentialInput>
@@ -218010,7 +215613,6 @@ export namespace Prisma {
     owner?: UserCreateNestedOneWithoutCredentialsInput
     last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
     connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialCreateNestedManyWithoutCredentialInput
   }
 
@@ -218038,7 +215640,6 @@ export namespace Prisma {
     created_at?: Date | string
     updated_at?: Date | string
     connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    tool_server?: ToolServerUncheckedCreateNestedOneWithoutCredentialInput
     bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
   }
 
@@ -218225,7 +215826,6 @@ export namespace Prisma {
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
   }
 
@@ -218253,7 +215853,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
   }
 
@@ -218652,67 +216251,6 @@ export namespace Prisma {
     create: XOR<UserCreateWithoutTool_serversInput, UserUncheckedCreateWithoutTool_serversInput>
   }
 
-  export type CredentialCreateWithoutTool_serverInput = {
-    id?: string
-    owner_type?: $Enums.CredentialOwnerType
-    kind: $Enums.CredentialKind
-    label: string
-    service_key?: string | null
-    service_name?: string | null
-    visibility?: $Enums.Visibility
-    status?: $Enums.CredentialStatus
-    masked_hint?: string | null
-    website_domain?: string | null
-    expires_at?: Date | string | null
-    scope?: string | null
-    secret_resource_name: string
-    secret_version?: string | null
-    last_tested_at?: Date | string | null
-    last_used_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutCredentialsInput
-    owner?: UserCreateNestedOneWithoutCredentialsInput
-    last_used_bot?: BotCreateNestedOneWithoutCredential_last_usedInput
-    connection?: ConnectionCreateNestedOneWithoutCredentialInput
-    bots?: BotCredentialCreateNestedManyWithoutCredentialInput
-    events?: CredentialEventCreateNestedManyWithoutCredentialInput
-  }
-
-  export type CredentialUncheckedCreateWithoutTool_serverInput = {
-    id?: string
-    organization_id: string
-    owner_type?: $Enums.CredentialOwnerType
-    owner_id?: string | null
-    kind: $Enums.CredentialKind
-    label: string
-    service_key?: string | null
-    service_name?: string | null
-    visibility?: $Enums.Visibility
-    status?: $Enums.CredentialStatus
-    masked_hint?: string | null
-    website_domain?: string | null
-    expires_at?: Date | string | null
-    scope?: string | null
-    secret_resource_name: string
-    secret_version?: string | null
-    last_tested_at?: Date | string | null
-    last_used_at?: Date | string | null
-    last_used_bot_id?: string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    connection?: ConnectionUncheckedCreateNestedOneWithoutCredentialInput
-    bots?: BotCredentialUncheckedCreateNestedManyWithoutCredentialInput
-    events?: CredentialEventUncheckedCreateNestedManyWithoutCredentialInput
-  }
-
-  export type CredentialCreateOrConnectWithoutTool_serverInput = {
-    where: CredentialWhereUniqueInput
-    create: XOR<CredentialCreateWithoutTool_serverInput, CredentialUncheckedCreateWithoutTool_serverInput>
-  }
-
   export type ConnectionCreateWithoutTool_serverInput = {
     id?: string
     kind: $Enums.ConnectionKind
@@ -218784,26 +216322,6 @@ export namespace Prisma {
   export type ConnectionCreateOrConnectWithoutTool_serverInput = {
     where: ConnectionWhereUniqueInput
     create: XOR<ConnectionCreateWithoutTool_serverInput, ConnectionUncheckedCreateWithoutTool_serverInput>
-  }
-
-  export type BotToolServerCreateWithoutTool_serverInput = {
-    created_at?: Date | string
-    bot: BotCreateNestedOneWithoutBot_tool_serversInput
-  }
-
-  export type BotToolServerUncheckedCreateWithoutTool_serverInput = {
-    bot_id: string
-    created_at?: Date | string
-  }
-
-  export type BotToolServerCreateOrConnectWithoutTool_serverInput = {
-    where: BotToolServerWhereUniqueInput
-    create: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput>
-  }
-
-  export type BotToolServerCreateManyTool_serverInputEnvelope = {
-    data: BotToolServerCreateManyTool_serverInput | BotToolServerCreateManyTool_serverInput[]
-    skipDuplicates?: boolean
   }
 
   export type OrganizationUpsertWithoutTool_serversInput = {
@@ -219064,73 +216582,6 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type CredentialUpsertWithoutTool_serverInput = {
-    update: XOR<CredentialUpdateWithoutTool_serverInput, CredentialUncheckedUpdateWithoutTool_serverInput>
-    create: XOR<CredentialCreateWithoutTool_serverInput, CredentialUncheckedCreateWithoutTool_serverInput>
-    where?: CredentialWhereInput
-  }
-
-  export type CredentialUpdateToOneWithWhereWithoutTool_serverInput = {
-    where?: CredentialWhereInput
-    data: XOR<CredentialUpdateWithoutTool_serverInput, CredentialUncheckedUpdateWithoutTool_serverInput>
-  }
-
-  export type CredentialUpdateWithoutTool_serverInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    owner_type?: EnumCredentialOwnerTypeFieldUpdateOperationsInput | $Enums.CredentialOwnerType
-    kind?: EnumCredentialKindFieldUpdateOperationsInput | $Enums.CredentialKind
-    label?: StringFieldUpdateOperationsInput | string
-    service_key?: NullableStringFieldUpdateOperationsInput | string | null
-    service_name?: NullableStringFieldUpdateOperationsInput | string | null
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
-    masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
-    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
-    expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
-    secret_resource_name?: StringFieldUpdateOperationsInput | string
-    secret_version?: NullableStringFieldUpdateOperationsInput | string | null
-    last_tested_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutCredentialsNestedInput
-    owner?: UserUpdateOneWithoutCredentialsNestedInput
-    last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
-    connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
-    events?: CredentialEventUpdateManyWithoutCredentialNestedInput
-  }
-
-  export type CredentialUncheckedUpdateWithoutTool_serverInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    owner_type?: EnumCredentialOwnerTypeFieldUpdateOperationsInput | $Enums.CredentialOwnerType
-    owner_id?: NullableStringFieldUpdateOperationsInput | string | null
-    kind?: EnumCredentialKindFieldUpdateOperationsInput | $Enums.CredentialKind
-    label?: StringFieldUpdateOperationsInput | string
-    service_key?: NullableStringFieldUpdateOperationsInput | string | null
-    service_name?: NullableStringFieldUpdateOperationsInput | string | null
-    visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumCredentialStatusFieldUpdateOperationsInput | $Enums.CredentialStatus
-    masked_hint?: NullableStringFieldUpdateOperationsInput | string | null
-    website_domain?: NullableStringFieldUpdateOperationsInput | string | null
-    expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    scope?: NullableStringFieldUpdateOperationsInput | string | null
-    secret_resource_name?: StringFieldUpdateOperationsInput | string
-    secret_version?: NullableStringFieldUpdateOperationsInput | string | null
-    last_tested_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    last_used_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    last_used_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
-    events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
-  }
-
   export type ConnectionUpsertWithoutTool_serverInput = {
     update: XOR<ConnectionUpdateWithoutTool_serverInput, ConnectionUncheckedUpdateWithoutTool_serverInput>
     create: XOR<ConnectionCreateWithoutTool_serverInput, ConnectionUncheckedCreateWithoutTool_serverInput>
@@ -219208,22 +216659,6 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutConnectionNestedInput
     user_defaults?: UserServiceDefaultUncheckedUpdateManyWithoutConnectionNestedInput
     trigger_subscriptions?: AutomationTriggerSubscriptionUncheckedUpdateManyWithoutConnectionNestedInput
-  }
-
-  export type BotToolServerUpsertWithWhereUniqueWithoutTool_serverInput = {
-    where: BotToolServerWhereUniqueInput
-    update: XOR<BotToolServerUpdateWithoutTool_serverInput, BotToolServerUncheckedUpdateWithoutTool_serverInput>
-    create: XOR<BotToolServerCreateWithoutTool_serverInput, BotToolServerUncheckedCreateWithoutTool_serverInput>
-  }
-
-  export type BotToolServerUpdateWithWhereUniqueWithoutTool_serverInput = {
-    where: BotToolServerWhereUniqueInput
-    data: XOR<BotToolServerUpdateWithoutTool_serverInput, BotToolServerUncheckedUpdateWithoutTool_serverInput>
-  }
-
-  export type BotToolServerUpdateManyWithWhereWithoutTool_serverInput = {
-    where: BotToolServerScalarWhereInput
-    data: XOR<BotToolServerUpdateManyMutationInput, BotToolServerUncheckedUpdateManyWithoutTool_serverInput>
   }
 
   export type OrganizationCreateWithoutFilesInput = {
@@ -220201,7 +217636,6 @@ export namespace Prisma {
     model?: AiModelCreateNestedOneWithoutBotsInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -220278,7 +217712,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -221453,7 +218886,6 @@ export namespace Prisma {
     model?: AiModelUpdateOneWithoutBotsNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -221530,7 +218962,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -221807,7 +219238,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -221884,7 +219314,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -222190,7 +219619,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -222267,7 +219695,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -224155,7 +221582,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -224232,7 +221658,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -225031,7 +222456,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -225108,7 +222532,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -228105,7 +225528,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -228182,7 +225604,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -228760,7 +226181,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -228837,7 +226257,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -229262,7 +226681,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -229339,7 +226757,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -229541,7 +226958,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -229618,7 +227034,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -230577,7 +227992,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -230654,7 +228068,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -231222,7 +228635,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -231299,7 +228711,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -232521,7 +229932,6 @@ export namespace Prisma {
     image?: FileCreateNestedOneWithoutBot_imageInput
     approval_rules?: BotApprovalRuleCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutBotInput
@@ -232598,7 +230008,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedCreateNestedManyWithoutDuplicated_fromInput
     approval_rules?: BotApprovalRuleUncheckedCreateNestedManyWithoutBotInput
     bot_connections?: BotConnectionUncheckedCreateNestedManyWithoutBotInput
-    bot_tool_servers?: BotToolServerUncheckedCreateNestedManyWithoutBotInput
     bot_credentials?: BotCredentialUncheckedCreateNestedManyWithoutBotInput
     bot_skills?: BotSkillUncheckedCreateNestedManyWithoutBotInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutBotInput
@@ -233012,7 +230421,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -233089,7 +230497,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -233771,10 +231178,8 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -234452,7 +231857,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -234529,7 +231933,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -235917,7 +233320,6 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
@@ -235945,7 +233347,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
@@ -236013,17 +233414,14 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     organization?: OrganizationUpdateOneRequiredWithoutTool_serversNestedInput
-    credential?: CredentialUpdateOneWithoutTool_serverNestedInput
     connection?: ConnectionUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateWithoutOwnerInput = {
@@ -236032,17 +233430,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateManyWithoutOwnerInput = {
@@ -236051,10 +233446,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237433,10 +234826,8 @@ export namespace Prisma {
     name: string
     url: string
     auth_kind?: $Enums.ToolServerAuthKind
-    credential_id?: string | null
     visibility?: $Enums.Visibility
-    status?: $Enums.ToolServerStatus
-    status_message?: string | null
+    composio_toolkit_slug?: string | null
     tool_count?: number
     last_listed_at?: Date | string | null
     deleted_at?: Date | string | null
@@ -237833,7 +235224,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -237910,7 +235300,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -238839,7 +236228,6 @@ export namespace Prisma {
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     last_used_bot?: BotUpdateOneWithoutCredential_last_usedNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
@@ -238867,7 +236255,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
@@ -238902,17 +236289,14 @@ export namespace Prisma {
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     owner?: UserUpdateOneWithoutTool_serversNestedInput
-    credential?: CredentialUpdateOneWithoutTool_serverNestedInput
     connection?: ConnectionUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateWithoutOrganizationInput = {
@@ -238921,17 +236305,14 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutTool_serverNestedInput
-    bots?: BotToolServerUncheckedUpdateManyWithoutTool_serverNestedInput
   }
 
   export type ToolServerUncheckedUpdateManyWithoutOrganizationInput = {
@@ -238940,10 +236321,8 @@ export namespace Prisma {
     name?: StringFieldUpdateOperationsInput | string
     url?: StringFieldUpdateOperationsInput | string
     auth_kind?: EnumToolServerAuthKindFieldUpdateOperationsInput | $Enums.ToolServerAuthKind
-    credential_id?: NullableStringFieldUpdateOperationsInput | string | null
     visibility?: EnumVisibilityFieldUpdateOperationsInput | $Enums.Visibility
-    status?: EnumToolServerStatusFieldUpdateOperationsInput | $Enums.ToolServerStatus
-    status_message?: NullableStringFieldUpdateOperationsInput | string | null
+    composio_toolkit_slug?: NullableStringFieldUpdateOperationsInput | string | null
     tool_count?: IntFieldUpdateOperationsInput | number
     last_listed_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -239980,7 +237359,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -240057,7 +237435,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -240741,7 +238118,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -240818,7 +238194,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -240972,11 +238347,6 @@ export namespace Prisma {
     id?: string
     connection_id: string
     is_default_for_service?: boolean
-    created_at?: Date | string
-  }
-
-  export type BotToolServerCreateManyBotInput = {
-    tool_server_id: string
     created_at?: Date | string
   }
 
@@ -241427,7 +238797,6 @@ export namespace Prisma {
     image?: FileUpdateOneWithoutBot_imageNestedInput
     approval_rules?: BotApprovalRuleUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutBotNestedInput
@@ -241504,7 +238873,6 @@ export namespace Prisma {
     duplicates?: BotUncheckedUpdateManyWithoutDuplicated_fromNestedInput
     approval_rules?: BotApprovalRuleUncheckedUpdateManyWithoutBotNestedInput
     bot_connections?: BotConnectionUncheckedUpdateManyWithoutBotNestedInput
-    bot_tool_servers?: BotToolServerUncheckedUpdateManyWithoutBotNestedInput
     bot_credentials?: BotCredentialUncheckedUpdateManyWithoutBotNestedInput
     bot_skills?: BotSkillUncheckedUpdateManyWithoutBotNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutBotNestedInput
@@ -241619,21 +238987,6 @@ export namespace Prisma {
     id?: StringFieldUpdateOperationsInput | string
     connection_id?: StringFieldUpdateOperationsInput | string
     is_default_for_service?: BoolFieldUpdateOperationsInput | boolean
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerUpdateWithoutBotInput = {
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    tool_server?: ToolServerUpdateOneRequiredWithoutBotsNestedInput
-  }
-
-  export type BotToolServerUncheckedUpdateWithoutBotInput = {
-    tool_server_id?: StringFieldUpdateOperationsInput | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerUncheckedUpdateManyWithoutBotInput = {
-    tool_server_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
@@ -242789,7 +240142,6 @@ export namespace Prisma {
     organization?: OrganizationUpdateOneRequiredWithoutCredentialsNestedInput
     owner?: UserUpdateOneWithoutCredentialsNestedInput
     connection?: ConnectionUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUpdateManyWithoutCredentialNestedInput
   }
@@ -242817,7 +240169,6 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
     connection?: ConnectionUncheckedUpdateOneWithoutCredentialNestedInput
-    tool_server?: ToolServerUncheckedUpdateOneWithoutCredentialNestedInput
     bots?: BotCredentialUncheckedUpdateManyWithoutCredentialNestedInput
     events?: CredentialEventUncheckedUpdateManyWithoutCredentialNestedInput
   }
@@ -247930,26 +245281,6 @@ export namespace Prisma {
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     action?: NullableStringFieldUpdateOperationsInput | string | null
     metadata?: NullableJsonNullValueInput | InputJsonValue
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerCreateManyTool_serverInput = {
-    bot_id: string
-    created_at?: Date | string
-  }
-
-  export type BotToolServerUpdateWithoutTool_serverInput = {
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    bot?: BotUpdateOneRequiredWithoutBot_tool_serversNestedInput
-  }
-
-  export type BotToolServerUncheckedUpdateWithoutTool_serverInput = {
-    bot_id?: StringFieldUpdateOperationsInput | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type BotToolServerUncheckedUpdateManyWithoutTool_serverInput = {
-    bot_id?: StringFieldUpdateOperationsInput | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 

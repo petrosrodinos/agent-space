@@ -2,6 +2,7 @@ import type { Visibility } from "@/features/connections/interfaces/connections.i
 
 export const ToolServerAuthKinds = { NONE: "NONE", TOKEN: "TOKEN", OAUTH: "OAUTH" } as const;
 export type ToolServerAuthKind = (typeof ToolServerAuthKinds)[keyof typeof ToolServerAuthKinds];
+/** Same values as a connection's status: a tool server's status is its connection's. */
 export const ToolServerStatuses = { ACTIVE: "ACTIVE", NEEDS_RECONNECTING: "NEEDS_RECONNECTING", ERROR: "ERROR" } as const;
 export type ToolServerStatus = (typeof ToolServerStatuses)[keyof typeof ToolServerStatuses];
 
@@ -15,8 +16,8 @@ export interface ToolServer {
   status_message: string | null;
   tool_count: number;
   last_listed_at: string | null;
-  masked_hint: string | null;
-  signed_in?: boolean;
+  /** The connected-service key (Composio custom toolkit). Null for servers that must be added again. */
+  service_key: string | null;
   owner: { id: string; name: string | null; email: string } | null;
   bots: { id: string; name: string; emoji: string; color: string }[];
   connection_id: string | null;
@@ -31,11 +32,12 @@ export interface CreateToolServerDto {
   token?: string;
   visibility?: Visibility;
   bot_ids?: string[];
+  return_url?: string;
 }
 
+/** The address and sign-in type can't change after adding: remove the server and add it again instead. */
 export interface UpdateToolServerDto {
   name?: string;
-  url?: string;
   visibility?: Visibility;
   bot_ids?: string[];
 }

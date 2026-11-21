@@ -707,12 +707,6 @@ enum ToolServerAuthKind {
   TOKEN
 }
 
-enum ToolServerStatus {
-  ACTIVE
-  NEEDS_RECONNECTING
-  ERROR
-}
-
 enum ToolRunsOn {
   SERVER
   DEVICE
@@ -1707,7 +1701,6 @@ model Bot {
 
   approval_rules            BotApprovalRule[]
   bot_connections           BotConnection[]
-  bot_tool_servers          BotToolServer[]
   bot_credentials           BotCredential[]
   bot_skills                BotSkill[]
   knowledge_items           KnowledgeItem[]
@@ -1768,19 +1761,6 @@ model BotConnection {
   @@unique([bot_id, connection_id])
   @@index([connection_id])
   @@map("bot_connections")
-}
-
-model BotToolServer {
-  bot_id         String
-  tool_server_id String
-  created_at     DateTime @default(now())
-
-  bot         Bot        @relation(fields: [bot_id], references: [id], onDelete: Cascade)
-  tool_server ToolServer @relation(fields: [tool_server_id], references: [id], onDelete: Cascade)
-
-  @@id([bot_id, tool_server_id])
-  @@index([tool_server_id])
-  @@map("bot_tool_servers")
 }
 
 /// §8.9 "Choose bots" — which bots may use a secret.
@@ -2758,7 +2738,6 @@ model Credential {
   owner         User?             @relation("CredentialOwner", fields: [owner_id], references: [id], onDelete: SetNull)
   last_used_bot Bot?              @relation("CredentialLastUsedBot", fields: [last_used_bot_id], references: [id], onDelete: SetNull)
   connection    Connection?
-  tool_server   ToolServer?
   bots          BotCredential[]
   events        CredentialEvent[]
 
@@ -2790,29 +2769,27 @@ model CredentialEvent {
   @@map("credential_events")
 }
 
-/// §8.4 — custom MCP tool server. Tools are listed from the server and cached in Redis.
+/// §8.4 — custom MCP tool server, registered with Composio as a shared custom toolkit. The user's sign-in, status and
+/// bot limits live on its Connection (kind MCP), exactly like a Composio service; tokens never reach Agent Space.
 model ToolServer {
-  id              String             @id @default(uuid())
-  organization_id String
-  owner_id        String?
-  name            String
-  url             String
-  auth_kind       ToolServerAuthKind @default(NONE)
-  credential_id   String?            @unique
-  visibility      Visibility         @default(PRIVATE)
-  status          ToolServerStatus   @default(ACTIVE)
-  status_message  String?
-  tool_count      Int                @default(0)
-  last_listed_at  DateTime?
-  deleted_at      DateTime?
-  created_at      DateTime           @default(now())
-  updated_at      DateTime           @updatedAt
+  id                    String             @id @default(uuid())
+  organization_id       String
+  owner_id              String?
+  name                  String
+  url                   String
+  auth_kind             ToolServerAuthKind @default(NONE)
+  visibility            Visibility         @default(PRIVATE)
+  /// Composio custom toolkit slug (CUSTOM_*). Null for servers added before the move to Composio: they must be added again.
+  composio_toolkit_slug String?
+  tool_count            Int                @default(0)
+  last_listed_at        DateTime?
+  deleted_at            DateTime?
+  created_at            DateTime           @default(now())
+  updated_at            DateTime           @updatedAt
 
-  organization Organization    @relation(fields: [organization_id], references: [id], onDelete: Cascade)
-  owner        User?           @relation("ToolServerOwner", fields: [owner_id], references: [id], onDelete: SetNull)
-  credential   Credential?     @relation(fields: [credential_id], references: [id], onDelete: SetNull)
+  organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
+  owner        User?        @relation("ToolServerOwner", fields: [owner_id], references: [id], onDelete: SetNull)
   connection   Connection?
-  bots         BotToolServer[]
 
   @@index([organization_id, visibility])
   @@index([owner_id])

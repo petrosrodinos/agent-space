@@ -135,7 +135,6 @@ export const ApiRoutes = {
     one: (id: string) => `/tool-servers/${id}`,
     token: (id: string) => `/tool-servers/${id}/token`,
     sign_in: (id: string) => `/tool-servers/${id}/sign-in`,
-    sign_in_callback: "/tool-servers/sign-in/callback",
     test: (id: string) => `/tool-servers/${id}/test`,
   },
   credentials: {

@@ -39,7 +39,6 @@ export const Routes = {
   connections: {
     root: "/connections",
     callback: "/connections/callback",
-    mcp_callback: "/connections/mcp-callback",
     legacy_callback: "/integrations/callback",
     service: (slug: string) => `/connections/services/${slug}`,
     service_pattern: "/connections/services/:serviceSlug",

@@ -1,4 +1,5 @@
 import { ActionType, ApprovalLevel, Bot, BotApprovalRule, OrganizationSettings, ToolPermission } from 'generated/prisma';
+import { isCustomToolkit } from '@/integrations/composio/composio.service';
 
 /** Actions "hard to undo or that go outside the company" (§11) — asked for at the default level. */
 const IMPORTANT: ActionType[] = ['SEND_MESSAGE', 'POST_PUBLICLY', 'DELETE_DATA', 'PURCHASE_PAYMENT', 'SHARE_FILES', 'ENTER_PASSWORD', 'EXTERNAL_EMAIL', 'CONSULT_SENSITIVE_BOT'];
@@ -62,6 +63,19 @@ export function classifyToolSlug(slug: string, args: Record<string, unknown>, us
     }
     if (/(CREATE|UPDATE|PATCH|EDIT|MODIFY|MOVE|ADD|INSERT|UPSERT|SET_|RENAME|ASSIGN|MERGE|UPLOAD|COPY|BATCH)/.test(s)) return 'EDIT_RECORDS';
     return null;
+}
+
+/** MCP tool hints that Composio copies onto custom MCP tools as tags. */
+export const McpToolTags = { READ_ONLY: 'readOnlyHint' } as const;
+
+/**
+ * Classifies a Composio tool. Custom MCP tools (§8.4) honour the server's read-only hint; otherwise an unrecognised verb
+ * counts as OTHER (so it is reviewed) rather than read-only, since nothing is known about a private server's tools.
+ */
+export function classifyServiceTool(t: { slug: string; tags?: string[] }, args: Record<string, unknown>, userEmail?: string | null): ActionType | null {
+    if (!isCustomToolkit(t.slug)) return classifyToolSlug(t.slug, args, userEmail);
+    if (t.tags?.includes(McpToolTags.READ_ONLY)) return null;
+    return classifyToolSlug(t.slug, args, userEmail) ?? 'OTHER';
 }
 
 export const ACTION_LABEL: Record<ActionType, string> = {

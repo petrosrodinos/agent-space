@@ -45,7 +45,6 @@
     "@elastic/elasticsearch": "^9.5.1",
     "@google-cloud/secret-manager": "^8.0.0",
     "@google-cloud/storage": "^8.4.0",
-    "@modelcontextprotocol/sdk": "^1.32.2",
     "@nestjs/apollo": "^14.0.3",
     "@nestjs/axios": "^12.0.1",
     "@nestjs/bull": "^12.0.0",

@@ -5,10 +5,10 @@ import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { EventsService, UserEvents } from '@/core/realtime/events.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
-import { ComposioService, ComposioTool } from '@/integrations/composio/composio.service';
+import { ComposioService, ComposioTool, isCustomToolkit } from '@/integrations/composio/composio.service';
 import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
 import { AccessService, isAdminRole } from '../access/access.service';
-import { classifyToolSlug } from '../agent/approval-policy';
+import { classifyServiceTool } from '../agent/approval-policy';
 import { ActivityService } from '../activity/activity.service';
 import type { Actor } from '../bots/bots.service';
 import { CredentialsService } from './credentials.service';
@@ -67,18 +67,28 @@ export class ConnectionsService {
 
     /** Service details page: the service, every tool grouped into reads/writes, and this user's permission for each. */
     async serviceDetails(actor: Actor, slug: string) {
-        const [toolkit, tools, connected, settings, perms] = await Promise.all([
+        const custom = isCustomToolkit(slug);
+        const [toolkit, tools, connected, settings, perms, server] = await Promise.all([
             this.composio.getToolkit(slug),
             this.allTools(slug),
             this.prisma.connection.count({ where: { service_key: slug, ...this.access.usableConnectionsWhere(actor.organization_id, actor.user_id) } }),
             this.prisma.organizationSettings.findUnique({ where: { organization_id: actor.organization_id } }),
             this.prisma.userToolPermission.findMany({ where: { user_id: actor.user_id, organization_id: actor.organization_id, service_key: slug } }),
+            // A custom toolkit is shared across the Composio project: show this organisation's name for it, not Composio's.
+            custom ? this.prisma.connection.findFirst({ where: { service_key: slug, ...this.access.usableConnectionsWhere(actor.organization_id, actor.user_id) }, select: { service_name: true } }) : null,
         ]);
         const permission = new Map(perms.map((p) => [p.tool_slug, p.permission]));
         return {
-            toolkit: { ...toolkit, connected_count: connected, allowed: this.serviceAllowed(settings, toolkit.slug) },
+            toolkit: {
+                ...toolkit,
+                ...(custom ? { slug, name: server?.service_name ?? toolkit.name, description: null, website: null } : {}),
+                // Custom tool servers are added and removed from the "Custom tool servers" section, not from this page.
+                is_tool_server: custom,
+                connected_count: connected,
+                allowed: custom || this.serviceAllowed(settings, toolkit.slug),
+            },
             tools: tools.map((t) => {
-                const action = classifyToolSlug(t.slug, {});
+                const action = classifyServiceTool(t, {});
                 return {
                     slug: t.slug,
                     name: t.name,
@@ -150,7 +160,8 @@ export class ConnectionsService {
         }));
     }
 
-    private callbackUrl(connectionId: string, returnUrl?: string) {
+    /** Where a hosted sign-in returns to: /connections/callback?connection=<id> (or the app's own return address). */
+    callbackUrl(connectionId: string, returnUrl?: string) {
         const app = (this.config.get<string>('APP_URL') || '').replace(/\/$/, '');
         const base = returnUrl && /^(https?:\/\/|agentspace:\/\/)/.test(returnUrl) ? returnUrl : this.config.get<string>('COMPOSIO_CALLBACK_URL') || `${app}/connections/callback`;
         const u = new URL(base);
@@ -208,16 +219,22 @@ export class ConnectionsService {
         const c = await this.requireOwnConnection(actor, id);
         if (!c.composio_connected_account_id) throw new BadRequestException('This connection has no sign-in in progress');
         const acc = await this.composio.getConnectedAccount(c.composio_connected_account_id);
-        const status = acc.status === 'ACTIVE' ? 'ACTIVE' : acc.status === 'FAILED' ? 'ERROR' : 'NEEDS_RECONNECTING';
+        let status: 'ACTIVE' | 'ERROR' | 'NEEDS_RECONNECTING' = acc.status === 'ACTIVE' ? 'ACTIVE' : acc.status === 'FAILED' ? 'ERROR' : 'NEEDS_RECONNECTING';
+        let message: string | null = status === 'ACTIVE' ? null : acc.status === 'INITIATED' ? 'Waiting for sign-in' : `Sign-in ${acc.status.toLowerCase()}`;
+        // A custom tool server's tools are read once its first account is signed in (§8.4).
+        if (status === 'ACTIVE' && c.kind === 'MCP' && c.status !== 'ACTIVE') {
+            try {
+                await this.syncToolServerTools(c);
+            } catch (e) {
+                status = 'ERROR';
+                message = `Signed in, but its tools couldn't be loaded: ${(e as Error).message.slice(0, 200)}`;
+            }
+        }
+        // The tool server's host stays the visible identifier: custom servers don't report an account email.
+        const identifier = c.kind === 'MCP' ? c.account_identifier : (acc.account_identifier ?? c.account_identifier);
         const updated = await this.prisma.connection.update({
             where: { id },
-            data: {
-                status,
-                status_message: status === 'ACTIVE' ? null : acc.status === 'INITIATED' ? 'Waiting for sign-in' : `Sign-in ${acc.status.toLowerCase()}`,
-                account_identifier: acc.account_identifier ?? c.account_identifier,
-                composio_user_id: acc.user_id ?? c.composio_user_id,
-                last_synced_at: new Date(),
-            },
+            data: { status, status_message: message, account_identifier: identifier, composio_user_id: acc.user_id ?? c.composio_user_id, last_synced_at: new Date() },
         });
         if (status === 'ACTIVE' && c.status !== 'ACTIVE') {
             await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'connection.created', target_type: 'connection', target_id: id, connection_id: id, metadata: { service: c.service_key, visibility: c.visibility } });
@@ -228,7 +245,9 @@ export class ConnectionsService {
 
     async reconnect(actor: Actor, id: string, returnUrl?: string) {
         const c = await this.requireOwnConnection(actor, id);
-        if (c.kind !== 'COMPOSIO') throw new BadRequestException('Replace the key on the Secrets page instead');
+        // Custom tool servers with a sign-in carry their toolkit's auth config; access-token ones replace the token instead.
+        const signInServer = c.kind === 'MCP' && !!c.composio_auth_config_id && isCustomToolkit(c.service_key);
+        if (c.kind !== 'COMPOSIO' && !signInServer) throw new BadRequestException(c.kind === 'MCP' ? 'This tool server has no sign-in to redo' : 'Replace the key on the Secrets page instead');
         const authConfigId = c.composio_auth_config_id ?? (await this.composio.ensureAuthConfig(c.service_key));
         const old = c.composio_connected_account_id;
         const composioUserId = this.composio.userId(actor.organization_id, c.visibility === 'SHARED' ? 'org' : (c.owner_id ?? actor.user_id));
@@ -262,14 +281,18 @@ export class ConnectionsService {
 
     async remove(actor: Actor, id: string) {
         const c = await this.requireOwnConnection(actor, id);
-        if (c.kind === 'COMPOSIO' && c.composio_connected_account_id) {
+        // Composio services and custom tool servers alike: only this account is removed, never a shared custom toolkit.
+        if (c.composio_connected_account_id) {
             await this.composio.deleteConnectedAccount(c.composio_connected_account_id).catch((e) => this.logger.warn(`Composio delete failed: ${e.message}`));
         }
+        // Tool servers added before the move to Composio may still point to their own stored token.
         if (c.credential_id) await this.credentials.remove(actor, c.credential_id).catch(() => undefined);
+        const now = new Date();
         await this.prisma.$transaction([
-            this.prisma.connection.update({ where: { id }, data: { deleted_at: new Date(), composio_connected_account_id: null, status: 'ERROR', status_message: 'Disconnected' } }),
+            this.prisma.connection.update({ where: { id }, data: { deleted_at: now, composio_connected_account_id: null, status: 'ERROR', status_message: 'Disconnected' } }),
             this.prisma.botConnection.deleteMany({ where: { connection_id: id } }),
             this.prisma.userServiceDefault.deleteMany({ where: { connection_id: id } }),
+            ...(c.tool_server_id ? [this.prisma.toolServer.update({ where: { id: c.tool_server_id }, data: { deleted_at: now } })] : []),
         ]);
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'connection.removed', target_type: 'connection', target_id: id, metadata: { service: c.service_key, label: c.label } });
         return { ok: true };
@@ -293,7 +316,8 @@ export class ConnectionsService {
 
     /** §14.4 connections.sync-composio-status: an EXPIRED Composio connection becomes "Needs re-connecting". */
     async syncComposioStatuses() {
-        const rows = await this.prisma.connection.findMany({ where: { kind: 'COMPOSIO', deleted_at: null, composio_connected_account_id: { not: null }, status: { in: ['ACTIVE', 'NEEDS_RECONNECTING'] } }, take: 500 });
+        // Custom tool servers (MCP) with a sign-in are Composio connected accounts too: Composio refreshes their tokens.
+        const rows = await this.prisma.connection.findMany({ where: { kind: { in: ['COMPOSIO', 'MCP'] }, deleted_at: null, composio_connected_account_id: { not: null }, status: { in: ['ACTIVE', 'NEEDS_RECONNECTING'] } }, take: 500 });
         let changed = 0;
         for (const c of rows) {
             try {
@@ -313,12 +337,25 @@ export class ConnectionsService {
         return { checked: rows.length, changed };
     }
 
+    /**
+     * Custom tool servers (§8.4): asks Composio to re-read the server's tools, records the count and clears the tool
+     * caches so bots see the change right away. Throws when the server can't be reached.
+     */
+    async syncToolServerTools(c: { service_key: string; composio_connected_account_id: string | null; tool_server_id: string | null }) {
+        await this.composio.syncCustomToolkit(c.service_key, c.composio_connected_account_id);
+        await this.redis.client.del(this.redis.key(RedisKeys.composioToolsCache(c.service_key)), this.redis.key(RedisKeys.composioAllToolsCache(c.service_key)));
+        const tools = await this.composio.listAllTools(c.service_key);
+        if (c.tool_server_id) await this.prisma.toolServer.update({ where: { id: c.tool_server_id }, data: { tool_count: tools.length, last_listed_at: new Date() } });
+        return tools;
+    }
+
     /** §8.7 Member removal: delete their private connections and keys in that organisation (and revoke at the provider). */
     async revokeAndDeleteForMember(orgId: string, userId: string) {
         const conns = await this.prisma.connection.findMany({ where: { organization_id: orgId, owner_id: userId, visibility: 'PRIVATE', deleted_at: null } });
         for (const c of conns) {
             if (c.composio_connected_account_id) await this.composio.deleteConnectedAccount(c.composio_connected_account_id);
             await this.prisma.connection.update({ where: { id: c.id }, data: { deleted_at: new Date(), composio_connected_account_id: null } });
+            if (c.tool_server_id) await this.prisma.toolServer.update({ where: { id: c.tool_server_id }, data: { deleted_at: new Date() } });
         }
         const creds = await this.prisma.credential.findMany({ where: { organization_id: orgId, owner_id: userId, visibility: 'PRIVATE', deleted_at: null } });
         for (const cred of creds) {

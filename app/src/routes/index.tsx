@@ -25,7 +25,6 @@ const SkillDetailPage = lazy(() => import("@/pages/skills/pages/skill-detail"));
 const ConnectionsPage = lazy(() => import("@/pages/connections"));
 const ConnectionCallbackPage = lazy(() => import("@/pages/connections/pages/callback"));
 const ConnectionServicePage = lazy(() => import("@/pages/connections/pages/service"));
-const ToolServerCallbackPage = lazy(() => import("@/pages/connections/pages/mcp-callback"));
 const SecretsPage = lazy(() => import("@/pages/secrets"));
 const ToolsPage = lazy(() => import("@/pages/tools"));
 const TasksPage = lazy(() => import("@/pages/tasks"));
@@ -88,7 +87,6 @@ export default function AppRoutes() {
         <Route path={Routes.connections.root} element={page(<ConnectionsPage />)} />
         <Route path={Routes.connections.callback} element={page(<ConnectionCallbackPage />)} />
         <Route path={Routes.connections.service_pattern} element={page(<ConnectionServicePage />)} />
-        <Route path={Routes.connections.mcp_callback} element={page(<ToolServerCallbackPage />)} />
         <Route path={Routes.connections.legacy_callback} element={page(<ConnectionCallbackPage />)} />
         <Route path={Routes.secrets} element={page(<SecretsPage />)} />
         <Route path={Routes.tools} element={page(<ToolsPage />)} />

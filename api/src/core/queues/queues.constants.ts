@@ -54,7 +54,6 @@ export const PLATFORM_SCHEDULES: { queue: string; job: string; pattern?: string;
     { queue: Queues.STORAGE, job: Jobs.storage.AGGREGATE_USAGE, pattern: '0 3 * * *' },
     { queue: Queues.AUTOMATIONS, job: Jobs.automations.RECONCILE, pattern: '30 3 * * *' },
     { queue: Queues.CONNECTIONS, job: Jobs.connections.SYNC_COMPOSIO_STATUS, pattern: '*/15 * * * *' },
-    { queue: Queues.CONNECTIONS, job: Jobs.connections.REFRESH_TOKEN, every: 2 * 60_000 },
     { queue: Queues.CLOUD_COMPUTERS, job: Jobs.cloudComputers.SWEEP, every: 5 * 60_000 },
     { queue: Queues.USAGE, job: Jobs.usage.FLUSH_COUNTERS, every: 60_000 },
     { queue: Queues.USAGE, job: Jobs.usage.LIMIT_ALERTS, every: 5 * 60_000 },

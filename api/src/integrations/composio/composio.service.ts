@@ -1,7 +1,34 @@
 import { BadGatewayException, Injectable, Logger, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 
-const BASE = 'https://backend.composio.dev/api/v3';
+const BASE = 'https://backend.composio.dev/api';
+
+/** API versions. Custom MCP toolkits are managed under v3.1; everything else still uses v3. */
+const ApiVersions = { V3: 'v3', V3_1: 'v3.1' } as const;
+type ApiVersion = (typeof ApiVersions)[keyof typeof ApiVersions];
+
+/** Custom MCP toolkits (and their tools) are slugged CUSTOM_<NAME>. */
+export const CUSTOM_TOOLKIT_PREFIX = 'CUSTOM_';
+export const isCustomToolkit = (slug: string | null | undefined) => !!slug && slug.toUpperCase().startsWith(CUSTOM_TOOLKIT_PREFIX);
+
+/** How a custom MCP server authenticates, in Composio's terms. */
+export const CustomAuthModes = { NO_AUTH: 'NO_AUTH', API_KEY: 'API_KEY', DCR_OAUTH: 'DCR_OAUTH' } as const;
+export type CustomAuthMode = (typeof CustomAuthModes)[keyof typeof CustomAuthModes];
+
+/** Custom toolkits are shared across the Composio project; every connected account still belongs to one Composio user. */
+const SHARED_TOOLKIT_USER = 'all';
+/** The access token is sent to the MCP server as a bearer header; Composio fills in each account's key. */
+const API_KEY_FIELD = 'generic_api_key';
+const API_KEY_HEADERS = { Authorization: `Bearer {{${API_KEY_FIELD}}}` };
+/** Custom toolkit tools only exist in the latest toolkit version; v3 reads a pinned version without them. */
+const LATEST_VERSION = 'latest';
+const SHARED_TOOLKIT_EXISTS = 'CustomToolkit_SharedToolkitExists';
+
+export interface CustomToolkit {
+    slug: string;
+    url: string;
+    auth_mode: CustomAuthMode | null;
+}
 
 export interface ComposioToolkit {
     slug: string;
@@ -90,10 +117,10 @@ export class ComposioService {
         return `agentspace:${this.config.get('NODE_ENV')}:${organizationId}:${ownerKey}`;
     }
 
-    private async call<T>(path: string, init: RequestInit = {}): Promise<T> {
+    private async call<T>(path: string, init: RequestInit = {}, version: ApiVersion = ApiVersions.V3): Promise<T> {
         const key = this.config.get<string>('COMPOSIO_API_KEY');
         if (!key) throw new ServiceUnavailableException('Connections are not configured');
-        const res = await fetch(`${BASE}${path}`, {
+        const res = await fetch(`${BASE}/${version}${path}`, {
             ...init,
             headers: { 'x-api-key': key, 'Content-Type': 'application/json', ...(init.headers ?? {}) },
         });
@@ -105,7 +132,7 @@ export class ComposioService {
         if (!res.ok) {
             const msg = body?.error?.message || body?.message || (typeof body === 'string' ? body : res.statusText);
             this.logger.warn(`Composio ${init.method ?? 'GET'} ${path} -> ${res.status}: ${String(msg).slice(0, 300)}`);
-            throw new BadGatewayException({ message: `Connection service error: ${String(msg).slice(0, 200)}`, status: res.status });
+            throw new BadGatewayException({ message: `Connection service error: ${String(msg).slice(0, 200)}`, status: res.status, error_slug: body?.error?.slug ?? null, detail: String(msg).slice(0, 500) });
         }
         return body as T;
     }
@@ -166,13 +193,19 @@ export class ComposioService {
         q.set('sort_by', 'usage');
         const res = await this.call<any>(`/toolkits?${q}`);
         return {
-            items: (res.items ?? []).filter((t: any) => !t.deprecated?.isDeprecated).map((t: any) => this.mapToolkit(t)),
+            // Custom MCP toolkits are shared across the whole Composio project (every organisation): never list them in the catalog.
+            items: (res.items ?? []).filter((t: any) => !t.deprecated?.isDeprecated && !isCustomToolkit(t.slug)).map((t: any) => this.mapToolkit(t)),
             next_cursor: res.next_cursor ?? null,
         };
     }
 
     async getToolkit(slug: string): Promise<ComposioToolkit> {
-        return this.mapToolkit(await this.call<any>(`/toolkits/${encodeURIComponent(slug)}`));
+        return this.mapToolkit(await this.call<any>(`/toolkits/${encodeURIComponent(slug)}`, {}, isCustomToolkit(slug) ? ApiVersions.V3_1 : ApiVersions.V3));
+    }
+
+    /** Query string that makes the v3 tools API return a custom toolkit's tools. */
+    private versionQuery(toolkitSlug: string) {
+        return isCustomToolkit(toolkitSlug) ? `&toolkit_versions=${LATEST_VERSION}` : '';
     }
 
     async listCategories(): Promise<{ id: string; name: string }[]> {
@@ -240,10 +273,12 @@ export class ComposioService {
             input_parameters: t.input_parameters ?? { type: 'object', properties: {} },
             tags: t.tags ?? [],
         });
-        const important = await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&important=true&limit=${limit}`);
+        const v = this.versionQuery(toolkitSlug);
+        // Custom MCP toolkits have no "important" tools: take them all.
+        const important = isCustomToolkit(toolkitSlug) ? { items: [] } : await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&important=true&limit=${limit}`);
         let items = (important.items ?? []).filter((t: any) => !t.is_deprecated);
         if (items.length < 5) {
-            const all = await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&limit=${limit}`);
+            const all = await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&limit=${limit}${v}`);
             const seen = new Set(items.map((t: any) => t.slug));
             items = items.concat((all.items ?? []).filter((t: any) => !t.is_deprecated && !seen.has(t.slug)));
         }
@@ -256,6 +291,7 @@ export class ComposioService {
         let cursor: string | null = null;
         do {
             const q = new URLSearchParams({ toolkit_slug: toolkitSlug, limit: '200' });
+            if (isCustomToolkit(toolkitSlug)) q.set('toolkit_versions', LATEST_VERSION);
             if (cursor) q.set('cursor', cursor);
             const res = await this.call<any>(`/tools?${q}`);
             for (const t of res.items ?? []) {
@@ -283,12 +319,18 @@ export class ComposioService {
      * Runs a tool with a connected account. Failures throw ComposioToolError, classified so the bot never relays
      * Composio's internal wording (e.g. "user ID does not match") as if it were a problem with the user's account.
      */
-    async executeTool(toolSlug: string, connectedAccountId: string, userId: string, args: Record<string, unknown>) {
+    async executeTool(toolSlug: string, connectedAccountId: string | null, userId: string, args: Record<string, unknown>) {
         let res: any;
         try {
             res = await this.call<any>(`/tools/execute/${encodeURIComponent(toolSlug)}`, {
                 method: 'POST',
-                body: JSON.stringify({ connected_account_id: connectedAccountId, user_id: userId, arguments: args }),
+                body: JSON.stringify({
+                    // Custom MCP servers without sign-in have no connected account: the Composio user is enough.
+                    ...(connectedAccountId ? { connected_account_id: connectedAccountId } : {}),
+                    user_id: userId,
+                    arguments: args,
+                    ...(isCustomToolkit(toolSlug) ? { version: LATEST_VERSION } : {}),
+                }),
             });
         } catch (e) {
             // Composio refused the call itself: either the sign-in is unusable, or it's on our side.
@@ -301,5 +343,65 @@ export class ComposioService {
             throw new ComposioToolError(NEEDS_RECONNECTING_PATTERN.test(detail) ? ToolFailureKinds.NEEDS_RECONNECTING : ToolFailureKinds.SERVICE_ERROR, detail);
         }
         return { data: res.data ?? null };
+    }
+
+    // ---------------- Custom MCP toolkits (§8.4) ----------------
+
+    private mapCustomToolkit(t: any): CustomToolkit {
+        const modes: string[] = t.auth_schemes ?? (t.auth_config_details ?? []).map((a: any) => a.mode);
+        const known = Object.values(CustomAuthModes) as string[];
+        return { slug: String(t.slug).toUpperCase(), url: t.meta?.app_url ?? t.base_url ?? '', auth_mode: (modes.find((m) => known.includes(m)) as CustomAuthMode | undefined) ?? null };
+    }
+
+    async getCustomToolkit(slug: string): Promise<CustomToolkit> {
+        return this.mapCustomToolkit(await this.call<any>(`/toolkits/${encodeURIComponent(slug)}`, {}, ApiVersions.V3_1));
+    }
+
+    /**
+     * Registers an MCP server as a shared custom toolkit, or returns the one already registered for that address (the
+     * caller checks its sign-in type). Toolkits are never deleted by us: other organisations or environments sharing
+     * the Composio project may use the same one. Each user's sign-in still lives in their own connected account.
+     */
+    async ensureCustomToolkit(url: string, mode: CustomAuthMode, discoveryUrl?: string): Promise<CustomToolkit> {
+        const scheme = mode === CustomAuthModes.DCR_OAUTH ? { mode, discovery_url: discoveryUrl } : mode === CustomAuthModes.API_KEY ? { mode, headers: API_KEY_HEADERS } : { mode };
+        const u = new URL(url);
+        const name = `${u.host}${u.pathname === '/' ? '' : u.pathname}`.slice(0, 80);
+        try {
+            const res = await this.call<{ slug: string }>('/custom/toolkits', { method: 'POST', body: JSON.stringify({ name, mcp_url: url, auth_schemes: [scheme], user_id: SHARED_TOOLKIT_USER }) }, ApiVersions.V3_1);
+            return { slug: res.slug.toUpperCase(), url, auth_mode: mode };
+        } catch (e) {
+            const r = e instanceof BadGatewayException ? (e.getResponse() as { error_slug?: string; detail?: string }) : null;
+            const existing = r?.error_slug === SHARED_TOOLKIT_EXISTS ? r.detail?.match(/CUSTOM_[A-Z0-9_]+/)?.[0] : undefined;
+            if (!existing) throw e;
+            return this.getCustomToolkit(existing);
+        }
+    }
+
+    /** Re-reads the server's tool list. Composio never does this on its own when the server's tools change. */
+    async syncCustomToolkit(slug: string, connectedAccountId?: string | null) {
+        await this.call('/custom/toolkits/sync', { method: 'POST', body: JSON.stringify({ slug, ...(connectedAccountId ? { connected_account_id: connectedAccountId } : {}) }) }, ApiVersions.V3_1);
+    }
+
+    /** The toolkit's auth config (one per custom toolkit, shared by every account linked to it), created on first use. */
+    async ensureCustomAuthConfig(slug: string, mode: Exclude<CustomAuthMode, 'NO_AUTH'>): Promise<string> {
+        const res = await this.call<any>(`/auth_configs?toolkit_slug=${encodeURIComponent(slug)}`, {}, ApiVersions.V3_1);
+        const existing = (res.items ?? []).find((a: any) => a.status === 'ENABLED' && a.auth_scheme === mode);
+        if (existing) return existing.id;
+        const created = await this.call<any>(
+            '/auth_configs',
+            { method: 'POST', body: JSON.stringify({ toolkit: { slug }, auth_config: { type: 'use_custom_auth', authScheme: mode, credentials: {} } }) },
+            ApiVersions.V3_1,
+        );
+        return created.auth_config?.id ?? created.id;
+    }
+
+    /** Links an access token to a Composio user. The token goes straight to Composio; Agent Space keeps only the account ID. */
+    async connectWithApiKey(authConfigId: string, userId: string, apiKey: string): Promise<string> {
+        const res = await this.call<any>('/connected_accounts', {
+            method: 'POST',
+            body: JSON.stringify({ auth_config: { id: authConfigId }, connection: { user_id: userId, state: { authScheme: CustomAuthModes.API_KEY, val: { status: 'ACTIVE', [API_KEY_FIELD]: apiKey } } } }),
+        });
+        if (!res.id) throw new BadGatewayException('The connection service did not return an account');
+        return res.id as string;
     }
 }

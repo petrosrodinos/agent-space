@@ -1,45 +1,45 @@
 import { BadRequestException, ForbiddenException, Injectable, Logger, NotFoundException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
-import { auth } from '@modelcontextprotocol/sdk/client/auth.js';
-import { Prisma, ToolServer } from 'generated/prisma';
+import { Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
-import { RedisService } from '@/core/databases/redis/redis.service';
-import { SecretStoreService } from '@/integrations/secrets/secret-store.service';
-import { maskSecret } from '@/shared/utils/security/secret-detection.utils';
-import { newId, randomToken, slugify } from '@/shared/utils/security/crypto.utils';
+import { ComposioService, CustomAuthMode, CustomAuthModes } from '@/integrations/composio/composio.service';
+import { newId } from '@/shared/utils/security/crypto.utils';
 import { AccessService, isAdminRole } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
+import { assertPublicUrl } from '../../agent/tools/web.utils';
 import type { Actor } from '../../bots/bots.service';
-import { CredentialsService } from '../credentials.service';
-import { McpAuth, McpAuthError, McpClientService, McpToolInfo } from './mcp-client.service';
-import { McpOAuthData, McpOAuthProvider } from './mcp-oauth.provider';
-import type { CreateToolServerDto, UpdateToolServerDto } from './tool-server.dto';
+import { ConnectionsService } from '../connections.service';
+import { discoverOAuthMetadataUrl, OAuthDiscoveryError } from './oauth-discovery';
+import { CreateToolServerDto, ToolServerAuthKind, ToolServerAuthKinds, UpdateToolServerDto } from './tool-server.dto';
 
-const TOOLS_CACHE_SECONDS = 300;
-const SIGN_IN_TTL_SECONDS = 15 * 60;
-const OAUTH_REFRESH_MARGIN_MS = 60_000;
-const OAUTH_SWEEP_MARGIN_MS = 5 * 60_000;
-const OAUTH_REFRESH_LOCK_SECONDS = 30;
+/** Our sign-in types and Composio's custom MCP auth modes. */
+const COMPOSIO_MODE: Record<ToolServerAuthKind, CustomAuthMode> = {
+    [ToolServerAuthKinds.NONE]: CustomAuthModes.NO_AUTH,
+    [ToolServerAuthKinds.TOKEN]: CustomAuthModes.API_KEY,
+    [ToolServerAuthKinds.OAUTH]: CustomAuthModes.DCR_OAUTH,
+};
+const MODE_LABEL: Record<CustomAuthMode, string> = {
+    [CustomAuthModes.NO_AUTH]: '"No sign-in"',
+    [CustomAuthModes.API_KEY]: '"Access token"',
+    [CustomAuthModes.DCR_OAUTH]: '"Sign in"',
+};
+
+const LEGACY_MESSAGE = 'Remove this tool server and add it again to reconnect it.';
 
 const INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
-    credential: { select: { id: true, masked_hint: true, kind: true, status: true } },
-    bots: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
-    connection: { select: { id: true } },
+    connection: {
+        include: { bot_restrictions: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } } },
+    },
 } satisfies Prisma.ToolServerInclude;
 
 type ServerRow = Prisma.ToolServerGetPayload<{ include: typeof INCLUDE }>;
-
-interface PendingSignIn {
-    tool_server_id: string;
-    user_id: string;
-    organization_id: string;
-    data: McpOAuthData;
-}
+type ConnectionRow = NonNullable<ServerRow['connection']>;
 
 /**
  * Custom tool servers (§8.4): MCP servers users add by address, with no sign-in, an access token, or the server's own
- * sign-in screen (standard MCP OAuth). Tokens live only in the secret store (§8.7) and are never returned to clients.
+ * sign-in screen. Each server is registered with Composio as a shared custom toolkit and each user's sign-in is a
+ * Composio connected account, so tool calls, token refresh, status sync and per-tool permissions work exactly like the
+ * other connected services. Agent Space never holds the server's tokens.
  */
 @Injectable()
 export class ToolServersService {
@@ -47,33 +47,30 @@ export class ToolServersService {
 
     constructor(
         private readonly prisma: PrismaService,
-        private readonly redis: RedisService,
-        private readonly store: SecretStoreService,
+        private readonly composio: ComposioService,
+        private readonly connections: ConnectionsService,
         private readonly access: AccessService,
         private readonly activity: ActivityService,
-        private readonly credentials: CredentialsService,
-        private readonly mcp: McpClientService,
-        private readonly config: ConfigService,
     ) { }
 
     // ---------------- Shapes and permissions ----------------
 
     private shape(s: ServerRow, actor: Actor) {
+        const c = s.connection;
         return {
             id: s.id,
             name: s.name,
             url: s.url,
             auth_kind: s.auth_kind,
             visibility: s.visibility,
-            status: s.status,
-            status_message: s.status_message,
+            status: c?.status ?? 'ERROR',
+            status_message: s.composio_toolkit_slug ? (c?.status_message ?? null) : LEGACY_MESSAGE,
             tool_count: s.tool_count,
             last_listed_at: s.last_listed_at,
-            masked_hint: s.auth_kind === 'TOKEN' ? (s.credential?.masked_hint ?? null) : null,
-            signed_in: s.auth_kind === 'OAUTH' ? !!s.credential : undefined,
+            service_key: s.composio_toolkit_slug,
             owner: s.owner,
-            bots: s.bots.map((b) => b.bot),
-            connection_id: s.connection?.id ?? null,
+            bots: c?.restricted_to_bots ? c.bot_restrictions.map((b) => b.bot) : [],
+            connection_id: c?.id ?? null,
             created_at: s.created_at,
             can_manage: this.canManage(s, actor),
         };
@@ -83,16 +80,26 @@ export class ToolServersService {
         return s.owner_id === actor.user_id || (s.visibility === 'SHARED' && isAdminRole(actor.role));
     }
 
-    /** Tool servers a user can see and use: their own private ones and every shared one (§8.4, §11 privacy). */
-    usableWhere(orgId: string, userId: string): Prisma.ToolServerWhereInput {
+    /** Tool servers a user can see: their own private ones and every shared one (§8.4, §11 privacy). */
+    private usableWhere(orgId: string, userId: string): Prisma.ToolServerWhereInput {
         return { organization_id: orgId, deleted_at: null, OR: [{ owner_id: userId }, { visibility: 'SHARED' }] };
     }
 
-    private async requireManageable(actor: Actor, id: string) {
+    private async find(actor: Actor, id: string) {
         const s = await this.prisma.toolServer.findFirst({ where: { id, ...this.usableWhere(actor.organization_id, actor.user_id) }, include: INCLUDE });
         if (!s) throw new NotFoundException('Tool server not found');
+        return s;
+    }
+
+    private async requireManageable(actor: Actor, id: string) {
+        const s = await this.find(actor, id);
         if (!this.canManage(s, actor)) throw new ForbiddenException('Only the person who added it (or an Owner/Admin for shared servers) can change this tool server');
         return s;
+    }
+
+    /** A server added before the move to Composio has no toolkit: it can only be removed and added again. */
+    private requireCurrent(s: ServerRow): asserts s is ServerRow & { composio_toolkit_slug: string; connection: ConnectionRow } {
+        if (!s.composio_toolkit_slug || !s.connection) throw new BadRequestException(LEGACY_MESSAGE);
     }
 
     private async checkVisibility(actor: Actor, visibility: 'PRIVATE' | 'SHARED') {
@@ -110,9 +117,27 @@ export class ToolServersService {
         if (n !== new Set(botIds).size) throw new BadRequestException('Unknown bot');
     }
 
-    private redirectUrl() {
-        const app = (this.config.get<string>('APP_URL') || '').replace(/\/$/, '');
-        return `${app}/connections/mcp-callback`;
+    /** https and a public address only. Composio connects to it, so it must be reachable from the internet. */
+    private async validateUrl(raw: string): Promise<URL> {
+        let url: URL;
+        try {
+            url = new URL(raw.trim());
+        } catch {
+            throw new BadRequestException('Enter a valid address, e.g. https://tools.example.com/mcp');
+        }
+        if (url.username || url.password) throw new BadRequestException('Put credentials in the access token field, not in the address');
+        if (url.protocol !== 'https:') throw new BadRequestException('Tool servers must use https');
+        try {
+            await assertPublicUrl(url.toString());
+        } catch {
+            throw new BadRequestException('That address is not allowed (private or internal network). The server must be reachable from the internet.');
+        }
+        return url;
+    }
+
+    private composioError(e: unknown, what: string): never {
+        const detail = (e as any)?.getResponse?.()?.detail ?? (e as Error).message;
+        throw new BadRequestException(`${what}: ${String(detail).slice(0, 200)}`);
     }
 
     // ---------------- CRUD ----------------
@@ -123,73 +148,96 @@ export class ToolServersService {
     }
 
     async get(actor: Actor, id: string) {
-        const s = await this.prisma.toolServer.findFirst({ where: { id, ...this.usableWhere(actor.organization_id, actor.user_id) }, include: INCLUDE });
-        if (!s) throw new NotFoundException('Tool server not found');
-        return this.shape(s, actor);
+        return this.shape(await this.find(actor, id), actor);
     }
 
     async create(actor: Actor, dto: CreateToolServerDto) {
         const visibility = dto.visibility ?? 'PRIVATE';
+        const shared = visibility === 'SHARED';
         await this.checkVisibility(actor, visibility);
-        await this.checkBots(actor, dto.bot_ids, visibility === 'SHARED');
-        let url: URL;
-        try {
-            url = await this.mcp.validateUrl(dto.url);
-        } catch (e) {
-            throw new BadRequestException((e as Error).message);
-        }
-        if (dto.auth_kind === 'TOKEN' && !dto.token?.trim()) throw new BadRequestException('Paste the access token');
+        await this.checkBots(actor, dto.bot_ids, shared);
+        const url = await this.validateUrl(dto.url);
+        if (dto.auth_kind === ToolServerAuthKinds.TOKEN && !dto.token?.trim()) throw new BadRequestException('Paste the access token');
         const name = dto.name.trim();
         const dup = await this.prisma.toolServer.count({ where: { organization_id: actor.organization_id, deleted_at: null, url: url.toString(), owner_id: actor.user_id } });
         if (dup) throw new BadRequestException('You already added this tool server');
 
-        let credentialId: string | null = null;
-        if (dto.auth_kind === 'TOKEN') {
-            const cred = await this.credentials.create(actor, { label: `${name} – access token`, service_name: name, kind: 'mcp_token', value: dto.token!, visibility, bot_ids: dto.bot_ids });
-            credentialId = cred.id;
+        // Register (or reuse) the server's Composio toolkit. Its sign-in type is fixed once registered.
+        const mode = COMPOSIO_MODE[dto.auth_kind];
+        let discoveryUrl: string | undefined;
+        if (mode === CustomAuthModes.DCR_OAUTH) {
+            try {
+                discoveryUrl = await discoverOAuthMetadataUrl(url);
+            } catch (e) {
+                if (e instanceof OAuthDiscoveryError) throw new BadRequestException(e.message);
+                throw e;
+            }
         }
+        let toolkit;
+        try {
+            toolkit = await this.composio.ensureCustomToolkit(url.toString(), mode, discoveryUrl);
+        } catch (e) {
+            this.composioError(e, 'The tool server could not be registered');
+        }
+        if (toolkit.auth_mode && toolkit.auth_mode !== mode) {
+            throw new BadRequestException(`This server address is already set up with ${MODE_LABEL[toolkit.auth_mode]}. Choose that sign-in option instead.`);
+        }
+
+        const composioUserId = this.composio.userId(actor.organization_id, shared ? 'org' : actor.user_id);
+        let authConfigId: string | null = null;
+        if (mode !== CustomAuthModes.NO_AUTH) {
+            try {
+                authConfigId = await this.composio.ensureCustomAuthConfig(toolkit.slug, mode);
+            } catch (e) {
+                this.composioError(e, 'The tool server sign-in could not be set up');
+            }
+        }
+
         const id = newId();
-        await this.prisma.$transaction(async (tx) => {
-            await tx.toolServer.create({
-                data: {
-                    id,
-                    organization_id: actor.organization_id,
-                    owner_id: actor.user_id,
-                    name,
-                    url: url.toString(),
-                    auth_kind: dto.auth_kind,
-                    credential_id: credentialId,
-                    visibility,
-                    status: dto.auth_kind === 'OAUTH' ? 'NEEDS_RECONNECTING' : 'ACTIVE',
-                    status_message: dto.auth_kind === 'OAUTH' ? 'Sign in to finish adding this tool server' : null,
-                    bots: dto.bot_ids?.length ? { create: dto.bot_ids.map((bot_id) => ({ bot_id })) } : undefined,
-                },
-            });
-            await tx.connection.create({
+        const restricted = !!dto.bot_ids?.length;
+        const connection = await this.prisma.$transaction(async (tx) => {
+            await tx.toolServer.create({ data: { id, organization_id: actor.organization_id, owner_id: actor.user_id, name, url: url.toString(), auth_kind: dto.auth_kind, visibility, composio_toolkit_slug: toolkit.slug } });
+            return tx.connection.create({
                 data: {
                     organization_id: actor.organization_id,
                     owner_id: actor.user_id,
                     kind: 'MCP',
-                    service_key: `mcp-${slugify(name, 30)}`,
+                    service_key: toolkit.slug,
                     service_name: name,
                     label: name,
                     account_identifier: url.host,
                     visibility,
                     tool_server_id: id,
-                    credential_id: credentialId,
-                    restricted_to_bots: !!dto.bot_ids?.length,
-                    bot_restrictions: dto.bot_ids?.length ? { create: dto.bot_ids.map((bot_id) => ({ bot_id })) } : undefined,
+                    composio_auth_config_id: authConfigId,
+                    composio_user_id: composioUserId,
+                    status: 'NEEDS_RECONNECTING',
+                    status_message: mode === CustomAuthModes.DCR_OAUTH ? 'Waiting for sign-in' : 'Connecting',
+                    restricted_to_bots: restricted,
+                    bot_restrictions: restricted ? { create: dto.bot_ids!.map((bot_id) => ({ bot_id })) } : undefined,
                 },
             });
         });
-        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.added', target_type: 'tool_server', target_id: id, metadata: { name, host: url.host, auth: dto.auth_kind, visibility } });
 
-        if (dto.auth_kind === 'OAUTH') {
-            const signIn = await this.startSignIn(actor, id);
-            return { tool_server: await this.get(actor, id), ...signIn };
+        // Connect the user's account. Undo the rows when Composio refuses, so a failed add leaves nothing behind.
+        let authorizationUrl: string | null = null;
+        try {
+            if (mode === CustomAuthModes.DCR_OAUTH) {
+                const init = await this.composio.initiateConnection(authConfigId!, composioUserId, this.connections.callbackUrl(connection.id, dto.return_url));
+                await this.prisma.connection.update({ where: { id: connection.id }, data: { composio_connected_account_id: init.connected_account_id } });
+                authorizationUrl = init.redirect_url;
+            } else if (mode === CustomAuthModes.API_KEY) {
+                const accountId = await this.composio.connectWithApiKey(authConfigId!, composioUserId, dto.token!.trim());
+                await this.prisma.connection.update({ where: { id: connection.id }, data: { composio_connected_account_id: accountId } });
+            }
+        } catch (e) {
+            await this.prisma.$transaction([this.prisma.connection.delete({ where: { id: connection.id } }), this.prisma.toolServer.delete({ where: { id } })]);
+            this.composioError(e, 'Could not connect to the tool server');
         }
+
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.added', target_type: 'tool_server', target_id: id, metadata: { name, host: url.host, auth: dto.auth_kind, visibility } });
+        if (authorizationUrl) return { tool_server: await this.get(actor, id), authorization_url: authorizationUrl };
         await this.refresh(id);
-        return { tool_server: await this.get(actor, id) };
+        return { tool_server: await this.get(actor, id), authorization_url: null };
     }
 
     async update(actor: Actor, id: string, dto: UpdateToolServerDto) {
@@ -197,333 +245,101 @@ export class ToolServersService {
         const visibility = dto.visibility ?? s.visibility;
         if (dto.visibility && dto.visibility !== s.visibility) await this.checkVisibility(actor, dto.visibility);
         if (dto.bot_ids) await this.checkBots(actor, dto.bot_ids, visibility === 'SHARED');
-        let url: string | undefined;
-        if (dto.url && dto.url !== s.url) {
-            try {
-                url = (await this.mcp.validateUrl(dto.url)).toString();
-            } catch (e) {
-                throw new BadRequestException((e as Error).message);
-            }
-        }
+        const name = dto.name?.trim() || undefined;
         await this.prisma.$transaction(async (tx) => {
-            await tx.toolServer.update({ where: { id }, data: { name: dto.name?.trim() || undefined, url, visibility } });
+            await tx.toolServer.update({ where: { id }, data: { name, visibility } });
+            if (!s.connection) return;
+            // The sign-in keeps its Composio user: a connection's stored composio_user_id is never recomputed.
+            await tx.connection.update({
+                where: { id: s.connection.id },
+                data: { label: name, service_name: name, visibility, ...(dto.bot_ids ? { restricted_to_bots: dto.bot_ids.length > 0 } : {}) },
+            });
             if (dto.bot_ids) {
-                await tx.botToolServer.deleteMany({ where: { tool_server_id: id } });
-                if (dto.bot_ids.length) await tx.botToolServer.createMany({ data: dto.bot_ids.map((bot_id) => ({ bot_id, tool_server_id: id })) });
-            }
-            if (s.connection) {
-                await tx.connection.update({
-                    where: { id: s.connection.id },
-                    data: { label: dto.name?.trim() || undefined, service_name: dto.name?.trim() || undefined, visibility, ...(url ? { account_identifier: new URL(url).host } : {}), ...(dto.bot_ids ? { restricted_to_bots: dto.bot_ids.length > 0 } : {}) },
-                });
-                if (dto.bot_ids) {
-                    await tx.connectionBotRestriction.deleteMany({ where: { connection_id: s.connection.id } });
-                    if (dto.bot_ids.length) await tx.connectionBotRestriction.createMany({ data: dto.bot_ids.map((bot_id) => ({ bot_id, connection_id: s.connection!.id })) });
-                }
-            }
-            if (s.credential_id && (dto.visibility || dto.name)) {
-                await tx.credential.update({ where: { id: s.credential_id }, data: { visibility, owner_type: visibility === 'SHARED' ? 'ORGANIZATION' : 'USER', ...(dto.name ? { label: `${dto.name.trim()} – ${s.auth_kind === 'OAUTH' ? 'sign-in' : 'access token'}`, service_name: dto.name.trim() } : {}) } });
+                await tx.connectionBotRestriction.deleteMany({ where: { connection_id: s.connection.id } });
+                if (dto.bot_ids.length) await tx.connectionBotRestriction.createMany({ data: dto.bot_ids.map((bot_id) => ({ bot_id, connection_id: s.connection!.id })) });
             }
         });
-        await this.invalidateCache(id);
-        if (url) await this.refresh(id);
-        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.updated', target_type: 'tool_server', target_id: id, metadata: { ...dto, url: url ? new URL(url).host : undefined } });
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.updated', target_type: 'tool_server', target_id: id, metadata: { ...dto } });
         return this.get(actor, id);
     }
 
-    /** Replace the access token (TOKEN servers). */
+    /** Replace the access token (TOKEN servers): a new Composio account replaces the old one. */
     async setToken(actor: Actor, id: string, token: string) {
         const s = await this.requireManageable(actor, id);
-        if (s.auth_kind !== 'TOKEN') throw new BadRequestException('This tool server does not use an access token');
-        if (s.credential_id) await this.credentials.replace(actor, s.credential_id, token);
-        else {
-            const cred = await this.credentials.create(actor, { label: `${s.name} – access token`, service_name: s.name, kind: 'mcp_token', value: token, visibility: s.visibility });
-            await this.prisma.toolServer.update({ where: { id }, data: { credential_id: cred.id } });
-            if (s.connection) await this.prisma.connection.update({ where: { id: s.connection.id }, data: { credential_id: cred.id } });
+        this.requireCurrent(s);
+        if (s.auth_kind !== ToolServerAuthKinds.TOKEN) throw new BadRequestException('This tool server does not use an access token');
+        const c = s.connection;
+        let accountId: string;
+        try {
+            const authConfigId = c.composio_auth_config_id ?? (await this.composio.ensureCustomAuthConfig(s.composio_toolkit_slug, CustomAuthModes.API_KEY));
+            accountId = await this.composio.connectWithApiKey(authConfigId, c.composio_user_id!, token.trim());
+            await this.prisma.connection.update({ where: { id: c.id }, data: { composio_connected_account_id: accountId, composio_auth_config_id: authConfigId } });
+        } catch (e) {
+            this.composioError(e, 'Could not save the new token');
         }
-        await this.invalidateCache(id);
+        if (c.composio_connected_account_id && c.composio_connected_account_id !== accountId) {
+            await this.composio.deleteConnectedAccount(c.composio_connected_account_id).catch((e) => this.logger.warn(`Old account delete failed: ${(e as Error).message}`));
+        }
+        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.token_replaced', target_type: 'tool_server', target_id: id, metadata: { name: s.name } });
         await this.refresh(id);
         return this.get(actor, id);
     }
 
+    /** Start (or redo) the server's own sign-in through Composio's hosted sign-in screen. */
+    async startSignIn(actor: Actor, id: string, returnUrl?: string) {
+        const s = await this.requireManageable(actor, id);
+        this.requireCurrent(s);
+        if (s.auth_kind !== ToolServerAuthKinds.OAUTH) throw new BadRequestException('This tool server does not use sign-in');
+        try {
+            const r = await this.connections.reconnect(actor, s.connection.id, returnUrl);
+            return { authorization_url: r.redirect_url };
+        } catch (e) {
+            this.composioError(e, 'The sign-in could not be started');
+        }
+    }
+
     async remove(actor: Actor, id: string) {
         const s = await this.requireManageable(actor, id);
-        const now = new Date();
-        if (s.credential_id) {
-            const cred = await this.prisma.credential.findUnique({ where: { id: s.credential_id } });
-            if (cred && !cred.deleted_at) {
-                await this.store.delete(cred.secret_resource_name).catch((e) => this.logger.warn(`Secret delete failed: ${(e as Error).message}`));
-                await this.prisma.credential.update({ where: { id: cred.id }, data: { deleted_at: now } });
-            }
-        }
-        await this.prisma.$transaction([
-            this.prisma.toolServer.update({ where: { id }, data: { deleted_at: now } }),
-            this.prisma.connection.updateMany({ where: { tool_server_id: id }, data: { deleted_at: now } }),
-            this.prisma.botToolServer.deleteMany({ where: { tool_server_id: id } }),
-        ]);
-        await this.invalidateCache(id);
+        // Removes this user's Composio account and both rows. The shared Composio toolkit stays (see ensureCustomToolkit).
+        if (s.connection) await this.connections.remove(actor, s.connection.id);
+        else await this.prisma.toolServer.update({ where: { id }, data: { deleted_at: new Date() } });
         await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.removed', target_type: 'tool_server', target_id: id, metadata: { name: s.name } });
         return { ok: true };
     }
 
-    /** "Test connection": reconnects, lists tools and updates the status. */
+    /** "Test connection": re-reads the server's tools through Composio and updates the status. */
     async test(actor: Actor, id: string) {
-        await this.get(actor, id);
-        await this.invalidateCache(id);
+        const s = await this.find(actor, id);
+        this.requireCurrent(s);
         const result = await this.refresh(id);
         return { ...result, tool_server: await this.get(actor, id) };
     }
 
-    // ---------------- Standard MCP sign-in (OAuth) ----------------
-
-    async startSignIn(actor: Actor, id: string) {
-        const s = await this.requireManageable(actor, id);
-        if (s.auth_kind !== 'OAUTH') throw new BadRequestException('This tool server does not use sign-in');
-        const existing = s.credential_id ? await this.loadOAuth(s.credential_id).catch(() => null) : null;
-        const state = randomToken(24);
-        const pending: PendingSignIn = { tool_server_id: id, user_id: actor.user_id, organization_id: actor.organization_id, data: { client_information: existing?.client_information } };
-        const key = this.redis.key(`mcp:oauth:${state}`);
-        const provider = new McpOAuthProvider(pending.data, this.redirectUrl(), async (d) => {
-            pending.data = d;
-            await this.redis.client.set(key, JSON.stringify(pending), 'EX', SIGN_IN_TTL_SECONDS);
-        }, state);
-        await this.redis.client.set(key, JSON.stringify(pending), 'EX', SIGN_IN_TTL_SECONDS);
-        let result: string;
-        try {
-            result = await auth(provider, { serverUrl: s.url, fetchFn: this.mcp.guardedFetch });
-        } catch (e) {
-            await this.redis.client.del(key);
-            const msg = (e as Error).message;
-            await this.setStatus(id, 'ERROR', `Sign-in could not start: ${msg.slice(0, 160)}`);
-            throw new BadRequestException(`This tool server's sign-in could not be started: ${msg.slice(0, 200)}. If it uses an access token instead, add it with "Access token".`);
-        }
-        if (result === 'AUTHORIZED') {
-            await this.saveOAuth(s, provider.data);
-            await this.redis.client.del(key);
-            await this.refresh(id);
-            return { authorization_url: null };
-        }
-        if (!provider.authorizationUrl) throw new BadRequestException('The tool server did not return a sign-in page');
-        return { authorization_url: provider.authorizationUrl.toString() };
-    }
-
-    async completeSignIn(actor: Actor, state: string, code: string) {
-        const key = this.redis.key(`mcp:oauth:${state}`);
-        const raw = await this.redis.client.get(key);
-        if (!raw) throw new BadRequestException('This sign-in expired. Start it again from Connections.');
-        const pending = JSON.parse(raw) as PendingSignIn;
-        if (pending.user_id !== actor.user_id || pending.organization_id !== actor.organization_id) throw new ForbiddenException('This sign-in was started by someone else');
-        await this.redis.client.del(key);
-        const s = await this.requireManageable(actor, pending.tool_server_id);
-        const provider = new McpOAuthProvider(pending.data, this.redirectUrl(), async (d) => {
-            pending.data = d;
-        }, state);
-        try {
-            const result = await auth(provider, { serverUrl: s.url, authorizationCode: code, fetchFn: this.mcp.guardedFetch });
-            if (result !== 'AUTHORIZED' || !provider.data.tokens) throw new Error('No tokens were returned');
-        } catch (e) {
-            await this.setStatus(s.id, 'NEEDS_RECONNECTING', 'Sign-in failed. Try again.');
-            throw new BadRequestException(`Sign-in failed: ${(e as Error).message.slice(0, 200)}`);
-        }
-        await this.saveOAuth(s, { client_information: provider.data.client_information, tokens: provider.data.tokens });
-        await this.activity.log({ organization_id: actor.organization_id, actor_user_id: actor.user_id, action: 'tool_server.signed_in', target_type: 'tool_server', target_id: s.id, metadata: { name: s.name } });
-        await this.invalidateCache(s.id);
-        await this.refresh(s.id);
-        return this.get(actor, s.id);
-    }
-
-    private oauthPayload(data: McpOAuthData) {
-        const t = data.tokens!;
-        return {
-            access_token: t.access_token,
-            refresh_token: t.refresh_token,
-            token_type: t.token_type,
-            scope: t.scope,
-            expires_at: t.expires_in ? new Date(Date.now() + t.expires_in * 1000).toISOString() : undefined,
-            oauth: JSON.stringify({ client_information: data.client_information, tokens: t }),
+    /** Checks the sign-in, re-reads the tool list and records the outcome on the connection. Never throws. */
+    private async refresh(id: string): Promise<{ ok: boolean; tool_count: number; tools: { name: string; description?: string }[]; error?: string }> {
+        const s = await this.prisma.toolServer.findUnique({ where: { id }, include: INCLUDE });
+        if (!s?.composio_toolkit_slug || !s.connection) return { ok: false, tool_count: 0, tools: [], error: LEGACY_MESSAGE };
+        const c = s.connection;
+        const fail = async (status: 'ERROR' | 'NEEDS_RECONNECTING', error: string) => {
+            await this.prisma.connection.update({ where: { id: c.id }, data: { status, status_message: error.slice(0, 300) } });
+            return { ok: false, tool_count: 0, tools: [], error };
         };
-    }
-
-    private async saveOAuth(s: ToolServer, data: McpOAuthData) {
-        const payload = this.oauthPayload(data);
-        const cred = s.credential_id ? await this.prisma.credential.findFirst({ where: { id: s.credential_id, deleted_at: null } }) : null;
-        if (cred) {
-            const version = await this.store.replace(cred.secret_resource_name, cred.secret_version, payload);
-            await this.prisma.credential.update({ where: { id: cred.id }, data: { secret_version: version, masked_hint: maskSecret(payload.access_token), status: 'ACTIVE', expires_at: payload.expires_at ? new Date(payload.expires_at) : null } });
-            return;
-        }
-        const id = newId();
-        const ref = await this.store.create(id, { org_id: s.organization_id, owner_type: s.visibility === 'SHARED' ? 'org' : 'user', kind: 'mcp_oauth' }, payload);
-        await this.prisma.credential.create({
-            data: {
-                id,
-                organization_id: s.organization_id,
-                owner_type: s.visibility === 'SHARED' ? 'ORGANIZATION' : 'USER',
-                owner_id: s.owner_id,
-                kind: 'MCP_OAUTH',
-                label: `${s.name} – sign-in`,
-                service_key: `mcp-${slugify(s.name, 30)}`,
-                service_name: s.name,
-                visibility: s.visibility,
-                masked_hint: maskSecret(payload.access_token),
-                secret_resource_name: ref.resource_name,
-                secret_version: ref.version,
-                expires_at: payload.expires_at ? new Date(payload.expires_at) : null,
-            },
-        });
-        await this.prisma.credentialEvent.create({ data: { credential_id: id, type: 'CREATED', actor_user_id: s.owner_id } });
-        await this.prisma.toolServer.update({ where: { id: s.id }, data: { credential_id: id } });
-        await this.prisma.connection.updateMany({ where: { tool_server_id: s.id }, data: { credential_id: id } });
-    }
-
-    private async loadOAuth(credentialId: string): Promise<McpOAuthData> {
-        const cred = await this.prisma.credential.findFirst({ where: { id: credentialId, deleted_at: null } });
-        if (!cred) throw new McpAuthError('Sign in to this tool server first.');
-        const payload = await this.store.access(cred.secret_resource_name);
-        return payload.oauth ? { ...(JSON.parse(payload.oauth) as McpOAuthData), expires_at: payload.expires_at } : { tokens: payload.access_token ? { access_token: payload.access_token, token_type: payload.token_type ?? 'bearer', refresh_token: payload.refresh_token } : undefined };
-    }
-
-    // ---------------- Runtime (tool listing and calls) ----------------
-
-    /**
-     * Authentication for one server. `secrets` collects the raw token values so the agent loop can redact them.
-     * OAuth refreshes made by the SDK are written back to the secret store.
-     */
-    async authFor(s: ToolServer, secrets?: string[]): Promise<McpAuth> {
-        if (s.auth_kind === 'NONE') return { kind: 'NONE' };
-        if (!s.credential_id) throw new McpAuthError(s.auth_kind === 'OAUTH' ? 'Sign in to this tool server first.' : 'Add the access token for this tool server.');
-        if (s.auth_kind === 'TOKEN') {
-            const cred = await this.prisma.credential.findFirst({ where: { id: s.credential_id, deleted_at: null } });
-            if (!cred) throw new McpAuthError('The access token for this tool server was deleted.');
-            const payload = await this.store.access(cred.secret_resource_name);
-            const token = payload.access_token ?? payload.api_key ?? '';
-            secrets?.push(token);
-            return { kind: 'TOKEN', token };
-        }
-        let data = await this.loadOAuth(s.credential_id);
-        // Refresh ahead of expiry, once at a time per server. Servers that rotate refresh tokens treat a second use of the
-        // same token as a replay and revoke the whole grant, so parallel runs must never refresh concurrently.
-        if (this.isExpiring(data.expires_at) && data.tokens?.refresh_token) data = (await this.refreshOAuthLocked(s)) ?? data;
-        if (data.tokens?.access_token) secrets?.push(data.tokens.access_token);
-        if (data.tokens?.refresh_token) secrets?.push(data.tokens.refresh_token);
-        const provider = new McpOAuthProvider(data, this.redirectUrl(), async (d) => {
-            if (!d.tokens) return;
-            secrets?.push(d.tokens.access_token, ...(d.tokens.refresh_token ? [d.tokens.refresh_token] : []));
-            await this.saveOAuth(s, { client_information: d.client_information, tokens: d.tokens });
-        });
-        return { kind: 'OAUTH', provider };
-    }
-
-    private isExpiring(expiresAt?: string, marginMs = OAUTH_REFRESH_MARGIN_MS) {
-        return !!expiresAt && new Date(expiresAt).getTime() - Date.now() < marginMs;
-    }
-
-    /**
-     * Scheduled job (`connections.refresh-token`, every 2 minutes): refreshes custom tool server sign-ins that expire
-     * within 5 minutes, so idle servers stay signed in. A sign-in that is already expired and could not be refreshed
-     * is flagged for the user instead of being retried forever.
-     */
-    async refreshExpiringSignIns() {
-        const servers = await this.prisma.toolServer.findMany({
-            where: {
-                deleted_at: null,
-                auth_kind: 'OAUTH',
-                credential_id: { not: null },
-                status: { not: 'NEEDS_RECONNECTING' },
-                credential: { is: { deleted_at: null, expires_at: { lt: new Date(Date.now() + OAUTH_SWEEP_MARGIN_MS) } } },
-            },
-            take: 200,
-        });
-        let refreshed = 0;
-        let failed = 0;
-        for (const s of servers) {
-            const data = await this.refreshOAuthLocked(s, OAUTH_SWEEP_MARGIN_MS);
-            if (!data) continue; // transient failure: try again on the next sweep
-            if (this.isExpiring(data.expires_at, 0)) {
-                failed++;
-                await this.setStatus(s.id, 'NEEDS_RECONNECTING', 'The sign-in expired and could not be renewed. Sign in again.');
-                await this.invalidateCache(s.id);
-            } else if (!this.isExpiring(data.expires_at, OAUTH_SWEEP_MARGIN_MS)) refreshed++;
-        }
-        return { checked: servers.length, refreshed, failed };
-    }
-
-    /** Refreshes the tokens under a Redis lock; waiters reuse the tokens the lock holder saved. Returns null on failure. */
-    private async refreshOAuthLocked(s: ToolServer, marginMs = OAUTH_REFRESH_MARGIN_MS): Promise<McpOAuthData | null> {
-        const lockKey = this.redis.key(`mcp:oauth:refresh:${s.id}`);
-        const acquired = await this.redis.client.set(lockKey, '1', 'EX', OAUTH_REFRESH_LOCK_SECONDS, 'NX');
-        if (!acquired) {
-            for (let i = 0; i < 40 && (await this.redis.client.exists(lockKey)); i++) await new Promise((r) => setTimeout(r, 250));
-            return this.loadOAuth(s.credential_id!).catch(() => null);
+        if (s.auth_kind !== ToolServerAuthKinds.NONE) {
+            if (!c.composio_connected_account_id) return fail('NEEDS_RECONNECTING', s.auth_kind === ToolServerAuthKinds.OAUTH ? 'Sign in to finish adding this tool server' : 'Add the access token for this tool server');
+            try {
+                const acc = await this.composio.getConnectedAccount(c.composio_connected_account_id);
+                if (acc.status !== 'ACTIVE') return fail('NEEDS_RECONNECTING', acc.status === 'INITIATED' ? 'Waiting for sign-in' : s.auth_kind === ToolServerAuthKinds.OAUTH ? 'Sign-in expired. Sign in again.' : 'The access token was rejected. Replace it.');
+            } catch (e) {
+                return fail('ERROR', `Couldn't check the sign-in: ${(e as Error).message}`);
+            }
         }
         try {
-            const data = await this.loadOAuth(s.credential_id!);
-            if (!this.isExpiring(data.expires_at, marginMs)) return data;
-            const provider = new McpOAuthProvider(data, this.redirectUrl(), async (d) => {
-                if (d.tokens) await this.saveOAuth(s, { client_information: d.client_information, tokens: d.tokens });
-            });
-            // With a stored refresh token the SDK refreshes and saves the new tokens through the provider.
-            await auth(provider, { serverUrl: s.url, fetchFn: this.mcp.guardedFetch });
-            return await this.loadOAuth(s.credential_id!);
-        } catch (e) {
-            this.logger.warn(`OAuth refresh failed for tool server ${s.id}: ${(e as Error).message}`);
-            return null;
-        } finally {
-            await this.redis.client.del(lockKey);
-        }
-    }
-
-    private cacheKey(id: string) {
-        return this.redis.key(`cache:mcp:tools:${id}`);
-    }
-
-    async invalidateCache(id: string) {
-        await this.redis.client.del(this.cacheKey(id));
-    }
-
-    /** Tool list, cached for 5 minutes per server. */
-    async toolsFor(s: ToolServer, secrets?: string[]): Promise<McpToolInfo[]> {
-        const cached = await this.redis.client.get(this.cacheKey(s.id));
-        if (cached) return JSON.parse(cached);
-        const tools = await this.mcp.listTools(s.url, await this.authFor(s, secrets));
-        await this.redis.client.set(this.cacheKey(s.id), JSON.stringify(tools), 'EX', TOOLS_CACHE_SECONDS);
-        if (tools.length !== s.tool_count || s.status !== 'ACTIVE') await this.prisma.toolServer.update({ where: { id: s.id }, data: { tool_count: tools.length, last_listed_at: new Date(), status: 'ACTIVE', status_message: null } });
-        return tools;
-    }
-
-    async call(s: ToolServer, tool: string, args: Record<string, unknown>, secrets: string[]) {
-        try {
-            const res = await this.mcp.callTool(s.url, await this.authFor(s, secrets), tool, args);
-            if (s.status !== 'ACTIVE') await this.setStatus(s.id, 'ACTIVE', null);
-            return res;
-        } catch (e) {
-            if (e instanceof McpAuthError) await this.setStatus(s.id, 'NEEDS_RECONNECTING', e.message);
-            throw e;
-        }
-    }
-
-    /** Connects, lists tools and records the outcome. Never throws. */
-    async refresh(id: string): Promise<{ ok: boolean; tool_count: number; tools: { name: string; description?: string }[]; error?: string }> {
-        const s = await this.prisma.toolServer.findUnique({ where: { id } });
-        if (!s || s.deleted_at) return { ok: false, tool_count: 0, tools: [], error: 'Tool server not found' };
-        try {
-            const tools = await this.mcp.listTools(s.url, await this.authFor(s));
-            await this.redis.client.set(this.cacheKey(id), JSON.stringify(tools), 'EX', TOOLS_CACHE_SECONDS);
-            await this.prisma.toolServer.update({ where: { id }, data: { tool_count: tools.length, last_listed_at: new Date(), status: 'ACTIVE', status_message: tools.length ? null : 'Connected, but the server offers no tools' } });
-            await this.prisma.connection.updateMany({ where: { tool_server_id: id }, data: { status: 'ACTIVE', status_message: null, last_synced_at: new Date() } });
-            if (s.credential_id) await this.prisma.credential.updateMany({ where: { id: s.credential_id }, data: { status: 'ACTIVE', last_tested_at: new Date() } });
+            const tools = await this.connections.syncToolServerTools(c);
+            await this.prisma.connection.update({ where: { id: c.id }, data: { status: 'ACTIVE', status_message: tools.length ? null : 'Connected, but the server offers no tools', last_synced_at: new Date() } });
             return { ok: true, tool_count: tools.length, tools: tools.map((t) => ({ name: t.name, description: t.description?.slice(0, 200) })) };
         } catch (e) {
-            const msg = (e as Error).message;
-            const needsAuth = e instanceof McpAuthError;
-            await this.setStatus(id, needsAuth ? 'NEEDS_RECONNECTING' : 'ERROR', msg.slice(0, 300));
-            if (needsAuth && s.credential_id) await this.prisma.credential.updateMany({ where: { id: s.credential_id }, data: { status: s.auth_kind === 'OAUTH' ? 'NEEDS_RECONNECTING' : 'NOT_WORKING', last_tested_at: new Date() } });
-            return { ok: false, tool_count: 0, tools: [], error: msg };
+            const detail = (e as any)?.getResponse?.()?.detail ?? (e as Error).message;
+            return fail('ERROR', `Couldn't load the server's tools: ${String(detail)}`);
         }
-    }
-
-    private async setStatus(id: string, status: 'ACTIVE' | 'ERROR' | 'NEEDS_RECONNECTING', message: string | null) {
-        await this.prisma.toolServer.update({ where: { id }, data: { status, status_message: message } });
-        await this.prisma.connection.updateMany({ where: { tool_server_id: id }, data: { status, status_message: message } });
     }
 }

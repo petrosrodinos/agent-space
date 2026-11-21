@@ -560,10 +560,23 @@ Every file in Agent Space is kept in **Google Cloud Storage**: files users uploa
 - Connections show a status: Active, Needs re-connecting, Error. Users get notified when one needs attention.
 
 ### 8.4 Custom tool servers
-- Users can add their own additional tool sources (for example an internal company system or a specialist service) by entering its address and signing in to it.
-- Sign-in uses the tool server's own sign-in screen when it supports one (standard MCP sign-in). Otherwise the user pastes an access key or token. Either way, it is stored as described in §8.7.
-- Several can be added; each can be private or shared (shared requires Owner/Admin).
-- Once added, its tools appear alongside all other tools and can be given to bots in the same way.
+- Users can add their own additional tool sources (for example an internal company system or a specialist service) by entering its address and signing in to it. The server must speak MCP and be reachable from the internet over https; servers that only exist on a computer or company network are added as local tool servers in the desktop app (§14.3).
+- Sign-in is one of: **No sign-in**, **Access token** (sent to the server as `Authorization: Bearer <token>`), or **Sign in** (the server's own sign-in screen, standard MCP sign-in). "Sign in" needs a server that lets apps register themselves (OAuth dynamic client registration); otherwise the user is told to use an access token.
+- Several can be added; each can be private or shared (shared requires Owner/Admin), and limited to chosen bots.
+- Once added, its tools appear alongside all other tools and can be given to bots in the same way. Each server also gets a service details page with its tools and per-tool permissions, like any connected service (§8.2).
+- The address and sign-in type can't be changed after adding; to change them the user removes the server and adds it again. The name, sharing and bot limits can be changed at any time. "Test connection" checks the sign-in and reloads the server's tools.
+
+**How it's built (for the development team):**
+- **Composio custom toolkits.** Each server is registered with Composio as a **shared custom toolkit** (`POST /api/v3.1/custom/toolkits`, `user_id: "all"`, slug `CUSTOM_<NAME>`). Auth modes map as None → `NO_AUTH`, Access token → `API_KEY` with header `Authorization: Bearer {{generic_api_key}}`, Sign in → `DCR_OAUTH` with the discovered authorization-server metadata URL. Shared toolkits are used because per-user toolkits need Composio's Pro plan; privacy is unaffected, because each user's sign-in is a separate connected account and Agent Space decides who may see which server.
+- **One toolkit per address, never deleted by us.** A second registration of the same address returns Composio's 409 `CustomToolkit_SharedToolkitExists`, and the existing toolkit is reused. If it was registered with a different sign-in type, adding fails with a message naming the type to choose. Toolkits are never deleted, because other organisations or environments sharing the Composio project may use the same one; removing a server deletes only that user's connected account.
+- **Sign-in discovery (Sign in only).** Before registering, the API reads the server's OAuth protected-resource metadata (`/.well-known/oauth-protected-resource`, path-specific first) to find its authorization server, falling back to the server's origin, then looks for authorization-server metadata (RFC 8414, then OpenID configuration). The first document with a `registration_endpoint` is used as the discovery URL.
+- **Database.** A `ToolServer` row (name, address, sign-in type, visibility, `composio_toolkit_slug`, tool count) plus a `Connection` of kind `MCP` whose `service_key` is the toolkit slug. The connection holds the Composio connected-account ID, auth config ID and Composio user ID, the status, and the bot limits (`restricted_to_bots`, which also applies to private connections). No token is ever stored by Agent Space.
+- **Connecting.** No sign-in: no connected account; tools run with the Composio user ID alone. Access token: the API creates the toolkit's auth config (`use_custom_auth`) if needed and a connected account directly from the pasted token (`POST /api/v3/connected_accounts`), which goes straight to Composio. Sign in: a hosted Composio connect link (`/connected_accounts/link`) that finishes on `/connections/callback`, like any Composio connection; completing it reads the server's tools.
+- **Tools.** Composio doesn't re-read a server's tools on its own, so the API calls `POST /api/v3.1/custom/toolkits/sync` after the first sign-in and on "Test connection", then clears the tool caches. Tools are listed and run through the same Composio tool layer as other services, with `toolkit_versions=latest` / `version: "latest"` (the default v3 version has no custom tools). Up to 8 tool servers and 40 tools per server are offered to a bot, separately from the 6 regular services.
+- **Approvals.** Composio copies the MCP tool hints onto tools as tags. A tool tagged `readOnlyHint` never needs approval; otherwise the tool name is classified like other services' tools, and an unrecognised name counts as "Other".
+- **Status and refresh.** Composio refreshes sign-ins. The 15-minute Composio status sync (§14.4) covers tool server connections too, and a call rejected as unauthorised marks the connection "Needs re-connecting".
+- **Catalog.** Custom toolkits are shared across the Composio project, so they are filtered out of the connection catalog.
+- **Servers added before Composio.** They keep their row but show "Remove this tool server and add it again to reconnect it." and offer only Remove.
 
 ### 8.5 Services added by access key
 - For services our connection partner doesn't support, users can add a connection by pasting an **access key** (API key) with a label, e.g. "Mailchimp – Marketing".
@@ -592,7 +605,7 @@ Users don't need to know which tools are built-in and which are connected — bo
 | What | Where it's kept | Who holds the actual secret |
 |---|---|---|
 | Accounts connected through our connection partner (Gmail, HubSpot, Slack…) | Our connection partner (Composio), encrypted | Composio. Agent Space keeps only a reference to the connection, never the tokens. |
-| Custom tool server sign-ins (§8.4) | Google Cloud Secret Manager | Agent Space, encrypted |
+| Custom tool server sign-ins and tokens (§8.4) | Our connection partner (Composio), encrypted | Composio. Agent Space keeps only a reference to the connection. |
 | Access keys pasted by users (§8.5) | Google Cloud Secret Manager | Agent Space, encrypted |
 | Website passwords used on the cloud computer | **Not stored at all** (see §9.4) | Nobody. Only the signed-in session is kept. |
 | Agent Space's own keys (AI providers, Composio, Daytona, email, sign-in providers) | Each environment's `.env` file on the server | Agent Space |
@@ -608,7 +621,7 @@ Users don't need to know which tools are built-in and which are connected — bo
 **How it's built (for the development team):**
 - **Composio connections:** the database stores only the Composio connected-account ID, its label, owner and status. Tool calls go through Composio's tool execution, so tokens never pass through our services. Connection status is synced from Composio (an `EXPIRED` connection becomes "Needs re-connecting").
 - **Google Cloud Secret Manager** stores every secret users give Agent Space:
-  - **User secrets** (custom tool server tokens, access keys) live in a dedicated GCP project used only for user secrets. Each credential is **one secret** named `cred-<credentialId>`, using a random ID only, never names or emails. It is labelled with `org_id`, `owner_type` (`user`/`org`) and `kind` (`mcp_oauth`, `mcp_token`, `api_key`). The payload is JSON: `{access_token, refresh_token, expires_at, token_type, scope}` for sign-ins, or `{api_key}` for keys. Secrets use customer-managed encryption (CMEK) with a Cloud KMS key in the same project.
+  - **User secrets** (access keys, website logins; custom tool server tokens only for servers added before §8.4 moved to Composio) live in a dedicated GCP project used only for user secrets. Each credential is **one secret** named `cred-<credentialId>`, using a random ID only, never names or emails. It is labelled with `org_id`, `owner_type` (`user`/`org`) and `kind` (`mcp_oauth`, `mcp_token`, `api_key`). The payload is JSON: `{access_token, refresh_token, expires_at, token_type, scope}` for sign-ins, or `{api_key}` for keys. Secrets use customer-managed encryption (CMEK) with a Cloud KMS key in the same project.
 - **Platform keys** (OpenAI, OpenRouter, Composio, Daytona, Resend, OAuth client secrets) stay in each environment's `.env` file, as today (see AGENTS.md); they are not moved to Secret Manager. They are loaded into the API at start-up and never sent to clients, the model, the cloud computer or logs.
 - **The database holds only credential metadata:** ID, label, owner (user or organisation), organisation, kind, status, masked hint (last 4 characters for keys), expiry time, and the Secret Manager resource name and current version. It never holds secret values.
 - **Least-privilege access:**
@@ -617,11 +630,11 @@ Users don't need to know which tools are built-in and which are connected — bo
   - Access is granted with IAM conditions on the `cred-` name prefix.
 - **Using a secret:** the tool-execution service loads the credential record, checks that the requesting user and bot may use it (same checks as §8.3), reads the secret, makes the call and returns only the result. Decrypted values are cached only in that service's memory, for at most 5 minutes or until the token expires, whichever is sooner. They are never cached in Redis or the database, and never sent to the client, the model or the cloud computer.
 - **Refreshing sign-ins:** the tool-execution service refreshes a token when it expires within 2 minutes, holding a per-credential lock so only one refresh runs at a time. It saves the new token as a new secret version and destroys the old version. If the refresh fails as unauthorised, the credential is marked "Needs re-connecting".
-- **Custom tool server sign-in** follows the MCP authorization spec (OAuth 2.1 with PKCE and dynamic client registration where the server supports it). Static tokens fall back to the access-key flow.
+- **Custom tool server sign-in** runs through Composio (§8.4): the MCP authorization spec with dynamic client registration for "Sign in", and Composio-held access tokens otherwise.
 - **Saving a pasted key:** the key goes straight from the client to the API over HTTPS. The API writes it to Secret Manager and stores only the masked hint. Request logging excludes these endpoints' bodies.
 - **Redaction:** before any tool result reaches the model, logs or traces, it is scanned for the values of the secrets used in that call, and any matches are replaced with `[secret]`. Error messages from tool servers get the same treatment.
 - **Deletion:** deleting a credential deletes its Secret Manager secret immediately. When a member is removed, a `connections.revoke-and-delete-credentials` job (§14.4) deletes their private credentials (and revokes them at the provider when the provider supports revocation), retrying until it succeeds.
-- **Refreshing:** custom tool server sign-ins are refreshed by a delayed `connections.refresh-token` job 5 minutes before they expire, and Composio connection status is synced every 15 minutes (§14.4). Refreshed tokens are written straight to Secret Manager as a new version; the job payload holds only the credential ID.
+- **Refreshing:** Composio refreshes the sign-ins it holds, including custom tool servers (§8.4), and Composio connection status is synced every 15 minutes (§14.4).
 - **Never fall back to plain text:** if Secret Manager is unavailable, saving fails with a clear error and tool calls needing that secret fail and are retried. Nothing is written elsewhere instead.
 - **Keys on the cloud computer:** scripts on the cloud computer never receive keys as environment variables or files. They call connected services through an Agent Space proxy reachable only from that computer. The proxy checks that the target service is allowed for that bot, adds the credential to the outgoing request and returns the response.
 
@@ -1514,7 +1527,7 @@ Bots keep working after the user leaves, automations run while nobody is watchin
 | `triggers` | `composio-event`, `device-place-event` | 20 | 5, exponential from 5 s | Job ID = provider event ID, so repeated webhook deliveries are ignored |
 | `approvals` | `timeout` | 10 | 3 | Delayed job per pending approval with a timeout (§13.2, §13.4) |
 | `notifications` | `dispatch`, `email`, `push` | 20 | 5, exponential from 30 s | `dispatch` applies the user's settings and quiet hours, then adds one job per channel |
-| `connections` | `sync-composio-status`, `refresh-token`, `revoke-and-delete-credentials` | 10 | 5, exponential from 1 min | |
+| `connections` | `sync-composio-status`, `revoke-and-delete-credentials` | 10 | 5, exponential from 1 min | |
 | `cloud-computers` | `idle-pause`, `session-limit`, `process-replay` | 10 | 3 | |
 | `storage` | `purge-deleted`, `apply-retention`, `aggregate-usage` | 2 | 3 | |
 | `exports` | `user-data-export`, `activity-export` | 2 | 2 | The user is notified with a download link when done (§11, §13.4) |
@@ -1554,7 +1567,7 @@ Bots keep working after the user leaves, automations run while nobody is watchin
 **Other timed jobs**
 - **Approval timeouts:** creating an approval with a timeout adds a delayed `approvals.timeout` job with ID `approval:<approvalId>`; resolving the approval removes it.
 - **Cloud computer idle pause (§9.3, §13.4):** every bot or user action on the computer replaces a delayed `idle-pause` job (ID `computer-idle:<botId>`) set to the organisation's idle time. A `session-limit` job enforces the maximum continuous session.
-- **Sign-in refresh (§8.7):** after every refresh of a custom tool server sign-in, a `refresh-token` job is added for 5 minutes before the new expiry. A Composio status sync runs every 15 minutes, and also immediately when Composio reports an expired connection.
+- **Sign-in refresh (§8.7):** Composio refreshes sign-ins itself, custom tool servers included (§8.4). A Composio status sync runs every 15 minutes, and also immediately when Composio reports an expired connection.
 - **Member removal (§8.7):** adds `revoke-and-delete-credentials` for that member.
 - **Notifications (§12):** quiet hours delay the channel jobs until quiet hours end, except approvals marked urgent. The `email` job is rate-limited with BullMQ's queue limiter to stay inside the email provider's sending limits.
 - **Platform schedules** (all times UTC):
@@ -1572,7 +1585,7 @@ Bots keep working after the user leaves, automations run while nobody is watchin
 - **Locks:** the locks above use a single Redis key set with `SET NX PX` and a random token, released only by the holder (checked in a Lua script).
 - **Rate limits:** API request rate limiting (per user and per IP for sign-in, public artifact and webhook endpoints) uses the NestJS throttler with Redis storage, so the limits apply across instances.
 - **Usage counters (§11, §13.4):** every model call, cloud computer minute and voice minute increments counters per organisation, member and bot for the current month (`as:<env>:usage:<orgId>:<yyyymm>:…`). Limit checks before and during runs read these counters. `usage.flush-counters` writes them to the database every minute; the database is the record used for the usage overview.
-- **Caches** (via the existing `AppCacheModule` with the Redis store), each with a TTL: the OpenRouter model list (1 hour), tool lists of custom tool servers (10 minutes, cleared when the server is edited), Composio connection status (5 minutes), and the effective settings for a user and bot (§13.1; 5 minutes, cleared on any settings change). Decrypted secrets are never cached in Redis (§8.7).
+- **Caches** (via the existing `AppCacheModule` with the Redis store), each with a TTL: the OpenRouter model list (1 hour), tool lists of connected services and custom tool servers (10 minutes; a tool server's are cleared when its tools are re-read), Composio connection status (5 minutes), and the effective settings for a user and bot (§13.1; 5 minutes, cleared on any settings change). Decrypted secrets are never cached in Redis (§8.7).
 
 **Operations**
 - **Bull Board** is served at `/admin/queues` behind basic auth (`BULL_BOARD_USER` / `BULL_BOARD_PASSWORD`) in every environment, with every queue above registered. In production it is reachable only from the internal network.
@@ -1682,7 +1695,7 @@ This section records what the code does today against this specification. Setup,
 | Voice mode | §7.6 | OpenAI Realtime over WebRTC. The API holds the key and runs every tool server-side. Includes the voice picker with samples, push-to-talk, mute, interrupt, reconnecting within 15 s, silence and length limits, approvals by voice, and transcripts saved to the chat as voice messages. Tested with a synthetic audio stream, because the browser's microphone prompt can't be clicked by automation |
 | Files and storage | §7.7 | Google Cloud Storage with signed upload and download links. Data from the earlier dev stand-in was moved with `api/scripts/migrate-dev-stores.cjs` |
 | Connections | §8.1–8.3, §8.5 | Composio accounts, several accounts per service, private and shared connections, services added by access key, `call_api` |
-| Custom tool servers | §8.4 | MCP over Streamable HTTP with SSE fallback, sign-in through OAuth (dynamic client registration and PKCE). Tested with DeepWiki |
+| Custom tool servers | §8.4 | Registered with Composio as shared custom toolkits (no sign-in, bearer access token, or OAuth with dynamic client registration); tools run through the Composio tool layer. Tested with DeepWiki |
 | Built-in tools | §8.6 | Web search, read web page, create document, memory, app management by chat |
 | Secrets | §8.7–8.9 | Google Cloud Secret Manager, secret box in chat, warning when a secret is typed into a message, Secrets page, and managing secrets by chat |
 | Cloud computer | §9.1–9.3 | One Daytona sandbox per bot with turn on, pause and reset, and auto-stop when idle. The live view goes through an API proxy, which hides Daytona's warning page and blocks input for people who are only watching. Includes take control and hand back, commands, file read/write, the files panel, screenshots the bot can see, browser clicking, typing and scrolling, a session replay, and minute-based usage |

@@ -1,6 +1,7 @@
 import { DesktopAppCard } from "./desktop-app-card";
 import { DesktopDownloadCard } from "./desktop-download-card";
 import { AndroidAppCard } from "./android-app-card";
+import { AppLockCard } from "./app-lock-card";
 import { VoicePicker } from "@/components/layout/voice-picker";
 import { useEffect, useMemo, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -1008,6 +1009,7 @@ export const SecuritySection: FC = () => {
           </SettingsCard>
         </form>
       </Form>
+      <AppLockCard />
       <SettingsCard
         title="Active sessions"
         actions={

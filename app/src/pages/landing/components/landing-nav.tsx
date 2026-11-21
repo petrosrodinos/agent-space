@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { Bot, Menu } from "lucide-react";
+import { Menu } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetClose, SheetContent, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { LandingNavLinks, type LandingSectionId } from "@/config/constants/landing/landing.content";
@@ -15,9 +15,7 @@ export function scrollToSection(id: LandingSectionId) {
 
 export const LandingLogo: FC<{ className?: string }> = ({ className }) => (
   <Link to={Routes.home} className={cn("flex items-center gap-2.5", className)}>
-    <span className="inline-flex h-9 w-9 items-center justify-center rounded-md bg-primary text-primary-foreground">
-      <Bot className="h-5 w-5" />
-    </span>
+    <img src="/favicon.svg" alt="" className="h-9 w-9 shrink-0" />
     <span className="text-[17px] font-extrabold tracking-tight text-ink">Agent Space</span>
   </Link>
 );

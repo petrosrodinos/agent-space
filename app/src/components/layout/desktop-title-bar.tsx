@@ -22,9 +22,10 @@ export const DesktopTitleBar: FC = () => {
   const mac = getDesktopBridge()?.os === "darwin";
   return (
     <div
-      className="titlebar-drag fixed inset-x-0 top-0 z-[300] flex items-center bg-canvas text-xs font-medium text-muted-text select-none"
+      className="titlebar-drag fixed inset-x-0 top-0 z-[300] flex items-center gap-2 bg-canvas text-xs font-medium text-muted-text select-none"
       style={{ height: "var(--titlebar-h)", paddingLeft: mac ? MAC_TRAFFIC_LIGHTS_INSET : 12 }}
     >
+      <img src="/favicon.svg" alt="" draggable={false} className="h-4 w-4 shrink-0" />
       Agent Space
     </div>
   );

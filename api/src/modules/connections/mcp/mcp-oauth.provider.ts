@@ -7,6 +7,8 @@ export interface McpOAuthData {
     tokens?: OAuthTokens;
     /** Only while a sign-in is in progress (held in Redis, not the secret store). */
     code_verifier?: string;
+    /** ISO time the access token expires (from the stored credential); lets callers refresh before a 401. */
+    expires_at?: string;
 }
 
 /**

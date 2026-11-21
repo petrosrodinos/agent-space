@@ -17,6 +17,9 @@ import type { CreateToolServerDto, UpdateToolServerDto } from './tool-server.dto
 
 const TOOLS_CACHE_SECONDS = 300;
 const SIGN_IN_TTL_SECONDS = 15 * 60;
+const OAUTH_REFRESH_MARGIN_MS = 60_000;
+const OAUTH_SWEEP_MARGIN_MS = 5 * 60_000;
+const OAUTH_REFRESH_LOCK_SECONDS = 30;
 
 const INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
@@ -377,7 +380,7 @@ export class ToolServersService {
         const cred = await this.prisma.credential.findFirst({ where: { id: credentialId, deleted_at: null } });
         if (!cred) throw new McpAuthError('Sign in to this tool server first.');
         const payload = await this.store.access(cred.secret_resource_name);
-        return payload.oauth ? (JSON.parse(payload.oauth) as McpOAuthData) : { tokens: payload.access_token ? { access_token: payload.access_token, token_type: payload.token_type ?? 'bearer', refresh_token: payload.refresh_token } : undefined };
+        return payload.oauth ? { ...(JSON.parse(payload.oauth) as McpOAuthData), expires_at: payload.expires_at } : { tokens: payload.access_token ? { access_token: payload.access_token, token_type: payload.token_type ?? 'bearer', refresh_token: payload.refresh_token } : undefined };
     }
 
     // ---------------- Runtime (tool listing and calls) ----------------
@@ -397,7 +400,10 @@ export class ToolServersService {
             secrets?.push(token);
             return { kind: 'TOKEN', token };
         }
-        const data = await this.loadOAuth(s.credential_id);
+        let data = await this.loadOAuth(s.credential_id);
+        // Refresh ahead of expiry, once at a time per server. Servers that rotate refresh tokens treat a second use of the
+        // same token as a replay and revoke the whole grant, so parallel runs must never refresh concurrently.
+        if (this.isExpiring(data.expires_at) && data.tokens?.refresh_token) data = (await this.refreshOAuthLocked(s)) ?? data;
         if (data.tokens?.access_token) secrets?.push(data.tokens.access_token);
         if (data.tokens?.refresh_token) secrets?.push(data.tokens.refresh_token);
         const provider = new McpOAuthProvider(data, this.redirectUrl(), async (d) => {
@@ -406,6 +412,65 @@ export class ToolServersService {
             await this.saveOAuth(s, { client_information: d.client_information, tokens: d.tokens });
         });
         return { kind: 'OAUTH', provider };
+    }
+
+    private isExpiring(expiresAt?: string, marginMs = OAUTH_REFRESH_MARGIN_MS) {
+        return !!expiresAt && new Date(expiresAt).getTime() - Date.now() < marginMs;
+    }
+
+    /**
+     * Scheduled job (`connections.refresh-token`, every 2 minutes): refreshes custom tool server sign-ins that expire
+     * within 5 minutes, so idle servers stay signed in. A sign-in that is already expired and could not be refreshed
+     * is flagged for the user instead of being retried forever.
+     */
+    async refreshExpiringSignIns() {
+        const servers = await this.prisma.toolServer.findMany({
+            where: {
+                deleted_at: null,
+                auth_kind: 'OAUTH',
+                credential_id: { not: null },
+                status: { not: 'NEEDS_RECONNECTING' },
+                credential: { is: { deleted_at: null, expires_at: { lt: new Date(Date.now() + OAUTH_SWEEP_MARGIN_MS) } } },
+            },
+            take: 200,
+        });
+        let refreshed = 0;
+        let failed = 0;
+        for (const s of servers) {
+            const data = await this.refreshOAuthLocked(s, OAUTH_SWEEP_MARGIN_MS);
+            if (!data) continue; // transient failure: try again on the next sweep
+            if (this.isExpiring(data.expires_at, 0)) {
+                failed++;
+                await this.setStatus(s.id, 'NEEDS_RECONNECTING', 'The sign-in expired and could not be renewed. Sign in again.');
+                await this.invalidateCache(s.id);
+            } else if (!this.isExpiring(data.expires_at, OAUTH_SWEEP_MARGIN_MS)) refreshed++;
+        }
+        return { checked: servers.length, refreshed, failed };
+    }
+
+    /** Refreshes the tokens under a Redis lock; waiters reuse the tokens the lock holder saved. Returns null on failure. */
+    private async refreshOAuthLocked(s: ToolServer, marginMs = OAUTH_REFRESH_MARGIN_MS): Promise<McpOAuthData | null> {
+        const lockKey = this.redis.key(`mcp:oauth:refresh:${s.id}`);
+        const acquired = await this.redis.client.set(lockKey, '1', 'EX', OAUTH_REFRESH_LOCK_SECONDS, 'NX');
+        if (!acquired) {
+            for (let i = 0; i < 40 && (await this.redis.client.exists(lockKey)); i++) await new Promise((r) => setTimeout(r, 250));
+            return this.loadOAuth(s.credential_id!).catch(() => null);
+        }
+        try {
+            const data = await this.loadOAuth(s.credential_id!);
+            if (!this.isExpiring(data.expires_at, marginMs)) return data;
+            const provider = new McpOAuthProvider(data, this.redirectUrl(), async (d) => {
+                if (d.tokens) await this.saveOAuth(s, { client_information: d.client_information, tokens: d.tokens });
+            });
+            // With a stored refresh token the SDK refreshes and saves the new tokens through the provider.
+            await auth(provider, { serverUrl: s.url, fetchFn: this.mcp.guardedFetch });
+            return await this.loadOAuth(s.credential_id!);
+        } catch (e) {
+            this.logger.warn(`OAuth refresh failed for tool server ${s.id}: ${(e as Error).message}`);
+            return null;
+        } finally {
+            await this.redis.client.del(lockKey);
+        }
     }
 
     private cacheKey(id: string) {
@@ -428,7 +493,9 @@ export class ToolServersService {
 
     async call(s: ToolServer, tool: string, args: Record<string, unknown>, secrets: string[]) {
         try {
-            return await this.mcp.callTool(s.url, await this.authFor(s, secrets), tool, args);
+            const res = await this.mcp.callTool(s.url, await this.authFor(s, secrets), tool, args);
+            if (s.status !== 'ACTIVE') await this.setStatus(s.id, 'ACTIVE', null);
+            return res;
         } catch (e) {
             if (e instanceof McpAuthError) await this.setStatus(s.id, 'NEEDS_RECONNECTING', e.message);
             throw e;

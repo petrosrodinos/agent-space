@@ -43,7 +43,10 @@ export class McpToolsService {
         const summary: string[] = [];
         const used = new Set<string>();
         for (const s of servers) {
-            if (s.status === 'NEEDS_RECONNECTING') {
+            // Servers flagged NEEDS_RECONNECTING are retried when they still hold credentials (or need none): a success
+            // in toolsFor() flips them back to ACTIVE, so one transient 401 no longer disconnects them for good.
+            const retryable = s.auth_kind === 'NONE' || !!s.credential_id;
+            if (s.status === 'NEEDS_RECONNECTING' && !retryable) {
                 summary.push(`Custom tool server "${s.name}": needs the user to sign in again on the Connections page`);
                 continue;
             }

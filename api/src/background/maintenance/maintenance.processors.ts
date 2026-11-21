@@ -6,6 +6,7 @@ import { Jobs, PLATFORM_SCHEDULES, Queues } from '@/core/queues/queues.constants
 import { StorageService } from '@/integrations/storage/storage.service';
 import { ApprovalsService } from '@/modules/approvals/approvals.service';
 import { ConnectionsService } from '@/modules/connections/connections.service';
+import { ToolServersService } from '@/modules/connections/mcp/tool-servers.service';
 import { UsageService } from '@/modules/usage/usage.service';
 import { ComputersService } from '@/modules/computers/computers.service';
 
@@ -48,12 +49,16 @@ export class UsageProcessor extends WorkerHost {
 
 @Processor(Queues.CONNECTIONS, { concurrency: 10 })
 export class ConnectionsProcessor extends WorkerHost {
-    constructor(private readonly connections: ConnectionsService) {
+    constructor(
+        private readonly connections: ConnectionsService,
+        private readonly toolServers: ToolServersService,
+    ) {
         super();
     }
 
     async process(job: Job<{ organization_id?: string; user_id?: string }>) {
         if (job.name === Jobs.connections.SYNC_COMPOSIO_STATUS) return this.connections.syncComposioStatuses();
+        if (job.name === Jobs.connections.REFRESH_TOKEN) return this.toolServers.refreshExpiringSignIns();
         if (job.name === Jobs.connections.REVOKE_AND_DELETE) return this.connections.revokeAndDeleteForMember(job.data.organization_id!, job.data.user_id!);
     }
 }

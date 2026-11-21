@@ -87,7 +87,9 @@ export class McpClientService {
 
     private isAuthError(e: unknown) {
         const msg = (e as Error)?.message ?? '';
-        return e instanceof UnauthorizedError || /\b401\b|unauthori[sz]ed|invalid[_ ]token|forbidden|\b403\b/i.test(msg);
+        // Only a genuine 401 / invalid token means "sign in again". 403 and free-text like "forbidden" are often a
+        // per-tool permission, WAF or Origin/Host rejection and must not log the server out.
+        return e instanceof UnauthorizedError || /\b401\b|invalid[_ ]token|invalid[_ ]grant/i.test(msg);
     }
 
     /** Connects (Streamable HTTP, then SSE), runs fn, always closes. */
@@ -100,7 +102,8 @@ export class McpClientService {
             try {
                 await client.connect(transport, { timeout: CONNECT_TIMEOUT_MS });
             } catch (e) {
-                lastError = e;
+                // Keep the first (Streamable HTTP) error: the SSE fallback's 404/405 would otherwise hide the real cause.
+                lastError ??= e;
                 await client.close().catch(() => undefined);
                 if (this.isAuthError(e)) throw new McpAuthError('The tool server needs you to sign in again (the access token was rejected or expired).');
                 continue;

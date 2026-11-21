@@ -76,6 +76,9 @@ let checkRunning = false;
 
 const isEnabled = () => app.isPackaged && existsSync(path.join(process.resourcesPath, 'app-update.yml'));
 
+/** An update is already downloaded and waiting for a restart; background re-checks must not hide it. */
+const holdingDownload = () => state.status === UpdateStatus.downloaded;
+
 function setState(next: UpdateState) {
     state = next;
     getWindow()?.webContents.send(UPDATE_STATUS_CHANNEL, state);
@@ -85,8 +88,9 @@ export const getUpdateState = (): UpdateState => state;
 
 export function checkForUpdates(opts: { force?: boolean } = {}): Promise<UpdateState> {
     if (!isEnabled()) return Promise.resolve(state);
-    // Already found and downloaded — nothing more to do until restart.
-    if (state.status === UpdateStatus.downloaded || state.status === UpdateStatus.downloading) return Promise.resolve(state);
+    // A download is in progress. A finished one does NOT stop checking: a newer release may have come out while the
+    // user postponed the restart, and installing the older one would force a second update right after.
+    if (state.status === UpdateStatus.downloading) return Promise.resolve(state);
     if (inFlight) return inFlight;
     if (!opts.force && Date.now() - lastCheckAt < MIN_CHECK_GAP_MS) return Promise.resolve(state);
     lastCheckAt = Date.now();
@@ -106,7 +110,7 @@ export function checkForUpdates(opts: { force?: boolean } = {}): Promise<UpdateS
                         await sleep(RETRY_DELAYS_MS[attempt]);
                         continue;
                     }
-                    setState({ status: UpdateStatus.error, message: friendlyError(message), checkedAt: Date.now() });
+                    if (!holdingDownload()) setState({ status: UpdateStatus.error, message: friendlyError(message), checkedAt: Date.now() });
                     break;
                 }
             }
@@ -146,10 +150,21 @@ export function initUpdater(windowGetter: () => BrowserWindow | null) {
     };
 
     const version = (i: UpdateInfo) => i.version;
-    autoUpdater.on('checking-for-update', () => setState({ ...state, status: UpdateStatus.checking }));
-    autoUpdater.on('update-not-available', () => setState({ status: UpdateStatus.none, checkedAt: Date.now() }));
-    autoUpdater.on('update-available', (i) => setState({ status: UpdateStatus.available, version: version(i), checkedAt: Date.now() }));
-    autoUpdater.on('download-progress', (p) => setState({ ...state, status: UpdateStatus.downloading, percent: Math.round(p.percent) }));
+    // While a downloaded update waits for a restart, a re-check may find an even newer one. Keep offering the
+    // downloaded one (so "Restart to update" stays usable) until the newer one has finished downloading, then
+    // `update-downloaded` replaces it and the restart installs the latest version in one step.
+    autoUpdater.on('checking-for-update', () => {
+        if (!holdingDownload()) setState({ ...state, status: UpdateStatus.checking });
+    });
+    autoUpdater.on('update-not-available', () => {
+        if (!holdingDownload()) setState({ status: UpdateStatus.none, checkedAt: Date.now() });
+    });
+    autoUpdater.on('update-available', (i) => {
+        if (!holdingDownload()) setState({ status: UpdateStatus.available, version: version(i), checkedAt: Date.now() });
+    });
+    autoUpdater.on('download-progress', (p) => {
+        if (!holdingDownload()) setState({ ...state, status: UpdateStatus.downloading, percent: Math.round(p.percent) });
+    });
     autoUpdater.on('update-downloaded', (i) => setState({ status: UpdateStatus.downloaded, version: version(i), checkedAt: Date.now() }));
     autoUpdater.on('error', (e) => {
         // A failed background download should not hide an update that is already waiting.

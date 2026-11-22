@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
@@ -38,6 +39,7 @@ export class ConversationsService {
             type: c.type,
             name: c.name ?? (c.type === 'DIRECT' ? first?.name : null) ?? 'Conversation',
             color: c.color ?? (c.type !== 'GROUP' ? first?.color : null) ?? '#6B4EFF',
+            avatar_seed: c.type === 'GROUP' ? c.avatar_seed : null,
             lead_bot: c.lead_bot,
             is_temporary: c.is_temporary,
             created_by_id: c.created_by_id,
@@ -168,6 +170,7 @@ export class ConversationsService {
                 type: dto.type,
                 name: dto.name?.trim() || null,
                 color: dto.color,
+                avatar_seed: dto.type === 'GROUP' ? dto.avatar_seed ?? randomBytes(6).toString('hex') : null,
                 created_by_id: actor.user_id,
                 lead_bot_id: lead,
                 participants: { create: [...userIds.map((user_id) => ({ user_id })), ...[...new Set(dto.bot_ids)].map((bot_id) => ({ bot_id }))] },

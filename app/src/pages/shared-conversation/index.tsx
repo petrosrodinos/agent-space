@@ -91,7 +91,7 @@ const SharedConversationPage: FC = () => {
     <div className="min-h-dvh bg-canvas">
       <header className="sticky top-0 z-10 border-b border-hairline bg-canvas/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3">
-          {c.bots.length ? <ConversationAvatar conversation={{ type: c.bots.length > 1 ? ConversationTypes.GROUP : ConversationTypes.DIRECT, name: c.name, color: c.color, bots: c.bots.map((b, i) => ({ ...b, id: String(i) })) }} size={40} /> : <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-surface-sunken text-muted-foreground"><Bot className="h-5 w-5" /></span>}
+          {c.bots.length ? <ConversationAvatar conversation={{ type: c.bots.length > 1 ? ConversationTypes.GROUP : ConversationTypes.DIRECT, name: c.name, color: c.color, avatar_seed: c.avatar_seed, bots: c.bots.map((b, i) => ({ ...b, id: String(i) })) }} size={40} /> : <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-surface-sunken text-muted-foreground"><Bot className="h-5 w-5" /></span>}
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-display text-lg font-bold text-ink">{c.name}</h1>
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

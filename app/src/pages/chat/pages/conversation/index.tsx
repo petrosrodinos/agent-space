@@ -313,7 +313,7 @@ const ConversationPage: FC = () => {
                   {conversation.type === ConversationTypes.DIRECT && conversation.bots[0] ? (
                     <BotAvatar seed={conversation.bots[0].avatar_seed} color={conversation.bots[0].color} size={88} followCursor />
                   ) : (
-                    <GroupAvatar bots={conversation.bots} color={conversation.color} name={conversation.name} size={88} />
+                    <GroupAvatar seed={conversation.avatar_seed} bots={conversation.bots} color={conversation.color} name={conversation.name} size={88} />
                   )}
                   <h2 className="mt-3 font-display text-2xl font-bold text-ink">{conversation.name}</h2>
                   {welcome ? <Markdown className="mt-2 max-w-md text-muted-foreground">{welcome}</Markdown> : <p className="mt-1 max-w-md text-sm text-muted-foreground">{conversation.type === ConversationTypes.DIRECT ? conversation.bots[0]?.description : "Talk to a specific bot with @name, or just ask — the lead bot coordinates."}</p>}

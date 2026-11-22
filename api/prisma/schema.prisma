@@ -1936,9 +1936,11 @@ model Conversation {
   organization_id String
   type            ConversationType
   name            String?
-  /// Deprecated, no longer read or written (groups show their bots' portraits). Drop with Bot.emoji.
+  /// Deprecated, no longer read or written. Drop with Bot.emoji.
   emoji           String?
   color           String?
+  /// Groups only: seed for the group's generated portrait avatar (same generator as bots).
+  avatar_seed     String?
   lead_bot_id     String?
   created_by_id   String?
   is_temporary    Boolean          @default(false)

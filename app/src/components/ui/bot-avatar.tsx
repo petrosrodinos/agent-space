@@ -42,22 +42,24 @@ export const BotAvatar: FC<BotAvatarProps> = ({ seed, color, size = 40, working 
 };
 
 interface ConversationAvatarProps {
-  conversation: { type: string; color?: string | null; name: string; bots: { id: string; avatar_seed: string; color: string; name: string }[] };
+  conversation: { type: string; color?: string | null; avatar_seed?: string | null; name: string; bots: { id: string; avatar_seed: string; color: string; name: string }[] };
   size?: keyof typeof SIZES;
   working?: boolean;
   followCursor?: boolean;
   className?: string;
 }
 
-/** Shared conversation avatar: groups show a "team photo" of their bots on the group colour, direct chats the lead bot. */
+/** Shared conversation avatar: groups show their own portrait (or their bots), direct chats the lead bot. */
 export const ConversationAvatar: FC<ConversationAvatarProps> = ({ conversation: c, size = 40, working, followCursor, className }) => {
   const lead = c.bots[0];
-  if (c.type === ConversationTypes.GROUP) return <GroupAvatar bots={c.bots} color={c.color ?? lead?.color ?? FALLBACK_BOT_COLOR} name={c.name} size={size} working={working} className={className} />;
+  if (c.type === ConversationTypes.GROUP) return <GroupAvatar seed={c.avatar_seed} bots={c.bots} color={c.color ?? lead?.color ?? FALLBACK_BOT_COLOR} name={c.name} size={size} working={working} className={className} />;
   if (lead) return <BotAvatar seed={lead.avatar_seed} color={lead.color} name={lead.name} size={size} working={working} followCursor={followCursor} className={className} />;
   return <BotAvatarStack bots={c.bots} />;
 };
 
 interface GroupAvatarProps {
+  /** The group's own portrait seed. Without one, the group shows its first two bots. */
+  seed?: string | null;
   bots: { id: string; avatar_seed: string; color: string }[];
   color: string;
   name?: string;
@@ -66,8 +68,9 @@ interface GroupAvatarProps {
   className?: string;
 }
 
-/** A group squircle: up to two bot portraits side by side (the lead in front) on the group colour. */
-export const GroupAvatar: FC<GroupAvatarProps> = ({ bots, color, name, size = 40, working = false, className }) => {
+/** A group squircle on the group colour: the group's own portrait, or up to two bot portraits side by side. */
+export const GroupAvatar: FC<GroupAvatarProps> = ({ seed, bots, color, name, size = 40, working = false, className }) => {
+  if (seed) return <BotAvatar seed={seed} color={color} name={name} size={size} working={working} className={className} />;
   const [front, back] = bots;
   return (
     <span

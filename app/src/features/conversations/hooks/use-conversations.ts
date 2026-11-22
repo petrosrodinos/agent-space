@@ -70,7 +70,7 @@ const useConvMutation = <T,>(fn: (v: T) => Promise<unknown>, success?: string, f
   });
 };
 
-export const useUpdateConversation = () => useConvMutation(({ id, ...dto }: { id: string; name?: string; color?: string; lead_bot_id?: string | null }) => updateConversation(id, dto), "Saved", "Could not save");
+export const useUpdateConversation = () => useConvMutation(({ id, ...dto }: { id: string; name?: string; color?: string; avatar_seed?: string; lead_bot_id?: string | null }) => updateConversation(id, dto), "Saved", "Could not save");
 export const useUpdateMyConversation = () => useConvMutation(({ id, ...dto }: { id: string; is_favourite?: boolean; is_archived?: boolean; is_muted?: boolean; folder_id?: string | null }) => updateMyConversation(id, dto));
 export const useDeleteConversation = () => useConvMutation(deleteConversation, "Conversation deleted", "Could not delete");
 export const useClearConversation = () => {

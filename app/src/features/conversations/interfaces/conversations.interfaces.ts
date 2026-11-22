@@ -74,6 +74,8 @@ export interface Conversation {
   type: ConversationType;
   name: string;
   color: string;
+  /** Groups: seed for the group's portrait avatar. Null for other chats. */
+  avatar_seed: string | null;
   lead_bot: BotBrief | null;
   is_temporary: boolean;
   created_by_id: string | null;
@@ -259,7 +261,7 @@ export type SharedMessage =
     };
 
 export interface SharedConversationPage {
-  conversation: { name: string; color: string | null; bots: { name: string; avatar_seed: string; color: string }[] };
+  conversation: { name: string; color: string | null; avatar_seed: string | null; bots: { name: string; avatar_seed: string; color: string }[] };
   mode: ConversationShareMode;
   shared_by: string | null;
   shared_at: string;

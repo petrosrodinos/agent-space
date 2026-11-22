@@ -663,6 +663,7 @@ exports.Prisma.ConversationScalarFieldEnum = {
   name: 'name',
   emoji: 'emoji',
   color: 'color',
+  avatar_seed: 'avatar_seed',
   lead_bot_id: 'lead_bot_id',
   created_by_id: 'created_by_id',
   is_temporary: 'is_temporary',

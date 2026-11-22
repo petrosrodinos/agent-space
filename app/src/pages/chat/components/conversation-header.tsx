@@ -36,7 +36,7 @@ const TitlePill: FC<{ conversation: Conversation; working: string[]; panelOpen: 
       )}
     >
       {c.type === ConversationTypes.GROUP ? (
-        <GroupAvatar bots={c.bots} color={c.color} name={c.name} size={32} working={working.length > 0} className="rounded-full" />
+        <GroupAvatar seed={c.avatar_seed} bots={c.bots} color={c.color} name={c.name} size={32} working={working.length > 0} className="rounded-full" />
       ) : lead ? (
         <BotAvatar seed={lead.avatar_seed} color={lead.color} name={lead.name} size={32} working={working.length > 0} className="rounded-full" />
       ) : (

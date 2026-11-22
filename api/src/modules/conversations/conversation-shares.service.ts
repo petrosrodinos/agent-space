@@ -105,7 +105,7 @@ export class ConversationSharesService {
                 created_by: { select: { name: true } },
                 conversation: {
                     select: {
-                        id: true, name: true, color: true, type: true, deleted_at: true,
+                        id: true, name: true, color: true, avatar_seed: true, type: true, deleted_at: true,
                         participants: { where: { left_at: null, bot_id: { not: null } }, select: { bot: { select: { name: true, avatar_seed: true, color: true } } } },
                     },
                 },
@@ -136,6 +136,7 @@ export class ConversationSharesService {
             conversation: {
                 name: c.name ?? (c.type === 'DIRECT' ? first?.name : null) ?? 'Conversation',
                 color: c.color ?? (c.type !== 'GROUP' ? first?.color : null) ?? null,
+                avatar_seed: c.type === 'GROUP' ? c.avatar_seed : null,
                 bots: c.participants.map((p) => p.bot!).filter(Boolean),
             },
             mode: share.mode,

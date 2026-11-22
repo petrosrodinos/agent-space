@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { BotAvatar, GroupAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
+import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import UnsavedChangesDialog from "@/components/ui/unsaved-changes-dialog";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { NewChatStepLayout, type NewChatStepProps } from "@/components/layout/new-chat/new-chat-step";
@@ -17,7 +17,8 @@ import { useMe } from "@/features/users/hooks/use-users";
 import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
-import { ColorSwatches } from "@/pages/bots/components/bot-pickers";
+import { AvatarPicker, ColorSwatches } from "@/pages/bots/components/bot-pickers";
+import { randomAvatarSeed } from "@/components/ui/bot-portrait";
 import { newGroupSchema, type NewGroupFormData } from "../validation-schemas/group.schema";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 
@@ -34,7 +35,8 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
     resolver: zodResolver(newGroupSchema),
     defaultValues: {
       name: "",
-      color: BotColorOptions[0].id,
+      color: BotColorOptions[Math.floor(Math.random() * BotColorOptions.length)].id,
+      avatar_seed: randomAvatarSeed(),
       bot_ids: [],
       user_ids: [],
     },
@@ -81,6 +83,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                 type: ConversationTypes.GROUP,
                 name: v.name,
                 color: v.color,
+                avatar_seed: v.avatar_seed,
                 bot_ids: v.bot_ids,
                 user_ids: v.user_ids,
                 lead_bot_id: v.lead_bot_id ?? v.bot_ids[0],
@@ -95,7 +98,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
           )}
         >
           <div className="flex items-center gap-4">
-            <GroupAvatar bots={(bots ?? []).filter((b) => botIds.includes(b.id))} color={color} size={56} className="shadow-sticker" />
+            <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} />} />
             <FormField
               control={form.control}
               name="name"

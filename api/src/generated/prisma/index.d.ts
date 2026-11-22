@@ -55820,6 +55820,7 @@ export namespace Prisma {
     name: string | null
     emoji: string | null
     color: string | null
+    avatar_seed: string | null
     lead_bot_id: string | null
     created_by_id: string | null
     is_temporary: boolean | null
@@ -55837,6 +55838,7 @@ export namespace Prisma {
     name: string | null
     emoji: string | null
     color: string | null
+    avatar_seed: string | null
     lead_bot_id: string | null
     created_by_id: string | null
     is_temporary: boolean | null
@@ -55854,6 +55856,7 @@ export namespace Prisma {
     name: number
     emoji: number
     color: number
+    avatar_seed: number
     lead_bot_id: number
     created_by_id: number
     is_temporary: number
@@ -55881,6 +55884,7 @@ export namespace Prisma {
     name?: true
     emoji?: true
     color?: true
+    avatar_seed?: true
     lead_bot_id?: true
     created_by_id?: true
     is_temporary?: true
@@ -55898,6 +55902,7 @@ export namespace Prisma {
     name?: true
     emoji?: true
     color?: true
+    avatar_seed?: true
     lead_bot_id?: true
     created_by_id?: true
     is_temporary?: true
@@ -55915,6 +55920,7 @@ export namespace Prisma {
     name?: true
     emoji?: true
     color?: true
+    avatar_seed?: true
     lead_bot_id?: true
     created_by_id?: true
     is_temporary?: true
@@ -56019,6 +56025,7 @@ export namespace Prisma {
     name: string | null
     emoji: string | null
     color: string | null
+    avatar_seed: string | null
     lead_bot_id: string | null
     created_by_id: string | null
     is_temporary: boolean
@@ -56055,6 +56062,7 @@ export namespace Prisma {
     name?: boolean
     emoji?: boolean
     color?: boolean
+    avatar_seed?: boolean
     lead_bot_id?: boolean
     created_by_id?: boolean
     is_temporary?: boolean
@@ -56089,6 +56097,7 @@ export namespace Prisma {
     name?: boolean
     emoji?: boolean
     color?: boolean
+    avatar_seed?: boolean
     lead_bot_id?: boolean
     created_by_id?: boolean
     is_temporary?: boolean
@@ -56109,6 +56118,7 @@ export namespace Prisma {
     name?: boolean
     emoji?: boolean
     color?: boolean
+    avatar_seed?: boolean
     lead_bot_id?: boolean
     created_by_id?: boolean
     is_temporary?: boolean
@@ -56129,6 +56139,7 @@ export namespace Prisma {
     name?: boolean
     emoji?: boolean
     color?: boolean
+    avatar_seed?: boolean
     lead_bot_id?: boolean
     created_by_id?: boolean
     is_temporary?: boolean
@@ -56139,7 +56150,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "type" | "name" | "emoji" | "color" | "lead_bot_id" | "created_by_id" | "is_temporary" | "last_message_at" | "message_count" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["conversation"]>
+  export type ConversationOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "type" | "name" | "emoji" | "color" | "avatar_seed" | "lead_bot_id" | "created_by_id" | "is_temporary" | "last_message_at" | "message_count" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["conversation"]>
   export type ConversationInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     lead_bot?: boolean | Conversation$lead_botArgs<ExtArgs>
@@ -56196,13 +56207,14 @@ export namespace Prisma {
       type: $Enums.ConversationType
       name: string | null
       /**
-       * Deprecated, no longer read or written (groups show their bots' portraits). Drop with Bot.emoji.
-       */
-      emoji: string | null
-      /**
        * Deprecated, no longer read or written. Drop with Bot.emoji.
        */
+      emoji: string | null
       color: string | null
+      /**
+       * Groups only: seed for the group's generated portrait avatar (same generator as bots).
+       */
+      avatar_seed: string | null
       lead_bot_id: string | null
       created_by_id: string | null
       is_temporary: boolean
@@ -56656,6 +56668,7 @@ export namespace Prisma {
     readonly name: FieldRef<"Conversation", 'String'>
     readonly emoji: FieldRef<"Conversation", 'String'>
     readonly color: FieldRef<"Conversation", 'String'>
+    readonly avatar_seed: FieldRef<"Conversation", 'String'>
     readonly lead_bot_id: FieldRef<"Conversation", 'String'>
     readonly created_by_id: FieldRef<"Conversation", 'String'>
     readonly is_temporary: FieldRef<"Conversation", 'Boolean'>
@@ -123558,6 +123571,7 @@ export namespace Prisma {
     name: 'name',
     emoji: 'emoji',
     color: 'color',
+    avatar_seed: 'avatar_seed',
     lead_bot_id: 'lead_bot_id',
     created_by_id: 'created_by_id',
     is_temporary: 'is_temporary',
@@ -130078,6 +130092,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"Conversation"> | string | null
     emoji?: StringNullableFilter<"Conversation"> | string | null
     color?: StringNullableFilter<"Conversation"> | string | null
+    avatar_seed?: StringNullableFilter<"Conversation"> | string | null
     lead_bot_id?: StringNullableFilter<"Conversation"> | string | null
     created_by_id?: StringNullableFilter<"Conversation"> | string | null
     is_temporary?: BoolFilter<"Conversation"> | boolean
@@ -130111,6 +130126,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     emoji?: SortOrderInput | SortOrder
     color?: SortOrderInput | SortOrder
+    avatar_seed?: SortOrderInput | SortOrder
     lead_bot_id?: SortOrderInput | SortOrder
     created_by_id?: SortOrderInput | SortOrder
     is_temporary?: SortOrder
@@ -130147,6 +130163,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"Conversation"> | string | null
     emoji?: StringNullableFilter<"Conversation"> | string | null
     color?: StringNullableFilter<"Conversation"> | string | null
+    avatar_seed?: StringNullableFilter<"Conversation"> | string | null
     lead_bot_id?: StringNullableFilter<"Conversation"> | string | null
     created_by_id?: StringNullableFilter<"Conversation"> | string | null
     is_temporary?: BoolFilter<"Conversation"> | boolean
@@ -130180,6 +130197,7 @@ export namespace Prisma {
     name?: SortOrderInput | SortOrder
     emoji?: SortOrderInput | SortOrder
     color?: SortOrderInput | SortOrder
+    avatar_seed?: SortOrderInput | SortOrder
     lead_bot_id?: SortOrderInput | SortOrder
     created_by_id?: SortOrderInput | SortOrder
     is_temporary?: SortOrder
@@ -130205,6 +130223,7 @@ export namespace Prisma {
     name?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     emoji?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     color?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
+    avatar_seed?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     lead_bot_id?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     created_by_id?: StringNullableWithAggregatesFilter<"Conversation"> | string | null
     is_temporary?: BoolWithAggregatesFilter<"Conversation"> | boolean
@@ -139730,6 +139749,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -139761,6 +139781,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -139790,6 +139811,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -139821,6 +139843,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -139851,6 +139874,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -139867,6 +139891,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -139882,6 +139907,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -149733,6 +149759,7 @@ export namespace Prisma {
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
+    avatar_seed?: SortOrder
     lead_bot_id?: SortOrder
     created_by_id?: SortOrder
     is_temporary?: SortOrder
@@ -149754,6 +149781,7 @@ export namespace Prisma {
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
+    avatar_seed?: SortOrder
     lead_bot_id?: SortOrder
     created_by_id?: SortOrder
     is_temporary?: SortOrder
@@ -149771,6 +149799,7 @@ export namespace Prisma {
     name?: SortOrder
     emoji?: SortOrder
     color?: SortOrder
+    avatar_seed?: SortOrder
     lead_bot_id?: SortOrder
     created_by_id?: SortOrder
     is_temporary?: SortOrder
@@ -170282,6 +170311,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -170312,6 +170342,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
@@ -172674,6 +172705,7 @@ export namespace Prisma {
     name?: StringNullableFilter<"Conversation"> | string | null
     emoji?: StringNullableFilter<"Conversation"> | string | null
     color?: StringNullableFilter<"Conversation"> | string | null
+    avatar_seed?: StringNullableFilter<"Conversation"> | string | null
     lead_bot_id?: StringNullableFilter<"Conversation"> | string | null
     created_by_id?: StringNullableFilter<"Conversation"> | string | null
     is_temporary?: BoolFilter<"Conversation"> | boolean
@@ -178954,6 +178986,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -178983,6 +179016,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -186395,6 +186429,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -186425,6 +186460,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
@@ -192651,6 +192687,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -192681,6 +192718,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -193150,6 +193188,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -193180,6 +193219,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -195612,6 +195652,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -195642,6 +195683,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -195829,6 +195871,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -195859,6 +195902,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -196036,6 +196080,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -196066,6 +196111,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -196439,6 +196485,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -196469,6 +196516,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -196947,6 +196995,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -196977,6 +197026,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -198535,6 +198585,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -198565,6 +198616,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -201132,6 +201184,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -201162,6 +201215,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -201545,6 +201599,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -201575,6 +201630,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -201793,6 +201849,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -201823,6 +201880,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -203403,6 +203461,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -203433,6 +203492,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -205317,6 +205377,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -205347,6 +205408,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -205980,6 +206042,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -206010,6 +206073,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -206544,6 +206608,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -206574,6 +206639,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -207125,6 +207191,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -207155,6 +207222,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -210350,6 +210418,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -210380,6 +210449,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -211328,6 +211398,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -211358,6 +211429,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -219656,6 +219728,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -219686,6 +219759,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -220870,6 +220944,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -220900,6 +220975,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -224548,6 +224624,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -224578,6 +224655,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -224611,6 +224689,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -224641,6 +224720,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -225444,6 +225524,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -225474,6 +225555,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -225513,6 +225595,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -225543,6 +225626,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -232836,6 +232920,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
     message_count?: number
@@ -232866,6 +232951,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -233335,6 +233421,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -233365,6 +233452,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -233585,6 +233673,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
@@ -234875,6 +234964,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -234905,6 +234995,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -234934,6 +235025,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -237388,6 +237480,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     lead_bot_id?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
@@ -238206,6 +238299,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -238235,6 +238329,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -238264,6 +238359,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     lead_bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
@@ -241269,6 +241365,7 @@ export namespace Prisma {
     name?: string | null
     emoji?: string | null
     color?: string | null
+    avatar_seed?: string | null
     created_by_id?: string | null
     is_temporary?: boolean
     last_message_at?: Date | string | null
@@ -242042,6 +242139,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     message_count?: IntFieldUpdateOperationsInput | number
@@ -242072,6 +242170,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -242101,6 +242200,7 @@ export namespace Prisma {
     name?: NullableStringFieldUpdateOperationsInput | string | null
     emoji?: NullableStringFieldUpdateOperationsInput | string | null
     color?: NullableStringFieldUpdateOperationsInput | string | null
+    avatar_seed?: NullableStringFieldUpdateOperationsInput | string | null
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
     is_temporary?: BoolFieldUpdateOperationsInput | boolean
     last_message_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null

@@ -58,10 +58,101 @@ export class McpToolsService {
                 summary.push(`Custom tool server "${s.name}": currently unavailable`);
                 continue;
             }
+            if (tools.length > MAX_TOOLS_PER_SERVER) {
+                // Too many to list in the prompt: expose search + call so every tool stays reachable.
+                summary.push(`Custom tool server "${s.name}" (${tools.length} tools, too many to list: use ${this.prefix(s)}find_tools to search them by keyword, then ${this.prefix(s)}call_tool to run one)`);
+                out.push(...this.gatewayTools(s, tools, used));
+                continue;
+            }
             summary.push(`Custom tool server "${s.name}" (${tools.length} tools, prefixed ${this.prefix(s)})`);
-            for (const t of tools.slice(0, MAX_TOOLS_PER_SERVER)) out.push(this.toolDef(s, t, used));
+            for (const t of tools) out.push(this.toolDef(s, t, used));
         }
         return { tools: out, summary };
+    }
+
+    /** Ranks tools by how many query words appear in their name/title/description (name hits count double). */
+    private search(tools: McpToolInfo[], query: string, limit: number) {
+        const words = query.toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
+        return tools
+            .map((t) => {
+                const name = t.name.toLowerCase();
+                const rest = `${t.title ?? ''} ${t.description ?? ''}`.toLowerCase();
+                const score = words.reduce((n, w) => n + (name.includes(w) ? 2 : 0) + (rest.includes(w) ? 1 : 0), 0);
+                return { t, score };
+            })
+            .filter((r) => r.score > 0 || !words.length)
+            .sort((a, b) => b.score - a.score)
+            .slice(0, limit)
+            .map((r) => r.t);
+    }
+
+    private gatewayTools(s: ToolServer & { connection: { id: string } | null }, tools: McpToolInfo[], used: Set<string>): ToolDef[] {
+        const byName = new Map(tools.map((t) => [t.name, t]));
+        const finder: ToolDef = {
+            name: this.toolName(s, 'find_tools', used),
+            description: `[${s.name}] Search the ${tools.length} tools of this server by keyword (e.g. "contacts", "create campaign"). Returns matching tool names with descriptions and input schemas; run one with call_tool.`,
+            parameters: { type: 'object', properties: { query: { type: 'string', description: 'Keywords describing what you want to do' }, limit: { type: 'number', description: 'Max results (default 8, max 20)' } }, required: ['query'] },
+            step_type: 'CONNECTION_CALL',
+            runs_on: 'server',
+            title: (args) => `Searching ${s.name} tools for "${String(args?.query ?? '').slice(0, 60)}"`,
+            execute: async (args) => {
+                const limit = Math.min(Math.max(Number(args?.limit) || 8, 1), 20);
+                const found = this.search(tools, String(args?.query ?? ''), limit);
+                return {
+                    output: found.length
+                        ? found.map((t) => ({ tool: t.name, description: (t.description ?? t.title ?? '').slice(0, 400), read_only: !!t.annotations?.readOnlyHint, input_schema: this.schema(t.input_schema) }))
+                        : `No tool matched. Try different keywords; the server has ${tools.length} tools.`,
+                };
+            },
+        };
+        const caller: ToolDef = {
+            name: this.toolName(s, 'call_tool', used),
+            description: `[${s.name}] Run one of this server's tools by exact name (find it with find_tools first). Pass its input as "arguments".`,
+            parameters: { type: 'object', properties: { tool: { type: 'string', description: 'Exact tool name from find_tools' }, arguments: { type: 'object', description: 'Input for that tool, per its input_schema' } }, required: ['tool'] },
+            step_type: 'CONNECTION_CALL',
+            runs_on: 'server',
+            title: (args) => `${byName.get(args?.tool)?.title || args?.tool || 'Tool'} — ${s.name}`,
+            classify: (args, ctx) => {
+                const t = byName.get(args?.tool);
+                if (!t) return null; // execute rejects unknown tools
+                const base = this.classify(t);
+                return base === 'SEND_MESSAGE' ? (classifyToolSlug(t.name, args?.arguments ?? {}, ctx.user?.email) ?? base) : base;
+            },
+            connection_id: s.connection?.id,
+            connectionFor: () => s.connection?.id,
+            preview: async (args) => {
+                const t = byName.get(args?.tool);
+                return {
+                    title: `${t?.title || args?.tool} with ${s.name}`,
+                    action_type: (t && this.classify(t)) || 'OTHER',
+                    preview: { kind: 'tool', service: s.name, account: s.name, tool: args?.tool, input: args?.arguments ?? {} },
+                };
+            },
+            execute: async (args, ctx) => {
+                const t = byName.get(args?.tool);
+                if (!t) throw new Error(`${s.name} has no tool named "${args?.tool}". Use find_tools to look it up.`);
+                return this.run(s, t, args?.arguments ?? {}, ctx);
+            },
+        };
+        return [finder, caller];
+    }
+
+    private async run(s: ToolServer & { connection: { id: string } | null }, t: McpToolInfo, args: Record<string, unknown>, ctx: ToolContext) {
+        const res = await this.servers.call(s, t.name, args, ctx.secrets_used);
+        if (s.connection) await this.prisma.connection.update({ where: { id: s.connection.id }, data: { last_used_at: new Date() } });
+        await this.activity.log({
+            organization_id: ctx.organization_id,
+            actor_bot_id: ctx.bot.id,
+            on_behalf_of_id: ctx.run.user_id,
+            action: 'tool_server.used',
+            target_type: 'tool_server',
+            target_id: s.id,
+            connection_id: s.connection?.id ?? null,
+            run_id: ctx.run.id,
+            metadata: { tool: t.name, error: res.is_error },
+        });
+        if (res.is_error) throw new Error(`${s.name} returned an error: ${res.content.slice(0, 800)}`);
+        return { output: res.structured ? { content: res.content, data: res.structured } : res.content, connection_id: s.connection?.id };
     }
 
     private prefix(s: ToolServer) {
@@ -112,23 +203,7 @@ export class McpToolsService {
                 action_type: this.classify(t) ?? 'OTHER',
                 preview: { kind: 'tool', service: s.name, account: s.name, tool: t.name, input: args ?? {} },
             }),
-            execute: async (args, ctx) => {
-                const res = await this.servers.call(s, t.name, args ?? {}, ctx.secrets_used);
-                if (s.connection) await this.prisma.connection.update({ where: { id: s.connection.id }, data: { last_used_at: new Date() } });
-                await this.activity.log({
-                    organization_id: ctx.organization_id,
-                    actor_bot_id: ctx.bot.id,
-                    on_behalf_of_id: ctx.run.user_id,
-                    action: 'tool_server.used',
-                    target_type: 'tool_server',
-                    target_id: s.id,
-                    connection_id: s.connection?.id ?? null,
-                    run_id: ctx.run.id,
-                    metadata: { tool: t.name, error: res.is_error },
-                });
-                if (res.is_error) throw new Error(`${s.name} returned an error: ${res.content.slice(0, 800)}`);
-                return { output: res.structured ? { content: res.content, data: res.structured } : res.content, connection_id: s.connection?.id };
-            },
+            execute: (args, ctx) => this.run(s, t, args ?? {}, ctx),
         };
     }
 }

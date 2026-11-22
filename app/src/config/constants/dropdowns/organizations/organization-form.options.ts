@@ -101,3 +101,15 @@ export const fromApprovalTimeoutValue = (v: string): { approval_timeout_minutes:
     approval_timeout_action: auto ? ApprovalTimeoutActions.APPROVE : ApprovalTimeoutActions.CANCEL,
   };
 };
+
+/** Usage → Charges tab: quick date ranges. CUSTOM shows the from/to date fields. */
+export const UsageRanges = { THIS_MONTH: "this_month", LAST_7: "last_7", LAST_30: "last_30", LAST_MONTH: "last_month", ALL: "all", CUSTOM: "custom" } as const;
+export type UsageRange = (typeof UsageRanges)[keyof typeof UsageRanges];
+export const UsageRangeOptions = [
+  { id: UsageRanges.THIS_MONTH, label: "This month" },
+  { id: UsageRanges.LAST_7, label: "Last 7 days" },
+  { id: UsageRanges.LAST_30, label: "Last 30 days" },
+  { id: UsageRanges.LAST_MONTH, label: "Last month" },
+  { id: UsageRanges.ALL, label: "All time" },
+  { id: UsageRanges.CUSTOM, label: "Custom range" },
+] as const;

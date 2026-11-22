@@ -15,7 +15,7 @@ import { Routes } from "@/routes/routes";
 import { platform } from "@/platform";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
-import { ActivitySteps } from "./activity-steps";
+import { ActivitySteps, SourceChips, type ActivityItem } from "./activity-steps";
 import { ApprovalCard } from "./approval-card";
 import { InteractiveReply } from "./interactive-reply";
 import { SecretInputCard } from "./secret-input-card";
@@ -83,16 +83,18 @@ const TypingDots: FC<{ color: string }> = ({ color }) => (
 const ReactionAligns = { START: "start", END: "end" } as const;
 type ReactionAlign = (typeof ReactionAligns)[keyof typeof ReactionAligns];
 const SegmentKinds = { STEPS: "steps", PART: "part" } as const;
-type ToolPart = Extract<MessagePart, { type: typeof MessagePartTypes.TOOL }>;
 
-/** Groups consecutive tool parts so the activity feed renders as one block. */
+/**
+ * Groups consecutive tool parts, and the sources they found, so a multi-step run renders as one collapsible block.
+ * Sources that don't follow a step (e.g. citations after the reply text) stay standalone.
+ */
 function segment(parts: MessagePart[]) {
-  const out: ({ kind: typeof SegmentKinds.STEPS; steps: ToolPart[] } | { kind: typeof SegmentKinds.PART; part: MessagePart; index: number })[] = [];
+  const out: ({ kind: typeof SegmentKinds.STEPS; items: ActivityItem[] } | { kind: typeof SegmentKinds.PART; part: MessagePart; index: number })[] = [];
   parts.forEach((p, index) => {
-    if (p.type === MessagePartTypes.TOOL) {
-      const last = out[out.length - 1];
-      if (last?.kind === SegmentKinds.STEPS) last.steps.push(p);
-      else out.push({ kind: SegmentKinds.STEPS, steps: [p] });
+    const last = out[out.length - 1];
+    if (p.type === MessagePartTypes.TOOL || (p.type === MessagePartTypes.SOURCES && last?.kind === SegmentKinds.STEPS)) {
+      if (last?.kind === SegmentKinds.STEPS) last.items.push(p);
+      else out.push({ kind: SegmentKinds.STEPS, items: [p] });
     } else out.push({ kind: SegmentKinds.PART, part: p, index });
   });
   return out;
@@ -420,23 +422,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
           </div>
         );
       case MessagePartTypes.SOURCES:
-        return (
-          <div key={i} className="my-1.5 flex flex-wrap gap-1.5">
-            {p.sources.map((s, j) => {
-              let host = s.url;
-              try {
-                host = new URL(s.url).hostname.replace(/^www\./, "");
-              } catch {
-                /* keep */
-              }
-              return (
-                <a key={j} href={s.url} target="_blank" rel="noopener noreferrer" className="inline-flex max-w-[220px] items-center gap-1 truncate rounded-full border border-hairline bg-surface px-2.5 py-1 text-xs font-semibold text-body hover:border-primary hover:text-primary">
-                  {j + 1}. {s.title || host}
-                </a>
-              );
-            })}
-          </div>
-        );
+        return <SourceChips key={i} sources={p.sources} className="my-1.5" />;
       case MessagePartTypes.NOTICE:
         return (
           <p key={i} className="my-1 text-xs font-semibold text-muted-foreground">
@@ -474,7 +460,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
           </div>
         )}
         {!streaming && <ActionsMenu m={m} mine={false} models={models} actions={actions} onStartEdit={() => undefined} />}
-        {segment(m.parts).map((seg, i) => (seg.kind === SegmentKinds.STEPS ? <ActivitySteps key={`s${i}`} steps={seg.steps} mode={activityMode} working={streaming && working} runId={m.run_id} /> : renderPart(seg.part, seg.index)))}
+        {segment(m.parts).map((seg, i) => (seg.kind === SegmentKinds.STEPS ? <ActivitySteps key={`s${i}`} items={seg.items} mode={activityMode} working={streaming && working} runId={m.run_id} /> : renderPart(seg.part, seg.index)))}
         {streaming && working && !hasText && !m.parts.some((p) => p.type === MessagePartTypes.APPROVAL || p.type === MessagePartTypes.SECRET_INPUT) && <TypingDots color={bot.color} />}
         {m.status === MessageStatuses.STOPPED && !hasText && <p className="text-xs text-muted-foreground">Stopped.</p>}
         <Reactions m={m} meId={meId} onReact={(e) => actions.onReact(m, e)} align={ReactionAligns.START} />

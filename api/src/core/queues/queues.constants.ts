@@ -33,7 +33,7 @@ export const Jobs = {
     cloudComputers: { IDLE_PAUSE: 'idle-pause', SESSION_LIMIT: 'session-limit', PROCESS_REPLAY: 'process-replay', SWEEP: 'sweep' },
     storage: { PURGE_DELETED: 'purge-deleted', APPLY_RETENTION: 'apply-retention', AGGREGATE_USAGE: 'aggregate-usage' },
     exports: { USER_DATA: 'user-data-export', ACTIVITY: 'activity-export' },
-    usage: { FLUSH_COUNTERS: 'flush-counters', LIMIT_ALERTS: 'limit-alerts' },
+    usage: { LIMIT_ALERTS: 'limit-alerts' },
     knowledge: { INDEX: 'index' },
     channels: { INBOUND: 'inbound', REPLY: 'reply' },
 } as const;
@@ -56,6 +56,11 @@ export const PLATFORM_SCHEDULES: { queue: string; job: string; pattern?: string;
     { queue: Queues.CONNECTIONS, job: Jobs.connections.SYNC_COMPOSIO_STATUS, pattern: '*/15 * * * *' },
     { queue: Queues.CONNECTIONS, job: Jobs.connections.REFRESH_TOKEN, every: 2 * 60_000 },
     { queue: Queues.CLOUD_COMPUTERS, job: Jobs.cloudComputers.SWEEP, every: 5 * 60_000 },
-    { queue: Queues.USAGE, job: Jobs.usage.FLUSH_COUNTERS, every: 60_000 },
     { queue: Queues.USAGE, job: Jobs.usage.LIMIT_ALERTS, every: 5 * 60_000 },
+];
+
+/** Schedules that no longer exist. Removed at worker start-up, because upserting the list above never deletes old ones. */
+export const RETIRED_SCHEDULES: { queue: string; job: string }[] = [
+    // Usage now writes one usage_charges row per charge, so there are no Redis counters to flush.
+    { queue: Queues.USAGE, job: 'flush-counters' },
 ];

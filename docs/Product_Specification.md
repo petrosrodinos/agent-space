@@ -1518,7 +1518,7 @@ Bots keep working after the user leaves, automations run while nobody is watchin
 | `cloud-computers` | `idle-pause`, `session-limit`, `process-replay` | 10 | 3 | |
 | `storage` | `purge-deleted`, `apply-retention`, `aggregate-usage` | 2 | 3 | |
 | `exports` | `user-data-export`, `activity-export` | 2 | 2 | The user is notified with a download link when done (§11, §13.4) |
-| `usage` | `flush-counters`, `limit-alerts` | 2 | 3 | |
+| `usage` | `limit-alerts` | 2 | 3 | |
 
 - Completed jobs are kept for 24 hours (at most 1,000 per queue); failed jobs for 14 days, for debugging.
 - Each job records its run, automation or user ID in its data and in log lines, so a job can be traced from Bull Board to the run history and back.
@@ -1565,13 +1565,12 @@ Bots keep working after the user leaves, automations run while nobody is watchin
   | `storage.aggregate-usage` (§7.7) | Daily 03:00 |
   | `automations.reconcile-schedulers` | Daily 03:30 |
   | `connections.sync-composio-status` | Every 15 minutes |
-  | `usage.flush-counters` | Every minute |
   | `usage.limit-alerts` | Every 5 minutes |
 
 **Caching, locks and limits in Redis**
 - **Locks:** the locks above use a single Redis key set with `SET NX PX` and a random token, released only by the holder (checked in a Lua script).
 - **Rate limits:** API request rate limiting (per user and per IP for sign-in, public artifact and webhook endpoints) uses the NestJS throttler with Redis storage, so the limits apply across instances.
-- **Usage counters (§11, §13.4):** every model call, cloud computer minute and voice minute increments counters per organisation, member and bot for the current month (`as:<env>:usage:<orgId>:<yyyymm>:…`). Limit checks before and during runs read these counters. `usage.flush-counters` writes them to the database every minute; the database is the record used for the usage overview.
+- **Usage charges (§11, §13.4):** every model call, cloud computer session and voice session writes one `usage_charges` row (type, member, bot, model, run, tokens or minutes, cost). It is the only usage store: limit checks before and during runs, the 80%/100% alerts, the usage overview and the Charges tab all read it.
 - **Caches** (via the existing `AppCacheModule` with the Redis store), each with a TTL: the OpenRouter model list (1 hour), tool lists of custom tool servers (10 minutes, cleared when the server is edited), Composio connection status (5 minutes), and the effective settings for a user and bot (§13.1; 5 minutes, cleared on any settings change). Decrypted secrets are never cached in Redis (§8.7).
 
 **Operations**

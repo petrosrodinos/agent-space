@@ -202,7 +202,7 @@ export const ApiRoutes = {
   },
   files: { uploads: "/files/uploads", confirm: (id: string) => `/files/${id}/confirm`, one: (id: string) => `/files/${id}`, url: (id: string) => `/files/${id}/url`, text: (id: string) => `/files/${id}/text`, sheets: (id: string) => `/files/${id}/sheets` },
   notifications: { root: "/notifications", read_all: "/notifications/read-all", read: (id: string) => `/notifications/${id}/read`, preferences: "/notifications/preferences" },
-  usage: { root: "/usage", limits: "/usage/limits" },
+  usage: { root: "/usage", limits: "/usage/limits", charges: "/usage/charges" },
   activity: { root: "/activity" },
   widgets: { root: "/widgets", one: (id: string) => `/widgets/${id}`, refresh: (id: string) => `/widgets/${id}/refresh` },
   channels: { root: "/channels", one: (channel: string) => `/channels/${channel}`, code: (channel: string) => `/channels/${channel}/code`, emailAddress: "/channels/EMAIL/address" },

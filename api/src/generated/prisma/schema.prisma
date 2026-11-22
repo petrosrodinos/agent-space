@@ -971,7 +971,7 @@ model User {
   computer_sessions       ComputerSession[]
   automations             Automation[]
   notifications           Notification[]
-  usage_records           UsageRecord[]
+  usage_charges           UsageCharge[]
   activity_logs           ActivityLog[]
   data_exports            DataExport[]
   knowledge_items         KnowledgeItem[]
@@ -1333,7 +1333,7 @@ model Organization {
   cloud_computers   CloudComputer[]
   automations       Automation[]
   notifications     Notification[]
-  usage_records     UsageRecord[]
+  usage_charges     UsageCharge[]
   usage_limits      UsageLimit[]
   usage_alerts      UsageAlert[]
   subscription      Subscription?
@@ -1545,7 +1545,7 @@ model AiModel {
   org_defaults   OrganizationSettings[]
   org_allowed    OrganizationAllowedModel[]
   runs           Run[]
-  usage_records  UsageRecord[]
+  usage_charges  UsageCharge[]
 
   @@index([fallback_model_id])
   @@index([is_available, is_recommended])
@@ -1727,7 +1727,7 @@ model Bot {
   approvals                 Approval[]
   voice_sessions            VoiceSession[]
   automations               Automation[]
-  usage_records             UsageRecord[]
+  usage_charges             UsageCharge[]
   usage_limits              UsageLimit[]
   activity_logs             ActivityLog[]
   default_for_users         UserSettings[]             @relation("UserDefaultBot")
@@ -2229,7 +2229,7 @@ model Run {
   approvals         Approval[]
   computer_sessions ComputerSession[]
   transfers         ComputerTransfer[]
-  usage_records     UsageRecord[]
+  usage_charges     UsageCharge[]
   activity_logs     ActivityLog[]
   artifact_versions ArtifactVersion[]
   files             File[]
@@ -2531,7 +2531,6 @@ model Artifact {
   records         ArtifactRecord[]
   reports         ArtifactReport[]
   files           File[]
-  usage_records   UsageRecord[]
   data_grants     ArtifactDataGrant[]
 
   @@unique([organization_id, slug])
@@ -3196,38 +3195,33 @@ model NotificationDelivery {
 // USAGE, LIMITS, BILLING (§11, §13.4)
 // =====================================================================
 
-/// Flushed from Redis counters every minute (usage.flush-counters). One row per (period, kind, org, user, bot, model, day).
-model UsageRecord {
+/// One row per charge (model call, voice session, computer minutes...). The only usage store: overview, limits, alerts and the Charges tab read it.
+model UsageCharge {
   id              String    @id @default(uuid())
   organization_id String
   user_id         String?
   bot_id          String?
   model_id        String?
-  artifact_id     String?
   run_id          String?
   kind            UsageKind
-  period          String // "2026-11"
-  day             DateTime  @db.Date
   quantity        Decimal   @db.Decimal(18, 4) // tokens, minutes, bytes
+  input_tokens    Int?
+  output_tokens   Int?
   cost            Decimal   @default(0) @db.Decimal(12, 6)
   created_at      DateTime  @default(now())
-  updated_at      DateTime  @updatedAt
 
   organization Organization @relation(fields: [organization_id], references: [id], onDelete: Cascade)
   user         User?        @relation(fields: [user_id], references: [id], onDelete: SetNull)
   bot          Bot?         @relation(fields: [bot_id], references: [id], onDelete: SetNull)
   model        AiModel?     @relation(fields: [model_id], references: [id], onDelete: SetNull)
-  artifact     Artifact?    @relation(fields: [artifact_id], references: [id], onDelete: SetNull)
   run          Run?         @relation(fields: [run_id], references: [id], onDelete: SetNull)
 
-  @@unique([organization_id, period, day, kind, user_id, bot_id, model_id, artifact_id])
-  @@index([organization_id, period])
-  @@index([user_id, period])
-  @@index([bot_id, period])
+  @@index([organization_id, created_at])
+  @@index([user_id])
+  @@index([bot_id])
   @@index([model_id])
-  @@index([artifact_id])
   @@index([run_id])
-  @@map("usage_records")
+  @@map("usage_charges")
 }
 
 model UsageLimit {

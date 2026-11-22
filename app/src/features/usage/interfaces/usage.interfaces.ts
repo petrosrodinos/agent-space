@@ -1,5 +1,7 @@
 export const UsageLimitScopes = { ORGANIZATION: "ORGANIZATION", MEMBER: "MEMBER", BOT: "BOT" } as const;
 export type UsageLimitScope = (typeof UsageLimitScopes)[keyof typeof UsageLimitScopes];
+export const UsageKinds = { MODEL_TOKENS: "MODEL_TOKENS", COMPUTER_MINUTES: "COMPUTER_MINUTES", VOICE_MINUTES: "VOICE_MINUTES", STORAGE_BYTES: "STORAGE_BYTES", ARTIFACT_AI: "ARTIFACT_AI" } as const;
+export type UsageKind = (typeof UsageKinds)[keyof typeof UsageKinds];
 export const ActorTypes = { USER: "USER", BOT: "BOT", SYSTEM: "SYSTEM" } as const;
 export type ActorType = (typeof ActorTypes)[keyof typeof ActorTypes];
 
@@ -14,6 +16,32 @@ export interface UsageOverview {
   by_model: { model: { id: string; name: string; provider: string } | null; cost: number; tokens: number }[];
   by_day: { day: string; cost: number }[];
   limits: { id: string; scope: UsageLimitScope; user_id: string | null; bot_id: string | null; monthly_limit: number }[];
+}
+
+export interface UsageCharge {
+  id: string;
+  kind: UsageKind;
+  /** Tokens for model calls, minutes for voice and computers. */
+  quantity: number;
+  input_tokens: number | null;
+  output_tokens: number | null;
+  cost: number;
+  run_id: string | null;
+  created_at: string;
+  user: { id: string; name: string | null; email: string } | null;
+  bot: BotBrief | null;
+  model: { id: string; name: string; provider: string } | null;
+}
+
+export interface UsageChargesFilters {
+  page?: number;
+  kind?: UsageKind;
+  user_id?: string;
+  bot_id?: string;
+  model_id?: string;
+  /** YYYY-MM-DD, inclusive. */
+  from?: string;
+  to?: string;
 }
 
 export interface ActivityEntry {

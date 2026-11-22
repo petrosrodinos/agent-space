@@ -1312,21 +1312,19 @@ exports.Prisma.NotificationDeliveryScalarFieldEnum = {
   created_at: 'created_at'
 };
 
-exports.Prisma.UsageRecordScalarFieldEnum = {
+exports.Prisma.UsageChargeScalarFieldEnum = {
   id: 'id',
   organization_id: 'organization_id',
   user_id: 'user_id',
   bot_id: 'bot_id',
   model_id: 'model_id',
-  artifact_id: 'artifact_id',
   run_id: 'run_id',
   kind: 'kind',
-  period: 'period',
-  day: 'day',
   quantity: 'quantity',
+  input_tokens: 'input_tokens',
+  output_tokens: 'output_tokens',
   cost: 'cost',
-  created_at: 'created_at',
-  updated_at: 'updated_at'
+  created_at: 'created_at'
 };
 
 exports.Prisma.UsageLimitScalarFieldEnum = {
@@ -2399,7 +2397,7 @@ exports.Prisma.ModelName = {
   AutomationRun: 'AutomationRun',
   Notification: 'Notification',
   NotificationDelivery: 'NotificationDelivery',
-  UsageRecord: 'UsageRecord',
+  UsageCharge: 'UsageCharge',
   UsageLimit: 'UsageLimit',
   UsageAlert: 'UsageAlert',
   Subscription: 'Subscription',

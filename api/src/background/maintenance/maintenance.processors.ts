@@ -2,7 +2,7 @@ import { Injectable, Logger, OnApplicationBootstrap } from '@nestjs/common';
 import { InjectQueue, Processor, WorkerHost } from '@nestjs/bullmq';
 import { Job, Queue } from 'bullmq';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
-import { Jobs, PLATFORM_SCHEDULES, Queues } from '@/core/queues/queues.constants';
+import { Jobs, PLATFORM_SCHEDULES, Queues, RETIRED_SCHEDULES } from '@/core/queues/queues.constants';
 import { StorageService } from '@/integrations/storage/storage.service';
 import { ApprovalsService } from '@/modules/approvals/approvals.service';
 import { ConnectionsService } from '@/modules/connections/connections.service';
@@ -41,7 +41,6 @@ export class UsageProcessor extends WorkerHost {
     }
 
     async process(job: Job) {
-        if (job.name === Jobs.usage.FLUSH_COUNTERS) return this.usage.flush();
         if (job.name === Jobs.usage.LIMIT_ALERTS) return this.usage.limitAlerts();
         return { ok: true };
     }
@@ -131,6 +130,7 @@ export class PlatformSchedules implements OnApplicationBootstrap {
             if (!q) continue;
             await q.upsertJobScheduler(`platform:${s.job}`, s.pattern ? { pattern: s.pattern, tz: 'UTC' } : { every: s.every! }, { name: s.job, data: {} }).catch((e) => this.logger.warn(`Scheduler ${s.job}: ${e.message}`));
         }
+        for (const s of RETIRED_SCHEDULES) await byName[s.queue]?.removeJobScheduler(`platform:${s.job}`).catch(() => undefined);
         this.logger.log(`Platform schedules upserted (${PLATFORM_SCHEDULES.length})`);
     }
 }

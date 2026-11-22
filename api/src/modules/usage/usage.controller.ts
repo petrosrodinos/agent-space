@@ -1,10 +1,12 @@
 import { Body, Controller, Get, Put, Query, UseGuards } from '@nestjs/common';
-import { ApiBearerAuth, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
 import { IsIn, IsNumber, IsOptional, IsUUID, Min, ValidateIf } from 'class-validator';
 import { JwtGuard } from '@/shared/guards/jwt.guard';
 import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
 import { CurrentMembership, OrgRoles } from '@/shared/decorators/org-roles.decorator';
+import { ZodValidationPipe } from '@/shared/pipes/zod.validation.pipe';
 import { UsageService } from './usage.service';
+import { UsageChargesQuerySchema, type UsageChargesQuery } from './dto/usage-charges-query.schema';
 
 class SetLimitDto {
     @ApiProperty({ enum: ['ORGANIZATION', 'MEMBER', 'BOT'] }) @IsIn(['ORGANIZATION', 'MEMBER', 'BOT']) scope: 'ORGANIZATION' | 'MEMBER' | 'BOT';
@@ -23,6 +25,12 @@ export class UsageController {
     @Get()
     overview(@CurrentMembership() m: OrgMembership, @Query('period') period?: string) {
         return this.usage.overview({ user_id: m.user_id, organization_id: m.organization_id, role: m.role }, period && /^\d{4}-\d{2}$/.test(period) ? period : undefined);
+    }
+
+    @Get('charges')
+    @ApiOperation({ summary: 'Every usage charge, newest first. Members only see their own.' })
+    charges(@CurrentMembership() m: OrgMembership, @Query(new ZodValidationPipe(UsageChargesQuerySchema)) q: UsageChargesQuery) {
+        return this.usage.charges({ user_id: m.user_id, organization_id: m.organization_id, role: m.role }, q);
     }
 
     @Put('limits')

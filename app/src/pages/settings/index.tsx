@@ -12,7 +12,8 @@ import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
 import { KnowledgePanel } from "@/components/layout/knowledge-panel";
 import { AppearanceSection, DevicesSection, MemorySection, NotificationsSection, ProfileSection, RepliesSection, SecuritySection } from "./components/personal-sections";
-import { ActivitySection, AiModelsSection, DangerSection, MembersSection, OrganizationSection, SafetySection, UsageSection } from "./components/org-sections";
+import { ActivitySection, AiModelsSection, DangerSection, MembersSection, OrganizationSection, SafetySection } from "./components/org-sections";
+import { UsageSection } from "./components/usage-sections";
 import { OrgRoles } from "@/features/users/interfaces/users.interfaces";
 import { MessageAnywhereCard } from "./components/message-anywhere-card";
 

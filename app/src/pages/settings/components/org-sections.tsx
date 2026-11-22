@@ -2,7 +2,6 @@ import { useEffect, useMemo, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Link2, Mail, RotateCcw, Trash2, UserPlus, X } from "lucide-react";
-import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from "recharts";
 import { Form, FormControl, FormDescription, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -10,7 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Badge } from "@/components/ui/badge";
-import { PersonAvatar, BotAvatar } from "@/components/ui/bot-avatar";
+import { PersonAvatar } from "@/components/ui/bot-avatar";
 import { SettingRow, SettingsCard } from "@/components/ui/setting-row";
 import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import UnsavedChangesDialog from "@/components/ui/unsaved-changes-dialog";
@@ -26,17 +25,16 @@ import {
 } from "@/features/organizations/hooks/use-organizations";
 import type { Organization, OrganizationSettings } from "@/features/organizations/interfaces/organizations.interfaces";
 import type { OrgRole } from "@/features/users/interfaces/users.interfaces";
-import { useBots, useModels } from "@/features/bots/hooks/use-bots";
-import { useActivity, useSetUsageLimit, useUsage } from "@/features/usage/hooks/use-usage";
+import { useModels } from "@/features/bots/hooks/use-bots";
+import { useActivity } from "@/features/usage/hooks/use-usage";
 import { useMe } from "@/features/users/hooks/use-users";
 import { useVoiceModels } from "@/features/voice/hooks/use-voice-session";
 import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
-import { BiometricApprovalScopeOptions, EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, UsageLimitScopeOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions, fromApprovalTimeoutValue, toApprovalTimeoutValue } from "@/config/constants/dropdowns/organizations/organization-form.options";
+import { BiometricApprovalScopeOptions, EnforcedApprovalOptions, InvitationExpiryOptions, LimitReachedActionOptions, MaxFileSizeOptions, MinApprovalLevelOptions, ModelPolicyOptions, OrgConversationRetentionOptions, OrgRoleFormOptions, WhoCanOptions, ApprovalTimeoutMinuteOptions, fromApprovalTimeoutValue, toApprovalTimeoutValue } from "@/config/constants/dropdowns/organizations/organization-form.options";
 import { AppLanguageOptions } from "@/config/constants/dropdowns/users/user-settings-form.options";
 import { ModelCostTierOptions } from "@/config/constants/dropdowns/bots/bot-settings-form.options";
-import { UsageKindOptions } from "@/config/constants/dropdowns/shared/status.options";
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
-import { formatDate, formatDateTime, formatMoney, timeAgo } from "@/lib/date";
+import { formatDate, formatDateTime, timeAgo } from "@/lib/date";
 import { cn } from "@/lib/utils";
 import { SelectSetting, SwitchSetting } from "./setting-controls";
 import { TimezonePicker } from "./timezone-picker";
@@ -45,7 +43,6 @@ import { inviteSchema, organizationSchema, type InviteFormValues, type Organizat
 import { OrgRoles } from "@/features/users/interfaces/users.interfaces";
 import { PickerValues } from "@/config/constants/filters";
 import { ModelPolicies } from "@/features/organizations/interfaces/organizations.interfaces";
-import { UsageLimitScopes, type UsageLimitScope } from "@/features/usage/interfaces/usage.interfaces";
 
 const useOrgSetting = () => {
   const { data: org } = useCurrentOrganization();
@@ -361,116 +358,6 @@ export const SafetySection: FC = () => {
       />
       <SelectSetting label="When a usage limit is reached" value={s.limit_reached_action} options={LimitReachedActionOptions} onChange={(v) => set("limit_reached_action", v as OrganizationSettings["limit_reached_action"])} />
     </SettingsCard>
-  );
-};
-
-export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
-  const [period, setPeriod] = useState<string | undefined>(undefined);
-  const { data, isPending } = useUsage(period);
-  const setLimit = useSetUsageLimit();
-  const [limitScope, setLimitScope] = useState<UsageLimitScope>(UsageLimitScopes.ORGANIZATION);
-  const [amount, setAmount] = useState("");
-  const [target, setTarget] = useState("");
-  const { data: members } = useMembers();
-  const { data: bots } = useBots();
-  const months = useMemo(() => Array.from({ length: 6 }).map((_, i) => { const d = new Date(); d.setMonth(d.getMonth() - i); return d.toISOString().slice(0, 7); }), []);
-  if (isPending || !data) return <SettingsSkeleton />;
-  const orgLimit = data.limits.find((l) => l.scope === UsageLimitScopes.ORGANIZATION);
-  return (
-    <div className="space-y-4">
-      <SettingsCard title="Usage overview" actions={
-        <Select value={period ?? months[0]} onValueChange={setPeriod}>
-          <SelectTrigger className="h-9 w-[130px]" aria-label="Month"><SelectValue /></SelectTrigger>
-          <SelectContent>{months.map((m) => <SelectItem key={m} value={m}>{m}</SelectItem>)}</SelectContent>
-        </Select>
-      }>
-        <div className="grid grid-cols-2 gap-3 py-3 sm:grid-cols-4">
-          <div className="rounded-md bg-primary-soft p-3"><p className="text-xs font-semibold text-accent-foreground">Total</p><p className="text-2xl font-extrabold text-ink">{formatMoney(data.total_cost)}</p></div>
-          {data.by_kind.map((k) => (
-            <div key={k.kind} className="rounded-md bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">{getDropdownOptionLabel(UsageKindOptions, k.kind, k.kind)}</p><p className="text-lg font-bold text-ink">{formatMoney(k.cost)}</p></div>
-          ))}
-          {orgLimit && <div className="rounded-md bg-surface-sunken p-3"><p className="text-xs font-semibold text-muted-foreground">Monthly limit</p><p className="text-lg font-bold text-ink">{formatMoney(orgLimit.monthly_limit)}</p></div>}
-        </div>
-        {data.by_day.length > 0 && (
-          <div className="h-56 w-full py-2">
-            <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={data.by_day.map((d) => ({ day: d.day.slice(5, 10), cost: Number(d.cost.toFixed(4)) }))}>
-                <CartesianGrid vertical={false} stroke="var(--hairline)" />
-                <XAxis dataKey="day" tick={{ fontSize: 12, fill: "var(--muted-text)" }} axisLine={false} tickLine={false} />
-                <YAxis tick={{ fontSize: 12, fill: "var(--muted-text)" }} axisLine={false} tickLine={false} width={44} tickFormatter={(v) => `$${v}`} />
-                <Tooltip formatter={(v) => formatMoney(Number(v))} contentStyle={{ borderRadius: "var(--radius-md)", border: "1px solid var(--hairline)", background: "var(--surface)", color: "var(--ink)" }} />
-                <Bar dataKey="cost" fill="var(--primary)" radius={[6, 6, 0, 0]} />
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        )}
-      </SettingsCard>
-      <div className="grid gap-4 lg:grid-cols-3">
-        <SettingsCard title="By member">
-          <ul className="divide-y divide-hairline">{data.by_member.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5"><PersonAvatar name={r.user?.name} email={r.user?.email} size={24} /><span className="min-w-0 flex-1 truncate text-sm">{r.user?.name ?? r.user?.email ?? "System"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_member.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
-        </SettingsCard>
-        <SettingsCard title="By bot">
-          <ul className="divide-y divide-hairline">{data.by_bot.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5">{r.bot ? <BotAvatar seed={r.bot.avatar_seed} color={r.bot.color} size={24} /> : null}<span className="min-w-0 flex-1 truncate text-sm">{r.bot?.name ?? "Other"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_bot.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
-        </SettingsCard>
-        <SettingsCard title="By model">
-          <ul className="divide-y divide-hairline">{data.by_model.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5"><span className="min-w-0 flex-1 truncate text-sm">{r.model?.name ?? "Other"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_model.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
-        </SettingsCard>
-      </div>
-      {isAdmin && (
-        <SettingsCard title="Monthly usage limits" description="Alerts at 80% and 100%. Bots pause when a limit is reached.">
-          <ul className="divide-y divide-hairline">
-            {data.limits.map((l) => {
-              const member = members?.find((m) => m.user.id === l.user_id)?.user;
-              const bot = bots?.find((b) => b.id === l.bot_id);
-              const spent = l.scope === UsageLimitScopes.ORGANIZATION ? data.total_cost : l.scope === UsageLimitScopes.MEMBER ? (data.by_member.find((r) => r.user?.id === l.user_id)?.cost ?? 0) : (data.by_bot.find((r) => r.bot?.id === l.bot_id)?.cost ?? 0);
-              const pct = l.monthly_limit > 0 ? Math.min(100, Math.round((spent / l.monthly_limit) * 100)) : 100;
-              return (
-                <li key={l.id} className="flex flex-wrap items-center gap-3 py-2.5">
-                  {member ? <PersonAvatar name={member.name} email={member.email} size={24} /> : bot ? <BotAvatar seed={bot.avatar_seed} color={bot.color} size={24} /> : null}
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-sm font-semibold text-ink">{member ? (member.name ?? member.email) : bot ? bot.name : getDropdownOptionLabel(UsageLimitScopeOptions, l.scope)}</span>
-                    <span className="mt-1 block h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-surface-sunken" aria-label={`${pct}% used`}>
-                      <span className={cn("block h-full rounded-full", pct >= 100 ? "bg-error" : pct >= 80 ? "bg-warning" : "bg-primary")} style={{ width: `${pct}%` }} />
-                    </span>
-                  </span>
-                  <span className="text-sm text-muted-foreground">{formatMoney(spent)} of</span>
-                  <span className="font-bold">{formatMoney(l.monthly_limit)}</span>
-                  <Button variant="ghost" size="sm" onClick={() => setLimit.mutate({ scope: l.scope, user_id: l.user_id ?? undefined, bot_id: l.bot_id ?? undefined, monthly_limit: null })}><X /> Remove</Button>
-                </li>
-              );
-            })}
-            {!data.limits.length && <li className="py-3 text-sm text-muted-foreground">No limits set.</li>}
-          </ul>
-          <div className="flex flex-col gap-2 pt-3 sm:flex-row sm:flex-wrap">
-            <Select value={limitScope} onValueChange={(v) => { setLimitScope(v as typeof limitScope); setTarget(""); }}>
-              <SelectTrigger className="sm:w-[180px]" aria-label="Limit scope"><SelectValue /></SelectTrigger>
-              <SelectContent>
-                {Object.values(UsageLimitScopes).map((v) => <SelectItem key={v} value={v}>{getDropdownOptionLabel(UsageLimitScopeOptions, v)}</SelectItem>)}
-              </SelectContent>
-            </Select>
-            {limitScope !== UsageLimitScopes.ORGANIZATION && (
-              <Select value={target} onValueChange={setTarget}>
-                <SelectTrigger className="sm:w-[220px]" aria-label={limitScope === UsageLimitScopes.MEMBER ? "Member" : "Bot"}><SelectValue placeholder={limitScope === UsageLimitScopes.MEMBER ? "Choose a member" : "Choose a bot"} /></SelectTrigger>
-                <SelectContent>
-                  {limitScope === UsageLimitScopes.MEMBER
-                    ? (members ?? []).map((m) => <SelectItem key={m.user.id} value={m.user.id}>{m.user.name ?? m.user.email}</SelectItem>)
-                    : (bots ?? []).map((b) => <SelectItem key={b.id} value={b.id}><span className="flex items-center gap-2"><BotAvatar seed={b.avatar_seed} color={b.color} size={24} />{b.name}</span></SelectItem>)}
-                </SelectContent>
-              </Select>
-            )}
-            <Input inputMode="decimal" placeholder="USD per month" value={amount} onChange={(e) => setAmount(e.target.value)} className="sm:w-[160px]" aria-label="Amount" />
-            <Button
-              disabled={!/^\d+(\.\d{1,2})?$/.test(amount) || (limitScope !== UsageLimitScopes.ORGANIZATION && !target)}
-              loading={setLimit.isPending}
-              onClick={() => setLimit.mutate({ scope: limitScope, user_id: limitScope === UsageLimitScopes.MEMBER ? target : undefined, bot_id: limitScope === UsageLimitScopes.BOT ? target : undefined, monthly_limit: Number(amount) }, { onSuccess: () => { setAmount(""); setTarget(""); } })}
-            >
-              Set limit
-            </Button>
-          </div>
-          <p className="pt-2 text-xs text-muted-foreground">Limits are in US dollars per calendar month. Bot limits can also be set in each bot's Sharing tab.</p>
-        </SettingsCard>
-      )}
-    </div>
   );
 };
 

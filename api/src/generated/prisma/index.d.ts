@@ -395,10 +395,10 @@ export type Notification = $Result.DefaultSelection<Prisma.$NotificationPayload>
  */
 export type NotificationDelivery = $Result.DefaultSelection<Prisma.$NotificationDeliveryPayload>
 /**
- * Model UsageRecord
- * Flushed from Redis counters every minute (usage.flush-counters). One row per (period, kind, org, user, bot, model, day).
+ * Model UsageCharge
+ * One row per charge (model call, voice session, computer minutes...). The only usage store: overview, limits, alerts and the Charges tab read it.
  */
-export type UsageRecord = $Result.DefaultSelection<Prisma.$UsageRecordPayload>
+export type UsageCharge = $Result.DefaultSelection<Prisma.$UsageChargePayload>
 /**
  * Model UsageLimit
  * 
@@ -3029,14 +3029,14 @@ export class PrismaClient<
   get notificationDelivery(): Prisma.NotificationDeliveryDelegate<ExtArgs, ClientOptions>;
 
   /**
-   * `prisma.usageRecord`: Exposes CRUD operations for the **UsageRecord** model.
+   * `prisma.usageCharge`: Exposes CRUD operations for the **UsageCharge** model.
     * Example usage:
     * ```ts
-    * // Fetch zero or more UsageRecords
-    * const usageRecords = await prisma.usageRecord.findMany()
+    * // Fetch zero or more UsageCharges
+    * const usageCharges = await prisma.usageCharge.findMany()
     * ```
     */
-  get usageRecord(): Prisma.UsageRecordDelegate<ExtArgs, ClientOptions>;
+  get usageCharge(): Prisma.UsageChargeDelegate<ExtArgs, ClientOptions>;
 
   /**
    * `prisma.usageLimit`: Exposes CRUD operations for the **UsageLimit** model.
@@ -3650,7 +3650,7 @@ export namespace Prisma {
     AutomationRun: 'AutomationRun',
     Notification: 'Notification',
     NotificationDelivery: 'NotificationDelivery',
-    UsageRecord: 'UsageRecord',
+    UsageCharge: 'UsageCharge',
     UsageLimit: 'UsageLimit',
     UsageAlert: 'UsageAlert',
     Subscription: 'Subscription',
@@ -3675,7 +3675,7 @@ export namespace Prisma {
       omit: GlobalOmitOptions
     }
     meta: {
-      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationShare" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageRecord" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
+      modelProps: "user" | "authIdentity" | "session" | "passwordResetToken" | "document" | "device" | "deviceToolSetting" | "localToolServer" | "devicePlace" | "userSettings" | "notificationPreference" | "userServiceDefault" | "userToolPermission" | "organization" | "organizationSettings" | "organizationMember" | "invitation" | "aiModel" | "organizationAllowedModel" | "botTemplate" | "botTemplateSkill" | "organizationTemplate" | "bot" | "botApprovalRule" | "botConnection" | "botToolServer" | "botCredential" | "botSkill" | "knowledgeItem" | "knowledgeChunk" | "knowledgeLink" | "memory" | "conversationFolder" | "conversation" | "conversationShare" | "conversationParticipant" | "message" | "messageFile" | "messageReaction" | "messageMention" | "interactiveResponse" | "savedWidget" | "run" | "runStep" | "approval" | "voiceSession" | "skill" | "skillVersion" | "skillShare" | "skillFile" | "organizationStarterSkill" | "artifact" | "artifactVersion" | "artifactShare" | "artifactComment" | "artifactRecord" | "artifactDataGrant" | "artifactReport" | "connection" | "connectionBotRestriction" | "credential" | "credentialEvent" | "toolServer" | "file" | "cloudComputer" | "computerSession" | "signedInWebsite" | "computerTransfer" | "automation" | "automationConnection" | "automationPreApproval" | "automationResultDestination" | "automationTriggerSubscription" | "automationRun" | "notification" | "notificationDelivery" | "usageCharge" | "usageLimit" | "usageAlert" | "subscription" | "invoice" | "activityLog" | "dataExport" | "devSecretBlob" | "appVersionPolicy" | "channelLink"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -9303,77 +9303,77 @@ export namespace Prisma {
           }
         }
       }
-      UsageRecord: {
-        payload: Prisma.$UsageRecordPayload<ExtArgs>
-        fields: Prisma.UsageRecordFieldRefs
+      UsageCharge: {
+        payload: Prisma.$UsageChargePayload<ExtArgs>
+        fields: Prisma.UsageChargeFieldRefs
         operations: {
           findUnique: {
-            args: Prisma.UsageRecordFindUniqueArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload> | null
+            args: Prisma.UsageChargeFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload> | null
           }
           findUniqueOrThrow: {
-            args: Prisma.UsageRecordFindUniqueOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           findFirst: {
-            args: Prisma.UsageRecordFindFirstArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload> | null
+            args: Prisma.UsageChargeFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload> | null
           }
           findFirstOrThrow: {
-            args: Prisma.UsageRecordFindFirstOrThrowArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           findMany: {
-            args: Prisma.UsageRecordFindManyArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>[]
+            args: Prisma.UsageChargeFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>[]
           }
           create: {
-            args: Prisma.UsageRecordCreateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           createMany: {
-            args: Prisma.UsageRecordCreateManyArgs<ExtArgs>
+            args: Prisma.UsageChargeCreateManyArgs<ExtArgs>
             result: BatchPayload
           }
           createManyAndReturn: {
-            args: Prisma.UsageRecordCreateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>[]
+            args: Prisma.UsageChargeCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>[]
           }
           delete: {
-            args: Prisma.UsageRecordDeleteArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           update: {
-            args: Prisma.UsageRecordUpdateArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           deleteMany: {
-            args: Prisma.UsageRecordDeleteManyArgs<ExtArgs>
+            args: Prisma.UsageChargeDeleteManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateMany: {
-            args: Prisma.UsageRecordUpdateManyArgs<ExtArgs>
+            args: Prisma.UsageChargeUpdateManyArgs<ExtArgs>
             result: BatchPayload
           }
           updateManyAndReturn: {
-            args: Prisma.UsageRecordUpdateManyAndReturnArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>[]
+            args: Prisma.UsageChargeUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>[]
           }
           upsert: {
-            args: Prisma.UsageRecordUpsertArgs<ExtArgs>
-            result: $Utils.PayloadToResult<Prisma.$UsageRecordPayload>
+            args: Prisma.UsageChargeUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$UsageChargePayload>
           }
           aggregate: {
-            args: Prisma.UsageRecordAggregateArgs<ExtArgs>
-            result: $Utils.Optional<AggregateUsageRecord>
+            args: Prisma.UsageChargeAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateUsageCharge>
           }
           groupBy: {
-            args: Prisma.UsageRecordGroupByArgs<ExtArgs>
-            result: $Utils.Optional<UsageRecordGroupByOutputType>[]
+            args: Prisma.UsageChargeGroupByArgs<ExtArgs>
+            result: $Utils.Optional<UsageChargeGroupByOutputType>[]
           }
           count: {
-            args: Prisma.UsageRecordCountArgs<ExtArgs>
-            result: $Utils.Optional<UsageRecordCountAggregateOutputType> | number
+            args: Prisma.UsageChargeCountArgs<ExtArgs>
+            result: $Utils.Optional<UsageChargeCountAggregateOutputType> | number
           }
         }
       }
@@ -10242,7 +10242,7 @@ export namespace Prisma {
     automationRun?: AutomationRunOmit
     notification?: NotificationOmit
     notificationDelivery?: NotificationDeliveryOmit
-    usageRecord?: UsageRecordOmit
+    usageCharge?: UsageChargeOmit
     usageLimit?: UsageLimitOmit
     usageAlert?: UsageAlertOmit
     subscription?: SubscriptionOmit
@@ -10374,7 +10374,7 @@ export namespace Prisma {
     computer_sessions: number
     automations: number
     notifications: number
-    usage_records: number
+    usage_charges: number
     activity_logs: number
     data_exports: number
     knowledge_items: number
@@ -10425,7 +10425,7 @@ export namespace Prisma {
     computer_sessions?: boolean | UserCountOutputTypeCountComputer_sessionsArgs
     automations?: boolean | UserCountOutputTypeCountAutomationsArgs
     notifications?: boolean | UserCountOutputTypeCountNotificationsArgs
-    usage_records?: boolean | UserCountOutputTypeCountUsage_recordsArgs
+    usage_charges?: boolean | UserCountOutputTypeCountUsage_chargesArgs
     activity_logs?: boolean | UserCountOutputTypeCountActivity_logsArgs
     data_exports?: boolean | UserCountOutputTypeCountData_exportsArgs
     knowledge_items?: boolean | UserCountOutputTypeCountKnowledge_itemsArgs
@@ -10741,8 +10741,8 @@ export namespace Prisma {
   /**
    * UserCountOutputType without action
    */
-  export type UserCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
+  export type UserCountOutputTypeCountUsage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
   }
 
   /**
@@ -10916,7 +10916,7 @@ export namespace Prisma {
     cloud_computers: number
     automations: number
     notifications: number
-    usage_records: number
+    usage_charges: number
     usage_limits: number
     usage_alerts: number
     invoices: number
@@ -10952,7 +10952,7 @@ export namespace Prisma {
     cloud_computers?: boolean | OrganizationCountOutputTypeCountCloud_computersArgs
     automations?: boolean | OrganizationCountOutputTypeCountAutomationsArgs
     notifications?: boolean | OrganizationCountOutputTypeCountNotificationsArgs
-    usage_records?: boolean | OrganizationCountOutputTypeCountUsage_recordsArgs
+    usage_charges?: boolean | OrganizationCountOutputTypeCountUsage_chargesArgs
     usage_limits?: boolean | OrganizationCountOutputTypeCountUsage_limitsArgs
     usage_alerts?: boolean | OrganizationCountOutputTypeCountUsage_alertsArgs
     invoices?: boolean | OrganizationCountOutputTypeCountInvoicesArgs
@@ -11139,8 +11139,8 @@ export namespace Prisma {
   /**
    * OrganizationCountOutputType without action
    */
-  export type OrganizationCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
+  export type OrganizationCountOutputTypeCountUsage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
   }
 
   /**
@@ -11218,7 +11218,7 @@ export namespace Prisma {
     org_defaults: number
     org_allowed: number
     runs: number
-    usage_records: number
+    usage_charges: number
   }
 
   export type AiModelCountOutputTypeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -11228,7 +11228,7 @@ export namespace Prisma {
     org_defaults?: boolean | AiModelCountOutputTypeCountOrg_defaultsArgs
     org_allowed?: boolean | AiModelCountOutputTypeCountOrg_allowedArgs
     runs?: boolean | AiModelCountOutputTypeCountRunsArgs
-    usage_records?: boolean | AiModelCountOutputTypeCountUsage_recordsArgs
+    usage_charges?: boolean | AiModelCountOutputTypeCountUsage_chargesArgs
   }
 
   // Custom InputTypes
@@ -11287,8 +11287,8 @@ export namespace Prisma {
   /**
    * AiModelCountOutputType without action
    */
-  export type AiModelCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
+  export type AiModelCountOutputTypeCountUsage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
   }
 
 
@@ -11362,7 +11362,7 @@ export namespace Prisma {
     approvals: number
     voice_sessions: number
     automations: number
-    usage_records: number
+    usage_charges: number
     usage_limits: number
     activity_logs: number
     default_for_users: number
@@ -11389,7 +11389,7 @@ export namespace Prisma {
     approvals?: boolean | BotCountOutputTypeCountApprovalsArgs
     voice_sessions?: boolean | BotCountOutputTypeCountVoice_sessionsArgs
     automations?: boolean | BotCountOutputTypeCountAutomationsArgs
-    usage_records?: boolean | BotCountOutputTypeCountUsage_recordsArgs
+    usage_charges?: boolean | BotCountOutputTypeCountUsage_chargesArgs
     usage_limits?: boolean | BotCountOutputTypeCountUsage_limitsArgs
     activity_logs?: boolean | BotCountOutputTypeCountActivity_logsArgs
     default_for_users?: boolean | BotCountOutputTypeCountDefault_for_usersArgs
@@ -11525,8 +11525,8 @@ export namespace Prisma {
   /**
    * BotCountOutputType without action
    */
-  export type BotCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
+  export type BotCountOutputTypeCountUsage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
   }
 
   /**
@@ -11912,7 +11912,7 @@ export namespace Prisma {
     approvals: number
     computer_sessions: number
     transfers: number
-    usage_records: number
+    usage_charges: number
     activity_logs: number
     artifact_versions: number
     files: number
@@ -11925,7 +11925,7 @@ export namespace Prisma {
     approvals?: boolean | RunCountOutputTypeCountApprovalsArgs
     computer_sessions?: boolean | RunCountOutputTypeCountComputer_sessionsArgs
     transfers?: boolean | RunCountOutputTypeCountTransfersArgs
-    usage_records?: boolean | RunCountOutputTypeCountUsage_recordsArgs
+    usage_charges?: boolean | RunCountOutputTypeCountUsage_chargesArgs
     activity_logs?: boolean | RunCountOutputTypeCountActivity_logsArgs
     artifact_versions?: boolean | RunCountOutputTypeCountArtifact_versionsArgs
     files?: boolean | RunCountOutputTypeCountFilesArgs
@@ -11987,8 +11987,8 @@ export namespace Prisma {
   /**
    * RunCountOutputType without action
    */
-  export type RunCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
+  export type RunCountOutputTypeCountUsage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
   }
 
   /**
@@ -12168,7 +12168,6 @@ export namespace Prisma {
     records: number
     reports: number
     files: number
-    usage_records: number
     data_grants: number
   }
 
@@ -12180,7 +12179,6 @@ export namespace Prisma {
     records?: boolean | ArtifactCountOutputTypeCountRecordsArgs
     reports?: boolean | ArtifactCountOutputTypeCountReportsArgs
     files?: boolean | ArtifactCountOutputTypeCountFilesArgs
-    usage_records?: boolean | ArtifactCountOutputTypeCountUsage_recordsArgs
     data_grants?: boolean | ArtifactCountOutputTypeCountData_grantsArgs
   }
 
@@ -12242,13 +12240,6 @@ export namespace Prisma {
    */
   export type ArtifactCountOutputTypeCountFilesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     where?: FileWhereInput
-  }
-
-  /**
-   * ArtifactCountOutputType without action
-   */
-  export type ArtifactCountOutputTypeCountUsage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
   }
 
   /**
@@ -13021,7 +13012,7 @@ export namespace Prisma {
     computer_sessions?: boolean | User$computer_sessionsArgs<ExtArgs>
     automations?: boolean | User$automationsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
-    usage_records?: boolean | User$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | User$usage_chargesArgs<ExtArgs>
     activity_logs?: boolean | User$activity_logsArgs<ExtArgs>
     data_exports?: boolean | User$data_exportsArgs<ExtArgs>
     knowledge_items?: boolean | User$knowledge_itemsArgs<ExtArgs>
@@ -13141,7 +13132,7 @@ export namespace Prisma {
     computer_sessions?: boolean | User$computer_sessionsArgs<ExtArgs>
     automations?: boolean | User$automationsArgs<ExtArgs>
     notifications?: boolean | User$notificationsArgs<ExtArgs>
-    usage_records?: boolean | User$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | User$usage_chargesArgs<ExtArgs>
     activity_logs?: boolean | User$activity_logsArgs<ExtArgs>
     data_exports?: boolean | User$data_exportsArgs<ExtArgs>
     knowledge_items?: boolean | User$knowledge_itemsArgs<ExtArgs>
@@ -13203,7 +13194,7 @@ export namespace Prisma {
       computer_sessions: Prisma.$ComputerSessionPayload<ExtArgs>[]
       automations: Prisma.$AutomationPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      usage_charges: Prisma.$UsageChargePayload<ExtArgs>[]
       activity_logs: Prisma.$ActivityLogPayload<ExtArgs>[]
       data_exports: Prisma.$DataExportPayload<ExtArgs>[]
       knowledge_items: Prisma.$KnowledgeItemPayload<ExtArgs>[]
@@ -13667,7 +13658,7 @@ export namespace Prisma {
     computer_sessions<T extends User$computer_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, User$computer_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComputerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     automations<T extends User$automationsArgs<ExtArgs> = {}>(args?: Subset<T, User$automationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends User$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, User$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends User$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, User$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usage_charges<T extends User$usage_chargesArgs<ExtArgs> = {}>(args?: Subset<T, User$usage_chargesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activity_logs<T extends User$activity_logsArgs<ExtArgs> = {}>(args?: Subset<T, User$activity_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     data_exports<T extends User$data_exportsArgs<ExtArgs> = {}>(args?: Subset<T, User$data_exportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$DataExportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     knowledge_items<T extends User$knowledge_itemsArgs<ExtArgs> = {}>(args?: Subset<T, User$knowledge_itemsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$KnowledgeItemPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -15167,27 +15158,27 @@ export namespace Prisma {
   }
 
   /**
-   * User.usage_records
+   * User.usage_charges
    */
-  export type User$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type User$usage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
+    include?: UsageChargeInclude<ExtArgs> | null
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
+    cursor?: UsageChargeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
@@ -29761,7 +29752,7 @@ export namespace Prisma {
     cloud_computers?: boolean | Organization$cloud_computersArgs<ExtArgs>
     automations?: boolean | Organization$automationsArgs<ExtArgs>
     notifications?: boolean | Organization$notificationsArgs<ExtArgs>
-    usage_records?: boolean | Organization$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Organization$usage_chargesArgs<ExtArgs>
     usage_limits?: boolean | Organization$usage_limitsArgs<ExtArgs>
     usage_alerts?: boolean | Organization$usage_alertsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
@@ -29852,7 +29843,7 @@ export namespace Prisma {
     cloud_computers?: boolean | Organization$cloud_computersArgs<ExtArgs>
     automations?: boolean | Organization$automationsArgs<ExtArgs>
     notifications?: boolean | Organization$notificationsArgs<ExtArgs>
-    usage_records?: boolean | Organization$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Organization$usage_chargesArgs<ExtArgs>
     usage_limits?: boolean | Organization$usage_limitsArgs<ExtArgs>
     usage_alerts?: boolean | Organization$usage_alertsArgs<ExtArgs>
     subscription?: boolean | Organization$subscriptionArgs<ExtArgs>
@@ -29903,7 +29894,7 @@ export namespace Prisma {
       cloud_computers: Prisma.$CloudComputerPayload<ExtArgs>[]
       automations: Prisma.$AutomationPayload<ExtArgs>[]
       notifications: Prisma.$NotificationPayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      usage_charges: Prisma.$UsageChargePayload<ExtArgs>[]
       usage_limits: Prisma.$UsageLimitPayload<ExtArgs>[]
       usage_alerts: Prisma.$UsageAlertPayload<ExtArgs>[]
       subscription: Prisma.$SubscriptionPayload<ExtArgs> | null
@@ -30348,7 +30339,7 @@ export namespace Prisma {
     cloud_computers<T extends Organization$cloud_computersArgs<ExtArgs> = {}>(args?: Subset<T, Organization$cloud_computersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$CloudComputerPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     automations<T extends Organization$automationsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$automationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     notifications<T extends Organization$notificationsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$notificationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$NotificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends Organization$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usage_charges<T extends Organization$usage_chargesArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usage_chargesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usage_limits<T extends Organization$usage_limitsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usage_limitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageLimitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usage_alerts<T extends Organization$usage_alertsArgs<ExtArgs> = {}>(args?: Subset<T, Organization$usage_alertsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageAlertPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     subscription<T extends Organization$subscriptionArgs<ExtArgs> = {}>(args?: Subset<T, Organization$subscriptionArgs<ExtArgs>>): Prisma__SubscriptionClient<$Result.GetResult<Prisma.$SubscriptionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
@@ -31410,27 +31401,27 @@ export namespace Prisma {
   }
 
   /**
-   * Organization.usage_records
+   * Organization.usage_charges
    */
-  export type Organization$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Organization$usage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
+    include?: UsageChargeInclude<ExtArgs> | null
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
+    cursor?: UsageChargeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
@@ -36364,7 +36355,7 @@ export namespace Prisma {
     org_defaults?: boolean | AiModel$org_defaultsArgs<ExtArgs>
     org_allowed?: boolean | AiModel$org_allowedArgs<ExtArgs>
     runs?: boolean | AiModel$runsArgs<ExtArgs>
-    usage_records?: boolean | AiModel$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | AiModel$usage_chargesArgs<ExtArgs>
     _count?: boolean | AiModelCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["aiModel"]>
 
@@ -36436,7 +36427,7 @@ export namespace Prisma {
     org_defaults?: boolean | AiModel$org_defaultsArgs<ExtArgs>
     org_allowed?: boolean | AiModel$org_allowedArgs<ExtArgs>
     runs?: boolean | AiModel$runsArgs<ExtArgs>
-    usage_records?: boolean | AiModel$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | AiModel$usage_chargesArgs<ExtArgs>
     _count?: boolean | AiModelCountOutputTypeDefaultArgs<ExtArgs>
   }
   export type AiModelIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
@@ -36456,7 +36447,7 @@ export namespace Prisma {
       org_defaults: Prisma.$OrganizationSettingsPayload<ExtArgs>[]
       org_allowed: Prisma.$OrganizationAllowedModelPayload<ExtArgs>[]
       runs: Prisma.$RunPayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      usage_charges: Prisma.$UsageChargePayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
       id: string
@@ -36876,7 +36867,7 @@ export namespace Prisma {
     org_defaults<T extends AiModel$org_defaultsArgs<ExtArgs> = {}>(args?: Subset<T, AiModel$org_defaultsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     org_allowed<T extends AiModel$org_allowedArgs<ExtArgs> = {}>(args?: Subset<T, AiModel$org_allowedArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$OrganizationAllowedModelPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     runs<T extends AiModel$runsArgs<ExtArgs> = {}>(args?: Subset<T, AiModel$runsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends AiModel$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, AiModel$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usage_charges<T extends AiModel$usage_chargesArgs<ExtArgs> = {}>(args?: Subset<T, AiModel$usage_chargesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -37486,27 +37477,27 @@ export namespace Prisma {
   }
 
   /**
-   * AiModel.usage_records
+   * AiModel.usage_charges
    */
-  export type AiModel$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type AiModel$usage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
+    include?: UsageChargeInclude<ExtArgs> | null
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
+    cursor?: UsageChargeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
@@ -42617,7 +42608,7 @@ export namespace Prisma {
     approvals?: boolean | Bot$approvalsArgs<ExtArgs>
     voice_sessions?: boolean | Bot$voice_sessionsArgs<ExtArgs>
     automations?: boolean | Bot$automationsArgs<ExtArgs>
-    usage_records?: boolean | Bot$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Bot$usage_chargesArgs<ExtArgs>
     usage_limits?: boolean | Bot$usage_limitsArgs<ExtArgs>
     activity_logs?: boolean | Bot$activity_logsArgs<ExtArgs>
     default_for_users?: boolean | Bot$default_for_usersArgs<ExtArgs>
@@ -42827,7 +42818,7 @@ export namespace Prisma {
     approvals?: boolean | Bot$approvalsArgs<ExtArgs>
     voice_sessions?: boolean | Bot$voice_sessionsArgs<ExtArgs>
     automations?: boolean | Bot$automationsArgs<ExtArgs>
-    usage_records?: boolean | Bot$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Bot$usage_chargesArgs<ExtArgs>
     usage_limits?: boolean | Bot$usage_limitsArgs<ExtArgs>
     activity_logs?: boolean | Bot$activity_logsArgs<ExtArgs>
     default_for_users?: boolean | Bot$default_for_usersArgs<ExtArgs>
@@ -42880,7 +42871,7 @@ export namespace Prisma {
       approvals: Prisma.$ApprovalPayload<ExtArgs>[]
       voice_sessions: Prisma.$VoiceSessionPayload<ExtArgs>[]
       automations: Prisma.$AutomationPayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      usage_charges: Prisma.$UsageChargePayload<ExtArgs>[]
       usage_limits: Prisma.$UsageLimitPayload<ExtArgs>[]
       activity_logs: Prisma.$ActivityLogPayload<ExtArgs>[]
       default_for_users: Prisma.$UserSettingsPayload<ExtArgs>[]
@@ -43367,7 +43358,7 @@ export namespace Prisma {
     approvals<T extends Bot$approvalsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     voice_sessions<T extends Bot$voice_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$voice_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$VoiceSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     automations<T extends Bot$automationsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$automationsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$AutomationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends Bot$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usage_charges<T extends Bot$usage_chargesArgs<ExtArgs> = {}>(args?: Subset<T, Bot$usage_chargesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     usage_limits<T extends Bot$usage_limitsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$usage_limitsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageLimitPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activity_logs<T extends Bot$activity_logsArgs<ExtArgs> = {}>(args?: Subset<T, Bot$activity_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     default_for_users<T extends Bot$default_for_usersArgs<ExtArgs> = {}>(args?: Subset<T, Bot$default_for_usersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UserSettingsPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -44354,27 +44345,27 @@ export namespace Prisma {
   }
 
   /**
-   * Bot.usage_records
+   * Bot.usage_charges
    */
-  export type Bot$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Bot$usage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
+    include?: UsageChargeInclude<ExtArgs> | null
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
+    cursor?: UsageChargeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
@@ -67631,7 +67622,7 @@ export namespace Prisma {
     approvals?: boolean | Run$approvalsArgs<ExtArgs>
     computer_sessions?: boolean | Run$computer_sessionsArgs<ExtArgs>
     transfers?: boolean | Run$transfersArgs<ExtArgs>
-    usage_records?: boolean | Run$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Run$usage_chargesArgs<ExtArgs>
     activity_logs?: boolean | Run$activity_logsArgs<ExtArgs>
     artifact_versions?: boolean | Run$artifact_versionsArgs<ExtArgs>
     files?: boolean | Run$filesArgs<ExtArgs>
@@ -67778,7 +67769,7 @@ export namespace Prisma {
     approvals?: boolean | Run$approvalsArgs<ExtArgs>
     computer_sessions?: boolean | Run$computer_sessionsArgs<ExtArgs>
     transfers?: boolean | Run$transfersArgs<ExtArgs>
-    usage_records?: boolean | Run$usage_recordsArgs<ExtArgs>
+    usage_charges?: boolean | Run$usage_chargesArgs<ExtArgs>
     activity_logs?: boolean | Run$activity_logsArgs<ExtArgs>
     artifact_versions?: boolean | Run$artifact_versionsArgs<ExtArgs>
     files?: boolean | Run$filesArgs<ExtArgs>
@@ -67831,7 +67822,7 @@ export namespace Prisma {
       approvals: Prisma.$ApprovalPayload<ExtArgs>[]
       computer_sessions: Prisma.$ComputerSessionPayload<ExtArgs>[]
       transfers: Prisma.$ComputerTransferPayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
+      usage_charges: Prisma.$UsageChargePayload<ExtArgs>[]
       activity_logs: Prisma.$ActivityLogPayload<ExtArgs>[]
       artifact_versions: Prisma.$ArtifactVersionPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
@@ -68281,7 +68272,7 @@ export namespace Prisma {
     approvals<T extends Run$approvalsArgs<ExtArgs> = {}>(args?: Subset<T, Run$approvalsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ApprovalPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     computer_sessions<T extends Run$computer_sessionsArgs<ExtArgs> = {}>(args?: Subset<T, Run$computer_sessionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComputerSessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     transfers<T extends Run$transfersArgs<ExtArgs> = {}>(args?: Subset<T, Run$transfersArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ComputerTransferPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends Run$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, Run$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+    usage_charges<T extends Run$usage_chargesArgs<ExtArgs> = {}>(args?: Subset<T, Run$usage_chargesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     activity_logs<T extends Run$activity_logsArgs<ExtArgs> = {}>(args?: Subset<T, Run$activity_logsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ActivityLogPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     artifact_versions<T extends Run$artifact_versionsArgs<ExtArgs> = {}>(args?: Subset<T, Run$artifact_versionsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactVersionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Run$filesArgs<ExtArgs> = {}>(args?: Subset<T, Run$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
@@ -69060,27 +69051,27 @@ export namespace Prisma {
   }
 
   /**
-   * Run.usage_records
+   * Run.usage_charges
    */
-  export type Run$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type Run$usage_chargesArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
+    include?: UsageChargeInclude<ExtArgs> | null
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
+    cursor?: UsageChargeWhereUniqueInput
     take?: number
     skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
@@ -79655,7 +79646,6 @@ export namespace Prisma {
     records?: boolean | Artifact$recordsArgs<ExtArgs>
     reports?: boolean | Artifact$reportsArgs<ExtArgs>
     files?: boolean | Artifact$filesArgs<ExtArgs>
-    usage_records?: boolean | Artifact$usage_recordsArgs<ExtArgs>
     data_grants?: boolean | Artifact$data_grantsArgs<ExtArgs>
     _count?: boolean | ArtifactCountOutputTypeDefaultArgs<ExtArgs>
   }, ExtArgs["result"]["artifact"]>
@@ -79783,7 +79773,6 @@ export namespace Prisma {
     records?: boolean | Artifact$recordsArgs<ExtArgs>
     reports?: boolean | Artifact$reportsArgs<ExtArgs>
     files?: boolean | Artifact$filesArgs<ExtArgs>
-    usage_records?: boolean | Artifact$usage_recordsArgs<ExtArgs>
     data_grants?: boolean | Artifact$data_grantsArgs<ExtArgs>
     _count?: boolean | ArtifactCountOutputTypeDefaultArgs<ExtArgs>
   }
@@ -79823,7 +79812,6 @@ export namespace Prisma {
       records: Prisma.$ArtifactRecordPayload<ExtArgs>[]
       reports: Prisma.$ArtifactReportPayload<ExtArgs>[]
       files: Prisma.$FilePayload<ExtArgs>[]
-      usage_records: Prisma.$UsageRecordPayload<ExtArgs>[]
       data_grants: Prisma.$ArtifactDataGrantPayload<ExtArgs>[]
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -80263,7 +80251,6 @@ export namespace Prisma {
     records<T extends Artifact$recordsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     reports<T extends Artifact$reportsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$reportsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactReportPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     files<T extends Artifact$filesArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$filesArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$FilePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
-    usage_records<T extends Artifact$usage_recordsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$usage_recordsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     data_grants<T extends Artifact$data_grantsArgs<ExtArgs> = {}>(args?: Subset<T, Artifact$data_grantsArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$ArtifactDataGrantPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
@@ -81002,30 +80989,6 @@ export namespace Prisma {
     take?: number
     skip?: number
     distinct?: FileScalarFieldEnum | FileScalarFieldEnum[]
-  }
-
-  /**
-   * Artifact.usage_records
-   */
-  export type Artifact$usage_recordsArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the UsageRecord
-     */
-    select?: UsageRecordSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the UsageRecord
-     */
-    omit?: UsageRecordOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: UsageRecordInclude<ExtArgs> | null
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
-    cursor?: UsageRecordWhereUniqueInput
-    take?: number
-    skip?: number
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
   }
 
   /**
@@ -111018,384 +110981,363 @@ export namespace Prisma {
 
 
   /**
-   * Model UsageRecord
+   * Model UsageCharge
    */
 
-  export type AggregateUsageRecord = {
-    _count: UsageRecordCountAggregateOutputType | null
-    _avg: UsageRecordAvgAggregateOutputType | null
-    _sum: UsageRecordSumAggregateOutputType | null
-    _min: UsageRecordMinAggregateOutputType | null
-    _max: UsageRecordMaxAggregateOutputType | null
+  export type AggregateUsageCharge = {
+    _count: UsageChargeCountAggregateOutputType | null
+    _avg: UsageChargeAvgAggregateOutputType | null
+    _sum: UsageChargeSumAggregateOutputType | null
+    _min: UsageChargeMinAggregateOutputType | null
+    _max: UsageChargeMaxAggregateOutputType | null
   }
 
-  export type UsageRecordAvgAggregateOutputType = {
+  export type UsageChargeAvgAggregateOutputType = {
     quantity: Decimal | null
+    input_tokens: number | null
+    output_tokens: number | null
     cost: Decimal | null
   }
 
-  export type UsageRecordSumAggregateOutputType = {
+  export type UsageChargeSumAggregateOutputType = {
     quantity: Decimal | null
+    input_tokens: number | null
+    output_tokens: number | null
     cost: Decimal | null
   }
 
-  export type UsageRecordMinAggregateOutputType = {
+  export type UsageChargeMinAggregateOutputType = {
     id: string | null
     organization_id: string | null
     user_id: string | null
     bot_id: string | null
     model_id: string | null
-    artifact_id: string | null
     run_id: string | null
     kind: $Enums.UsageKind | null
-    period: string | null
-    day: Date | null
     quantity: Decimal | null
+    input_tokens: number | null
+    output_tokens: number | null
     cost: Decimal | null
     created_at: Date | null
-    updated_at: Date | null
   }
 
-  export type UsageRecordMaxAggregateOutputType = {
+  export type UsageChargeMaxAggregateOutputType = {
     id: string | null
     organization_id: string | null
     user_id: string | null
     bot_id: string | null
     model_id: string | null
-    artifact_id: string | null
     run_id: string | null
     kind: $Enums.UsageKind | null
-    period: string | null
-    day: Date | null
     quantity: Decimal | null
+    input_tokens: number | null
+    output_tokens: number | null
     cost: Decimal | null
     created_at: Date | null
-    updated_at: Date | null
   }
 
-  export type UsageRecordCountAggregateOutputType = {
+  export type UsageChargeCountAggregateOutputType = {
     id: number
     organization_id: number
     user_id: number
     bot_id: number
     model_id: number
-    artifact_id: number
     run_id: number
     kind: number
-    period: number
-    day: number
     quantity: number
+    input_tokens: number
+    output_tokens: number
     cost: number
     created_at: number
-    updated_at: number
     _all: number
   }
 
 
-  export type UsageRecordAvgAggregateInputType = {
+  export type UsageChargeAvgAggregateInputType = {
     quantity?: true
+    input_tokens?: true
+    output_tokens?: true
     cost?: true
   }
 
-  export type UsageRecordSumAggregateInputType = {
+  export type UsageChargeSumAggregateInputType = {
     quantity?: true
+    input_tokens?: true
+    output_tokens?: true
     cost?: true
   }
 
-  export type UsageRecordMinAggregateInputType = {
+  export type UsageChargeMinAggregateInputType = {
     id?: true
     organization_id?: true
     user_id?: true
     bot_id?: true
     model_id?: true
-    artifact_id?: true
     run_id?: true
     kind?: true
-    period?: true
-    day?: true
     quantity?: true
+    input_tokens?: true
+    output_tokens?: true
     cost?: true
     created_at?: true
-    updated_at?: true
   }
 
-  export type UsageRecordMaxAggregateInputType = {
+  export type UsageChargeMaxAggregateInputType = {
     id?: true
     organization_id?: true
     user_id?: true
     bot_id?: true
     model_id?: true
-    artifact_id?: true
     run_id?: true
     kind?: true
-    period?: true
-    day?: true
     quantity?: true
+    input_tokens?: true
+    output_tokens?: true
     cost?: true
     created_at?: true
-    updated_at?: true
   }
 
-  export type UsageRecordCountAggregateInputType = {
+  export type UsageChargeCountAggregateInputType = {
     id?: true
     organization_id?: true
     user_id?: true
     bot_id?: true
     model_id?: true
-    artifact_id?: true
     run_id?: true
     kind?: true
-    period?: true
-    day?: true
     quantity?: true
+    input_tokens?: true
+    output_tokens?: true
     cost?: true
     created_at?: true
-    updated_at?: true
     _all?: true
   }
 
-  export type UsageRecordAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which UsageRecord to aggregate.
+     * Filter which UsageCharge to aggregate.
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of UsageRecords to fetch.
+     * Determine the order of UsageCharges to fetch.
      */
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
      * Sets the start position
      */
-    cursor?: UsageRecordWhereUniqueInput
+    cursor?: UsageChargeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` UsageRecords from the position of the cursor.
+     * Take `±n` UsageCharges from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` UsageRecords.
+     * Skip the first `n` UsageCharges.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
-     * Count returned UsageRecords
+     * Count returned UsageCharges
     **/
-    _count?: true | UsageRecordCountAggregateInputType
+    _count?: true | UsageChargeCountAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to average
     **/
-    _avg?: UsageRecordAvgAggregateInputType
+    _avg?: UsageChargeAvgAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to sum
     **/
-    _sum?: UsageRecordSumAggregateInputType
+    _sum?: UsageChargeSumAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the minimum value
     **/
-    _min?: UsageRecordMinAggregateInputType
+    _min?: UsageChargeMinAggregateInputType
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
      * 
      * Select which fields to find the maximum value
     **/
-    _max?: UsageRecordMaxAggregateInputType
+    _max?: UsageChargeMaxAggregateInputType
   }
 
-  export type GetUsageRecordAggregateType<T extends UsageRecordAggregateArgs> = {
-        [P in keyof T & keyof AggregateUsageRecord]: P extends '_count' | 'count'
+  export type GetUsageChargeAggregateType<T extends UsageChargeAggregateArgs> = {
+        [P in keyof T & keyof AggregateUsageCharge]: P extends '_count' | 'count'
       ? T[P] extends true
         ? number
-        : GetScalarType<T[P], AggregateUsageRecord[P]>
-      : GetScalarType<T[P], AggregateUsageRecord[P]>
+        : GetScalarType<T[P], AggregateUsageCharge[P]>
+      : GetScalarType<T[P], AggregateUsageCharge[P]>
   }
 
 
 
 
-  export type UsageRecordGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    where?: UsageRecordWhereInput
-    orderBy?: UsageRecordOrderByWithAggregationInput | UsageRecordOrderByWithAggregationInput[]
-    by: UsageRecordScalarFieldEnum[] | UsageRecordScalarFieldEnum
-    having?: UsageRecordScalarWhereWithAggregatesInput
+  export type UsageChargeGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: UsageChargeWhereInput
+    orderBy?: UsageChargeOrderByWithAggregationInput | UsageChargeOrderByWithAggregationInput[]
+    by: UsageChargeScalarFieldEnum[] | UsageChargeScalarFieldEnum
+    having?: UsageChargeScalarWhereWithAggregatesInput
     take?: number
     skip?: number
-    _count?: UsageRecordCountAggregateInputType | true
-    _avg?: UsageRecordAvgAggregateInputType
-    _sum?: UsageRecordSumAggregateInputType
-    _min?: UsageRecordMinAggregateInputType
-    _max?: UsageRecordMaxAggregateInputType
+    _count?: UsageChargeCountAggregateInputType | true
+    _avg?: UsageChargeAvgAggregateInputType
+    _sum?: UsageChargeSumAggregateInputType
+    _min?: UsageChargeMinAggregateInputType
+    _max?: UsageChargeMaxAggregateInputType
   }
 
-  export type UsageRecordGroupByOutputType = {
+  export type UsageChargeGroupByOutputType = {
     id: string
     organization_id: string
     user_id: string | null
     bot_id: string | null
     model_id: string | null
-    artifact_id: string | null
     run_id: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date
     quantity: Decimal
+    input_tokens: number | null
+    output_tokens: number | null
     cost: Decimal
     created_at: Date
-    updated_at: Date
-    _count: UsageRecordCountAggregateOutputType | null
-    _avg: UsageRecordAvgAggregateOutputType | null
-    _sum: UsageRecordSumAggregateOutputType | null
-    _min: UsageRecordMinAggregateOutputType | null
-    _max: UsageRecordMaxAggregateOutputType | null
+    _count: UsageChargeCountAggregateOutputType | null
+    _avg: UsageChargeAvgAggregateOutputType | null
+    _sum: UsageChargeSumAggregateOutputType | null
+    _min: UsageChargeMinAggregateOutputType | null
+    _max: UsageChargeMaxAggregateOutputType | null
   }
 
-  type GetUsageRecordGroupByPayload<T extends UsageRecordGroupByArgs> = Prisma.PrismaPromise<
+  type GetUsageChargeGroupByPayload<T extends UsageChargeGroupByArgs> = Prisma.PrismaPromise<
     Array<
-      PickEnumerable<UsageRecordGroupByOutputType, T['by']> &
+      PickEnumerable<UsageChargeGroupByOutputType, T['by']> &
         {
-          [P in ((keyof T) & (keyof UsageRecordGroupByOutputType))]: P extends '_count'
+          [P in ((keyof T) & (keyof UsageChargeGroupByOutputType))]: P extends '_count'
             ? T[P] extends boolean
               ? number
-              : GetScalarType<T[P], UsageRecordGroupByOutputType[P]>
-            : GetScalarType<T[P], UsageRecordGroupByOutputType[P]>
+              : GetScalarType<T[P], UsageChargeGroupByOutputType[P]>
+            : GetScalarType<T[P], UsageChargeGroupByOutputType[P]>
         }
       >
     >
 
 
-  export type UsageRecordSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UsageChargeSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     organization_id?: boolean
     user_id?: boolean
     bot_id?: boolean
     model_id?: boolean
-    artifact_id?: boolean
     run_id?: boolean
     kind?: boolean
-    period?: boolean
-    day?: boolean
     quantity?: boolean
+    input_tokens?: boolean
+    output_tokens?: boolean
     cost?: boolean
     created_at?: boolean
-    updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
-  }, ExtArgs["result"]["usageRecord"]>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
+  }, ExtArgs["result"]["usageCharge"]>
 
-  export type UsageRecordSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UsageChargeSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     organization_id?: boolean
     user_id?: boolean
     bot_id?: boolean
     model_id?: boolean
-    artifact_id?: boolean
     run_id?: boolean
     kind?: boolean
-    period?: boolean
-    day?: boolean
     quantity?: boolean
+    input_tokens?: boolean
+    output_tokens?: boolean
     cost?: boolean
     created_at?: boolean
-    updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
-  }, ExtArgs["result"]["usageRecord"]>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
+  }, ExtArgs["result"]["usageCharge"]>
 
-  export type UsageRecordSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+  export type UsageChargeSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
     id?: boolean
     organization_id?: boolean
     user_id?: boolean
     bot_id?: boolean
     model_id?: boolean
-    artifact_id?: boolean
     run_id?: boolean
     kind?: boolean
-    period?: boolean
-    day?: boolean
     quantity?: boolean
+    input_tokens?: boolean
+    output_tokens?: boolean
     cost?: boolean
     created_at?: boolean
-    updated_at?: boolean
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
-  }, ExtArgs["result"]["usageRecord"]>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
+  }, ExtArgs["result"]["usageCharge"]>
 
-  export type UsageRecordSelectScalar = {
+  export type UsageChargeSelectScalar = {
     id?: boolean
     organization_id?: boolean
     user_id?: boolean
     bot_id?: boolean
     model_id?: boolean
-    artifact_id?: boolean
     run_id?: boolean
     kind?: boolean
-    period?: boolean
-    day?: boolean
     quantity?: boolean
+    input_tokens?: boolean
+    output_tokens?: boolean
     cost?: boolean
     created_at?: boolean
-    updated_at?: boolean
   }
 
-  export type UsageRecordOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "bot_id" | "model_id" | "artifact_id" | "run_id" | "kind" | "period" | "day" | "quantity" | "cost" | "created_at" | "updated_at", ExtArgs["result"]["usageRecord"]>
-  export type UsageRecordInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "user_id" | "bot_id" | "model_id" | "run_id" | "kind" | "quantity" | "input_tokens" | "output_tokens" | "cost" | "created_at", ExtArgs["result"]["usageCharge"]>
+  export type UsageChargeInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
   }
-  export type UsageRecordIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeIncludeCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
   }
-  export type UsageRecordIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeIncludeUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
-    user?: boolean | UsageRecord$userArgs<ExtArgs>
-    bot?: boolean | UsageRecord$botArgs<ExtArgs>
-    model?: boolean | UsageRecord$modelArgs<ExtArgs>
-    artifact?: boolean | UsageRecord$artifactArgs<ExtArgs>
-    run?: boolean | UsageRecord$runArgs<ExtArgs>
+    user?: boolean | UsageCharge$userArgs<ExtArgs>
+    bot?: boolean | UsageCharge$botArgs<ExtArgs>
+    model?: boolean | UsageCharge$modelArgs<ExtArgs>
+    run?: boolean | UsageCharge$runArgs<ExtArgs>
   }
 
-  export type $UsageRecordPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    name: "UsageRecord"
+  export type $UsageChargePayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "UsageCharge"
     objects: {
       organization: Prisma.$OrganizationPayload<ExtArgs>
       user: Prisma.$UserPayload<ExtArgs> | null
       bot: Prisma.$BotPayload<ExtArgs> | null
       model: Prisma.$AiModelPayload<ExtArgs> | null
-      artifact: Prisma.$ArtifactPayload<ExtArgs> | null
       run: Prisma.$RunPayload<ExtArgs> | null
     }
     scalars: $Extensions.GetPayloadResult<{
@@ -111404,145 +111346,143 @@ export namespace Prisma {
       user_id: string | null
       bot_id: string | null
       model_id: string | null
-      artifact_id: string | null
       run_id: string | null
       kind: $Enums.UsageKind
-      period: string
-      day: Date
       quantity: Prisma.Decimal
+      input_tokens: number | null
+      output_tokens: number | null
       cost: Prisma.Decimal
       created_at: Date
-      updated_at: Date
-    }, ExtArgs["result"]["usageRecord"]>
+    }, ExtArgs["result"]["usageCharge"]>
     composites: {}
   }
 
-  type UsageRecordGetPayload<S extends boolean | null | undefined | UsageRecordDefaultArgs> = $Result.GetResult<Prisma.$UsageRecordPayload, S>
+  type UsageChargeGetPayload<S extends boolean | null | undefined | UsageChargeDefaultArgs> = $Result.GetResult<Prisma.$UsageChargePayload, S>
 
-  type UsageRecordCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
-    Omit<UsageRecordFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
-      select?: UsageRecordCountAggregateInputType | true
+  type UsageChargeCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<UsageChargeFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: UsageChargeCountAggregateInputType | true
     }
 
-  export interface UsageRecordDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
-    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UsageRecord'], meta: { name: 'UsageRecord' } }
+  export interface UsageChargeDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['UsageCharge'], meta: { name: 'UsageCharge' } }
     /**
-     * Find zero or one UsageRecord that matches the filter.
-     * @param {UsageRecordFindUniqueArgs} args - Arguments to find a UsageRecord
+     * Find zero or one UsageCharge that matches the filter.
+     * @param {UsageChargeFindUniqueArgs} args - Arguments to find a UsageCharge
      * @example
-     * // Get one UsageRecord
-     * const usageRecord = await prisma.usageRecord.findUnique({
+     * // Get one UsageCharge
+     * const usageCharge = await prisma.usageCharge.findUnique({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUnique<T extends UsageRecordFindUniqueArgs>(args: SelectSubset<T, UsageRecordFindUniqueArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findUnique<T extends UsageChargeFindUniqueArgs>(args: SelectSubset<T, UsageChargeFindUniqueArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findUnique", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find one UsageRecord that matches the filter or throw an error with `error.code='P2025'`
+     * Find one UsageCharge that matches the filter or throw an error with `error.code='P2025'`
      * if no matches were found.
-     * @param {UsageRecordFindUniqueOrThrowArgs} args - Arguments to find a UsageRecord
+     * @param {UsageChargeFindUniqueOrThrowArgs} args - Arguments to find a UsageCharge
      * @example
-     * // Get one UsageRecord
-     * const usageRecord = await prisma.usageRecord.findUniqueOrThrow({
+     * // Get one UsageCharge
+     * const usageCharge = await prisma.usageCharge.findUniqueOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findUniqueOrThrow<T extends UsageRecordFindUniqueOrThrowArgs>(args: SelectSubset<T, UsageRecordFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findUniqueOrThrow<T extends UsageChargeFindUniqueOrThrowArgs>(args: SelectSubset<T, UsageChargeFindUniqueOrThrowArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first UsageRecord that matches the filter.
+     * Find the first UsageCharge that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordFindFirstArgs} args - Arguments to find a UsageRecord
+     * @param {UsageChargeFindFirstArgs} args - Arguments to find a UsageCharge
      * @example
-     * // Get one UsageRecord
-     * const usageRecord = await prisma.usageRecord.findFirst({
+     * // Get one UsageCharge
+     * const usageCharge = await prisma.usageCharge.findFirst({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirst<T extends UsageRecordFindFirstArgs>(args?: SelectSubset<T, UsageRecordFindFirstArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    findFirst<T extends UsageChargeFindFirstArgs>(args?: SelectSubset<T, UsageChargeFindFirstArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findFirst", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find the first UsageRecord that matches the filter or
+     * Find the first UsageCharge that matches the filter or
      * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordFindFirstOrThrowArgs} args - Arguments to find a UsageRecord
+     * @param {UsageChargeFindFirstOrThrowArgs} args - Arguments to find a UsageCharge
      * @example
-     * // Get one UsageRecord
-     * const usageRecord = await prisma.usageRecord.findFirstOrThrow({
+     * // Get one UsageCharge
+     * const usageCharge = await prisma.usageCharge.findFirstOrThrow({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      */
-    findFirstOrThrow<T extends UsageRecordFindFirstOrThrowArgs>(args?: SelectSubset<T, UsageRecordFindFirstOrThrowArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    findFirstOrThrow<T extends UsageChargeFindFirstOrThrowArgs>(args?: SelectSubset<T, UsageChargeFindFirstOrThrowArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findFirstOrThrow", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Find zero or more UsageRecords that matches the filter.
+     * Find zero or more UsageCharges that matches the filter.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @param {UsageChargeFindManyArgs} args - Arguments to filter and select certain fields only.
      * @example
-     * // Get all UsageRecords
-     * const usageRecords = await prisma.usageRecord.findMany()
+     * // Get all UsageCharges
+     * const usageCharges = await prisma.usageCharge.findMany()
      * 
-     * // Get first 10 UsageRecords
-     * const usageRecords = await prisma.usageRecord.findMany({ take: 10 })
+     * // Get first 10 UsageCharges
+     * const usageCharges = await prisma.usageCharge.findMany({ take: 10 })
      * 
      * // Only select the `id`
-     * const usageRecordWithIdOnly = await prisma.usageRecord.findMany({ select: { id: true } })
+     * const usageChargeWithIdOnly = await prisma.usageCharge.findMany({ select: { id: true } })
      * 
      */
-    findMany<T extends UsageRecordFindManyArgs>(args?: SelectSubset<T, UsageRecordFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
+    findMany<T extends UsageChargeFindManyArgs>(args?: SelectSubset<T, UsageChargeFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "findMany", GlobalOmitOptions>>
 
     /**
-     * Create a UsageRecord.
-     * @param {UsageRecordCreateArgs} args - Arguments to create a UsageRecord.
+     * Create a UsageCharge.
+     * @param {UsageChargeCreateArgs} args - Arguments to create a UsageCharge.
      * @example
-     * // Create one UsageRecord
-     * const UsageRecord = await prisma.usageRecord.create({
+     * // Create one UsageCharge
+     * const UsageCharge = await prisma.usageCharge.create({
      *   data: {
-     *     // ... data to create a UsageRecord
+     *     // ... data to create a UsageCharge
      *   }
      * })
      * 
      */
-    create<T extends UsageRecordCreateArgs>(args: SelectSubset<T, UsageRecordCreateArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    create<T extends UsageChargeCreateArgs>(args: SelectSubset<T, UsageChargeCreateArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "create", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Create many UsageRecords.
-     * @param {UsageRecordCreateManyArgs} args - Arguments to create many UsageRecords.
+     * Create many UsageCharges.
+     * @param {UsageChargeCreateManyArgs} args - Arguments to create many UsageCharges.
      * @example
-     * // Create many UsageRecords
-     * const usageRecord = await prisma.usageRecord.createMany({
+     * // Create many UsageCharges
+     * const usageCharge = await prisma.usageCharge.createMany({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      *     
      */
-    createMany<T extends UsageRecordCreateManyArgs>(args?: SelectSubset<T, UsageRecordCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    createMany<T extends UsageChargeCreateManyArgs>(args?: SelectSubset<T, UsageChargeCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Create many UsageRecords and returns the data saved in the database.
-     * @param {UsageRecordCreateManyAndReturnArgs} args - Arguments to create many UsageRecords.
+     * Create many UsageCharges and returns the data saved in the database.
+     * @param {UsageChargeCreateManyAndReturnArgs} args - Arguments to create many UsageCharges.
      * @example
-     * // Create many UsageRecords
-     * const usageRecord = await prisma.usageRecord.createManyAndReturn({
+     * // Create many UsageCharges
+     * const usageCharge = await prisma.usageCharge.createManyAndReturn({
      *   data: [
      *     // ... provide data here
      *   ]
      * })
      * 
-     * // Create many UsageRecords and only return the `id`
-     * const usageRecordWithIdOnly = await prisma.usageRecord.createManyAndReturn({
+     * // Create many UsageCharges and only return the `id`
+     * const usageChargeWithIdOnly = await prisma.usageCharge.createManyAndReturn({
      *   select: { id: true },
      *   data: [
      *     // ... provide data here
@@ -111552,28 +111492,28 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    createManyAndReturn<T extends UsageRecordCreateManyAndReturnArgs>(args?: SelectSubset<T, UsageRecordCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
+    createManyAndReturn<T extends UsageChargeCreateManyAndReturnArgs>(args?: SelectSubset<T, UsageChargeCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "createManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Delete a UsageRecord.
-     * @param {UsageRecordDeleteArgs} args - Arguments to delete one UsageRecord.
+     * Delete a UsageCharge.
+     * @param {UsageChargeDeleteArgs} args - Arguments to delete one UsageCharge.
      * @example
-     * // Delete one UsageRecord
-     * const UsageRecord = await prisma.usageRecord.delete({
+     * // Delete one UsageCharge
+     * const UsageCharge = await prisma.usageCharge.delete({
      *   where: {
-     *     // ... filter to delete one UsageRecord
+     *     // ... filter to delete one UsageCharge
      *   }
      * })
      * 
      */
-    delete<T extends UsageRecordDeleteArgs>(args: SelectSubset<T, UsageRecordDeleteArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    delete<T extends UsageChargeDeleteArgs>(args: SelectSubset<T, UsageChargeDeleteArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "delete", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Update one UsageRecord.
-     * @param {UsageRecordUpdateArgs} args - Arguments to update one UsageRecord.
+     * Update one UsageCharge.
+     * @param {UsageChargeUpdateArgs} args - Arguments to update one UsageCharge.
      * @example
-     * // Update one UsageRecord
-     * const usageRecord = await prisma.usageRecord.update({
+     * // Update one UsageCharge
+     * const usageCharge = await prisma.usageCharge.update({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -111583,30 +111523,30 @@ export namespace Prisma {
      * })
      * 
      */
-    update<T extends UsageRecordUpdateArgs>(args: SelectSubset<T, UsageRecordUpdateArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    update<T extends UsageChargeUpdateArgs>(args: SelectSubset<T, UsageChargeUpdateArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "update", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
     /**
-     * Delete zero or more UsageRecords.
-     * @param {UsageRecordDeleteManyArgs} args - Arguments to filter UsageRecords to delete.
+     * Delete zero or more UsageCharges.
+     * @param {UsageChargeDeleteManyArgs} args - Arguments to filter UsageCharges to delete.
      * @example
-     * // Delete a few UsageRecords
-     * const { count } = await prisma.usageRecord.deleteMany({
+     * // Delete a few UsageCharges
+     * const { count } = await prisma.usageCharge.deleteMany({
      *   where: {
      *     // ... provide filter here
      *   }
      * })
      * 
      */
-    deleteMany<T extends UsageRecordDeleteManyArgs>(args?: SelectSubset<T, UsageRecordDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    deleteMany<T extends UsageChargeDeleteManyArgs>(args?: SelectSubset<T, UsageChargeDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more UsageRecords.
+     * Update zero or more UsageCharges.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordUpdateManyArgs} args - Arguments to update one or more rows.
+     * @param {UsageChargeUpdateManyArgs} args - Arguments to update one or more rows.
      * @example
-     * // Update many UsageRecords
-     * const usageRecord = await prisma.usageRecord.updateMany({
+     * // Update many UsageCharges
+     * const usageCharge = await prisma.usageCharge.updateMany({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -111616,14 +111556,14 @@ export namespace Prisma {
      * })
      * 
      */
-    updateMany<T extends UsageRecordUpdateManyArgs>(args: SelectSubset<T, UsageRecordUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+    updateMany<T extends UsageChargeUpdateManyArgs>(args: SelectSubset<T, UsageChargeUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
 
     /**
-     * Update zero or more UsageRecords and returns the data updated in the database.
-     * @param {UsageRecordUpdateManyAndReturnArgs} args - Arguments to update many UsageRecords.
+     * Update zero or more UsageCharges and returns the data updated in the database.
+     * @param {UsageChargeUpdateManyAndReturnArgs} args - Arguments to update many UsageCharges.
      * @example
-     * // Update many UsageRecords
-     * const usageRecord = await prisma.usageRecord.updateManyAndReturn({
+     * // Update many UsageCharges
+     * const usageCharge = await prisma.usageCharge.updateManyAndReturn({
      *   where: {
      *     // ... provide filter here
      *   },
@@ -111632,8 +111572,8 @@ export namespace Prisma {
      *   ]
      * })
      * 
-     * // Update zero or more UsageRecords and only return the `id`
-     * const usageRecordWithIdOnly = await prisma.usageRecord.updateManyAndReturn({
+     * // Update zero or more UsageCharges and only return the `id`
+     * const usageChargeWithIdOnly = await prisma.usageCharge.updateManyAndReturn({
      *   select: { id: true },
      *   where: {
      *     // ... provide filter here
@@ -111646,56 +111586,56 @@ export namespace Prisma {
      * Read more here: https://pris.ly/d/null-undefined
      * 
      */
-    updateManyAndReturn<T extends UsageRecordUpdateManyAndReturnArgs>(args: SelectSubset<T, UsageRecordUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
+    updateManyAndReturn<T extends UsageChargeUpdateManyAndReturnArgs>(args: SelectSubset<T, UsageChargeUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "updateManyAndReturn", GlobalOmitOptions>>
 
     /**
-     * Create or update one UsageRecord.
-     * @param {UsageRecordUpsertArgs} args - Arguments to update or create a UsageRecord.
+     * Create or update one UsageCharge.
+     * @param {UsageChargeUpsertArgs} args - Arguments to update or create a UsageCharge.
      * @example
-     * // Update or create a UsageRecord
-     * const usageRecord = await prisma.usageRecord.upsert({
+     * // Update or create a UsageCharge
+     * const usageCharge = await prisma.usageCharge.upsert({
      *   create: {
-     *     // ... data to create a UsageRecord
+     *     // ... data to create a UsageCharge
      *   },
      *   update: {
      *     // ... in case it already exists, update
      *   },
      *   where: {
-     *     // ... the filter for the UsageRecord we want to update
+     *     // ... the filter for the UsageCharge we want to update
      *   }
      * })
      */
-    upsert<T extends UsageRecordUpsertArgs>(args: SelectSubset<T, UsageRecordUpsertArgs<ExtArgs>>): Prisma__UsageRecordClient<$Result.GetResult<Prisma.$UsageRecordPayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
+    upsert<T extends UsageChargeUpsertArgs>(args: SelectSubset<T, UsageChargeUpsertArgs<ExtArgs>>): Prisma__UsageChargeClient<$Result.GetResult<Prisma.$UsageChargePayload<ExtArgs>, T, "upsert", GlobalOmitOptions>, never, ExtArgs, GlobalOmitOptions>
 
 
     /**
-     * Count the number of UsageRecords.
+     * Count the number of UsageCharges.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordCountArgs} args - Arguments to filter UsageRecords to count.
+     * @param {UsageChargeCountArgs} args - Arguments to filter UsageCharges to count.
      * @example
-     * // Count the number of UsageRecords
-     * const count = await prisma.usageRecord.count({
+     * // Count the number of UsageCharges
+     * const count = await prisma.usageCharge.count({
      *   where: {
-     *     // ... the filter for the UsageRecords we want to count
+     *     // ... the filter for the UsageCharges we want to count
      *   }
      * })
     **/
-    count<T extends UsageRecordCountArgs>(
-      args?: Subset<T, UsageRecordCountArgs>,
+    count<T extends UsageChargeCountArgs>(
+      args?: Subset<T, UsageChargeCountArgs>,
     ): Prisma.PrismaPromise<
       T extends $Utils.Record<'select', any>
         ? T['select'] extends true
           ? number
-          : GetScalarType<T['select'], UsageRecordCountAggregateOutputType>
+          : GetScalarType<T['select'], UsageChargeCountAggregateOutputType>
         : number
     >
 
     /**
-     * Allows you to perform aggregations operations on a UsageRecord.
+     * Allows you to perform aggregations operations on a UsageCharge.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @param {UsageChargeAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
      * @example
      * // Ordered by age ascending
      * // Where email contains prisma.io
@@ -111715,13 +111655,13 @@ export namespace Prisma {
      *   take: 10,
      * })
     **/
-    aggregate<T extends UsageRecordAggregateArgs>(args: Subset<T, UsageRecordAggregateArgs>): Prisma.PrismaPromise<GetUsageRecordAggregateType<T>>
+    aggregate<T extends UsageChargeAggregateArgs>(args: Subset<T, UsageChargeAggregateArgs>): Prisma.PrismaPromise<GetUsageChargeAggregateType<T>>
 
     /**
-     * Group by UsageRecord.
+     * Group by UsageCharge.
      * Note, that providing `undefined` is treated as the value not being there.
      * Read more here: https://pris.ly/d/null-undefined
-     * @param {UsageRecordGroupByArgs} args - Group by arguments.
+     * @param {UsageChargeGroupByArgs} args - Group by arguments.
      * @example
      * // Group by city, order by createdAt, get count
      * const result = await prisma.user.groupBy({
@@ -111736,14 +111676,14 @@ export namespace Prisma {
      * 
     **/
     groupBy<
-      T extends UsageRecordGroupByArgs,
+      T extends UsageChargeGroupByArgs,
       HasSelectOrTake extends Or<
         Extends<'skip', Keys<T>>,
         Extends<'take', Keys<T>>
       >,
       OrderByArg extends True extends HasSelectOrTake
-        ? { orderBy: UsageRecordGroupByArgs['orderBy'] }
-        : { orderBy?: UsageRecordGroupByArgs['orderBy'] },
+        ? { orderBy: UsageChargeGroupByArgs['orderBy'] }
+        : { orderBy?: UsageChargeGroupByArgs['orderBy'] },
       OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
       ByFields extends MaybeTupleToUnion<T['by']>,
       ByValid extends Has<ByFields, OrderFields>,
@@ -111792,27 +111732,26 @@ export namespace Prisma {
             ? never
             : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
         }[OrderFields]
-    >(args: SubsetIntersection<T, UsageRecordGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsageRecordGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+    >(args: SubsetIntersection<T, UsageChargeGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetUsageChargeGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
   /**
-   * Fields of the UsageRecord model
+   * Fields of the UsageCharge model
    */
-  readonly fields: UsageRecordFieldRefs;
+  readonly fields: UsageChargeFieldRefs;
   }
 
   /**
-   * The delegate class that acts as a "Promise-like" for UsageRecord.
+   * The delegate class that acts as a "Promise-like" for UsageCharge.
    * Why is this prefixed with `Prisma__`?
    * Because we want to prevent naming conflicts as mentioned in
    * https://github.com/prisma/prisma-client-js/issues/707
    */
-  export interface Prisma__UsageRecordClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
+  export interface Prisma__UsageChargeClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
     readonly [Symbol.toStringTag]: "PrismaPromise"
     organization<T extends OrganizationDefaultArgs<ExtArgs> = {}>(args?: Subset<T, OrganizationDefaultArgs<ExtArgs>>): Prisma__OrganizationClient<$Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-    user<T extends UsageRecord$userArgs<ExtArgs> = {}>(args?: Subset<T, UsageRecord$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    bot<T extends UsageRecord$botArgs<ExtArgs> = {}>(args?: Subset<T, UsageRecord$botArgs<ExtArgs>>): Prisma__BotClient<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    model<T extends UsageRecord$modelArgs<ExtArgs> = {}>(args?: Subset<T, UsageRecord$modelArgs<ExtArgs>>): Prisma__AiModelClient<$Result.GetResult<Prisma.$AiModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    artifact<T extends UsageRecord$artifactArgs<ExtArgs> = {}>(args?: Subset<T, UsageRecord$artifactArgs<ExtArgs>>): Prisma__ArtifactClient<$Result.GetResult<Prisma.$ArtifactPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
-    run<T extends UsageRecord$runArgs<ExtArgs> = {}>(args?: Subset<T, UsageRecord$runArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    user<T extends UsageCharge$userArgs<ExtArgs> = {}>(args?: Subset<T, UsageCharge$userArgs<ExtArgs>>): Prisma__UserClient<$Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    bot<T extends UsageCharge$botArgs<ExtArgs> = {}>(args?: Subset<T, UsageCharge$botArgs<ExtArgs>>): Prisma__BotClient<$Result.GetResult<Prisma.$BotPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    model<T extends UsageCharge$modelArgs<ExtArgs> = {}>(args?: Subset<T, UsageCharge$modelArgs<ExtArgs>>): Prisma__AiModelClient<$Result.GetResult<Prisma.$AiModelPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+    run<T extends UsageCharge$runArgs<ExtArgs> = {}>(args?: Subset<T, UsageCharge$runArgs<ExtArgs>>): Prisma__RunClient<$Result.GetResult<Prisma.$RunPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
     /**
      * Attaches callbacks for the resolution and/or rejection of the Promise.
      * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -111839,427 +111778,425 @@ export namespace Prisma {
 
 
   /**
-   * Fields of the UsageRecord model
+   * Fields of the UsageCharge model
    */
-  interface UsageRecordFieldRefs {
-    readonly id: FieldRef<"UsageRecord", 'String'>
-    readonly organization_id: FieldRef<"UsageRecord", 'String'>
-    readonly user_id: FieldRef<"UsageRecord", 'String'>
-    readonly bot_id: FieldRef<"UsageRecord", 'String'>
-    readonly model_id: FieldRef<"UsageRecord", 'String'>
-    readonly artifact_id: FieldRef<"UsageRecord", 'String'>
-    readonly run_id: FieldRef<"UsageRecord", 'String'>
-    readonly kind: FieldRef<"UsageRecord", 'UsageKind'>
-    readonly period: FieldRef<"UsageRecord", 'String'>
-    readonly day: FieldRef<"UsageRecord", 'DateTime'>
-    readonly quantity: FieldRef<"UsageRecord", 'Decimal'>
-    readonly cost: FieldRef<"UsageRecord", 'Decimal'>
-    readonly created_at: FieldRef<"UsageRecord", 'DateTime'>
-    readonly updated_at: FieldRef<"UsageRecord", 'DateTime'>
+  interface UsageChargeFieldRefs {
+    readonly id: FieldRef<"UsageCharge", 'String'>
+    readonly organization_id: FieldRef<"UsageCharge", 'String'>
+    readonly user_id: FieldRef<"UsageCharge", 'String'>
+    readonly bot_id: FieldRef<"UsageCharge", 'String'>
+    readonly model_id: FieldRef<"UsageCharge", 'String'>
+    readonly run_id: FieldRef<"UsageCharge", 'String'>
+    readonly kind: FieldRef<"UsageCharge", 'UsageKind'>
+    readonly quantity: FieldRef<"UsageCharge", 'Decimal'>
+    readonly input_tokens: FieldRef<"UsageCharge", 'Int'>
+    readonly output_tokens: FieldRef<"UsageCharge", 'Int'>
+    readonly cost: FieldRef<"UsageCharge", 'Decimal'>
+    readonly created_at: FieldRef<"UsageCharge", 'DateTime'>
   }
     
 
   // Custom InputTypes
   /**
-   * UsageRecord findUnique
+   * UsageCharge findUnique
    */
-  export type UsageRecordFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter, which UsageRecord to fetch.
+     * Filter, which UsageCharge to fetch.
      */
-    where: UsageRecordWhereUniqueInput
+    where: UsageChargeWhereUniqueInput
   }
 
   /**
-   * UsageRecord findUniqueOrThrow
+   * UsageCharge findUniqueOrThrow
    */
-  export type UsageRecordFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter, which UsageRecord to fetch.
+     * Filter, which UsageCharge to fetch.
      */
-    where: UsageRecordWhereUniqueInput
+    where: UsageChargeWhereUniqueInput
   }
 
   /**
-   * UsageRecord findFirst
+   * UsageCharge findFirst
    */
-  export type UsageRecordFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter, which UsageRecord to fetch.
+     * Filter, which UsageCharge to fetch.
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of UsageRecords to fetch.
+     * Determine the order of UsageCharges to fetch.
      */
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for UsageRecords.
+     * Sets the position for searching for UsageCharges.
      */
-    cursor?: UsageRecordWhereUniqueInput
+    cursor?: UsageChargeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` UsageRecords from the position of the cursor.
+     * Take `±n` UsageCharges from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` UsageRecords.
+     * Skip the first `n` UsageCharges.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of UsageRecords.
+     * Filter by unique combinations of UsageCharges.
      */
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
-   * UsageRecord findFirstOrThrow
+   * UsageCharge findFirstOrThrow
    */
-  export type UsageRecordFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter, which UsageRecord to fetch.
+     * Filter, which UsageCharge to fetch.
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of UsageRecords to fetch.
+     * Determine the order of UsageCharges to fetch.
      */
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for searching for UsageRecords.
+     * Sets the position for searching for UsageCharges.
      */
-    cursor?: UsageRecordWhereUniqueInput
+    cursor?: UsageChargeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` UsageRecords from the position of the cursor.
+     * Take `±n` UsageCharges from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` UsageRecords.
+     * Skip the first `n` UsageCharges.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of UsageRecords.
+     * Filter by unique combinations of UsageCharges.
      */
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
-   * UsageRecord findMany
+   * UsageCharge findMany
    */
-  export type UsageRecordFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter, which UsageRecords to fetch.
+     * Filter, which UsageCharges to fetch.
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
      * 
-     * Determine the order of UsageRecords to fetch.
+     * Determine the order of UsageCharges to fetch.
      */
-    orderBy?: UsageRecordOrderByWithRelationInput | UsageRecordOrderByWithRelationInput[]
+    orderBy?: UsageChargeOrderByWithRelationInput | UsageChargeOrderByWithRelationInput[]
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
      * 
-     * Sets the position for listing UsageRecords.
+     * Sets the position for listing UsageCharges.
      */
-    cursor?: UsageRecordWhereUniqueInput
+    cursor?: UsageChargeWhereUniqueInput
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Take `±n` UsageRecords from the position of the cursor.
+     * Take `±n` UsageCharges from the position of the cursor.
      */
     take?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
      * 
-     * Skip the first `n` UsageRecords.
+     * Skip the first `n` UsageCharges.
      */
     skip?: number
     /**
      * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
      * 
-     * Filter by unique combinations of UsageRecords.
+     * Filter by unique combinations of UsageCharges.
      */
-    distinct?: UsageRecordScalarFieldEnum | UsageRecordScalarFieldEnum[]
+    distinct?: UsageChargeScalarFieldEnum | UsageChargeScalarFieldEnum[]
   }
 
   /**
-   * UsageRecord create
+   * UsageCharge create
    */
-  export type UsageRecordCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * The data needed to create a UsageRecord.
+     * The data needed to create a UsageCharge.
      */
-    data: XOR<UsageRecordCreateInput, UsageRecordUncheckedCreateInput>
+    data: XOR<UsageChargeCreateInput, UsageChargeUncheckedCreateInput>
   }
 
   /**
-   * UsageRecord createMany
+   * UsageCharge createMany
    */
-  export type UsageRecordCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to create many UsageRecords.
+     * The data used to create many UsageCharges.
      */
-    data: UsageRecordCreateManyInput | UsageRecordCreateManyInput[]
+    data: UsageChargeCreateManyInput | UsageChargeCreateManyInput[]
     skipDuplicates?: boolean
   }
 
   /**
-   * UsageRecord createManyAndReturn
+   * UsageCharge createManyAndReturn
    */
-  export type UsageRecordCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelectCreateManyAndReturn<ExtArgs> | null
+    select?: UsageChargeSelectCreateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
-     * The data used to create many UsageRecords.
+     * The data used to create many UsageCharges.
      */
-    data: UsageRecordCreateManyInput | UsageRecordCreateManyInput[]
+    data: UsageChargeCreateManyInput | UsageChargeCreateManyInput[]
     skipDuplicates?: boolean
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordIncludeCreateManyAndReturn<ExtArgs> | null
+    include?: UsageChargeIncludeCreateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * UsageRecord update
+   * UsageCharge update
    */
-  export type UsageRecordUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * The data needed to update a UsageRecord.
+     * The data needed to update a UsageCharge.
      */
-    data: XOR<UsageRecordUpdateInput, UsageRecordUncheckedUpdateInput>
+    data: XOR<UsageChargeUpdateInput, UsageChargeUncheckedUpdateInput>
     /**
-     * Choose, which UsageRecord to update.
+     * Choose, which UsageCharge to update.
      */
-    where: UsageRecordWhereUniqueInput
+    where: UsageChargeWhereUniqueInput
   }
 
   /**
-   * UsageRecord updateMany
+   * UsageCharge updateMany
    */
-  export type UsageRecordUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * The data used to update UsageRecords.
+     * The data used to update UsageCharges.
      */
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyInput>
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyInput>
     /**
-     * Filter which UsageRecords to update
+     * Filter which UsageCharges to update
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
-     * Limit how many UsageRecords to update.
+     * Limit how many UsageCharges to update.
      */
     limit?: number
   }
 
   /**
-   * UsageRecord updateManyAndReturn
+   * UsageCharge updateManyAndReturn
    */
-  export type UsageRecordUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelectUpdateManyAndReturn<ExtArgs> | null
+    select?: UsageChargeSelectUpdateManyAndReturn<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
-     * The data used to update UsageRecords.
+     * The data used to update UsageCharges.
      */
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyInput>
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyInput>
     /**
-     * Filter which UsageRecords to update
+     * Filter which UsageCharges to update
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
-     * Limit how many UsageRecords to update.
+     * Limit how many UsageCharges to update.
      */
     limit?: number
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordIncludeUpdateManyAndReturn<ExtArgs> | null
+    include?: UsageChargeIncludeUpdateManyAndReturn<ExtArgs> | null
   }
 
   /**
-   * UsageRecord upsert
+   * UsageCharge upsert
    */
-  export type UsageRecordUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * The filter to search for the UsageRecord to update in case it exists.
+     * The filter to search for the UsageCharge to update in case it exists.
      */
-    where: UsageRecordWhereUniqueInput
+    where: UsageChargeWhereUniqueInput
     /**
-     * In case the UsageRecord found by the `where` argument doesn't exist, create a new UsageRecord with this data.
+     * In case the UsageCharge found by the `where` argument doesn't exist, create a new UsageCharge with this data.
      */
-    create: XOR<UsageRecordCreateInput, UsageRecordUncheckedCreateInput>
+    create: XOR<UsageChargeCreateInput, UsageChargeUncheckedCreateInput>
     /**
-     * In case the UsageRecord was found with the provided `where` argument, update it with this data.
+     * In case the UsageCharge was found with the provided `where` argument, update it with this data.
      */
-    update: XOR<UsageRecordUpdateInput, UsageRecordUncheckedUpdateInput>
+    update: XOR<UsageChargeUpdateInput, UsageChargeUncheckedUpdateInput>
   }
 
   /**
-   * UsageRecord delete
+   * UsageCharge delete
    */
-  export type UsageRecordDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
     /**
-     * Filter which UsageRecord to delete.
+     * Filter which UsageCharge to delete.
      */
-    where: UsageRecordWhereUniqueInput
+    where: UsageChargeWhereUniqueInput
   }
 
   /**
-   * UsageRecord deleteMany
+   * UsageCharge deleteMany
    */
-  export type UsageRecordDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Filter which UsageRecords to delete
+     * Filter which UsageCharges to delete
      */
-    where?: UsageRecordWhereInput
+    where?: UsageChargeWhereInput
     /**
-     * Limit how many UsageRecords to delete.
+     * Limit how many UsageCharges to delete.
      */
     limit?: number
   }
 
   /**
-   * UsageRecord.user
+   * UsageCharge.user
    */
-  export type UsageRecord$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageCharge$userArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the User
      */
@@ -112276,9 +112213,9 @@ export namespace Prisma {
   }
 
   /**
-   * UsageRecord.bot
+   * UsageCharge.bot
    */
-  export type UsageRecord$botArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageCharge$botArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Bot
      */
@@ -112295,9 +112232,9 @@ export namespace Prisma {
   }
 
   /**
-   * UsageRecord.model
+   * UsageCharge.model
    */
-  export type UsageRecord$modelArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageCharge$modelArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the AiModel
      */
@@ -112314,28 +112251,9 @@ export namespace Prisma {
   }
 
   /**
-   * UsageRecord.artifact
+   * UsageCharge.run
    */
-  export type UsageRecord$artifactArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
-    /**
-     * Select specific fields to fetch from the Artifact
-     */
-    select?: ArtifactSelect<ExtArgs> | null
-    /**
-     * Omit specific fields from the Artifact
-     */
-    omit?: ArtifactOmit<ExtArgs> | null
-    /**
-     * Choose, which related nodes to fetch as well
-     */
-    include?: ArtifactInclude<ExtArgs> | null
-    where?: ArtifactWhereInput
-  }
-
-  /**
-   * UsageRecord.run
-   */
-  export type UsageRecord$runArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageCharge$runArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
      * Select specific fields to fetch from the Run
      */
@@ -112352,21 +112270,21 @@ export namespace Prisma {
   }
 
   /**
-   * UsageRecord without action
+   * UsageCharge without action
    */
-  export type UsageRecordDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+  export type UsageChargeDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     /**
-     * Select specific fields to fetch from the UsageRecord
+     * Select specific fields to fetch from the UsageCharge
      */
-    select?: UsageRecordSelect<ExtArgs> | null
+    select?: UsageChargeSelect<ExtArgs> | null
     /**
-     * Omit specific fields from the UsageRecord
+     * Omit specific fields from the UsageCharge
      */
-    omit?: UsageRecordOmit<ExtArgs> | null
+    omit?: UsageChargeOmit<ExtArgs> | null
     /**
      * Choose, which related nodes to fetch as well
      */
-    include?: UsageRecordInclude<ExtArgs> | null
+    include?: UsageChargeInclude<ExtArgs> | null
   }
 
 
@@ -124349,24 +124267,22 @@ export namespace Prisma {
   export type NotificationDeliveryScalarFieldEnum = (typeof NotificationDeliveryScalarFieldEnum)[keyof typeof NotificationDeliveryScalarFieldEnum]
 
 
-  export const UsageRecordScalarFieldEnum: {
+  export const UsageChargeScalarFieldEnum: {
     id: 'id',
     organization_id: 'organization_id',
     user_id: 'user_id',
     bot_id: 'bot_id',
     model_id: 'model_id',
-    artifact_id: 'artifact_id',
     run_id: 'run_id',
     kind: 'kind',
-    period: 'period',
-    day: 'day',
     quantity: 'quantity',
+    input_tokens: 'input_tokens',
+    output_tokens: 'output_tokens',
     cost: 'cost',
-    created_at: 'created_at',
-    updated_at: 'updated_at'
+    created_at: 'created_at'
   };
 
-  export type UsageRecordScalarFieldEnum = (typeof UsageRecordScalarFieldEnum)[keyof typeof UsageRecordScalarFieldEnum]
+  export type UsageChargeScalarFieldEnum = (typeof UsageChargeScalarFieldEnum)[keyof typeof UsageChargeScalarFieldEnum]
 
 
   export const UsageLimitScalarFieldEnum: {
@@ -126468,7 +126384,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionListRelationFilter
     automations?: AutomationListRelationFilter
     notifications?: NotificationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     data_exports?: DataExportListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
@@ -126539,7 +126455,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionOrderByRelationAggregateInput
     automations?: AutomationOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
+    usage_charges?: UsageChargeOrderByRelationAggregateInput
     activity_logs?: ActivityLogOrderByRelationAggregateInput
     data_exports?: DataExportOrderByRelationAggregateInput
     knowledge_items?: KnowledgeItemOrderByRelationAggregateInput
@@ -126613,7 +126529,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionListRelationFilter
     automations?: AutomationListRelationFilter
     notifications?: NotificationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     data_exports?: DataExportListRelationFilter
     knowledge_items?: KnowledgeItemListRelationFilter
@@ -127858,7 +127774,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerListRelationFilter
     automations?: AutomationListRelationFilter
     notifications?: NotificationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     usage_limits?: UsageLimitListRelationFilter
     usage_alerts?: UsageAlertListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
@@ -127910,7 +127826,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerOrderByRelationAggregateInput
     automations?: AutomationOrderByRelationAggregateInput
     notifications?: NotificationOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
+    usage_charges?: UsageChargeOrderByRelationAggregateInput
     usage_limits?: UsageLimitOrderByRelationAggregateInput
     usage_alerts?: UsageAlertOrderByRelationAggregateInput
     subscription?: SubscriptionOrderByWithRelationInput
@@ -127965,7 +127881,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerListRelationFilter
     automations?: AutomationListRelationFilter
     notifications?: NotificationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     usage_limits?: UsageLimitListRelationFilter
     usage_alerts?: UsageAlertListRelationFilter
     subscription?: XOR<SubscriptionNullableScalarRelationFilter, SubscriptionWhereInput> | null
@@ -128636,7 +128552,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsListRelationFilter
     org_allowed?: OrganizationAllowedModelListRelationFilter
     runs?: RunListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
   }
 
   export type AiModelOrderByWithRelationInput = {
@@ -128663,7 +128579,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsOrderByRelationAggregateInput
     org_allowed?: OrganizationAllowedModelOrderByRelationAggregateInput
     runs?: RunOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
+    usage_charges?: UsageChargeOrderByRelationAggregateInput
   }
 
   export type AiModelWhereUniqueInput = Prisma.AtLeast<{
@@ -128693,7 +128609,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsListRelationFilter
     org_allowed?: OrganizationAllowedModelListRelationFilter
     runs?: RunListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
   }, "id" | "openrouter_id">
 
   export type AiModelOrderByWithAggregationInput = {
@@ -129098,7 +129014,7 @@ export namespace Prisma {
     approvals?: ApprovalListRelationFilter
     voice_sessions?: VoiceSessionListRelationFilter
     automations?: AutomationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     usage_limits?: UsageLimitListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     default_for_users?: UserSettingsListRelationFilter
@@ -129183,7 +129099,7 @@ export namespace Prisma {
     approvals?: ApprovalOrderByRelationAggregateInput
     voice_sessions?: VoiceSessionOrderByRelationAggregateInput
     automations?: AutomationOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
+    usage_charges?: UsageChargeOrderByRelationAggregateInput
     usage_limits?: UsageLimitOrderByRelationAggregateInput
     activity_logs?: ActivityLogOrderByRelationAggregateInput
     default_for_users?: UserSettingsOrderByRelationAggregateInput
@@ -129271,7 +129187,7 @@ export namespace Prisma {
     approvals?: ApprovalListRelationFilter
     voice_sessions?: VoiceSessionListRelationFilter
     automations?: AutomationListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     usage_limits?: UsageLimitListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     default_for_users?: UserSettingsListRelationFilter
@@ -130992,7 +130908,7 @@ export namespace Prisma {
     approvals?: ApprovalListRelationFilter
     computer_sessions?: ComputerSessionListRelationFilter
     transfers?: ComputerTransferListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     artifact_versions?: ArtifactVersionListRelationFilter
     files?: FileListRelationFilter
@@ -131046,7 +130962,7 @@ export namespace Prisma {
     approvals?: ApprovalOrderByRelationAggregateInput
     computer_sessions?: ComputerSessionOrderByRelationAggregateInput
     transfers?: ComputerTransferOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
+    usage_charges?: UsageChargeOrderByRelationAggregateInput
     activity_logs?: ActivityLogOrderByRelationAggregateInput
     artifact_versions?: ArtifactVersionOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
@@ -131103,7 +131019,7 @@ export namespace Prisma {
     approvals?: ApprovalListRelationFilter
     computer_sessions?: ComputerSessionListRelationFilter
     transfers?: ComputerTransferListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
+    usage_charges?: UsageChargeListRelationFilter
     activity_logs?: ActivityLogListRelationFilter
     artifact_versions?: ArtifactVersionListRelationFilter
     files?: FileListRelationFilter
@@ -132084,7 +132000,6 @@ export namespace Prisma {
     records?: ArtifactRecordListRelationFilter
     reports?: ArtifactReportListRelationFilter
     files?: FileListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
     data_grants?: ArtifactDataGrantListRelationFilter
   }
 
@@ -132131,7 +132046,6 @@ export namespace Prisma {
     records?: ArtifactRecordOrderByRelationAggregateInput
     reports?: ArtifactReportOrderByRelationAggregateInput
     files?: FileOrderByRelationAggregateInput
-    usage_records?: UsageRecordOrderByRelationAggregateInput
     data_grants?: ArtifactDataGrantOrderByRelationAggregateInput
   }
 
@@ -132182,7 +132096,6 @@ export namespace Prisma {
     records?: ArtifactRecordListRelationFilter
     reports?: ArtifactReportListRelationFilter
     files?: FileListRelationFilter
-    usage_records?: UsageRecordListRelationFilter
     data_grants?: ArtifactDataGrantListRelationFilter
   }, "id" | "current_version_id" | "draft_version_id" | "organization_id_slug">
 
@@ -134627,122 +134540,108 @@ export namespace Prisma {
     created_at?: DateTimeWithAggregatesFilter<"NotificationDelivery"> | Date | string
   }
 
-  export type UsageRecordWhereInput = {
-    AND?: UsageRecordWhereInput | UsageRecordWhereInput[]
-    OR?: UsageRecordWhereInput[]
-    NOT?: UsageRecordWhereInput | UsageRecordWhereInput[]
-    id?: StringFilter<"UsageRecord"> | string
-    organization_id?: StringFilter<"UsageRecord"> | string
-    user_id?: StringNullableFilter<"UsageRecord"> | string | null
-    bot_id?: StringNullableFilter<"UsageRecord"> | string | null
-    model_id?: StringNullableFilter<"UsageRecord"> | string | null
-    artifact_id?: StringNullableFilter<"UsageRecord"> | string | null
-    run_id?: StringNullableFilter<"UsageRecord"> | string | null
-    kind?: EnumUsageKindFilter<"UsageRecord"> | $Enums.UsageKind
-    period?: StringFilter<"UsageRecord"> | string
-    day?: DateTimeFilter<"UsageRecord"> | Date | string
-    quantity?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFilter<"UsageRecord"> | Date | string
-    updated_at?: DateTimeFilter<"UsageRecord"> | Date | string
+  export type UsageChargeWhereInput = {
+    AND?: UsageChargeWhereInput | UsageChargeWhereInput[]
+    OR?: UsageChargeWhereInput[]
+    NOT?: UsageChargeWhereInput | UsageChargeWhereInput[]
+    id?: StringFilter<"UsageCharge"> | string
+    organization_id?: StringFilter<"UsageCharge"> | string
+    user_id?: StringNullableFilter<"UsageCharge"> | string | null
+    bot_id?: StringNullableFilter<"UsageCharge"> | string | null
+    model_id?: StringNullableFilter<"UsageCharge"> | string | null
+    run_id?: StringNullableFilter<"UsageCharge"> | string | null
+    kind?: EnumUsageKindFilter<"UsageCharge"> | $Enums.UsageKind
+    quantity?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    input_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    output_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    cost?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFilter<"UsageCharge"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     bot?: XOR<BotNullableScalarRelationFilter, BotWhereInput> | null
     model?: XOR<AiModelNullableScalarRelationFilter, AiModelWhereInput> | null
-    artifact?: XOR<ArtifactNullableScalarRelationFilter, ArtifactWhereInput> | null
     run?: XOR<RunNullableScalarRelationFilter, RunWhereInput> | null
   }
 
-  export type UsageRecordOrderByWithRelationInput = {
+  export type UsageChargeOrderByWithRelationInput = {
     id?: SortOrder
     organization_id?: SortOrder
     user_id?: SortOrderInput | SortOrder
     bot_id?: SortOrderInput | SortOrder
     model_id?: SortOrderInput | SortOrder
-    artifact_id?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     kind?: SortOrder
-    period?: SortOrder
-    day?: SortOrder
     quantity?: SortOrder
+    input_tokens?: SortOrderInput | SortOrder
+    output_tokens?: SortOrderInput | SortOrder
     cost?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
     organization?: OrganizationOrderByWithRelationInput
     user?: UserOrderByWithRelationInput
     bot?: BotOrderByWithRelationInput
     model?: AiModelOrderByWithRelationInput
-    artifact?: ArtifactOrderByWithRelationInput
     run?: RunOrderByWithRelationInput
   }
 
-  export type UsageRecordWhereUniqueInput = Prisma.AtLeast<{
+  export type UsageChargeWhereUniqueInput = Prisma.AtLeast<{
     id?: string
-    organization_id_period_day_kind_user_id_bot_id_model_id_artifact_id?: UsageRecordOrganization_idPeriodDayKindUser_idBot_idModel_idArtifact_idCompoundUniqueInput
-    AND?: UsageRecordWhereInput | UsageRecordWhereInput[]
-    OR?: UsageRecordWhereInput[]
-    NOT?: UsageRecordWhereInput | UsageRecordWhereInput[]
-    organization_id?: StringFilter<"UsageRecord"> | string
-    user_id?: StringNullableFilter<"UsageRecord"> | string | null
-    bot_id?: StringNullableFilter<"UsageRecord"> | string | null
-    model_id?: StringNullableFilter<"UsageRecord"> | string | null
-    artifact_id?: StringNullableFilter<"UsageRecord"> | string | null
-    run_id?: StringNullableFilter<"UsageRecord"> | string | null
-    kind?: EnumUsageKindFilter<"UsageRecord"> | $Enums.UsageKind
-    period?: StringFilter<"UsageRecord"> | string
-    day?: DateTimeFilter<"UsageRecord"> | Date | string
-    quantity?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFilter<"UsageRecord"> | Date | string
-    updated_at?: DateTimeFilter<"UsageRecord"> | Date | string
+    AND?: UsageChargeWhereInput | UsageChargeWhereInput[]
+    OR?: UsageChargeWhereInput[]
+    NOT?: UsageChargeWhereInput | UsageChargeWhereInput[]
+    organization_id?: StringFilter<"UsageCharge"> | string
+    user_id?: StringNullableFilter<"UsageCharge"> | string | null
+    bot_id?: StringNullableFilter<"UsageCharge"> | string | null
+    model_id?: StringNullableFilter<"UsageCharge"> | string | null
+    run_id?: StringNullableFilter<"UsageCharge"> | string | null
+    kind?: EnumUsageKindFilter<"UsageCharge"> | $Enums.UsageKind
+    quantity?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    input_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    output_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    cost?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFilter<"UsageCharge"> | Date | string
     organization?: XOR<OrganizationScalarRelationFilter, OrganizationWhereInput>
     user?: XOR<UserNullableScalarRelationFilter, UserWhereInput> | null
     bot?: XOR<BotNullableScalarRelationFilter, BotWhereInput> | null
     model?: XOR<AiModelNullableScalarRelationFilter, AiModelWhereInput> | null
-    artifact?: XOR<ArtifactNullableScalarRelationFilter, ArtifactWhereInput> | null
     run?: XOR<RunNullableScalarRelationFilter, RunWhereInput> | null
-  }, "id" | "organization_id_period_day_kind_user_id_bot_id_model_id_artifact_id">
+  }, "id">
 
-  export type UsageRecordOrderByWithAggregationInput = {
+  export type UsageChargeOrderByWithAggregationInput = {
     id?: SortOrder
     organization_id?: SortOrder
     user_id?: SortOrderInput | SortOrder
     bot_id?: SortOrderInput | SortOrder
     model_id?: SortOrderInput | SortOrder
-    artifact_id?: SortOrderInput | SortOrder
     run_id?: SortOrderInput | SortOrder
     kind?: SortOrder
-    period?: SortOrder
-    day?: SortOrder
     quantity?: SortOrder
+    input_tokens?: SortOrderInput | SortOrder
+    output_tokens?: SortOrderInput | SortOrder
     cost?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
-    _count?: UsageRecordCountOrderByAggregateInput
-    _avg?: UsageRecordAvgOrderByAggregateInput
-    _max?: UsageRecordMaxOrderByAggregateInput
-    _min?: UsageRecordMinOrderByAggregateInput
-    _sum?: UsageRecordSumOrderByAggregateInput
+    _count?: UsageChargeCountOrderByAggregateInput
+    _avg?: UsageChargeAvgOrderByAggregateInput
+    _max?: UsageChargeMaxOrderByAggregateInput
+    _min?: UsageChargeMinOrderByAggregateInput
+    _sum?: UsageChargeSumOrderByAggregateInput
   }
 
-  export type UsageRecordScalarWhereWithAggregatesInput = {
-    AND?: UsageRecordScalarWhereWithAggregatesInput | UsageRecordScalarWhereWithAggregatesInput[]
-    OR?: UsageRecordScalarWhereWithAggregatesInput[]
-    NOT?: UsageRecordScalarWhereWithAggregatesInput | UsageRecordScalarWhereWithAggregatesInput[]
-    id?: StringWithAggregatesFilter<"UsageRecord"> | string
-    organization_id?: StringWithAggregatesFilter<"UsageRecord"> | string
-    user_id?: StringNullableWithAggregatesFilter<"UsageRecord"> | string | null
-    bot_id?: StringNullableWithAggregatesFilter<"UsageRecord"> | string | null
-    model_id?: StringNullableWithAggregatesFilter<"UsageRecord"> | string | null
-    artifact_id?: StringNullableWithAggregatesFilter<"UsageRecord"> | string | null
-    run_id?: StringNullableWithAggregatesFilter<"UsageRecord"> | string | null
-    kind?: EnumUsageKindWithAggregatesFilter<"UsageRecord"> | $Enums.UsageKind
-    period?: StringWithAggregatesFilter<"UsageRecord"> | string
-    day?: DateTimeWithAggregatesFilter<"UsageRecord"> | Date | string
-    quantity?: DecimalWithAggregatesFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    cost?: DecimalWithAggregatesFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeWithAggregatesFilter<"UsageRecord"> | Date | string
-    updated_at?: DateTimeWithAggregatesFilter<"UsageRecord"> | Date | string
+  export type UsageChargeScalarWhereWithAggregatesInput = {
+    AND?: UsageChargeScalarWhereWithAggregatesInput | UsageChargeScalarWhereWithAggregatesInput[]
+    OR?: UsageChargeScalarWhereWithAggregatesInput[]
+    NOT?: UsageChargeScalarWhereWithAggregatesInput | UsageChargeScalarWhereWithAggregatesInput[]
+    id?: StringWithAggregatesFilter<"UsageCharge"> | string
+    organization_id?: StringWithAggregatesFilter<"UsageCharge"> | string
+    user_id?: StringNullableWithAggregatesFilter<"UsageCharge"> | string | null
+    bot_id?: StringNullableWithAggregatesFilter<"UsageCharge"> | string | null
+    model_id?: StringNullableWithAggregatesFilter<"UsageCharge"> | string | null
+    run_id?: StringNullableWithAggregatesFilter<"UsageCharge"> | string | null
+    kind?: EnumUsageKindWithAggregatesFilter<"UsageCharge"> | $Enums.UsageKind
+    quantity?: DecimalWithAggregatesFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    input_tokens?: IntNullableWithAggregatesFilter<"UsageCharge"> | number | null
+    output_tokens?: IntNullableWithAggregatesFilter<"UsageCharge"> | number | null
+    cost?: DecimalWithAggregatesFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeWithAggregatesFilter<"UsageCharge"> | Date | string
   }
 
   export type UsageLimitWhereInput = {
@@ -135598,7 +135497,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -135668,7 +135567,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -135738,7 +135637,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -135808,7 +135707,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -137222,7 +137121,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -137272,7 +137171,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -137322,7 +137221,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -137372,7 +137271,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -138193,7 +138092,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateInput = {
@@ -138219,7 +138118,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUpdateInput = {
@@ -138245,7 +138144,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateInput = {
@@ -138271,7 +138170,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelCreateManyInput = {
@@ -138678,7 +138577,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -138757,7 +138656,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -138836,7 +138735,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -138915,7 +138814,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -140659,7 +140558,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -140702,7 +140601,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -140745,7 +140644,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -140788,7 +140687,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -141834,7 +141733,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -141874,7 +141772,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -141914,7 +141811,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -141954,7 +141850,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -144575,117 +144470,104 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordCreateInput = {
+  export type UsageChargeCreateInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
+    organization: OrganizationCreateNestedOneWithoutUsage_chargesInput
+    user?: UserCreateNestedOneWithoutUsage_chargesInput
+    bot?: BotCreateNestedOneWithoutUsage_chargesInput
+    model?: AiModelCreateNestedOneWithoutUsage_chargesInput
+    run?: RunCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateInput = {
+  export type UsageChargeUncheckedCreateInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordUpdateInput = {
+  export type UsageChargeUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput
+    user?: UserUpdateOneWithoutUsage_chargesNestedInput
+    bot?: BotUpdateOneWithoutUsage_chargesNestedInput
+    model?: AiModelUpdateOneWithoutUsage_chargesNestedInput
+    run?: RunUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateInput = {
+  export type UsageChargeUncheckedUpdateInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordCreateManyInput = {
+  export type UsageChargeCreateManyInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordUpdateManyMutationInput = {
+  export type UsageChargeUpdateManyMutationInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyInput = {
+  export type UsageChargeUncheckedUpdateManyInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsageLimitCreateInput = {
@@ -145868,10 +145750,10 @@ export namespace Prisma {
     none?: NotificationWhereInput
   }
 
-  export type UsageRecordListRelationFilter = {
-    every?: UsageRecordWhereInput
-    some?: UsageRecordWhereInput
-    none?: UsageRecordWhereInput
+  export type UsageChargeListRelationFilter = {
+    every?: UsageChargeWhereInput
+    some?: UsageChargeWhereInput
+    none?: UsageChargeWhereInput
   }
 
   export type ActivityLogListRelationFilter = {
@@ -146069,7 +145951,7 @@ export namespace Prisma {
     _count?: SortOrder
   }
 
-  export type UsageRecordOrderByRelationAggregateInput = {
+  export type UsageChargeOrderByRelationAggregateInput = {
     _count?: SortOrder
   }
 
@@ -152977,75 +152859,62 @@ export namespace Prisma {
     not?: NestedEnumUsageKindFilter<$PrismaModel> | $Enums.UsageKind
   }
 
-  export type UsageRecordOrganization_idPeriodDayKindUser_idBot_idModel_idArtifact_idCompoundUniqueInput = {
-    organization_id: string
-    period: string
-    day: Date | string
-    kind: $Enums.UsageKind
-    user_id: string
-    bot_id: string
-    model_id: string
-    artifact_id: string
-  }
-
-  export type UsageRecordCountOrderByAggregateInput = {
+  export type UsageChargeCountOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
     user_id?: SortOrder
     bot_id?: SortOrder
     model_id?: SortOrder
-    artifact_id?: SortOrder
     run_id?: SortOrder
     kind?: SortOrder
-    period?: SortOrder
-    day?: SortOrder
     quantity?: SortOrder
+    input_tokens?: SortOrder
+    output_tokens?: SortOrder
     cost?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
-  export type UsageRecordAvgOrderByAggregateInput = {
+  export type UsageChargeAvgOrderByAggregateInput = {
     quantity?: SortOrder
+    input_tokens?: SortOrder
+    output_tokens?: SortOrder
     cost?: SortOrder
   }
 
-  export type UsageRecordMaxOrderByAggregateInput = {
+  export type UsageChargeMaxOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
     user_id?: SortOrder
     bot_id?: SortOrder
     model_id?: SortOrder
-    artifact_id?: SortOrder
     run_id?: SortOrder
     kind?: SortOrder
-    period?: SortOrder
-    day?: SortOrder
     quantity?: SortOrder
+    input_tokens?: SortOrder
+    output_tokens?: SortOrder
     cost?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
-  export type UsageRecordMinOrderByAggregateInput = {
+  export type UsageChargeMinOrderByAggregateInput = {
     id?: SortOrder
     organization_id?: SortOrder
     user_id?: SortOrder
     bot_id?: SortOrder
     model_id?: SortOrder
-    artifact_id?: SortOrder
     run_id?: SortOrder
     kind?: SortOrder
-    period?: SortOrder
-    day?: SortOrder
     quantity?: SortOrder
+    input_tokens?: SortOrder
+    output_tokens?: SortOrder
     cost?: SortOrder
     created_at?: SortOrder
-    updated_at?: SortOrder
   }
 
-  export type UsageRecordSumOrderByAggregateInput = {
+  export type UsageChargeSumOrderByAggregateInput = {
     quantity?: SortOrder
+    input_tokens?: SortOrder
+    output_tokens?: SortOrder
     cost?: SortOrder
   }
 
@@ -153954,11 +153823,11 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutUserInput = {
-    create?: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput> | UsageRecordCreateWithoutUserInput[] | UsageRecordUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutUserInput | UsageRecordCreateOrConnectWithoutUserInput[]
-    createMany?: UsageRecordCreateManyUserInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeCreateNestedManyWithoutUserInput = {
+    create?: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput> | UsageChargeCreateWithoutUserInput[] | UsageChargeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutUserInput | UsageChargeCreateOrConnectWithoutUserInput[]
+    createMany?: UsageChargeCreateManyUserInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type ActivityLogCreateNestedManyWithoutActor_userInput = {
@@ -154296,11 +154165,11 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
-  export type UsageRecordUncheckedCreateNestedManyWithoutUserInput = {
-    create?: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput> | UsageRecordCreateWithoutUserInput[] | UsageRecordUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutUserInput | UsageRecordCreateOrConnectWithoutUserInput[]
-    createMany?: UsageRecordCreateManyUserInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeUncheckedCreateNestedManyWithoutUserInput = {
+    create?: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput> | UsageChargeCreateWithoutUserInput[] | UsageChargeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutUserInput | UsageChargeCreateOrConnectWithoutUserInput[]
+    createMany?: UsageChargeCreateManyUserInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type ActivityLogUncheckedCreateNestedManyWithoutActor_userInput = {
@@ -154970,18 +154839,18 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutUserNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput> | UsageRecordCreateWithoutUserInput[] | UsageRecordUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutUserInput | UsageRecordCreateOrConnectWithoutUserInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutUserInput | UsageRecordUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: UsageRecordCreateManyUserInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutUserInput | UsageRecordUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutUserInput | UsageRecordUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput> | UsageChargeCreateWithoutUserInput[] | UsageChargeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutUserInput | UsageChargeCreateOrConnectWithoutUserInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutUserInput | UsageChargeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UsageChargeCreateManyUserInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutUserInput | UsageChargeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutUserInput | UsageChargeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type ActivityLogUpdateManyWithoutActor_userNestedInput = {
@@ -155652,18 +155521,18 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutUserNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput> | UsageRecordCreateWithoutUserInput[] | UsageRecordUncheckedCreateWithoutUserInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutUserInput | UsageRecordCreateOrConnectWithoutUserInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutUserInput | UsageRecordUpsertWithWhereUniqueWithoutUserInput[]
-    createMany?: UsageRecordCreateManyUserInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutUserInput | UsageRecordUpdateWithWhereUniqueWithoutUserInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutUserInput | UsageRecordUpdateManyWithWhereWithoutUserInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUncheckedUpdateManyWithoutUserNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput> | UsageChargeCreateWithoutUserInput[] | UsageChargeUncheckedCreateWithoutUserInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutUserInput | UsageChargeCreateOrConnectWithoutUserInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutUserInput | UsageChargeUpsertWithWhereUniqueWithoutUserInput[]
+    createMany?: UsageChargeCreateManyUserInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutUserInput | UsageChargeUpdateWithWhereUniqueWithoutUserInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutUserInput | UsageChargeUpdateManyWithWhereWithoutUserInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput = {
@@ -156639,11 +156508,11 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutOrganizationInput = {
-    create?: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput> | UsageRecordCreateWithoutOrganizationInput[] | UsageRecordUncheckedCreateWithoutOrganizationInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutOrganizationInput | UsageRecordCreateOrConnectWithoutOrganizationInput[]
-    createMany?: UsageRecordCreateManyOrganizationInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput> | UsageChargeCreateWithoutOrganizationInput[] | UsageChargeUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutOrganizationInput | UsageChargeCreateOrConnectWithoutOrganizationInput[]
+    createMany?: UsageChargeCreateManyOrganizationInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type UsageLimitCreateNestedManyWithoutOrganizationInput = {
@@ -156882,11 +156751,11 @@ export namespace Prisma {
     connect?: NotificationWhereUniqueInput | NotificationWhereUniqueInput[]
   }
 
-  export type UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput = {
-    create?: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput> | UsageRecordCreateWithoutOrganizationInput[] | UsageRecordUncheckedCreateWithoutOrganizationInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutOrganizationInput | UsageRecordCreateOrConnectWithoutOrganizationInput[]
-    createMany?: UsageRecordCreateManyOrganizationInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput = {
+    create?: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput> | UsageChargeCreateWithoutOrganizationInput[] | UsageChargeUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutOrganizationInput | UsageChargeCreateOrConnectWithoutOrganizationInput[]
+    createMany?: UsageChargeCreateManyOrganizationInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput = {
@@ -157310,18 +157179,18 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutOrganizationNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput> | UsageRecordCreateWithoutOrganizationInput[] | UsageRecordUncheckedCreateWithoutOrganizationInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutOrganizationInput | UsageRecordCreateOrConnectWithoutOrganizationInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutOrganizationInput | UsageRecordUpsertWithWhereUniqueWithoutOrganizationInput[]
-    createMany?: UsageRecordCreateManyOrganizationInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutOrganizationInput | UsageRecordUpdateWithWhereUniqueWithoutOrganizationInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutOrganizationInput | UsageRecordUpdateManyWithWhereWithoutOrganizationInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput> | UsageChargeCreateWithoutOrganizationInput[] | UsageChargeUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutOrganizationInput | UsageChargeCreateOrConnectWithoutOrganizationInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutOrganizationInput | UsageChargeUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: UsageChargeCreateManyOrganizationInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutOrganizationInput | UsageChargeUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutOrganizationInput | UsageChargeUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type UsageLimitUpdateManyWithoutOrganizationNestedInput = {
@@ -157792,18 +157661,18 @@ export namespace Prisma {
     deleteMany?: NotificationScalarWhereInput | NotificationScalarWhereInput[]
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput> | UsageRecordCreateWithoutOrganizationInput[] | UsageRecordUncheckedCreateWithoutOrganizationInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutOrganizationInput | UsageRecordCreateOrConnectWithoutOrganizationInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutOrganizationInput | UsageRecordUpsertWithWhereUniqueWithoutOrganizationInput[]
-    createMany?: UsageRecordCreateManyOrganizationInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutOrganizationInput | UsageRecordUpdateWithWhereUniqueWithoutOrganizationInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutOrganizationInput | UsageRecordUpdateManyWithWhereWithoutOrganizationInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput> | UsageChargeCreateWithoutOrganizationInput[] | UsageChargeUncheckedCreateWithoutOrganizationInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutOrganizationInput | UsageChargeCreateOrConnectWithoutOrganizationInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutOrganizationInput | UsageChargeUpsertWithWhereUniqueWithoutOrganizationInput[]
+    createMany?: UsageChargeCreateManyOrganizationInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutOrganizationInput | UsageChargeUpdateWithWhereUniqueWithoutOrganizationInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutOrganizationInput | UsageChargeUpdateManyWithWhereWithoutOrganizationInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput = {
@@ -158265,11 +158134,11 @@ export namespace Prisma {
     connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutModelInput = {
-    create?: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput> | UsageRecordCreateWithoutModelInput[] | UsageRecordUncheckedCreateWithoutModelInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutModelInput | UsageRecordCreateOrConnectWithoutModelInput[]
-    createMany?: UsageRecordCreateManyModelInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeCreateNestedManyWithoutModelInput = {
+    create?: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput> | UsageChargeCreateWithoutModelInput[] | UsageChargeUncheckedCreateWithoutModelInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutModelInput | UsageChargeCreateOrConnectWithoutModelInput[]
+    createMany?: UsageChargeCreateManyModelInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type AiModelUncheckedCreateNestedManyWithoutFallback_modelInput = {
@@ -158314,11 +158183,11 @@ export namespace Prisma {
     connect?: RunWhereUniqueInput | RunWhereUniqueInput[]
   }
 
-  export type UsageRecordUncheckedCreateNestedManyWithoutModelInput = {
-    create?: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput> | UsageRecordCreateWithoutModelInput[] | UsageRecordUncheckedCreateWithoutModelInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutModelInput | UsageRecordCreateOrConnectWithoutModelInput[]
-    createMany?: UsageRecordCreateManyModelInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeUncheckedCreateNestedManyWithoutModelInput = {
+    create?: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput> | UsageChargeCreateWithoutModelInput[] | UsageChargeUncheckedCreateWithoutModelInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutModelInput | UsageChargeCreateOrConnectWithoutModelInput[]
+    createMany?: UsageChargeCreateManyModelInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type AiModelUpdatelabelsInput = {
@@ -158432,18 +158301,18 @@ export namespace Prisma {
     deleteMany?: RunScalarWhereInput | RunScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutModelNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput> | UsageRecordCreateWithoutModelInput[] | UsageRecordUncheckedCreateWithoutModelInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutModelInput | UsageRecordCreateOrConnectWithoutModelInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutModelInput | UsageRecordUpsertWithWhereUniqueWithoutModelInput[]
-    createMany?: UsageRecordCreateManyModelInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutModelInput | UsageRecordUpdateWithWhereUniqueWithoutModelInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutModelInput | UsageRecordUpdateManyWithWhereWithoutModelInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUpdateManyWithoutModelNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput> | UsageChargeCreateWithoutModelInput[] | UsageChargeUncheckedCreateWithoutModelInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutModelInput | UsageChargeCreateOrConnectWithoutModelInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutModelInput | UsageChargeUpsertWithWhereUniqueWithoutModelInput[]
+    createMany?: UsageChargeCreateManyModelInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutModelInput | UsageChargeUpdateWithWhereUniqueWithoutModelInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutModelInput | UsageChargeUpdateManyWithWhereWithoutModelInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type AiModelUncheckedUpdateManyWithoutFallback_modelNestedInput = {
@@ -158530,18 +158399,18 @@ export namespace Prisma {
     deleteMany?: RunScalarWhereInput | RunScalarWhereInput[]
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutModelNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput> | UsageRecordCreateWithoutModelInput[] | UsageRecordUncheckedCreateWithoutModelInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutModelInput | UsageRecordCreateOrConnectWithoutModelInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutModelInput | UsageRecordUpsertWithWhereUniqueWithoutModelInput[]
-    createMany?: UsageRecordCreateManyModelInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutModelInput | UsageRecordUpdateWithWhereUniqueWithoutModelInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutModelInput | UsageRecordUpdateManyWithWhereWithoutModelInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUncheckedUpdateManyWithoutModelNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput> | UsageChargeCreateWithoutModelInput[] | UsageChargeUncheckedCreateWithoutModelInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutModelInput | UsageChargeCreateOrConnectWithoutModelInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutModelInput | UsageChargeUpsertWithWhereUniqueWithoutModelInput[]
+    createMany?: UsageChargeCreateManyModelInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutModelInput | UsageChargeUpdateWithWhereUniqueWithoutModelInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutModelInput | UsageChargeUpdateManyWithWhereWithoutModelInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type OrganizationCreateNestedOneWithoutAllowed_modelsInput = {
@@ -158946,11 +158815,11 @@ export namespace Prisma {
     connect?: AutomationWhereUniqueInput | AutomationWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutBotInput = {
-    create?: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput> | UsageRecordCreateWithoutBotInput[] | UsageRecordUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutBotInput | UsageRecordCreateOrConnectWithoutBotInput[]
-    createMany?: UsageRecordCreateManyBotInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeCreateNestedManyWithoutBotInput = {
+    create?: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput> | UsageChargeCreateWithoutBotInput[] | UsageChargeUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutBotInput | UsageChargeCreateOrConnectWithoutBotInput[]
+    createMany?: UsageChargeCreateManyBotInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type UsageLimitCreateNestedManyWithoutBotInput = {
@@ -159120,11 +158989,11 @@ export namespace Prisma {
     connect?: AutomationWhereUniqueInput | AutomationWhereUniqueInput[]
   }
 
-  export type UsageRecordUncheckedCreateNestedManyWithoutBotInput = {
-    create?: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput> | UsageRecordCreateWithoutBotInput[] | UsageRecordUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutBotInput | UsageRecordCreateOrConnectWithoutBotInput[]
-    createMany?: UsageRecordCreateManyBotInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeUncheckedCreateNestedManyWithoutBotInput = {
+    create?: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput> | UsageChargeCreateWithoutBotInput[] | UsageChargeUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutBotInput | UsageChargeCreateOrConnectWithoutBotInput[]
+    createMany?: UsageChargeCreateManyBotInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type UsageLimitUncheckedCreateNestedManyWithoutBotInput = {
@@ -159525,18 +159394,18 @@ export namespace Prisma {
     deleteMany?: AutomationScalarWhereInput | AutomationScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutBotNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput> | UsageRecordCreateWithoutBotInput[] | UsageRecordUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutBotInput | UsageRecordCreateOrConnectWithoutBotInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutBotInput | UsageRecordUpsertWithWhereUniqueWithoutBotInput[]
-    createMany?: UsageRecordCreateManyBotInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutBotInput | UsageRecordUpdateWithWhereUniqueWithoutBotInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutBotInput | UsageRecordUpdateManyWithWhereWithoutBotInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUpdateManyWithoutBotNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput> | UsageChargeCreateWithoutBotInput[] | UsageChargeUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutBotInput | UsageChargeCreateOrConnectWithoutBotInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutBotInput | UsageChargeUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: UsageChargeCreateManyBotInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutBotInput | UsageChargeUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutBotInput | UsageChargeUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type UsageLimitUpdateManyWithoutBotNestedInput = {
@@ -159871,18 +159740,18 @@ export namespace Prisma {
     deleteMany?: AutomationScalarWhereInput | AutomationScalarWhereInput[]
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutBotNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput> | UsageRecordCreateWithoutBotInput[] | UsageRecordUncheckedCreateWithoutBotInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutBotInput | UsageRecordCreateOrConnectWithoutBotInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutBotInput | UsageRecordUpsertWithWhereUniqueWithoutBotInput[]
-    createMany?: UsageRecordCreateManyBotInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutBotInput | UsageRecordUpdateWithWhereUniqueWithoutBotInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutBotInput | UsageRecordUpdateManyWithWhereWithoutBotInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUncheckedUpdateManyWithoutBotNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput> | UsageChargeCreateWithoutBotInput[] | UsageChargeUncheckedCreateWithoutBotInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutBotInput | UsageChargeCreateOrConnectWithoutBotInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutBotInput | UsageChargeUpsertWithWhereUniqueWithoutBotInput[]
+    createMany?: UsageChargeCreateManyBotInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutBotInput | UsageChargeUpdateWithWhereUniqueWithoutBotInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutBotInput | UsageChargeUpdateManyWithWhereWithoutBotInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type UsageLimitUncheckedUpdateManyWithoutBotNestedInput = {
@@ -162023,11 +161892,11 @@ export namespace Prisma {
     connect?: ComputerTransferWhereUniqueInput | ComputerTransferWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutRunInput = {
-    create?: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput> | UsageRecordCreateWithoutRunInput[] | UsageRecordUncheckedCreateWithoutRunInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutRunInput | UsageRecordCreateOrConnectWithoutRunInput[]
-    createMany?: UsageRecordCreateManyRunInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeCreateNestedManyWithoutRunInput = {
+    create?: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput> | UsageChargeCreateWithoutRunInput[] | UsageChargeUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutRunInput | UsageChargeCreateOrConnectWithoutRunInput[]
+    createMany?: UsageChargeCreateManyRunInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type ActivityLogCreateNestedManyWithoutRunInput = {
@@ -162093,11 +161962,11 @@ export namespace Prisma {
     connect?: ComputerTransferWhereUniqueInput | ComputerTransferWhereUniqueInput[]
   }
 
-  export type UsageRecordUncheckedCreateNestedManyWithoutRunInput = {
-    create?: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput> | UsageRecordCreateWithoutRunInput[] | UsageRecordUncheckedCreateWithoutRunInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutRunInput | UsageRecordCreateOrConnectWithoutRunInput[]
-    createMany?: UsageRecordCreateManyRunInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
+  export type UsageChargeUncheckedCreateNestedManyWithoutRunInput = {
+    create?: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput> | UsageChargeCreateWithoutRunInput[] | UsageChargeUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutRunInput | UsageChargeCreateOrConnectWithoutRunInput[]
+    createMany?: UsageChargeCreateManyRunInputEnvelope
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
   }
 
   export type ActivityLogUncheckedCreateNestedManyWithoutRunInput = {
@@ -162327,18 +162196,18 @@ export namespace Prisma {
     deleteMany?: ComputerTransferScalarWhereInput | ComputerTransferScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutRunNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput> | UsageRecordCreateWithoutRunInput[] | UsageRecordUncheckedCreateWithoutRunInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutRunInput | UsageRecordCreateOrConnectWithoutRunInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutRunInput | UsageRecordUpsertWithWhereUniqueWithoutRunInput[]
-    createMany?: UsageRecordCreateManyRunInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutRunInput | UsageRecordUpdateWithWhereUniqueWithoutRunInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutRunInput | UsageRecordUpdateManyWithWhereWithoutRunInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUpdateManyWithoutRunNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput> | UsageChargeCreateWithoutRunInput[] | UsageChargeUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutRunInput | UsageChargeCreateOrConnectWithoutRunInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutRunInput | UsageChargeUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: UsageChargeCreateManyRunInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutRunInput | UsageChargeUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutRunInput | UsageChargeUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type ActivityLogUpdateManyWithoutRunNestedInput = {
@@ -162467,18 +162336,18 @@ export namespace Prisma {
     deleteMany?: ComputerTransferScalarWhereInput | ComputerTransferScalarWhereInput[]
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutRunNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput> | UsageRecordCreateWithoutRunInput[] | UsageRecordUncheckedCreateWithoutRunInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutRunInput | UsageRecordCreateOrConnectWithoutRunInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutRunInput | UsageRecordUpsertWithWhereUniqueWithoutRunInput[]
-    createMany?: UsageRecordCreateManyRunInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutRunInput | UsageRecordUpdateWithWhereUniqueWithoutRunInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutRunInput | UsageRecordUpdateManyWithWhereWithoutRunInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
+  export type UsageChargeUncheckedUpdateManyWithoutRunNestedInput = {
+    create?: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput> | UsageChargeCreateWithoutRunInput[] | UsageChargeUncheckedCreateWithoutRunInput[]
+    connectOrCreate?: UsageChargeCreateOrConnectWithoutRunInput | UsageChargeCreateOrConnectWithoutRunInput[]
+    upsert?: UsageChargeUpsertWithWhereUniqueWithoutRunInput | UsageChargeUpsertWithWhereUniqueWithoutRunInput[]
+    createMany?: UsageChargeCreateManyRunInputEnvelope
+    set?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    disconnect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    delete?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    connect?: UsageChargeWhereUniqueInput | UsageChargeWhereUniqueInput[]
+    update?: UsageChargeUpdateWithWhereUniqueWithoutRunInput | UsageChargeUpdateWithWhereUniqueWithoutRunInput[]
+    updateMany?: UsageChargeUpdateManyWithWhereWithoutRunInput | UsageChargeUpdateManyWithWhereWithoutRunInput[]
+    deleteMany?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
   }
 
   export type ActivityLogUncheckedUpdateManyWithoutRunNestedInput = {
@@ -163458,13 +163327,6 @@ export namespace Prisma {
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
   }
 
-  export type UsageRecordCreateNestedManyWithoutArtifactInput = {
-    create?: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput> | UsageRecordCreateWithoutArtifactInput[] | UsageRecordUncheckedCreateWithoutArtifactInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutArtifactInput | UsageRecordCreateOrConnectWithoutArtifactInput[]
-    createMany?: UsageRecordCreateManyArtifactInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-  }
-
   export type ArtifactDataGrantCreateNestedManyWithoutArtifactInput = {
     create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
     connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
@@ -163519,13 +163381,6 @@ export namespace Prisma {
     connectOrCreate?: FileCreateOrConnectWithoutArtifactInput | FileCreateOrConnectWithoutArtifactInput[]
     createMany?: FileCreateManyArtifactInputEnvelope
     connect?: FileWhereUniqueInput | FileWhereUniqueInput[]
-  }
-
-  export type UsageRecordUncheckedCreateNestedManyWithoutArtifactInput = {
-    create?: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput> | UsageRecordCreateWithoutArtifactInput[] | UsageRecordUncheckedCreateWithoutArtifactInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutArtifactInput | UsageRecordCreateOrConnectWithoutArtifactInput[]
-    createMany?: UsageRecordCreateManyArtifactInputEnvelope
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
   }
 
   export type ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput = {
@@ -163705,20 +163560,6 @@ export namespace Prisma {
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
   }
 
-  export type UsageRecordUpdateManyWithoutArtifactNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput> | UsageRecordCreateWithoutArtifactInput[] | UsageRecordUncheckedCreateWithoutArtifactInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutArtifactInput | UsageRecordCreateOrConnectWithoutArtifactInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutArtifactInput | UsageRecordUpsertWithWhereUniqueWithoutArtifactInput[]
-    createMany?: UsageRecordCreateManyArtifactInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutArtifactInput | UsageRecordUpdateWithWhereUniqueWithoutArtifactInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutArtifactInput | UsageRecordUpdateManyWithWhereWithoutArtifactInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
-  }
-
   export type ArtifactDataGrantUpdateManyWithoutArtifactNestedInput = {
     create?: XOR<ArtifactDataGrantCreateWithoutArtifactInput, ArtifactDataGrantUncheckedCreateWithoutArtifactInput> | ArtifactDataGrantCreateWithoutArtifactInput[] | ArtifactDataGrantUncheckedCreateWithoutArtifactInput[]
     connectOrCreate?: ArtifactDataGrantCreateOrConnectWithoutArtifactInput | ArtifactDataGrantCreateOrConnectWithoutArtifactInput[]
@@ -163829,20 +163670,6 @@ export namespace Prisma {
     update?: FileUpdateWithWhereUniqueWithoutArtifactInput | FileUpdateWithWhereUniqueWithoutArtifactInput[]
     updateMany?: FileUpdateManyWithWhereWithoutArtifactInput | FileUpdateManyWithWhereWithoutArtifactInput[]
     deleteMany?: FileScalarWhereInput | FileScalarWhereInput[]
-  }
-
-  export type UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput = {
-    create?: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput> | UsageRecordCreateWithoutArtifactInput[] | UsageRecordUncheckedCreateWithoutArtifactInput[]
-    connectOrCreate?: UsageRecordCreateOrConnectWithoutArtifactInput | UsageRecordCreateOrConnectWithoutArtifactInput[]
-    upsert?: UsageRecordUpsertWithWhereUniqueWithoutArtifactInput | UsageRecordUpsertWithWhereUniqueWithoutArtifactInput[]
-    createMany?: UsageRecordCreateManyArtifactInputEnvelope
-    set?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    disconnect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    delete?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    connect?: UsageRecordWhereUniqueInput | UsageRecordWhereUniqueInput[]
-    update?: UsageRecordUpdateWithWhereUniqueWithoutArtifactInput | UsageRecordUpdateWithWhereUniqueWithoutArtifactInput[]
-    updateMany?: UsageRecordUpdateManyWithWhereWithoutArtifactInput | UsageRecordUpdateManyWithWhereWithoutArtifactInput[]
-    deleteMany?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
   }
 
   export type ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput = {
@@ -166523,39 +166350,33 @@ export namespace Prisma {
     update?: XOR<XOR<DeviceUpdateToOneWithWhereWithoutNotification_deliveriesInput, DeviceUpdateWithoutNotification_deliveriesInput>, DeviceUncheckedUpdateWithoutNotification_deliveriesInput>
   }
 
-  export type OrganizationCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<OrganizationCreateWithoutUsage_recordsInput, OrganizationUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: OrganizationCreateOrConnectWithoutUsage_recordsInput
+  export type OrganizationCreateNestedOneWithoutUsage_chargesInput = {
+    create?: XOR<OrganizationCreateWithoutUsage_chargesInput, OrganizationUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutUsage_chargesInput
     connect?: OrganizationWhereUniqueInput
   }
 
-  export type UserCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<UserCreateWithoutUsage_recordsInput, UserUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUsage_recordsInput
+  export type UserCreateNestedOneWithoutUsage_chargesInput = {
+    create?: XOR<UserCreateWithoutUsage_chargesInput, UserUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUsage_chargesInput
     connect?: UserWhereUniqueInput
   }
 
-  export type BotCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<BotCreateWithoutUsage_recordsInput, BotUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: BotCreateOrConnectWithoutUsage_recordsInput
+  export type BotCreateNestedOneWithoutUsage_chargesInput = {
+    create?: XOR<BotCreateWithoutUsage_chargesInput, BotUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: BotCreateOrConnectWithoutUsage_chargesInput
     connect?: BotWhereUniqueInput
   }
 
-  export type AiModelCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<AiModelCreateWithoutUsage_recordsInput, AiModelUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: AiModelCreateOrConnectWithoutUsage_recordsInput
+  export type AiModelCreateNestedOneWithoutUsage_chargesInput = {
+    create?: XOR<AiModelCreateWithoutUsage_chargesInput, AiModelUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: AiModelCreateOrConnectWithoutUsage_chargesInput
     connect?: AiModelWhereUniqueInput
   }
 
-  export type ArtifactCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<ArtifactCreateWithoutUsage_recordsInput, ArtifactUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: ArtifactCreateOrConnectWithoutUsage_recordsInput
-    connect?: ArtifactWhereUniqueInput
-  }
-
-  export type RunCreateNestedOneWithoutUsage_recordsInput = {
-    create?: XOR<RunCreateWithoutUsage_recordsInput, RunUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: RunCreateOrConnectWithoutUsage_recordsInput
+  export type RunCreateNestedOneWithoutUsage_chargesInput = {
+    create?: XOR<RunCreateWithoutUsage_chargesInput, RunUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: RunCreateOrConnectWithoutUsage_chargesInput
     connect?: RunWhereUniqueInput
   }
 
@@ -166563,62 +166384,52 @@ export namespace Prisma {
     set?: $Enums.UsageKind
   }
 
-  export type OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput = {
-    create?: XOR<OrganizationCreateWithoutUsage_recordsInput, OrganizationUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: OrganizationCreateOrConnectWithoutUsage_recordsInput
-    upsert?: OrganizationUpsertWithoutUsage_recordsInput
+  export type OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput = {
+    create?: XOR<OrganizationCreateWithoutUsage_chargesInput, OrganizationUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: OrganizationCreateOrConnectWithoutUsage_chargesInput
+    upsert?: OrganizationUpsertWithoutUsage_chargesInput
     connect?: OrganizationWhereUniqueInput
-    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutUsage_recordsInput, OrganizationUpdateWithoutUsage_recordsInput>, OrganizationUncheckedUpdateWithoutUsage_recordsInput>
+    update?: XOR<XOR<OrganizationUpdateToOneWithWhereWithoutUsage_chargesInput, OrganizationUpdateWithoutUsage_chargesInput>, OrganizationUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type UserUpdateOneWithoutUsage_recordsNestedInput = {
-    create?: XOR<UserCreateWithoutUsage_recordsInput, UserUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: UserCreateOrConnectWithoutUsage_recordsInput
-    upsert?: UserUpsertWithoutUsage_recordsInput
+  export type UserUpdateOneWithoutUsage_chargesNestedInput = {
+    create?: XOR<UserCreateWithoutUsage_chargesInput, UserUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: UserCreateOrConnectWithoutUsage_chargesInput
+    upsert?: UserUpsertWithoutUsage_chargesInput
     disconnect?: UserWhereInput | boolean
     delete?: UserWhereInput | boolean
     connect?: UserWhereUniqueInput
-    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUsage_recordsInput, UserUpdateWithoutUsage_recordsInput>, UserUncheckedUpdateWithoutUsage_recordsInput>
+    update?: XOR<XOR<UserUpdateToOneWithWhereWithoutUsage_chargesInput, UserUpdateWithoutUsage_chargesInput>, UserUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type BotUpdateOneWithoutUsage_recordsNestedInput = {
-    create?: XOR<BotCreateWithoutUsage_recordsInput, BotUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: BotCreateOrConnectWithoutUsage_recordsInput
-    upsert?: BotUpsertWithoutUsage_recordsInput
+  export type BotUpdateOneWithoutUsage_chargesNestedInput = {
+    create?: XOR<BotCreateWithoutUsage_chargesInput, BotUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: BotCreateOrConnectWithoutUsage_chargesInput
+    upsert?: BotUpsertWithoutUsage_chargesInput
     disconnect?: BotWhereInput | boolean
     delete?: BotWhereInput | boolean
     connect?: BotWhereUniqueInput
-    update?: XOR<XOR<BotUpdateToOneWithWhereWithoutUsage_recordsInput, BotUpdateWithoutUsage_recordsInput>, BotUncheckedUpdateWithoutUsage_recordsInput>
+    update?: XOR<XOR<BotUpdateToOneWithWhereWithoutUsage_chargesInput, BotUpdateWithoutUsage_chargesInput>, BotUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type AiModelUpdateOneWithoutUsage_recordsNestedInput = {
-    create?: XOR<AiModelCreateWithoutUsage_recordsInput, AiModelUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: AiModelCreateOrConnectWithoutUsage_recordsInput
-    upsert?: AiModelUpsertWithoutUsage_recordsInput
+  export type AiModelUpdateOneWithoutUsage_chargesNestedInput = {
+    create?: XOR<AiModelCreateWithoutUsage_chargesInput, AiModelUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: AiModelCreateOrConnectWithoutUsage_chargesInput
+    upsert?: AiModelUpsertWithoutUsage_chargesInput
     disconnect?: AiModelWhereInput | boolean
     delete?: AiModelWhereInput | boolean
     connect?: AiModelWhereUniqueInput
-    update?: XOR<XOR<AiModelUpdateToOneWithWhereWithoutUsage_recordsInput, AiModelUpdateWithoutUsage_recordsInput>, AiModelUncheckedUpdateWithoutUsage_recordsInput>
+    update?: XOR<XOR<AiModelUpdateToOneWithWhereWithoutUsage_chargesInput, AiModelUpdateWithoutUsage_chargesInput>, AiModelUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type ArtifactUpdateOneWithoutUsage_recordsNestedInput = {
-    create?: XOR<ArtifactCreateWithoutUsage_recordsInput, ArtifactUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: ArtifactCreateOrConnectWithoutUsage_recordsInput
-    upsert?: ArtifactUpsertWithoutUsage_recordsInput
-    disconnect?: ArtifactWhereInput | boolean
-    delete?: ArtifactWhereInput | boolean
-    connect?: ArtifactWhereUniqueInput
-    update?: XOR<XOR<ArtifactUpdateToOneWithWhereWithoutUsage_recordsInput, ArtifactUpdateWithoutUsage_recordsInput>, ArtifactUncheckedUpdateWithoutUsage_recordsInput>
-  }
-
-  export type RunUpdateOneWithoutUsage_recordsNestedInput = {
-    create?: XOR<RunCreateWithoutUsage_recordsInput, RunUncheckedCreateWithoutUsage_recordsInput>
-    connectOrCreate?: RunCreateOrConnectWithoutUsage_recordsInput
-    upsert?: RunUpsertWithoutUsage_recordsInput
+  export type RunUpdateOneWithoutUsage_chargesNestedInput = {
+    create?: XOR<RunCreateWithoutUsage_chargesInput, RunUncheckedCreateWithoutUsage_chargesInput>
+    connectOrCreate?: RunCreateOrConnectWithoutUsage_chargesInput
+    upsert?: RunUpsertWithoutUsage_chargesInput
     disconnect?: RunWhereInput | boolean
     delete?: RunWhereInput | boolean
     connect?: RunWhereUniqueInput
-    update?: XOR<XOR<RunUpdateToOneWithWhereWithoutUsage_recordsInput, RunUpdateWithoutUsage_recordsInput>, RunUncheckedUpdateWithoutUsage_recordsInput>
+    update?: XOR<XOR<RunUpdateToOneWithWhereWithoutUsage_chargesInput, RunUpdateWithoutUsage_chargesInput>, RunUncheckedUpdateWithoutUsage_chargesInput>
   }
 
   export type OrganizationCreateNestedOneWithoutUsage_limitsInput = {
@@ -169931,7 +169742,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -169980,7 +169791,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -170151,7 +169962,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -170229,7 +170040,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -170763,7 +170574,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -170805,7 +170616,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -171136,7 +170947,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -171175,7 +170985,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -171789,45 +171598,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutUserInput = {
+  export type UsageChargeCreateWithoutUserInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
+    organization: OrganizationCreateNestedOneWithoutUsage_chargesInput
+    bot?: BotCreateNestedOneWithoutUsage_chargesInput
+    model?: AiModelCreateNestedOneWithoutUsage_chargesInput
+    run?: RunCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateWithoutUserInput = {
+  export type UsageChargeUncheckedCreateWithoutUserInput = {
     id?: string
     organization_id: string
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordCreateOrConnectWithoutUserInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput>
+  export type UsageChargeCreateOrConnectWithoutUserInput = {
+    where: UsageChargeWhereUniqueInput
+    create: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput>
   }
 
-  export type UsageRecordCreateManyUserInputEnvelope = {
-    data: UsageRecordCreateManyUserInput | UsageRecordCreateManyUserInput[]
+  export type UsageChargeCreateManyUserInputEnvelope = {
+    data: UsageChargeCreateManyUserInput | UsageChargeCreateManyUserInput[]
     skipDuplicates?: boolean
   }
 
@@ -173723,40 +173528,38 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"Notification"> | Date | string
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutUserInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutUserInput, UsageRecordUncheckedUpdateWithoutUserInput>
-    create: XOR<UsageRecordCreateWithoutUserInput, UsageRecordUncheckedCreateWithoutUserInput>
+  export type UsageChargeUpsertWithWhereUniqueWithoutUserInput = {
+    where: UsageChargeWhereUniqueInput
+    update: XOR<UsageChargeUpdateWithoutUserInput, UsageChargeUncheckedUpdateWithoutUserInput>
+    create: XOR<UsageChargeCreateWithoutUserInput, UsageChargeUncheckedCreateWithoutUserInput>
   }
 
-  export type UsageRecordUpdateWithWhereUniqueWithoutUserInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutUserInput, UsageRecordUncheckedUpdateWithoutUserInput>
+  export type UsageChargeUpdateWithWhereUniqueWithoutUserInput = {
+    where: UsageChargeWhereUniqueInput
+    data: XOR<UsageChargeUpdateWithoutUserInput, UsageChargeUncheckedUpdateWithoutUserInput>
   }
 
-  export type UsageRecordUpdateManyWithWhereWithoutUserInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutUserInput>
+  export type UsageChargeUpdateManyWithWhereWithoutUserInput = {
+    where: UsageChargeScalarWhereInput
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyWithoutUserInput>
   }
 
-  export type UsageRecordScalarWhereInput = {
-    AND?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
-    OR?: UsageRecordScalarWhereInput[]
-    NOT?: UsageRecordScalarWhereInput | UsageRecordScalarWhereInput[]
-    id?: StringFilter<"UsageRecord"> | string
-    organization_id?: StringFilter<"UsageRecord"> | string
-    user_id?: StringNullableFilter<"UsageRecord"> | string | null
-    bot_id?: StringNullableFilter<"UsageRecord"> | string | null
-    model_id?: StringNullableFilter<"UsageRecord"> | string | null
-    artifact_id?: StringNullableFilter<"UsageRecord"> | string | null
-    run_id?: StringNullableFilter<"UsageRecord"> | string | null
-    kind?: EnumUsageKindFilter<"UsageRecord"> | $Enums.UsageKind
-    period?: StringFilter<"UsageRecord"> | string
-    day?: DateTimeFilter<"UsageRecord"> | Date | string
-    quantity?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFilter<"UsageRecord"> | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFilter<"UsageRecord"> | Date | string
-    updated_at?: DateTimeFilter<"UsageRecord"> | Date | string
+  export type UsageChargeScalarWhereInput = {
+    AND?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
+    OR?: UsageChargeScalarWhereInput[]
+    NOT?: UsageChargeScalarWhereInput | UsageChargeScalarWhereInput[]
+    id?: StringFilter<"UsageCharge"> | string
+    organization_id?: StringFilter<"UsageCharge"> | string
+    user_id?: StringNullableFilter<"UsageCharge"> | string | null
+    bot_id?: StringNullableFilter<"UsageCharge"> | string | null
+    model_id?: StringNullableFilter<"UsageCharge"> | string | null
+    run_id?: StringNullableFilter<"UsageCharge"> | string | null
+    kind?: EnumUsageKindFilter<"UsageCharge"> | $Enums.UsageKind
+    quantity?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    input_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    output_tokens?: IntNullableFilter<"UsageCharge"> | number | null
+    cost?: DecimalFilter<"UsageCharge"> | Decimal | DecimalJsLike | number | string
+    created_at?: DateTimeFilter<"UsageCharge"> | Date | string
   }
 
   export type ActivityLogUpsertWithWhereUniqueWithoutActor_userInput = {
@@ -173994,7 +173797,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -174063,7 +173866,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -174148,7 +173951,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -174217,7 +174020,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -174286,7 +174089,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -174355,7 +174158,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -174495,7 +174298,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -174564,7 +174367,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -174694,7 +174497,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -174763,7 +174566,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -174848,7 +174651,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -174917,7 +174720,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -174986,7 +174789,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -175055,7 +174858,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -175366,7 +175169,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -175435,7 +175238,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -175902,7 +175705,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -175971,7 +175774,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -176136,7 +175939,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -176205,7 +176008,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -176290,7 +176093,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -176359,7 +176162,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -176441,7 +176244,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
@@ -176519,7 +176322,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
@@ -176605,7 +176408,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -176674,7 +176477,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -176762,7 +176565,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
@@ -176840,7 +176643,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
@@ -176910,7 +176713,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -176979,7 +176782,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -177064,7 +176867,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -177133,7 +176936,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -177202,7 +177005,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -177271,7 +177074,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -177321,7 +177124,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -177370,7 +177173,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -177532,7 +177335,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -177601,7 +177404,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -177657,7 +177460,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -177706,7 +177509,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -177858,7 +177661,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -177927,7 +177730,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -177977,7 +177780,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -178026,7 +177829,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -178115,7 +177918,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -178184,7 +177987,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -178240,7 +178043,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -178289,7 +178092,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -178439,7 +178242,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -178508,7 +178311,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -178882,7 +178685,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -178960,7 +178763,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -179202,7 +179005,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -179244,7 +179047,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -179559,7 +179362,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -179598,7 +179400,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -180052,45 +179853,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutOrganizationInput = {
+  export type UsageChargeCreateWithoutOrganizationInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
+    user?: UserCreateNestedOneWithoutUsage_chargesInput
+    bot?: BotCreateNestedOneWithoutUsage_chargesInput
+    model?: AiModelCreateNestedOneWithoutUsage_chargesInput
+    run?: RunCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateWithoutOrganizationInput = {
+  export type UsageChargeUncheckedCreateWithoutOrganizationInput = {
     id?: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordCreateOrConnectWithoutOrganizationInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput>
+  export type UsageChargeCreateOrConnectWithoutOrganizationInput = {
+    where: UsageChargeWhereUniqueInput
+    create: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput>
   }
 
-  export type UsageRecordCreateManyOrganizationInputEnvelope = {
-    data: UsageRecordCreateManyOrganizationInput | UsageRecordCreateManyOrganizationInput[]
+  export type UsageChargeCreateManyOrganizationInputEnvelope = {
+    data: UsageChargeCreateManyOrganizationInput | UsageChargeCreateManyOrganizationInput[]
     skipDuplicates?: boolean
   }
 
@@ -180604,7 +180401,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -180673,7 +180470,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -181265,20 +181062,20 @@ export namespace Prisma {
     data: XOR<NotificationUpdateManyMutationInput, NotificationUncheckedUpdateManyWithoutOrganizationInput>
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutOrganizationInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutOrganizationInput, UsageRecordUncheckedUpdateWithoutOrganizationInput>
-    create: XOR<UsageRecordCreateWithoutOrganizationInput, UsageRecordUncheckedCreateWithoutOrganizationInput>
+  export type UsageChargeUpsertWithWhereUniqueWithoutOrganizationInput = {
+    where: UsageChargeWhereUniqueInput
+    update: XOR<UsageChargeUpdateWithoutOrganizationInput, UsageChargeUncheckedUpdateWithoutOrganizationInput>
+    create: XOR<UsageChargeCreateWithoutOrganizationInput, UsageChargeUncheckedCreateWithoutOrganizationInput>
   }
 
-  export type UsageRecordUpdateWithWhereUniqueWithoutOrganizationInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutOrganizationInput, UsageRecordUncheckedUpdateWithoutOrganizationInput>
+  export type UsageChargeUpdateWithWhereUniqueWithoutOrganizationInput = {
+    where: UsageChargeWhereUniqueInput
+    data: XOR<UsageChargeUpdateWithoutOrganizationInput, UsageChargeUncheckedUpdateWithoutOrganizationInput>
   }
 
-  export type UsageRecordUpdateManyWithWhereWithoutOrganizationInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutOrganizationInput>
+  export type UsageChargeUpdateManyWithWhereWithoutOrganizationInput = {
+    where: UsageChargeScalarWhereInput
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyWithoutOrganizationInput>
   }
 
   export type UsageLimitUpsertWithWhereUniqueWithoutOrganizationInput = {
@@ -181552,7 +181349,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -181601,7 +181398,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -181641,7 +181438,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateCreateNestedManyWithoutModelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutOrg_defaultsInput = {
@@ -181666,7 +181463,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedCreateNestedManyWithoutModelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutOrg_defaultsInput = {
@@ -181721,7 +181518,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -181770,7 +181567,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -181816,7 +181613,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUpdateManyWithoutModelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutOrg_defaultsInput = {
@@ -181841,7 +181638,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedUpdateManyWithoutModelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type OrganizationCreateWithoutMembersInput = {
@@ -181880,7 +181677,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -181929,7 +181726,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -182008,7 +181805,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -182077,7 +181874,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -182137,7 +181934,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -182186,7 +181983,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -182271,7 +182068,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -182340,7 +182137,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -182384,7 +182181,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -182433,7 +182230,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -182512,7 +182309,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -182581,7 +182378,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -182655,7 +182452,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -182724,7 +182521,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -182784,7 +182581,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -182833,7 +182630,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -182918,7 +182715,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -182987,7 +182784,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -183067,7 +182864,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -183136,7 +182933,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -183166,7 +182963,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutFallbacks_forInput = {
@@ -183191,7 +182988,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutFallbacks_forInput = {
@@ -183221,7 +183018,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutFallback_modelInput = {
@@ -183246,7 +183043,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutFallback_modelInput = {
@@ -183327,7 +183124,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -183405,7 +183202,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -183707,7 +183504,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -183749,7 +183546,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -183765,45 +183562,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutModelInput = {
+  export type UsageChargeCreateWithoutModelInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
+    organization: OrganizationCreateNestedOneWithoutUsage_chargesInput
+    user?: UserCreateNestedOneWithoutUsage_chargesInput
+    bot?: BotCreateNestedOneWithoutUsage_chargesInput
+    run?: RunCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateWithoutModelInput = {
+  export type UsageChargeUncheckedCreateWithoutModelInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordCreateOrConnectWithoutModelInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput>
+  export type UsageChargeCreateOrConnectWithoutModelInput = {
+    where: UsageChargeWhereUniqueInput
+    create: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput>
   }
 
-  export type UsageRecordCreateManyModelInputEnvelope = {
-    data: UsageRecordCreateManyModelInput | UsageRecordCreateManyModelInput[]
+  export type UsageChargeCreateManyModelInputEnvelope = {
+    data: UsageChargeCreateManyModelInput | UsageChargeCreateManyModelInput[]
     skipDuplicates?: boolean
   }
 
@@ -183840,7 +183633,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutFallbacks_forInput = {
@@ -183865,7 +183658,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUpsertWithWhereUniqueWithoutFallback_modelInput = {
@@ -184094,20 +183887,20 @@ export namespace Prisma {
     data: XOR<RunUpdateManyMutationInput, RunUncheckedUpdateManyWithoutModelInput>
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutModelInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutModelInput, UsageRecordUncheckedUpdateWithoutModelInput>
-    create: XOR<UsageRecordCreateWithoutModelInput, UsageRecordUncheckedCreateWithoutModelInput>
+  export type UsageChargeUpsertWithWhereUniqueWithoutModelInput = {
+    where: UsageChargeWhereUniqueInput
+    update: XOR<UsageChargeUpdateWithoutModelInput, UsageChargeUncheckedUpdateWithoutModelInput>
+    create: XOR<UsageChargeCreateWithoutModelInput, UsageChargeUncheckedCreateWithoutModelInput>
   }
 
-  export type UsageRecordUpdateWithWhereUniqueWithoutModelInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutModelInput, UsageRecordUncheckedUpdateWithoutModelInput>
+  export type UsageChargeUpdateWithWhereUniqueWithoutModelInput = {
+    where: UsageChargeWhereUniqueInput
+    data: XOR<UsageChargeUpdateWithoutModelInput, UsageChargeUncheckedUpdateWithoutModelInput>
   }
 
-  export type UsageRecordUpdateManyWithWhereWithoutModelInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutModelInput>
+  export type UsageChargeUpdateManyWithWhereWithoutModelInput = {
+    where: UsageChargeScalarWhereInput
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyWithoutModelInput>
   }
 
   export type OrganizationCreateWithoutAllowed_modelsInput = {
@@ -184146,7 +183939,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -184195,7 +183988,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -184235,7 +184028,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateCreateNestedManyWithoutModelInput
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutOrg_allowedInput = {
@@ -184260,7 +184053,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedCreateNestedManyWithoutModelInput
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutOrg_allowedInput = {
@@ -184315,7 +184108,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -184364,7 +184157,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -184410,7 +184203,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUpdateManyWithoutModelNestedInput
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutOrg_allowedInput = {
@@ -184435,7 +184228,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedUpdateManyWithoutModelNestedInput
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelCreateWithoutBot_templatesInput = {
@@ -184460,7 +184253,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutBot_templatesInput = {
@@ -184485,7 +184278,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutBot_templatesInput = {
@@ -184579,7 +184372,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -184657,7 +184450,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -184730,7 +184523,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutBot_templatesInput = {
@@ -184755,7 +184548,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type BotTemplateSkillUpsertWithWhereUniqueWithoutTemplateInput = {
@@ -185102,7 +184895,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -185151,7 +184944,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -185269,7 +185062,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -185318,7 +185111,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -185426,7 +185219,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -185475,7 +185268,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -185554,7 +185347,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -185623,7 +185416,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -185757,7 +185550,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -185835,7 +185628,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -185918,7 +185711,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -185996,7 +185789,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -186038,7 +185831,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
     runs?: RunCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutBotsInput = {
@@ -186063,7 +185856,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutBotsInput = {
@@ -186615,7 +186408,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -186657,7 +186450,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -186709,7 +186502,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -186751,7 +186544,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -186953,45 +186746,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutBotInput = {
+  export type UsageChargeCreateWithoutBotInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
+    organization: OrganizationCreateNestedOneWithoutUsage_chargesInput
+    user?: UserCreateNestedOneWithoutUsage_chargesInput
+    model?: AiModelCreateNestedOneWithoutUsage_chargesInput
+    run?: RunCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateWithoutBotInput = {
+  export type UsageChargeUncheckedCreateWithoutBotInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordCreateOrConnectWithoutBotInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput>
+  export type UsageChargeCreateOrConnectWithoutBotInput = {
+    where: UsageChargeWhereUniqueInput
+    create: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput>
   }
 
-  export type UsageRecordCreateManyBotInputEnvelope = {
-    data: UsageRecordCreateManyBotInput | UsageRecordCreateManyBotInput[]
+  export type UsageChargeCreateManyBotInputEnvelope = {
+    data: UsageChargeCreateManyBotInput | UsageChargeCreateManyBotInput[]
     skipDuplicates?: boolean
   }
 
@@ -187412,7 +187201,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -187461,7 +187250,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -187546,7 +187335,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -187615,7 +187404,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -187761,7 +187550,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -187839,7 +187628,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -187898,7 +187687,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutBotsInput = {
@@ -187923,7 +187712,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type FileUpsertWithoutBot_imageInput = {
@@ -188347,20 +188136,20 @@ export namespace Prisma {
     data: XOR<AutomationUpdateManyMutationInput, AutomationUncheckedUpdateManyWithoutBotInput>
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutBotInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutBotInput, UsageRecordUncheckedUpdateWithoutBotInput>
-    create: XOR<UsageRecordCreateWithoutBotInput, UsageRecordUncheckedCreateWithoutBotInput>
+  export type UsageChargeUpsertWithWhereUniqueWithoutBotInput = {
+    where: UsageChargeWhereUniqueInput
+    update: XOR<UsageChargeUpdateWithoutBotInput, UsageChargeUncheckedUpdateWithoutBotInput>
+    create: XOR<UsageChargeCreateWithoutBotInput, UsageChargeUncheckedCreateWithoutBotInput>
   }
 
-  export type UsageRecordUpdateWithWhereUniqueWithoutBotInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutBotInput, UsageRecordUncheckedUpdateWithoutBotInput>
+  export type UsageChargeUpdateWithWhereUniqueWithoutBotInput = {
+    where: UsageChargeWhereUniqueInput
+    data: XOR<UsageChargeUpdateWithoutBotInput, UsageChargeUncheckedUpdateWithoutBotInput>
   }
 
-  export type UsageRecordUpdateManyWithWhereWithoutBotInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutBotInput>
+  export type UsageChargeUpdateManyWithWhereWithoutBotInput = {
+    where: UsageChargeScalarWhereInput
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyWithoutBotInput>
   }
 
   export type UsageLimitUpsertWithWhereUniqueWithoutBotInput = {
@@ -188616,7 +188405,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -188694,7 +188483,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -188788,7 +188577,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -188866,7 +188655,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -188944,7 +188733,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -189022,7 +188811,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -189189,7 +188978,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -189267,7 +189056,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -189424,7 +189213,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -189502,7 +189291,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -189639,7 +189428,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -189717,7 +189506,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -189844,7 +189633,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -189922,7 +189711,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -190077,7 +189866,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -190155,7 +189944,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -190300,7 +190089,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -190378,7 +190167,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -190539,7 +190328,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -190617,7 +190406,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -190736,7 +190525,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -190785,7 +190574,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -190871,7 +190660,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -190949,7 +190738,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -191103,7 +190892,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
@@ -191172,7 +190961,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
@@ -191285,7 +191074,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -191334,7 +191123,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -191426,7 +191215,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -191504,7 +191293,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -191670,7 +191459,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
@@ -191739,7 +191528,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
@@ -191993,7 +191782,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -192062,7 +191851,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -192198,7 +191987,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -192267,7 +192056,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -192310,7 +192099,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -192359,7 +192148,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -192445,7 +192234,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -192523,7 +192312,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -192599,7 +192388,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -192668,7 +192457,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -192793,7 +192582,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -192842,7 +192631,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -192934,7 +192723,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -193012,7 +192801,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -193094,7 +192883,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -193163,7 +192952,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -193278,7 +193067,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -193327,7 +193116,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -193406,7 +193195,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -193475,7 +193264,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -193573,7 +193362,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -193622,7 +193411,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -193707,7 +193496,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -193776,7 +193565,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -193836,7 +193625,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -193885,7 +193674,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -193971,7 +193760,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -194049,7 +193838,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -194125,7 +193914,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -194194,7 +193983,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -194367,7 +194156,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -194409,7 +194198,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -194602,7 +194391,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -194641,7 +194429,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -195045,7 +194832,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -195094,7 +194881,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -195186,7 +194973,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -195264,7 +195051,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -195346,7 +195133,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -195415,7 +195202,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -195772,7 +195559,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -195841,7 +195628,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -195997,7 +195784,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -196066,7 +195853,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -196200,7 +195987,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -196269,7 +196056,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -196350,7 +196137,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -196428,7 +196215,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -196611,7 +196398,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -196680,7 +196467,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -196767,7 +196554,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -196845,7 +196632,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -196922,7 +196709,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -196971,7 +196758,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -197115,7 +196902,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -197184,7 +196971,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -197265,7 +197052,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -197343,7 +197130,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -197394,7 +197181,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -197436,7 +197223,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -198009,7 +197796,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -198078,7 +197865,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -198312,7 +198099,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -198351,7 +198137,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -198401,7 +198186,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -198443,7 +198228,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -198506,7 +198291,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -198555,7 +198340,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -198711,7 +198496,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -198780,7 +198565,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -198867,7 +198652,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -198945,7 +198730,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -199002,7 +198787,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -199044,7 +198829,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -199431,7 +199216,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -199500,7 +199285,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -200138,7 +199923,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -200207,7 +199992,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -200379,7 +200164,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -200448,7 +200233,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -200969,7 +200754,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -201018,7 +200803,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -201096,7 +200881,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -201165,7 +200950,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -201372,7 +201157,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -201421,7 +201206,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -201505,7 +201290,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -201574,7 +201359,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -201776,7 +201561,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -201825,7 +201610,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -201976,7 +201761,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -202054,7 +201839,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -202130,7 +201915,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -202199,7 +201984,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -202329,7 +202114,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -202371,7 +202156,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -202418,7 +202203,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -202460,7 +202245,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -202544,7 +202329,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -202622,7 +202407,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -202741,7 +202526,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateCreateNestedManyWithoutModelInput
     org_defaults?: OrganizationSettingsCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutModelInput
   }
 
   export type AiModelUncheckedCreateWithoutRunsInput = {
@@ -202766,7 +202551,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedCreateNestedManyWithoutModelInput
     org_defaults?: OrganizationSettingsUncheckedCreateNestedManyWithoutDefault_modelInput
     org_allowed?: OrganizationAllowedModelUncheckedCreateNestedManyWithoutModelInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutModelInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutModelInput
   }
 
   export type AiModelCreateOrConnectWithoutRunsInput = {
@@ -203123,45 +202908,41 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutRunInput = {
+  export type UsageChargeCreateWithoutRunInput = {
     id?: string
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    artifact?: ArtifactCreateNestedOneWithoutUsage_recordsInput
+    organization: OrganizationCreateNestedOneWithoutUsage_chargesInput
+    user?: UserCreateNestedOneWithoutUsage_chargesInput
+    bot?: BotCreateNestedOneWithoutUsage_chargesInput
+    model?: AiModelCreateNestedOneWithoutUsage_chargesInput
   }
 
-  export type UsageRecordUncheckedCreateWithoutRunInput = {
+  export type UsageChargeUncheckedCreateWithoutRunInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
-  export type UsageRecordCreateOrConnectWithoutRunInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput>
+  export type UsageChargeCreateOrConnectWithoutRunInput = {
+    where: UsageChargeWhereUniqueInput
+    create: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput>
   }
 
-  export type UsageRecordCreateManyRunInputEnvelope = {
-    data: UsageRecordCreateManyRunInput | UsageRecordCreateManyRunInput[]
+  export type UsageChargeCreateManyRunInputEnvelope = {
+    data: UsageChargeCreateManyRunInput | UsageChargeCreateManyRunInput[]
     skipDuplicates?: boolean
   }
 
@@ -203382,7 +203163,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -203431,7 +203212,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -203594,7 +203375,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -203672,7 +203453,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -203754,7 +203535,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -203823,7 +203604,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -203965,7 +203746,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -204007,7 +203788,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -204108,7 +203889,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -204186,7 +203967,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -204323,7 +204104,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUpdateManyWithoutModelNestedInput
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutRunsInput = {
@@ -204348,7 +204129,7 @@ export namespace Prisma {
     bot_templates?: BotTemplateUncheckedUpdateManyWithoutModelNestedInput
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type SkillUpsertWithoutRunsInput = {
@@ -204523,20 +204304,20 @@ export namespace Prisma {
     created_at?: DateTimeFilter<"ComputerTransfer"> | Date | string
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutRunInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutRunInput, UsageRecordUncheckedUpdateWithoutRunInput>
-    create: XOR<UsageRecordCreateWithoutRunInput, UsageRecordUncheckedCreateWithoutRunInput>
+  export type UsageChargeUpsertWithWhereUniqueWithoutRunInput = {
+    where: UsageChargeWhereUniqueInput
+    update: XOR<UsageChargeUpdateWithoutRunInput, UsageChargeUncheckedUpdateWithoutRunInput>
+    create: XOR<UsageChargeCreateWithoutRunInput, UsageChargeUncheckedCreateWithoutRunInput>
   }
 
-  export type UsageRecordUpdateWithWhereUniqueWithoutRunInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutRunInput, UsageRecordUncheckedUpdateWithoutRunInput>
+  export type UsageChargeUpdateWithWhereUniqueWithoutRunInput = {
+    where: UsageChargeWhereUniqueInput
+    data: XOR<UsageChargeUpdateWithoutRunInput, UsageChargeUncheckedUpdateWithoutRunInput>
   }
 
-  export type UsageRecordUpdateManyWithWhereWithoutRunInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutRunInput>
+  export type UsageChargeUpdateManyWithWhereWithoutRunInput = {
+    where: UsageChargeScalarWhereInput
+    data: XOR<UsageChargeUpdateManyMutationInput, UsageChargeUncheckedUpdateManyWithoutRunInput>
   }
 
   export type ActivityLogUpsertWithWhereUniqueWithoutRunInput = {
@@ -204623,7 +204404,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -204665,7 +204446,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -204918,7 +204699,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -204960,7 +204741,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -205215,7 +204996,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -205264,7 +205045,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -205318,7 +205099,7 @@ export namespace Prisma {
     steps?: RunStepCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -205360,7 +205141,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -205585,7 +205366,7 @@ export namespace Prisma {
     consultations?: RunCreateNestedManyWithoutRequested_by_botInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -205663,7 +205444,7 @@ export namespace Prisma {
     consultations?: RunUncheckedCreateNestedManyWithoutRequested_by_botInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -205739,7 +205520,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -205808,7 +205589,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -205868,7 +205649,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -205917,7 +205698,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -205977,7 +205758,7 @@ export namespace Prisma {
     steps?: RunStepUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -206019,7 +205800,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -206262,7 +206043,7 @@ export namespace Prisma {
     consultations?: RunUpdateManyWithoutRequested_by_botNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -206340,7 +206121,7 @@ export namespace Prisma {
     consultations?: RunUncheckedUpdateManyWithoutRequested_by_botNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -206422,7 +206203,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -206491,7 +206272,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -206535,7 +206316,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -206584,7 +206365,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -206728,7 +206509,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -206797,7 +206578,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -206878,7 +206659,7 @@ export namespace Prisma {
     consultations?: RunCreateNestedManyWithoutRequested_by_botInput
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -206956,7 +206737,7 @@ export namespace Prisma {
     consultations?: RunUncheckedCreateNestedManyWithoutRequested_by_botInput
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -207007,7 +206788,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -207049,7 +206830,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -207112,7 +206893,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -207161,7 +206942,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -207317,7 +207098,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -207386,7 +207167,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -207473,7 +207254,7 @@ export namespace Prisma {
     consultations?: RunUpdateManyWithoutRequested_by_botNestedInput
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -207551,7 +207332,7 @@ export namespace Prisma {
     consultations?: RunUncheckedUpdateManyWithoutRequested_by_botNestedInput
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -207613,7 +207394,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -207662,7 +207443,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -207741,7 +207522,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -207810,7 +207591,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -207983,7 +207764,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -208025,7 +207806,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -208270,7 +208051,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -208319,7 +208100,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -208404,7 +208185,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -208473,7 +208254,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -208778,7 +208559,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -208847,7 +208628,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -209005,7 +208786,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -209074,7 +208855,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -209210,7 +208991,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -209279,7 +209060,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -209437,7 +209218,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -209506,7 +209287,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -209850,7 +209631,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -209899,7 +209680,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -210031,7 +209812,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -210080,7 +209861,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -210202,7 +209983,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -210251,7 +210032,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -210330,7 +210111,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -210399,7 +210180,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -210593,7 +210374,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -210632,7 +210412,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -210676,7 +210455,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -210715,7 +210493,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -211057,48 +210834,6 @@ export namespace Prisma {
     skipDuplicates?: boolean
   }
 
-  export type UsageRecordCreateWithoutArtifactInput = {
-    id?: string
-    kind: $Enums.UsageKind
-    period: string
-    day: Date | string
-    quantity: Decimal | DecimalJsLike | number | string
-    cost?: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutUsage_recordsInput
-    user?: UserCreateNestedOneWithoutUsage_recordsInput
-    bot?: BotCreateNestedOneWithoutUsage_recordsInput
-    model?: AiModelCreateNestedOneWithoutUsage_recordsInput
-    run?: RunCreateNestedOneWithoutUsage_recordsInput
-  }
-
-  export type UsageRecordUncheckedCreateWithoutArtifactInput = {
-    id?: string
-    organization_id: string
-    user_id?: string | null
-    bot_id?: string | null
-    model_id?: string | null
-    run_id?: string | null
-    kind: $Enums.UsageKind
-    period: string
-    day: Date | string
-    quantity: Decimal | DecimalJsLike | number | string
-    cost?: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
-  export type UsageRecordCreateOrConnectWithoutArtifactInput = {
-    where: UsageRecordWhereUniqueInput
-    create: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput>
-  }
-
-  export type UsageRecordCreateManyArtifactInputEnvelope = {
-    data: UsageRecordCreateManyArtifactInput | UsageRecordCreateManyArtifactInput[]
-    skipDuplicates?: boolean
-  }
-
   export type ArtifactDataGrantCreateWithoutArtifactInput = {
     id?: string
     service_key: string
@@ -211170,7 +210905,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -211219,7 +210954,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -211304,7 +211039,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -211373,7 +211108,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -211585,7 +211320,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -211624,7 +211358,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -211845,22 +211578,6 @@ export namespace Prisma {
     data: XOR<FileUpdateManyMutationInput, FileUncheckedUpdateManyWithoutArtifactInput>
   }
 
-  export type UsageRecordUpsertWithWhereUniqueWithoutArtifactInput = {
-    where: UsageRecordWhereUniqueInput
-    update: XOR<UsageRecordUpdateWithoutArtifactInput, UsageRecordUncheckedUpdateWithoutArtifactInput>
-    create: XOR<UsageRecordCreateWithoutArtifactInput, UsageRecordUncheckedCreateWithoutArtifactInput>
-  }
-
-  export type UsageRecordUpdateWithWhereUniqueWithoutArtifactInput = {
-    where: UsageRecordWhereUniqueInput
-    data: XOR<UsageRecordUpdateWithoutArtifactInput, UsageRecordUncheckedUpdateWithoutArtifactInput>
-  }
-
-  export type UsageRecordUpdateManyWithWhereWithoutArtifactInput = {
-    where: UsageRecordScalarWhereInput
-    data: XOR<UsageRecordUpdateManyMutationInput, UsageRecordUncheckedUpdateManyWithoutArtifactInput>
-  }
-
   export type ArtifactDataGrantUpsertWithWhereUniqueWithoutArtifactInput = {
     where: ArtifactDataGrantWhereUniqueInput
     update: XOR<ArtifactDataGrantUpdateWithoutArtifactInput, ArtifactDataGrantUncheckedUpdateWithoutArtifactInput>
@@ -211912,7 +211629,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -211951,7 +211667,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -212021,7 +211736,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -212090,7 +211805,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -212140,7 +211855,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
   }
@@ -212182,7 +211897,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
   }
@@ -212227,7 +211942,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -212266,7 +211980,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -212310,7 +212023,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -212349,7 +212061,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -212404,7 +212115,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212443,7 +212153,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212519,7 +212228,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -212588,7 +212297,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -212644,7 +212353,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
   }
@@ -212686,7 +212395,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
   }
@@ -212737,7 +212446,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212776,7 +212484,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212826,7 +212533,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212865,7 +212571,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -212904,7 +212609,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -212943,7 +212647,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -213013,7 +212716,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -213082,7 +212785,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -213141,7 +212844,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -213180,7 +212882,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -213256,7 +212957,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -213325,7 +213026,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -213368,7 +213069,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -213407,7 +213107,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -213477,7 +213176,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -213546,7 +213245,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -213699,7 +213398,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -213777,7 +213476,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -213837,7 +213536,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -213876,7 +213574,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -213952,7 +213649,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -214021,7 +213718,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -214164,7 +213861,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -214242,7 +213939,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -214286,7 +213983,6 @@ export namespace Prisma {
     comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -214325,7 +214021,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -214380,7 +214075,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -214419,7 +214113,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -214459,7 +214152,6 @@ export namespace Prisma {
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactUncheckedCreateWithoutData_grantsInput = {
@@ -214498,7 +214190,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
   }
 
   export type ArtifactCreateOrConnectWithoutData_grantsInput = {
@@ -214567,7 +214258,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -214636,7 +214327,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -214696,7 +214387,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
   }
 
   export type ArtifactUncheckedUpdateWithoutData_grantsInput = {
@@ -214735,7 +214425,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
   export type UserUpsertWithoutArtifact_data_grantsInput = {
@@ -214810,7 +214499,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -214879,7 +214568,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -214922,7 +214611,6 @@ export namespace Prisma {
     comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     files?: FileCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -214961,7 +214649,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -215031,7 +214718,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -215100,7 +214787,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -215159,7 +214846,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUpdateManyWithoutArtifactNestedInput
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -215198,7 +214884,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedUpdateManyWithoutArtifactNestedInput
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -215274,7 +214959,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -215343,7 +215028,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -215387,7 +215072,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -215436,7 +215121,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -215515,7 +215200,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -215584,7 +215269,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -216062,7 +215747,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -216111,7 +215796,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -216196,7 +215881,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -216265,7 +215950,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -216738,7 +216423,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -216816,7 +216501,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -216989,7 +216674,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -217067,7 +216752,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -217112,7 +216797,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -217161,7 +216846,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -217240,7 +216925,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -217309,7 +216994,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -217391,7 +217076,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -217469,7 +217154,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -217698,7 +217383,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -217747,7 +217432,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -217832,7 +217517,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -217901,7 +217586,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -217989,7 +217674,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -218067,7 +217752,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -218358,7 +218043,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -218427,7 +218112,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -218579,7 +218264,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -218648,7 +218333,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -218692,7 +218377,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -218741,7 +218426,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -218820,7 +218505,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -218889,7 +218574,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -219103,7 +218788,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -219152,7 +218837,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -219237,7 +218922,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -219306,7 +218991,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -219512,7 +219197,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -219561,7 +219246,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -219640,7 +219325,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -219709,7 +219394,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -219842,7 +219527,6 @@ export namespace Prisma {
     comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
   }
 
@@ -219881,7 +219565,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
     records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
     reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutArtifactInput
     data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
   }
 
@@ -220002,7 +219685,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
   }
@@ -220044,7 +219727,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
   }
@@ -220215,7 +219898,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -220284,7 +219967,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -220333,7 +220016,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -220382,7 +220065,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -220468,7 +220151,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -220546,7 +220229,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -220716,7 +220399,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -220765,7 +220448,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -220850,7 +220533,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -220919,7 +220602,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -221060,7 +220743,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUpdateManyWithoutArtifactNestedInput
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -221099,7 +220781,6 @@ export namespace Prisma {
     comments?: ArtifactCommentUncheckedUpdateManyWithoutArtifactNestedInput
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -221232,7 +220913,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
   }
@@ -221274,7 +220955,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
   }
@@ -221459,7 +221140,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -221528,7 +221209,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -221583,7 +221264,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -221632,7 +221313,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -221724,7 +221405,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -221802,7 +221483,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -221944,7 +221625,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -221993,7 +221674,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -222079,7 +221760,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -222157,7 +221838,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -222323,7 +222004,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -222372,7 +222053,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -222464,7 +222145,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -222542,7 +222223,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -222690,7 +222371,7 @@ export namespace Prisma {
     steps?: RunStepCreateNestedManyWithoutRunInput
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -222732,7 +222413,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedCreateNestedManyWithoutRunInput
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -222804,7 +222485,7 @@ export namespace Prisma {
     files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -222873,7 +222554,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -223141,7 +222822,7 @@ export namespace Prisma {
     steps?: RunStepUpdateManyWithoutRunNestedInput
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -223183,7 +222864,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedUpdateManyWithoutRunNestedInput
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -223261,7 +222942,7 @@ export namespace Prisma {
     files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -223330,7 +223011,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -223608,7 +223289,7 @@ export namespace Prisma {
     steps?: RunStepCreateNestedManyWithoutRunInput
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -223650,7 +223331,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedCreateNestedManyWithoutRunInput
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -223907,7 +223588,7 @@ export namespace Prisma {
     steps?: RunStepUpdateManyWithoutRunNestedInput
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -223949,7 +223630,7 @@ export namespace Prisma {
     steps?: RunStepUncheckedUpdateManyWithoutRunNestedInput
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -224153,7 +223834,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutOrganizationInput
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -224202,7 +223883,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -224281,7 +223962,7 @@ export namespace Prisma {
     files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -224350,7 +224031,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -224431,7 +224112,7 @@ export namespace Prisma {
     consultations?: RunCreateNestedManyWithoutRequested_by_botInput
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -224509,7 +224190,7 @@ export namespace Prisma {
     consultations?: RunUncheckedCreateNestedManyWithoutRequested_by_botInput
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -225023,7 +224704,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutOrganizationNestedInput
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -225072,7 +224753,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -225157,7 +224838,7 @@ export namespace Prisma {
     files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -225226,7 +224907,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -225313,7 +224994,7 @@ export namespace Prisma {
     consultations?: RunUpdateManyWithoutRequested_by_botNestedInput
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -225391,7 +225072,7 @@ export namespace Prisma {
     consultations?: RunUncheckedUpdateManyWithoutRequested_by_botNestedInput
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -227108,7 +226789,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
@@ -227150,7 +226831,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
@@ -227289,7 +226970,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -227331,7 +227012,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -227373,7 +227054,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutOrganizationInput
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -227422,7 +227103,7 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutOrganizationInput
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -227501,7 +227182,7 @@ export namespace Prisma {
     files_uploaded?: FileCreateNestedManyWithoutUploaded_byInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -227570,7 +227251,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedCreateNestedManyWithoutUploaded_byInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -227664,7 +227345,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutOrganizationNestedInput
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -227713,7 +227394,7 @@ export namespace Prisma {
     files?: FileUncheckedUpdateManyWithoutOrganizationNestedInput
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -227798,7 +227479,7 @@ export namespace Prisma {
     files_uploaded?: FileUpdateManyWithoutUploaded_byNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -227867,7 +227548,7 @@ export namespace Prisma {
     files_uploaded?: FileUncheckedUpdateManyWithoutUploaded_byNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -228079,7 +227760,7 @@ export namespace Prisma {
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutDeviceNestedInput
   }
 
-  export type OrganizationCreateWithoutUsage_recordsInput = {
+  export type OrganizationCreateWithoutUsage_chargesInput = {
     id?: string
     name: string
     slug: string
@@ -228128,7 +227809,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkCreateNestedManyWithoutOrganizationInput
   }
 
-  export type OrganizationUncheckedCreateWithoutUsage_recordsInput = {
+  export type OrganizationUncheckedCreateWithoutUsage_chargesInput = {
     id?: string
     name: string
     slug: string
@@ -228177,12 +227858,12 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutOrganizationInput
   }
 
-  export type OrganizationCreateOrConnectWithoutUsage_recordsInput = {
+  export type OrganizationCreateOrConnectWithoutUsage_chargesInput = {
     where: OrganizationWhereUniqueInput
-    create: XOR<OrganizationCreateWithoutUsage_recordsInput, OrganizationUncheckedCreateWithoutUsage_recordsInput>
+    create: XOR<OrganizationCreateWithoutUsage_chargesInput, OrganizationUncheckedCreateWithoutUsage_chargesInput>
   }
 
-  export type UserCreateWithoutUsage_recordsInput = {
+  export type UserCreateWithoutUsage_chargesInput = {
     id?: string
     email: string
     phone?: string | null
@@ -228251,7 +227932,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkCreateNestedManyWithoutUserInput
   }
 
-  export type UserUncheckedCreateWithoutUsage_recordsInput = {
+  export type UserUncheckedCreateWithoutUsage_chargesInput = {
     id?: string
     email: string
     phone?: string | null
@@ -228320,12 +228001,12 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutUserInput
   }
 
-  export type UserCreateOrConnectWithoutUsage_recordsInput = {
+  export type UserCreateOrConnectWithoutUsage_chargesInput = {
     where: UserWhereUniqueInput
-    create: XOR<UserCreateWithoutUsage_recordsInput, UserUncheckedCreateWithoutUsage_recordsInput>
+    create: XOR<UserCreateWithoutUsage_chargesInput, UserUncheckedCreateWithoutUsage_chargesInput>
   }
 
-  export type BotCreateWithoutUsage_recordsInput = {
+  export type BotCreateWithoutUsage_chargesInput = {
     id?: string
     is_starter?: boolean
     name: string
@@ -228403,7 +228084,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkCreateNestedManyWithoutBotInput
   }
 
-  export type BotUncheckedCreateWithoutUsage_recordsInput = {
+  export type BotUncheckedCreateWithoutUsage_chargesInput = {
     id?: string
     organization_id: string
     created_by_id?: string | null
@@ -228481,12 +228162,12 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedCreateNestedManyWithoutBotInput
   }
 
-  export type BotCreateOrConnectWithoutUsage_recordsInput = {
+  export type BotCreateOrConnectWithoutUsage_chargesInput = {
     where: BotWhereUniqueInput
-    create: XOR<BotCreateWithoutUsage_recordsInput, BotUncheckedCreateWithoutUsage_recordsInput>
+    create: XOR<BotCreateWithoutUsage_chargesInput, BotUncheckedCreateWithoutUsage_chargesInput>
   }
 
-  export type AiModelCreateWithoutUsage_recordsInput = {
+  export type AiModelCreateWithoutUsage_chargesInput = {
     id?: string
     openrouter_id: string
     name: string
@@ -228511,7 +228192,7 @@ export namespace Prisma {
     runs?: RunCreateNestedManyWithoutModelInput
   }
 
-  export type AiModelUncheckedCreateWithoutUsage_recordsInput = {
+  export type AiModelUncheckedCreateWithoutUsage_chargesInput = {
     id?: string
     openrouter_id: string
     name: string
@@ -228536,95 +228217,12 @@ export namespace Prisma {
     runs?: RunUncheckedCreateNestedManyWithoutModelInput
   }
 
-  export type AiModelCreateOrConnectWithoutUsage_recordsInput = {
+  export type AiModelCreateOrConnectWithoutUsage_chargesInput = {
     where: AiModelWhereUniqueInput
-    create: XOR<AiModelCreateWithoutUsage_recordsInput, AiModelUncheckedCreateWithoutUsage_recordsInput>
+    create: XOR<AiModelCreateWithoutUsage_chargesInput, AiModelUncheckedCreateWithoutUsage_chargesInput>
   }
 
-  export type ArtifactCreateWithoutUsage_recordsInput = {
-    id?: string
-    title: string
-    slug: string
-    type?: $Enums.ArtifactType
-    description?: string | null
-    sharing_level?: $Enums.ArtifactSharingLevel
-    public_enabled?: boolean
-    public_password_hash?: string | null
-    public_expires_at?: Date | string | null
-    allow_search_engines?: boolean
-    allow_embedding?: boolean
-    public_ai_enabled?: boolean
-    public_uploads_enabled?: boolean
-    review_before_publish?: boolean
-    view_count?: number
-    use_count?: number
-    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
-    taken_down_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    organization: OrganizationCreateNestedOneWithoutArtifactsInput
-    owner?: UserCreateNestedOneWithoutArtifacts_ownedInput
-    conversation?: ConversationCreateNestedOneWithoutArtifactsInput
-    message?: MessageCreateNestedOneWithoutArtifactsInput
-    duplicated_from?: ArtifactCreateNestedOneWithoutDuplicatesInput
-    duplicates?: ArtifactCreateNestedManyWithoutDuplicated_fromInput
-    current_version?: ArtifactVersionCreateNestedOneWithoutCurrent_ofInput
-    draft_version?: ArtifactVersionCreateNestedOneWithoutDraft_ofInput
-    versions?: ArtifactVersionCreateNestedManyWithoutArtifactInput
-    shares?: ArtifactShareCreateNestedManyWithoutArtifactInput
-    comments?: ArtifactCommentCreateNestedManyWithoutArtifactInput
-    records?: ArtifactRecordCreateNestedManyWithoutArtifactInput
-    reports?: ArtifactReportCreateNestedManyWithoutArtifactInput
-    files?: FileCreateNestedManyWithoutArtifactInput
-    data_grants?: ArtifactDataGrantCreateNestedManyWithoutArtifactInput
-  }
-
-  export type ArtifactUncheckedCreateWithoutUsage_recordsInput = {
-    id?: string
-    organization_id: string
-    owner_id?: string | null
-    conversation_id?: string | null
-    message_id?: string | null
-    duplicated_from_id?: string | null
-    title: string
-    slug: string
-    type?: $Enums.ArtifactType
-    description?: string | null
-    sharing_level?: $Enums.ArtifactSharingLevel
-    public_enabled?: boolean
-    public_password_hash?: string | null
-    public_expires_at?: Date | string | null
-    allow_search_engines?: boolean
-    allow_embedding?: boolean
-    public_ai_enabled?: boolean
-    public_uploads_enabled?: boolean
-    review_before_publish?: boolean
-    current_version_id?: string | null
-    draft_version_id?: string | null
-    view_count?: number
-    use_count?: number
-    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
-    taken_down_at?: Date | string | null
-    deleted_at?: Date | string | null
-    created_at?: Date | string
-    updated_at?: Date | string
-    duplicates?: ArtifactUncheckedCreateNestedManyWithoutDuplicated_fromInput
-    versions?: ArtifactVersionUncheckedCreateNestedManyWithoutArtifactInput
-    shares?: ArtifactShareUncheckedCreateNestedManyWithoutArtifactInput
-    comments?: ArtifactCommentUncheckedCreateNestedManyWithoutArtifactInput
-    records?: ArtifactRecordUncheckedCreateNestedManyWithoutArtifactInput
-    reports?: ArtifactReportUncheckedCreateNestedManyWithoutArtifactInput
-    files?: FileUncheckedCreateNestedManyWithoutArtifactInput
-    data_grants?: ArtifactDataGrantUncheckedCreateNestedManyWithoutArtifactInput
-  }
-
-  export type ArtifactCreateOrConnectWithoutUsage_recordsInput = {
-    where: ArtifactWhereUniqueInput
-    create: XOR<ArtifactCreateWithoutUsage_recordsInput, ArtifactUncheckedCreateWithoutUsage_recordsInput>
-  }
-
-  export type RunCreateWithoutUsage_recordsInput = {
+  export type RunCreateWithoutUsage_chargesInput = {
     id?: string
     type: $Enums.RunType
     status?: $Enums.RunStatus
@@ -228666,7 +228264,7 @@ export namespace Prisma {
     files?: FileCreateNestedManyWithoutRunInput
   }
 
-  export type RunUncheckedCreateWithoutUsage_recordsInput = {
+  export type RunUncheckedCreateWithoutUsage_chargesInput = {
     id?: string
     organization_id: string
     conversation_id?: string | null
@@ -228708,23 +228306,23 @@ export namespace Prisma {
     files?: FileUncheckedCreateNestedManyWithoutRunInput
   }
 
-  export type RunCreateOrConnectWithoutUsage_recordsInput = {
+  export type RunCreateOrConnectWithoutUsage_chargesInput = {
     where: RunWhereUniqueInput
-    create: XOR<RunCreateWithoutUsage_recordsInput, RunUncheckedCreateWithoutUsage_recordsInput>
+    create: XOR<RunCreateWithoutUsage_chargesInput, RunUncheckedCreateWithoutUsage_chargesInput>
   }
 
-  export type OrganizationUpsertWithoutUsage_recordsInput = {
-    update: XOR<OrganizationUpdateWithoutUsage_recordsInput, OrganizationUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<OrganizationCreateWithoutUsage_recordsInput, OrganizationUncheckedCreateWithoutUsage_recordsInput>
+  export type OrganizationUpsertWithoutUsage_chargesInput = {
+    update: XOR<OrganizationUpdateWithoutUsage_chargesInput, OrganizationUncheckedUpdateWithoutUsage_chargesInput>
+    create: XOR<OrganizationCreateWithoutUsage_chargesInput, OrganizationUncheckedCreateWithoutUsage_chargesInput>
     where?: OrganizationWhereInput
   }
 
-  export type OrganizationUpdateToOneWithWhereWithoutUsage_recordsInput = {
+  export type OrganizationUpdateToOneWithWhereWithoutUsage_chargesInput = {
     where?: OrganizationWhereInput
-    data: XOR<OrganizationUpdateWithoutUsage_recordsInput, OrganizationUncheckedUpdateWithoutUsage_recordsInput>
+    data: XOR<OrganizationUpdateWithoutUsage_chargesInput, OrganizationUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type OrganizationUpdateWithoutUsage_recordsInput = {
+  export type OrganizationUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
@@ -228773,7 +228371,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkUpdateManyWithoutOrganizationNestedInput
   }
 
-  export type OrganizationUncheckedUpdateWithoutUsage_recordsInput = {
+  export type OrganizationUncheckedUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     slug?: StringFieldUpdateOperationsInput | string
@@ -228822,18 +228420,18 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutOrganizationNestedInput
   }
 
-  export type UserUpsertWithoutUsage_recordsInput = {
-    update: XOR<UserUpdateWithoutUsage_recordsInput, UserUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<UserCreateWithoutUsage_recordsInput, UserUncheckedCreateWithoutUsage_recordsInput>
+  export type UserUpsertWithoutUsage_chargesInput = {
+    update: XOR<UserUpdateWithoutUsage_chargesInput, UserUncheckedUpdateWithoutUsage_chargesInput>
+    create: XOR<UserCreateWithoutUsage_chargesInput, UserUncheckedCreateWithoutUsage_chargesInput>
     where?: UserWhereInput
   }
 
-  export type UserUpdateToOneWithWhereWithoutUsage_recordsInput = {
+  export type UserUpdateToOneWithWhereWithoutUsage_chargesInput = {
     where?: UserWhereInput
-    data: XOR<UserUpdateWithoutUsage_recordsInput, UserUncheckedUpdateWithoutUsage_recordsInput>
+    data: XOR<UserUpdateWithoutUsage_chargesInput, UserUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type UserUpdateWithoutUsage_recordsInput = {
+  export type UserUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228902,7 +228500,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkUpdateManyWithoutUserNestedInput
   }
 
-  export type UserUncheckedUpdateWithoutUsage_recordsInput = {
+  export type UserUncheckedUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     email?: StringFieldUpdateOperationsInput | string
     phone?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228971,18 +228569,18 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutUserNestedInput
   }
 
-  export type BotUpsertWithoutUsage_recordsInput = {
-    update: XOR<BotUpdateWithoutUsage_recordsInput, BotUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<BotCreateWithoutUsage_recordsInput, BotUncheckedCreateWithoutUsage_recordsInput>
+  export type BotUpsertWithoutUsage_chargesInput = {
+    update: XOR<BotUpdateWithoutUsage_chargesInput, BotUncheckedUpdateWithoutUsage_chargesInput>
+    create: XOR<BotCreateWithoutUsage_chargesInput, BotUncheckedCreateWithoutUsage_chargesInput>
     where?: BotWhereInput
   }
 
-  export type BotUpdateToOneWithWhereWithoutUsage_recordsInput = {
+  export type BotUpdateToOneWithWhereWithoutUsage_chargesInput = {
     where?: BotWhereInput
-    data: XOR<BotUpdateWithoutUsage_recordsInput, BotUncheckedUpdateWithoutUsage_recordsInput>
+    data: XOR<BotUpdateWithoutUsage_chargesInput, BotUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type BotUpdateWithoutUsage_recordsInput = {
+  export type BotUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
@@ -229060,7 +228658,7 @@ export namespace Prisma {
     channel_links?: ChannelLinkUpdateManyWithoutBotNestedInput
   }
 
-  export type BotUncheckedUpdateWithoutUsage_recordsInput = {
+  export type BotUncheckedUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     created_by_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229138,18 +228736,18 @@ export namespace Prisma {
     channel_links?: ChannelLinkUncheckedUpdateManyWithoutBotNestedInput
   }
 
-  export type AiModelUpsertWithoutUsage_recordsInput = {
-    update: XOR<AiModelUpdateWithoutUsage_recordsInput, AiModelUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<AiModelCreateWithoutUsage_recordsInput, AiModelUncheckedCreateWithoutUsage_recordsInput>
+  export type AiModelUpsertWithoutUsage_chargesInput = {
+    update: XOR<AiModelUpdateWithoutUsage_chargesInput, AiModelUncheckedUpdateWithoutUsage_chargesInput>
+    create: XOR<AiModelCreateWithoutUsage_chargesInput, AiModelUncheckedCreateWithoutUsage_chargesInput>
     where?: AiModelWhereInput
   }
 
-  export type AiModelUpdateToOneWithWhereWithoutUsage_recordsInput = {
+  export type AiModelUpdateToOneWithWhereWithoutUsage_chargesInput = {
     where?: AiModelWhereInput
-    data: XOR<AiModelUpdateWithoutUsage_recordsInput, AiModelUncheckedUpdateWithoutUsage_recordsInput>
+    data: XOR<AiModelUpdateWithoutUsage_chargesInput, AiModelUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type AiModelUpdateWithoutUsage_recordsInput = {
+  export type AiModelUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     openrouter_id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -229174,7 +228772,7 @@ export namespace Prisma {
     runs?: RunUpdateManyWithoutModelNestedInput
   }
 
-  export type AiModelUncheckedUpdateWithoutUsage_recordsInput = {
+  export type AiModelUncheckedUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     openrouter_id?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
@@ -229199,107 +228797,18 @@ export namespace Prisma {
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
   }
 
-  export type ArtifactUpsertWithoutUsage_recordsInput = {
-    update: XOR<ArtifactUpdateWithoutUsage_recordsInput, ArtifactUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<ArtifactCreateWithoutUsage_recordsInput, ArtifactUncheckedCreateWithoutUsage_recordsInput>
-    where?: ArtifactWhereInput
-  }
-
-  export type ArtifactUpdateToOneWithWhereWithoutUsage_recordsInput = {
-    where?: ArtifactWhereInput
-    data: XOR<ArtifactUpdateWithoutUsage_recordsInput, ArtifactUncheckedUpdateWithoutUsage_recordsInput>
-  }
-
-  export type ArtifactUpdateWithoutUsage_recordsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    title?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    type?: EnumArtifactTypeFieldUpdateOperationsInput | $Enums.ArtifactType
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    sharing_level?: EnumArtifactSharingLevelFieldUpdateOperationsInput | $Enums.ArtifactSharingLevel
-    public_enabled?: BoolFieldUpdateOperationsInput | boolean
-    public_password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    public_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    allow_search_engines?: BoolFieldUpdateOperationsInput | boolean
-    allow_embedding?: BoolFieldUpdateOperationsInput | boolean
-    public_ai_enabled?: BoolFieldUpdateOperationsInput | boolean
-    public_uploads_enabled?: BoolFieldUpdateOperationsInput | boolean
-    review_before_publish?: BoolFieldUpdateOperationsInput | boolean
-    view_count?: IntFieldUpdateOperationsInput | number
-    use_count?: IntFieldUpdateOperationsInput | number
-    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
-    taken_down_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutArtifactsNestedInput
-    owner?: UserUpdateOneWithoutArtifacts_ownedNestedInput
-    conversation?: ConversationUpdateOneWithoutArtifactsNestedInput
-    message?: MessageUpdateOneWithoutArtifactsNestedInput
-    duplicated_from?: ArtifactUpdateOneWithoutDuplicatesNestedInput
-    duplicates?: ArtifactUpdateManyWithoutDuplicated_fromNestedInput
-    current_version?: ArtifactVersionUpdateOneWithoutCurrent_ofNestedInput
-    draft_version?: ArtifactVersionUpdateOneWithoutDraft_ofNestedInput
-    versions?: ArtifactVersionUpdateManyWithoutArtifactNestedInput
-    shares?: ArtifactShareUpdateManyWithoutArtifactNestedInput
-    comments?: ArtifactCommentUpdateManyWithoutArtifactNestedInput
-    records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
-    reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
-    files?: FileUpdateManyWithoutArtifactNestedInput
-    data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
-  }
-
-  export type ArtifactUncheckedUpdateWithoutUsage_recordsInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    owner_id?: NullableStringFieldUpdateOperationsInput | string | null
-    conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
-    message_id?: NullableStringFieldUpdateOperationsInput | string | null
-    duplicated_from_id?: NullableStringFieldUpdateOperationsInput | string | null
-    title?: StringFieldUpdateOperationsInput | string
-    slug?: StringFieldUpdateOperationsInput | string
-    type?: EnumArtifactTypeFieldUpdateOperationsInput | $Enums.ArtifactType
-    description?: NullableStringFieldUpdateOperationsInput | string | null
-    sharing_level?: EnumArtifactSharingLevelFieldUpdateOperationsInput | $Enums.ArtifactSharingLevel
-    public_enabled?: BoolFieldUpdateOperationsInput | boolean
-    public_password_hash?: NullableStringFieldUpdateOperationsInput | string | null
-    public_expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    allow_search_engines?: BoolFieldUpdateOperationsInput | boolean
-    allow_embedding?: BoolFieldUpdateOperationsInput | boolean
-    public_ai_enabled?: BoolFieldUpdateOperationsInput | boolean
-    public_uploads_enabled?: BoolFieldUpdateOperationsInput | boolean
-    review_before_publish?: BoolFieldUpdateOperationsInput | boolean
-    current_version_id?: NullableStringFieldUpdateOperationsInput | string | null
-    draft_version_id?: NullableStringFieldUpdateOperationsInput | string | null
-    view_count?: IntFieldUpdateOperationsInput | number
-    use_count?: IntFieldUpdateOperationsInput | number
-    is_pinned_by?: NullableJsonNullValueInput | InputJsonValue
-    taken_down_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    duplicates?: ArtifactUncheckedUpdateManyWithoutDuplicated_fromNestedInput
-    versions?: ArtifactVersionUncheckedUpdateManyWithoutArtifactNestedInput
-    shares?: ArtifactShareUncheckedUpdateManyWithoutArtifactNestedInput
-    comments?: ArtifactCommentUncheckedUpdateManyWithoutArtifactNestedInput
-    records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
-    reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
-    files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
-  }
-
-  export type RunUpsertWithoutUsage_recordsInput = {
-    update: XOR<RunUpdateWithoutUsage_recordsInput, RunUncheckedUpdateWithoutUsage_recordsInput>
-    create: XOR<RunCreateWithoutUsage_recordsInput, RunUncheckedCreateWithoutUsage_recordsInput>
+  export type RunUpsertWithoutUsage_chargesInput = {
+    update: XOR<RunUpdateWithoutUsage_chargesInput, RunUncheckedUpdateWithoutUsage_chargesInput>
+    create: XOR<RunCreateWithoutUsage_chargesInput, RunUncheckedCreateWithoutUsage_chargesInput>
     where?: RunWhereInput
   }
 
-  export type RunUpdateToOneWithWhereWithoutUsage_recordsInput = {
+  export type RunUpdateToOneWithWhereWithoutUsage_chargesInput = {
     where?: RunWhereInput
-    data: XOR<RunUpdateWithoutUsage_recordsInput, RunUncheckedUpdateWithoutUsage_recordsInput>
+    data: XOR<RunUpdateWithoutUsage_chargesInput, RunUncheckedUpdateWithoutUsage_chargesInput>
   }
 
-  export type RunUpdateWithoutUsage_recordsInput = {
+  export type RunUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     type?: EnumRunTypeFieldUpdateOperationsInput | $Enums.RunType
     status?: EnumRunStatusFieldUpdateOperationsInput | $Enums.RunStatus
@@ -229341,7 +228850,7 @@ export namespace Prisma {
     files?: FileUpdateManyWithoutRunNestedInput
   }
 
-  export type RunUncheckedUpdateWithoutUsage_recordsInput = {
+  export type RunUncheckedUpdateWithoutUsage_chargesInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     conversation_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229420,7 +228929,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
@@ -229469,7 +228978,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -229555,7 +229064,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
@@ -229633,7 +229142,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
@@ -229695,7 +229204,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
@@ -229744,7 +229253,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -229836,7 +229345,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
@@ -229914,7 +229423,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
@@ -229960,7 +229469,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
@@ -230009,7 +229518,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -230074,7 +229583,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
@@ -230123,7 +229632,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -230172,7 +229681,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     invoices?: InvoiceCreateNestedManyWithoutOrganizationInput
@@ -230221,7 +229730,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     invoices?: InvoiceUncheckedCreateNestedManyWithoutOrganizationInput
@@ -230286,7 +229795,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     invoices?: InvoiceUpdateManyWithoutOrganizationNestedInput
@@ -230335,7 +229844,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     invoices?: InvoiceUncheckedUpdateManyWithoutOrganizationNestedInput
@@ -230384,7 +229893,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -230433,7 +229942,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -230498,7 +230007,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -230547,7 +230056,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -230596,7 +230105,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -230645,7 +230154,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -230724,7 +230233,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
@@ -230793,7 +230302,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
@@ -230874,7 +230383,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionCreateNestedManyWithoutBotInput
@@ -230952,7 +230461,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedCreateNestedManyWithoutBotInput
@@ -231076,7 +230585,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionCreateNestedManyWithoutRunInput
     files?: FileCreateNestedManyWithoutRunInput
   }
@@ -231118,7 +230627,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutRunInput
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutRunInput
     transfers?: ComputerTransferUncheckedCreateNestedManyWithoutRunInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutRunInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutRunInput
     artifact_versions?: ArtifactVersionUncheckedCreateNestedManyWithoutRunInput
     files?: FileUncheckedCreateNestedManyWithoutRunInput
   }
@@ -231231,7 +230740,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -231280,7 +230789,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -231365,7 +230874,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
@@ -231434,7 +230943,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
@@ -231521,7 +231030,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUpdateManyWithoutBotNestedInput
@@ -231599,7 +231108,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
     connection_restrictions?: ConnectionBotRestrictionUncheckedUpdateManyWithoutBotNestedInput
@@ -231735,7 +231244,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
   }
@@ -231777,7 +231286,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
   }
@@ -231880,7 +231389,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -231929,7 +231438,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -232008,7 +231517,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkCreateNestedManyWithoutFetched_byInput
@@ -232077,7 +231586,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
     knowledge_links?: KnowledgeLinkUncheckedCreateNestedManyWithoutFetched_byInput
@@ -232214,7 +231723,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -232263,7 +231772,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -232348,7 +231857,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUpdateManyWithoutFetched_byNestedInput
@@ -232417,7 +231926,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
     knowledge_links?: KnowledgeLinkUncheckedUpdateManyWithoutFetched_byNestedInput
@@ -232544,7 +232053,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerCreateNestedManyWithoutOrganizationInput
     automations?: AutomationCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionCreateNestedOneWithoutOrganizationInput
@@ -232593,7 +232102,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedCreateNestedManyWithoutOrganizationInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOrganizationInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutOrganizationInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutOrganizationInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutOrganizationInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutOrganizationInput
     usage_alerts?: UsageAlertUncheckedCreateNestedManyWithoutOrganizationInput
     subscription?: SubscriptionUncheckedCreateNestedOneWithoutOrganizationInput
@@ -232672,7 +232181,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionCreateNestedManyWithoutUserInput
     automations?: AutomationCreateNestedManyWithoutOwnerInput
     notifications?: NotificationCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemCreateNestedManyWithoutAdded_byInput
@@ -232741,7 +232250,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedCreateNestedManyWithoutUserInput
     automations?: AutomationUncheckedCreateNestedManyWithoutOwnerInput
     notifications?: NotificationUncheckedCreateNestedManyWithoutUserInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutUserInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutUserInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_userInput
     data_exports?: DataExportUncheckedCreateNestedManyWithoutUserInput
     knowledge_items?: KnowledgeItemUncheckedCreateNestedManyWithoutAdded_byInput
@@ -232822,7 +232331,7 @@ export namespace Prisma {
     approvals?: ApprovalCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionCreateNestedManyWithoutBotInput
     automations?: AutomationCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsCreateNestedManyWithoutDefault_botInput
@@ -232900,7 +232409,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedCreateNestedManyWithoutBotInput
     voice_sessions?: VoiceSessionUncheckedCreateNestedManyWithoutBotInput
     automations?: AutomationUncheckedCreateNestedManyWithoutBotInput
-    usage_records?: UsageRecordUncheckedCreateNestedManyWithoutBotInput
+    usage_charges?: UsageChargeUncheckedCreateNestedManyWithoutBotInput
     usage_limits?: UsageLimitUncheckedCreateNestedManyWithoutBotInput
     activity_logs?: ActivityLogUncheckedCreateNestedManyWithoutActor_botInput
     default_for_users?: UserSettingsUncheckedCreateNestedManyWithoutDefault_botInput
@@ -233027,7 +232536,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -233076,7 +232585,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -233161,7 +232670,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUpdateManyWithoutUserNestedInput
     automations?: AutomationUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUpdateManyWithoutAdded_byNestedInput
@@ -233230,7 +232739,7 @@ export namespace Prisma {
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutUserNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOwnerNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutUserNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutUserNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutUserNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_userNestedInput
     data_exports?: DataExportUncheckedUpdateManyWithoutUserNestedInput
     knowledge_items?: KnowledgeItemUncheckedUpdateManyWithoutAdded_byNestedInput
@@ -233317,7 +232826,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -233395,7 +232904,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -234161,20 +233670,18 @@ export namespace Prisma {
     created_at?: Date | string
   }
 
-  export type UsageRecordCreateManyUserInput = {
+  export type UsageChargeCreateManyUserInput = {
     id?: string
     organization_id: string
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type ActivityLogCreateManyActor_userInput = {
@@ -234529,7 +234036,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUpdateOneWithoutOrganizationNestedInput
@@ -234578,7 +234085,7 @@ export namespace Prisma {
     cloud_computers?: CloudComputerUncheckedUpdateManyWithoutOrganizationNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutOrganizationNestedInput
     notifications?: NotificationUncheckedUpdateManyWithoutOrganizationNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutOrganizationNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutOrganizationNestedInput
     usage_alerts?: UsageAlertUncheckedUpdateManyWithoutOrganizationNestedInput
     subscription?: SubscriptionUncheckedUpdateOneWithoutOrganizationNestedInput
@@ -234763,7 +234270,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -234841,7 +234348,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -235456,7 +234963,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -235498,7 +235005,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -235890,7 +235397,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -235929,7 +235435,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -236647,52 +236152,46 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUpdateWithoutUserInput = {
+  export type UsageChargeUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput
+    bot?: BotUpdateOneWithoutUsage_chargesNestedInput
+    model?: AiModelUpdateOneWithoutUsage_chargesNestedInput
+    run?: RunUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateWithoutUserInput = {
+  export type UsageChargeUncheckedUpdateWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutUserInput = {
+  export type UsageChargeUncheckedUpdateManyWithoutUserInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ActivityLogUpdateWithoutActor_userInput = {
@@ -237833,20 +237332,18 @@ export namespace Prisma {
     created_at?: Date | string
   }
 
-  export type UsageRecordCreateManyOrganizationInput = {
+  export type UsageChargeCreateManyOrganizationInput = {
     id?: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type UsageLimitCreateManyOrganizationInput = {
@@ -238152,7 +237649,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -238230,7 +237727,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -238538,7 +238035,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -238580,7 +238077,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -238961,7 +238458,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -239000,7 +238496,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -239554,52 +239049,46 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUpdateWithoutOrganizationInput = {
+  export type UsageChargeUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
+    user?: UserUpdateOneWithoutUsage_chargesNestedInput
+    bot?: BotUpdateOneWithoutUsage_chargesNestedInput
+    model?: AiModelUpdateOneWithoutUsage_chargesNestedInput
+    run?: RunUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateWithoutOrganizationInput = {
+  export type UsageChargeUncheckedUpdateWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutOrganizationInput = {
+  export type UsageChargeUncheckedUpdateManyWithoutOrganizationInput = {
     id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsageLimitUpdateWithoutOrganizationInput = {
@@ -240155,20 +239644,18 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
-  export type UsageRecordCreateManyModelInput = {
+  export type UsageChargeCreateManyModelInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type AiModelUpdateWithoutFallback_modelInput = {
@@ -240193,7 +239680,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUpdateManyWithoutModelNestedInput
     runs?: RunUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateWithoutFallback_modelInput = {
@@ -240218,7 +239705,7 @@ export namespace Prisma {
     org_defaults?: OrganizationSettingsUncheckedUpdateManyWithoutDefault_modelNestedInput
     org_allowed?: OrganizationAllowedModelUncheckedUpdateManyWithoutModelNestedInput
     runs?: RunUncheckedUpdateManyWithoutModelNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutModelNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutModelNestedInput
   }
 
   export type AiModelUncheckedUpdateManyWithoutFallback_modelInput = {
@@ -240307,7 +239794,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -240385,7 +239872,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -240805,7 +240292,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -240847,7 +240334,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -240885,52 +240372,46 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUpdateWithoutModelInput = {
+  export type UsageChargeUpdateWithoutModelInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput
+    user?: UserUpdateOneWithoutUsage_chargesNestedInput
+    bot?: BotUpdateOneWithoutUsage_chargesNestedInput
+    run?: RunUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateWithoutModelInput = {
+  export type UsageChargeUncheckedUpdateWithoutModelInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutModelInput = {
+  export type UsageChargeUncheckedUpdateManyWithoutModelInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type BotTemplateSkillCreateManyTemplateInput = {
@@ -241075,7 +240556,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -241153,7 +240634,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -241537,20 +241018,18 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
-  export type UsageRecordCreateManyBotInput = {
+  export type UsageChargeCreateManyBotInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     run_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type UsageLimitCreateManyBotInput = {
@@ -241766,7 +241245,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUpdateManyWithoutBotNestedInput
     automations?: AutomationUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUpdateManyWithoutDefault_botNestedInput
@@ -241844,7 +241323,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutBotNestedInput
     voice_sessions?: VoiceSessionUncheckedUpdateManyWithoutBotNestedInput
     automations?: AutomationUncheckedUpdateManyWithoutBotNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutBotNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutBotNestedInput
     usage_limits?: UsageLimitUncheckedUpdateManyWithoutBotNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutActor_botNestedInput
     default_for_users?: UserSettingsUncheckedUpdateManyWithoutDefault_botNestedInput
@@ -242349,7 +241828,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -242391,7 +241870,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -242465,7 +241944,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -242507,7 +241986,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -242772,52 +242251,46 @@ export namespace Prisma {
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUpdateWithoutBotInput = {
+  export type UsageChargeUpdateWithoutBotInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput
+    user?: UserUpdateOneWithoutUsage_chargesNestedInput
+    model?: AiModelUpdateOneWithoutUsage_chargesNestedInput
+    run?: RunUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateWithoutBotInput = {
+  export type UsageChargeUncheckedUpdateWithoutBotInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutBotInput = {
+  export type UsageChargeUncheckedUpdateManyWithoutBotInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     run_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type UsageLimitUpdateWithoutBotInput = {
@@ -243841,7 +243314,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -243883,7 +243356,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -244123,7 +243596,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -244162,7 +243634,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -245316,7 +244787,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -245355,7 +244825,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -245425,7 +244894,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -245467,7 +244936,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -245641,20 +245110,18 @@ export namespace Prisma {
     created_at?: Date | string
   }
 
-  export type UsageRecordCreateManyRunInput = {
+  export type UsageChargeCreateManyRunInput = {
     id?: string
     organization_id: string
     user_id?: string | null
     bot_id?: string | null
     model_id?: string | null
-    artifact_id?: string | null
     kind: $Enums.UsageKind
-    period: string
-    day: Date | string
     quantity: Decimal | DecimalJsLike | number | string
+    input_tokens?: number | null
+    output_tokens?: number | null
     cost?: Decimal | DecimalJsLike | number | string
     created_at?: Date | string
-    updated_at?: Date | string
   }
 
   export type ActivityLogCreateManyRunInput = {
@@ -245752,7 +245219,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -245794,7 +245261,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -246168,52 +245635,46 @@ export namespace Prisma {
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUpdateWithoutRunInput = {
+  export type UsageChargeUpdateWithoutRunInput = {
     id?: StringFieldUpdateOperationsInput | string
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    artifact?: ArtifactUpdateOneWithoutUsage_recordsNestedInput
+    organization?: OrganizationUpdateOneRequiredWithoutUsage_chargesNestedInput
+    user?: UserUpdateOneWithoutUsage_chargesNestedInput
+    bot?: BotUpdateOneWithoutUsage_chargesNestedInput
+    model?: AiModelUpdateOneWithoutUsage_chargesNestedInput
   }
 
-  export type UsageRecordUncheckedUpdateWithoutRunInput = {
+  export type UsageChargeUncheckedUpdateWithoutRunInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
-  export type UsageRecordUncheckedUpdateManyWithoutRunInput = {
+  export type UsageChargeUncheckedUpdateManyWithoutRunInput = {
     id?: StringFieldUpdateOperationsInput | string
     organization_id?: StringFieldUpdateOperationsInput | string
     user_id?: NullableStringFieldUpdateOperationsInput | string | null
     bot_id?: NullableStringFieldUpdateOperationsInput | string | null
     model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    artifact_id?: NullableStringFieldUpdateOperationsInput | string | null
     kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
     quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
+    input_tokens?: NullableIntFieldUpdateOperationsInput | number | null
+    output_tokens?: NullableIntFieldUpdateOperationsInput | number | null
     cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }
 
   export type ActivityLogUpdateWithoutRunInput = {
@@ -246483,7 +245944,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -246525,7 +245986,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -246844,7 +246305,7 @@ export namespace Prisma {
     approvals?: ApprovalUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUpdateManyWithoutRunNestedInput
     files?: FileUpdateManyWithoutRunNestedInput
@@ -246886,7 +246347,7 @@ export namespace Prisma {
     approvals?: ApprovalUncheckedUpdateManyWithoutRunNestedInput
     computer_sessions?: ComputerSessionUncheckedUpdateManyWithoutRunNestedInput
     transfers?: ComputerTransferUncheckedUpdateManyWithoutRunNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutRunNestedInput
+    usage_charges?: UsageChargeUncheckedUpdateManyWithoutRunNestedInput
     activity_logs?: ActivityLogUncheckedUpdateManyWithoutRunNestedInput
     artifact_versions?: ArtifactVersionUncheckedUpdateManyWithoutRunNestedInput
     files?: FileUncheckedUpdateManyWithoutRunNestedInput
@@ -247244,22 +246705,6 @@ export namespace Prisma {
     updated_at?: Date | string
   }
 
-  export type UsageRecordCreateManyArtifactInput = {
-    id?: string
-    organization_id: string
-    user_id?: string | null
-    bot_id?: string | null
-    model_id?: string | null
-    run_id?: string | null
-    kind: $Enums.UsageKind
-    period: string
-    day: Date | string
-    quantity: Decimal | DecimalJsLike | number | string
-    cost?: Decimal | DecimalJsLike | number | string
-    created_at?: Date | string
-    updated_at?: Date | string
-  }
-
   export type ArtifactDataGrantCreateManyArtifactInput = {
     id?: string
     user_id: string
@@ -247302,7 +246747,6 @@ export namespace Prisma {
     records?: ArtifactRecordUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUpdateManyWithoutArtifactNestedInput
     files?: FileUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUpdateManyWithoutArtifactNestedInput
   }
 
@@ -247341,7 +246785,6 @@ export namespace Prisma {
     records?: ArtifactRecordUncheckedUpdateManyWithoutArtifactNestedInput
     reports?: ArtifactReportUncheckedUpdateManyWithoutArtifactNestedInput
     files?: FileUncheckedUpdateManyWithoutArtifactNestedInput
-    usage_records?: UsageRecordUncheckedUpdateManyWithoutArtifactNestedInput
     data_grants?: ArtifactDataGrantUncheckedUpdateManyWithoutArtifactNestedInput
   }
 
@@ -247644,54 +247087,6 @@ export namespace Prisma {
     deleted_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     purge_after?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     expires_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UsageRecordUpdateWithoutArtifactInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    organization?: OrganizationUpdateOneRequiredWithoutUsage_recordsNestedInput
-    user?: UserUpdateOneWithoutUsage_recordsNestedInput
-    bot?: BotUpdateOneWithoutUsage_recordsNestedInput
-    model?: AiModelUpdateOneWithoutUsage_recordsNestedInput
-    run?: RunUpdateOneWithoutUsage_recordsNestedInput
-  }
-
-  export type UsageRecordUncheckedUpdateWithoutArtifactInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    user_id?: NullableStringFieldUpdateOperationsInput | string | null
-    bot_id?: NullableStringFieldUpdateOperationsInput | string | null
-    model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    run_id?: NullableStringFieldUpdateOperationsInput | string | null
-    kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    created_at?: DateTimeFieldUpdateOperationsInput | Date | string
-    updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
-  }
-
-  export type UsageRecordUncheckedUpdateManyWithoutArtifactInput = {
-    id?: StringFieldUpdateOperationsInput | string
-    organization_id?: StringFieldUpdateOperationsInput | string
-    user_id?: NullableStringFieldUpdateOperationsInput | string | null
-    bot_id?: NullableStringFieldUpdateOperationsInput | string | null
-    model_id?: NullableStringFieldUpdateOperationsInput | string | null
-    run_id?: NullableStringFieldUpdateOperationsInput | string | null
-    kind?: EnumUsageKindFieldUpdateOperationsInput | $Enums.UsageKind
-    period?: StringFieldUpdateOperationsInput | string
-    day?: DateTimeFieldUpdateOperationsInput | Date | string
-    quantity?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
-    cost?: DecimalFieldUpdateOperationsInput | Decimal | DecimalJsLike | number | string
     created_at?: DateTimeFieldUpdateOperationsInput | Date | string
     updated_at?: DateTimeFieldUpdateOperationsInput | Date | string
   }

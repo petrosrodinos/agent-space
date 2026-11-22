@@ -14,7 +14,7 @@ import ConfirmationDialog from "@/components/ui/confirmation-dialog";
 import { ShareConversationDialog } from "../../components/share-conversation-dialog";
 import { Markdown } from "@/components/ui/markdown";
 import {
-  useClearConversation, useConversation, useConversationSearch, useDeleteConversation, useDeleteMessage, useEditMessage, useMarkRead, useMessages, usePinned, useReact, useRetryMessage, useSendMessage,
+  useClearConversation, useConversation, useConversations, useConversationSearch, useDeleteConversation, useDeleteMessage, useEditMessage, useMarkRead, useMessages, usePinned, useReact, useRetryMessage, useSendMessage,
   useStopRun, useTogglePin, useUpdateMyConversation,
 } from "@/features/conversations/hooks/use-conversations";
 import { useConversationStream, type RunStatusMap } from "@/features/realtime/hooks/use-realtime";
@@ -72,6 +72,8 @@ const ConversationPage: FC = () => {
   const qc = useQueryClient();
   const { data: me } = useMe();
   const { data: conversation, isPending: convPending, error: convError } = useConversation(conversationId);
+  // Same query (and cache) as the sidebar, so this sees the sidebar's unread badge.
+  const { data: conversationsList } = useConversations();
   const messagesQuery = useMessages(conversationId);
   const { data: models } = useModels();
   useConversationStream(conversationId);
@@ -214,6 +216,22 @@ const ConversationPage: FC = () => {
     if (conversationId && conversation && (conversation.me?.unread_count ?? 0) >= 0) markRead.mutate(conversationId);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [conversationId, messages.length]);
+
+  // A bot reply bumps the unread count when it *finishes*, after the effect above already ran for the new message.
+  // The sidebar list is refetched on that bump, so watch this chat's count there and clear it while the chat is in view.
+  const listUnread = conversationsList?.find((x) => x.id === conversationId)?.me?.unread_count ?? 0;
+  useEffect(() => {
+    if (!conversationId || listUnread === 0 || markRead.isPending) return;
+    if (document.visibilityState === "visible") {
+      markRead.mutate(conversationId);
+      return;
+    }
+    // Opened in a background tab: clear it as soon as the user comes back.
+    const onVisible = () => document.visibilityState === "visible" && markRead.mutate(conversationId);
+    document.addEventListener("visibilitychange", onVisible);
+    return () => document.removeEventListener("visibilitychange", onVisible);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [conversationId, listUnread]);
 
   const onScroll = () => {
     const el = scroller.current;

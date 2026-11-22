@@ -1,4 +1,5 @@
 import { useEffect, useState, type FC } from "react";
+import { Link } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Bot as BotIcon, LogIn, MoreHorizontal, Pencil, Plus, RefreshCw, Server, Trash2, Users, Wrench } from "lucide-react";
@@ -25,6 +26,7 @@ import { ConnectionStatusOptions, VisibilityOptions } from "@/config/constants/d
 import { ToolServerAuthOptions } from "@/config/constants/dropdowns/connections/tool-server.options";
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { timeAgo } from "@/lib/date";
+import { Routes } from "@/routes/routes";
 import { platform } from "@/platform";
 import { editToolServerSchema, toolServerSchema, type EditToolServerFormValues, type ToolServerFormValues } from "../validation-schemas/tool-server.schema";
 import { SecretField } from "./secret-field";
@@ -112,7 +114,7 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
       </span>
       <div className="min-w-0 flex-1">
         <div className="flex flex-wrap items-center gap-1.5">
-          <span className="truncate font-bold text-ink">{s.name}</span>
+          <Link to={Routes.connections.tool_server(s.id)} className="truncate font-bold text-ink hover:underline">{s.name}</Link>
           {s.visibility === Visibilities.SHARED && (
             <Badge variant="secondary">
               <Users className="h-3 w-3" /> Shared
@@ -150,6 +152,11 @@ const ToolServerTile: FC<{ s: ToolServer; isAdmin: boolean; onEdit: () => void; 
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-56 rounded-md p-1.5">
+            <DropdownMenuItem asChild className="gap-2 rounded-sm">
+              <Link to={Routes.connections.tool_server(s.id)}>
+                <Server className="h-4 w-4" /> View details
+              </Link>
+            </DropdownMenuItem>
             <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => test.mutate(s.id)}>
               <RefreshCw className="h-4 w-4" /> Test connection
             </DropdownMenuItem>

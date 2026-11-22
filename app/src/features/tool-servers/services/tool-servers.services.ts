@@ -4,6 +4,7 @@ import { request } from "@/lib/request";
 import type { CreateToolServerDto, ToolServer, ToolServerTestResult, UpdateToolServerDto } from "../interfaces/tool-servers.interfaces";
 
 export const getToolServers = () => request<ToolServer[]>(() => axiosInstance.get(ApiRoutes.tool_servers.root));
+export const getToolServer = (id: string) => request<ToolServer>(() => axiosInstance.get(ApiRoutes.tool_servers.one(id)));
 /** Returns `authorization_url` when the server uses its own sign-in (standard MCP sign-in). */
 export const createToolServer = (dto: CreateToolServerDto) => request<{ tool_server: ToolServer; authorization_url?: string | null }>(() => axiosInstance.post(ApiRoutes.tool_servers.root, dto), "Could not add the tool server.");
 export const updateToolServer = (id: string, dto: UpdateToolServerDto) => request<ToolServer>(() => axiosInstance.patch(ApiRoutes.tool_servers.one(id), dto));

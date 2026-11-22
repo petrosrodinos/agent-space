@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import type { CreateToolServerDto, UpdateToolServerDto } from "../interfaces/tool-servers.interfaces";
-import { completeToolServerSignIn, createToolServer, deleteToolServer, getToolServers, setToolServerToken, startToolServerSignIn, testToolServer, updateToolServer } from "../services/tool-servers.services";
+import { getToolServer, completeToolServerSignIn, createToolServer, deleteToolServer, getToolServers, setToolServerToken, startToolServerSignIn, testToolServer, updateToolServer } from "../services/tool-servers.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { ToolServerStatuses } from "../interfaces/tool-servers.interfaces";
 
@@ -34,3 +34,8 @@ export const useCompleteToolServerSignIn = () => useToolServerMutation(completeT
 export const useTestToolServer = () =>
   useToolServerMutation(testToolServer, (r) => (r.ok ? `Connected — ${r.tool_count} tools available` : null), "Could not test the tool server");
 export const useDeleteToolServer = () => useToolServerMutation(deleteToolServer, "Tool server removed", "Could not remove the tool server");
+
+export const useToolServer = (id: string) => {
+  const org = useOrganizationStore((s) => s.current_id);
+  return useQuery({ queryKey: [QueryKeys.TOOL_SERVERS, id], queryFn: () => getToolServer(id), enabled: !!org && !!id });
+};

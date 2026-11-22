@@ -43,6 +43,8 @@ export const Routes = {
     legacy_callback: "/integrations/callback",
     service: (slug: string) => `/connections/services/${slug}`,
     service_pattern: "/connections/services/:serviceSlug",
+    tool_server: (id: string) => `/connections/tool-servers/${id}`,
+    tool_server_pattern: "/connections/tool-servers/:toolServerId",
   },
   secrets: "/secrets",
   tools: "/tools",

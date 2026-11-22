@@ -26,7 +26,7 @@ const CommentBody: FC<{ c: ArtifactCommentItem; artifactId: string; canModerate:
         </p>
         {c.mentioned_bot && (
           <span className="mt-1 inline-flex items-center gap-1 rounded-full bg-primary-soft py-0.5 pl-0.5 pr-2 text-xs font-semibold text-accent-foreground">
-            <BotAvatar emoji={c.mentioned_bot.emoji} color={c.mentioned_bot.color} size={24} /> @{c.mentioned_bot.name}
+            <BotAvatar seed={c.mentioned_bot.avatar_seed} color={c.mentioned_bot.color} size={24} /> @{c.mentioned_bot.name}
           </span>
         )}
         <p className="mt-0.5 whitespace-pre-wrap break-words text-sm text-body">{c.content}</p>
@@ -88,7 +88,7 @@ export const CommentsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
                 <SelectItem value={NO_BOT}>Just a comment</SelectItem>
                 {conversation.bots.map((b) => (
                   <SelectItem key={b.id} value={b.id}>
-                    {b.emoji} Ask @{b.name} to change it
+                    Ask @{b.name} to change it
                   </SelectItem>
                 ))}
               </SelectContent>

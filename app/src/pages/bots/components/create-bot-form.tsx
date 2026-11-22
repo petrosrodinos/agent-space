@@ -12,13 +12,16 @@ import { NewChatStepLayout, type NewChatStepProps } from "@/components/layout/ne
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { useCreateBot } from "@/features/bots/hooks/use-bots";
 import { useOpenDirect } from "@/features/conversations/hooks/use-conversations";
-import { BotColorOptions, BotEmojiSuggestions, DEFAULT_BOT_EMOJI, isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { BotColorOptions, isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { randomAvatarSeed } from "@/components/ui/bot-portrait";
+import { AvatarPresets } from "./bot-pickers";
 import { quickBotSchema, type QuickBotFormValues } from "../validation-schemas/bot.schema";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
 
 const FORM_ID = "create-bot-quick";
-const DEFAULT_VALUES: QuickBotFormValues = { name: "", emoji: DEFAULT_BOT_EMOJI, color: BotColorOptions[0].id };
+/** A random face and colour so every new bot starts out different. */
+const defaultValues = (): QuickBotFormValues => ({ name: "", avatar_seed: randomAvatarSeed(), color: BotColorOptions[Math.floor(Math.random() * BotColorOptions.length)].id });
 
 /**
  * "New bot" step of the new-chat modal: name, avatar and colour only. Everything else uses the API defaults and is
@@ -29,8 +32,8 @@ export const CreateBotForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef }
   const createBot = useCreateBot();
   const openDirect = useOpenDirect();
   const pending = createBot.isPending || openDirect.isPending;
-  const form = useForm<QuickBotFormValues>({ resolver: zodResolver(quickBotSchema), defaultValues: DEFAULT_VALUES });
-  const [name, emoji, color] = useWatch({ control: form.control, name: ["name", "emoji", "color"] });
+  const form = useForm<QuickBotFormValues>({ resolver: zodResolver(quickBotSchema), defaultValues: defaultValues() });
+  const [name, avatarSeed, color] = useWatch({ control: form.control, name: ["name", "avatar_seed", "color"] });
   const { requestClose, requestLeave, dialogProps } = useUnsavedChangesGuard({ isDirty: form.formState.isDirty, disabled: pending, onClose: onDone });
 
   useEffect(() => {
@@ -42,7 +45,7 @@ export const CreateBotForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef }
 
   const submit = form.handleSubmit((v) =>
     createBot.mutate(
-      { name: v.name, emoji: v.emoji, color: v.color },
+      { name: v.name, avatar_seed: v.avatar_seed, color: v.color },
       {
         onSuccess: (bot) =>
           openDirect.mutate(
@@ -77,7 +80,7 @@ export const CreateBotForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef }
     >
       <Form {...form}>
         <form id={FORM_ID} onSubmit={submit} className="flex flex-col items-center gap-6">
-          <BotAvatar emoji={emoji} color={color} size={88} name={name || "New bot"} followCursor className="rounded-full transition-colors duration-200" />
+          <BotAvatar seed={avatarSeed} color={color} size={88} name={name || "New bot"} followCursor className="rounded-full transition-colors duration-200" />
 
           <FormField
             control={form.control}
@@ -92,27 +95,7 @@ export const CreateBotForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef }
             )}
           />
 
-          <div role="radiogroup" aria-label="Avatar" className="grid grid-cols-6 gap-2 sm:grid-cols-8">
-            {BotEmojiSuggestions.map((e) => {
-              const selected = e === emoji;
-              return (
-                <button
-                  key={e}
-                  type="button"
-                  role="radio"
-                  aria-checked={selected}
-                  aria-label={`Avatar ${e}`}
-                  onClick={() => form.setValue("emoji", e, { shouldDirty: true })}
-                  className={cn(
-                    "flex h-11 w-11 items-center justify-center rounded-full text-[22px] transition-[transform,box-shadow,background-color] duration-150 hover:scale-110 hover:bg-surface-sunken focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary",
-                    selected && "bg-surface-sunken ring-2 ring-hairline-strong ring-offset-2 ring-offset-surface",
-                  )}
-                >
-                  <span aria-hidden>{e}</span>
-                </button>
-              );
-            })}
-          </div>
+          <AvatarPresets value={avatarSeed} color={color} onChange={(seed) => form.setValue("avatar_seed", seed, { shouldDirty: true })} />
 
           <div role="radiogroup" aria-label="Colour" className="flex max-w-[360px] flex-wrap justify-center gap-3">
             {BotColorOptions.map((c) => {

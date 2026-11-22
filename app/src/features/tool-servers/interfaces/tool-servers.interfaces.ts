@@ -18,7 +18,7 @@ export interface ToolServer {
   masked_hint: string | null;
   signed_in?: boolean;
   owner: { id: string; name: string | null; email: string } | null;
-  bots: { id: string; name: string; emoji: string; color: string }[];
+  bots: { id: string; name: string; avatar_seed: string; color: string }[];
   connection_id: string | null;
   created_at: string;
   can_manage: boolean;

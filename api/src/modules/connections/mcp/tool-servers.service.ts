@@ -24,7 +24,7 @@ const OAUTH_REFRESH_LOCK_SECONDS = 30;
 const INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
     credential: { select: { id: true, masked_hint: true, kind: true, status: true } },
-    bots: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
+    bots: { include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } },
     connection: { select: { id: true } },
 } satisfies Prisma.ToolServerInclude;
 

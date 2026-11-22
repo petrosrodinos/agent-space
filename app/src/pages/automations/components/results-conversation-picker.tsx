@@ -22,7 +22,7 @@ export const ResultsConversationPicker: FC<{ automation: Automation }> = ({ auto
   const options = useMemo(() => {
     const list: ConversationOption[] = (conversations ?? [])
       .filter((c) => !c.is_temporary && c.bots.some((b) => b.id === a.bot.id))
-      .map((c) => ({ id: c.id, label: `${c.emoji} ${c.name}`.trim(), type: c.type }));
+      .map((c) => ({ id: c.id, label: c.name, type: c.type }));
     // The current destination may be archived and so missing from the list; keep it selectable.
     const current = a.results_conversation;
     if (current && !list.some((o) => o.id === current.id)) list.unshift({ id: current.id, label: current.name ?? `Chat with ${a.bot.name}`, type: current.type });

@@ -359,7 +359,7 @@ const LimitToolServerBotsDialog: FC<{ server: ToolServer | null; onClose: () => 
                   })
                 }
               />
-              <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
+              <BotAvatar seed={b.avatar_seed} color={b.color} size={32} name={b.name} />
               <span className="font-semibold">{b.name}</span>
             </label>
           ))}

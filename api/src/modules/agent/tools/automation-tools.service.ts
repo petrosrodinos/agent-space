@@ -146,7 +146,7 @@ export class AutomationToolsService {
                 const r = await this.resolve(ctx, a);
                 const changes = [
                     { field: 'name', to: a.name },
-                    { field: 'bot', to: `${ctx.bot.emoji} ${ctx.bot.name}` },
+                    { field: 'bot', to: ctx.bot.name },
                     { field: 'when', to: r.trigger ? `When ${r.trigger.name} (${r.trigger.connection_label})` : `${describeCron(a.cron)} (${r.tz})` },
                     { field: 'instructions', to: String(a.instructions).slice(0, 600) },
                     ...(r.skill ? [{ field: 'skill', to: `${r.skill.emoji ? `${r.skill.emoji} ` : ''}${r.skill.name}` }] : []),

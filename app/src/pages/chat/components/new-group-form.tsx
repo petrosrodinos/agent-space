@@ -6,7 +6,7 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
+import { BotAvatar, GroupAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import UnsavedChangesDialog from "@/components/ui/unsaved-changes-dialog";
 import { useUnsavedChangesGuard } from "@/hooks/use-unsaved-changes-guard";
 import { NewChatStepLayout, type NewChatStepProps } from "@/components/layout/new-chat/new-chat-step";
@@ -14,10 +14,10 @@ import { useBots } from "@/features/bots/hooks/use-bots";
 import { useMembers } from "@/features/organizations/hooks/use-organizations";
 import { useCreateConversation } from "@/features/conversations/hooks/use-conversations";
 import { useMe } from "@/features/users/hooks/use-users";
-import { BotColorOptions, DEFAULT_GROUP_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
-import { ColorSwatches, EmojiPicker } from "@/pages/bots/components/bot-pickers";
+import { ColorSwatches } from "@/pages/bots/components/bot-pickers";
 import { newGroupSchema, type NewGroupFormData } from "../validation-schemas/group.schema";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 
@@ -34,7 +34,6 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
     resolver: zodResolver(newGroupSchema),
     defaultValues: {
       name: "",
-      emoji: DEFAULT_GROUP_EMOJI,
       color: BotColorOptions[0].id,
       bot_ids: [],
       user_ids: [],
@@ -81,7 +80,6 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
               {
                 type: ConversationTypes.GROUP,
                 name: v.name,
-                emoji: v.emoji,
                 color: v.color,
                 bot_ids: v.bot_ids,
                 user_ids: v.user_ids,
@@ -97,7 +95,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
           )}
         >
           <div className="flex items-center gap-4">
-            <FormField control={form.control} name="emoji" render={({ field }) => <EmojiPicker value={field.value} color={color} onChange={field.onChange} />} />
+            <GroupAvatar bots={(bots ?? []).filter((b) => botIds.includes(b.id))} color={color} size={56} className="shadow-sticker" />
             <FormField
               control={form.control}
               name="name"
@@ -133,7 +131,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                   {(bots ?? []).map((b) => (
                     <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-2.5 rounded-md border border-hairline px-2.5 hover:bg-surface-sunken">
                       <Checkbox checked={field.value.includes(b.id)} onCheckedChange={(v) => field.onChange(v ? [...field.value, b.id] : field.value.filter((x) => x !== b.id))} />
-                      <BotAvatar emoji={b.emoji} color={b.color} size={24} />
+                      <BotAvatar seed={b.avatar_seed} color={b.color} size={24} />
                       <span className="truncate text-sm font-semibold">{b.name}</span>
                     </label>
                   ))}
@@ -162,7 +160,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
                             (field.value ?? botIds[0]) === b.id ? "border-primary bg-primary-soft" : "border-hairline",
                           )}
                         >
-                          {b.emoji} {b.name}
+                          <BotAvatar seed={b.avatar_seed} color={b.color} size={24} className="rounded-full" /> {b.name}
                         </button>
                       ))}
                   </div>

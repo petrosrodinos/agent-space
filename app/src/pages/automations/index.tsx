@@ -77,7 +77,7 @@ const AutomationsPage: FC = () => {
           {data.map((a) => (
             <li key={a.id} className="card-lift flex items-center gap-2 rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:gap-3 sm:p-4">
               <Link to={Routes.automations.detail(a.id)} className="flex min-w-0 flex-1 items-center gap-3">
-                <BotAvatar emoji={a.bot.emoji} color={a.bot.color} name={a.bot.name} working={a.last_run?.status === AutomationRunStatuses.RUNNING} />
+                <BotAvatar seed={a.bot.avatar_seed} color={a.bot.color} name={a.bot.name} working={a.last_run?.status === AutomationRunStatuses.RUNNING} />
                 <div className="min-w-0 flex-1">
                   <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
                     <p className="truncate font-bold text-ink">{a.name}</p>

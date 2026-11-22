@@ -1,3 +1,4 @@
+import { BotAvatar } from "@/components/ui/bot-avatar";
 import { useMemo, useState, type FC } from "react";
 import { Link } from "react-router-dom";
 import { Bot as BotIcon, Globe, History, KeyRound, Lock, MoreHorizontal, Pencil, Plug, Plus, RefreshCw, Search, ShieldCheck, Trash2, Users } from "lucide-react";
@@ -136,7 +137,7 @@ const SecretsPage: FC = () => {
           <SelectTrigger aria-label="Filter by bot"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value={ALL_FILTER}>All bots</SelectItem>
-            {bots?.map((b) => <SelectItem key={b.id} value={b.id}>{b.emoji} {b.name}</SelectItem>)}
+            {bots?.map((b) => <SelectItem key={b.id} value={b.id}><span className="flex items-center gap-2"><BotAvatar seed={b.avatar_seed} color={b.color} size={24} />{b.name}</span></SelectItem>)}
           </SelectContent>
         </Select>
       </div>

@@ -31,7 +31,7 @@ const schedulerId = (id: string) => `automation:${id}`;
 const TARGET_KEYS = ['channel', 'channel_id', 'channel_name', 'to', 'recipient', 'recipient_email', 'recipients', 'email', 'repo', 'repository', 'repo_name', 'owner', 'chat_id', 'conversation_id', 'list_id', 'board_id', 'project', 'project_key', 'page_id', 'database_id', 'folder_id', 'calendar_id', 'url', 'website'];
 
 const AUTOMATION_INCLUDE = {
-    bot: { select: { id: true, name: true, emoji: true, color: true, deleted_at: true } },
+    bot: { select: { id: true, name: true, avatar_seed: true, color: true, deleted_at: true } },
     skill: { select: { id: true, name: true, emoji: true, slug: true } },
     connections: { include: { connection: { select: { id: true, label: true, service_name: true, service_key: true, status: true, deleted_at: true } } } },
     pre_approvals: { include: { connection: { select: { id: true, label: true, service_name: true } } }, orderBy: { created_at: 'asc' } },

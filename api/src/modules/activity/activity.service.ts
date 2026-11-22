@@ -69,7 +69,7 @@ export class ActivityService {
                 take: q.limit,
                 include: {
                     actor_user: { select: { id: true, name: true, email: true } },
-                    actor_bot: { select: { id: true, name: true, emoji: true, color: true } },
+                    actor_bot: { select: { id: true, name: true, avatar_seed: true, color: true } },
                     connection: { select: { id: true, label: true } },
                 },
             }),

@@ -479,7 +479,7 @@ export const RepliesSection: FC = () => {
             { id: "none", label: "None" },
             ...(bots ?? []).map((b) => ({
               id: b.id,
-              label: `${b.emoji} ${b.name}`,
+              label: b.name,
             })),
           ]}
           onChange={(v) => set("default_bot_id", v === PickerValues.NONE ? null : v)}

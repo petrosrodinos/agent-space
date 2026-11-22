@@ -2,27 +2,29 @@ import { useRef, type FC } from "react";
 import { useCursorFollow } from "@/hooks/use-cursor-follow";
 import { cn } from "@/lib/utils";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
-import { isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { FALLBACK_BOT_COLOR, isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { BotPortrait } from "@/components/ui/bot-portrait";
 
-const SIZES = { 24: "h-6 w-6 rounded-sm text-[14px]", 32: "h-8 w-8 rounded-sm text-[19px]", 40: "h-10 w-10 rounded-md text-[24px]", 56: "h-14 w-14 rounded-lg text-[34px]", 88: "h-[88px] w-[88px] rounded-xl text-[52px]", 120: "h-[120px] w-[120px] rounded-2xl text-[72px]" } as const;
+const SIZES = { 24: "h-6 w-6 rounded-sm", 32: "h-8 w-8 rounded-sm", 40: "h-10 w-10 rounded-md", 56: "h-14 w-14 rounded-lg", 88: "h-[88px] w-[88px] rounded-xl", 120: "h-[120px] w-[120px] rounded-2xl" } as const;
 
 interface BotAvatarProps {
-  emoji: string;
+  /** Seed for the generated portrait (bot.avatar_seed). */
+  seed: string;
   color: string;
   size?: keyof typeof SIZES;
   working?: boolean;
   className?: string;
   name?: string;
-  /** The emoji leans toward a nearby mouse pointer. Use on large, standalone avatars. */
+  /** The portrait leans toward a nearby mouse pointer. Use on large, standalone avatars. */
   followCursor?: boolean;
 }
 
-/** Bots are squircles filled with their colour, emoji at 60% (DESIGN.MD). A soft ring pulses while the bot works. */
-export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working = false, className, name, followCursor = false }) => {
-  const emojiRef = useRef<HTMLSpanElement>(null);
-  // Scale the pull and tilt down for small avatars so the emoji stays inside its squircle.
+/** Bots are squircles filled with their colour and a generated flat portrait. A soft ring pulses while the bot works. */
+export const BotAvatar: FC<BotAvatarProps> = ({ seed, color, size = 40, working = false, className, name, followCursor = false }) => {
+  const figureRef = useRef<HTMLSpanElement>(null);
+  // Scale the pull and tilt down for small avatars so the figure stays inside its squircle.
   const scale = Math.min(1, size / 88);
-  useCursorFollow(emojiRef, { enabled: followCursor, maxShift: Math.max(2, 10 * scale), maxTilt: Math.max(6, 12 * scale) });
+  useCursorFollow(figureRef, { enabled: followCursor, maxShift: Math.max(1, 5 * scale), maxTilt: Math.max(3, 6 * scale) });
   return (
     <span
       role="img"
@@ -30,27 +32,54 @@ export const BotAvatar: FC<BotAvatarProps> = ({ emoji, color, size = 40, working
       className={cn("relative inline-flex shrink-0 select-none items-center justify-center leading-none", SIZES[size], isLightBotColor(color) && "ring-1 ring-inset ring-[rgba(28,22,51,0.12)]", working && "animate-pulse-ring", className)}
       style={{ backgroundColor: color, ["--ring-color" as string]: `${color}88` }}
     >
-      <span ref={emojiRef} aria-hidden className="inline-block">
-        {emoji}
+      <span className="absolute inset-0 overflow-hidden rounded-[inherit]">
+        <span ref={figureRef} aria-hidden className="block h-full w-full">
+          <BotPortrait seed={seed} color={color} className="h-full w-full" />
+        </span>
       </span>
     </span>
   );
 };
 
 interface ConversationAvatarProps {
-  conversation: { type: string; emoji?: string | null; color?: string | null; name: string; bots: { id: string; emoji: string; color: string; name: string }[] };
+  conversation: { type: string; color?: string | null; name: string; bots: { id: string; avatar_seed: string; color: string; name: string }[] };
   size?: keyof typeof SIZES;
   working?: boolean;
   followCursor?: boolean;
   className?: string;
 }
 
-/** Shared conversation avatar: groups use their own emoji and colour, direct chats the lead bot, otherwise a stack. */
+/** Shared conversation avatar: groups show a "team photo" of their bots on the group colour, direct chats the lead bot. */
 export const ConversationAvatar: FC<ConversationAvatarProps> = ({ conversation: c, size = 40, working, followCursor, className }) => {
   const lead = c.bots[0];
-  if (c.type === ConversationTypes.GROUP && c.emoji && c.color) return <BotAvatar emoji={c.emoji} color={c.color} name={c.name} size={size} working={working} followCursor={followCursor} className={className} />;
-  if (lead) return <BotAvatar emoji={lead.emoji} color={lead.color} name={lead.name} size={size} working={working} followCursor={followCursor} className={className} />;
+  if (c.type === ConversationTypes.GROUP) return <GroupAvatar bots={c.bots} color={c.color ?? lead?.color ?? FALLBACK_BOT_COLOR} name={c.name} size={size} working={working} className={className} />;
+  if (lead) return <BotAvatar seed={lead.avatar_seed} color={lead.color} name={lead.name} size={size} working={working} followCursor={followCursor} className={className} />;
   return <BotAvatarStack bots={c.bots} />;
+};
+
+interface GroupAvatarProps {
+  bots: { id: string; avatar_seed: string; color: string }[];
+  color: string;
+  name?: string;
+  size?: keyof typeof SIZES;
+  working?: boolean;
+  className?: string;
+}
+
+/** A group squircle: up to two bot portraits side by side (the lead in front) on the group colour. */
+export const GroupAvatar: FC<GroupAvatarProps> = ({ bots, color, name, size = 40, working = false, className }) => {
+  const [front, back] = bots;
+  return (
+    <span
+      role="img"
+      aria-label={name ? `${name}, group` : "group"}
+      className={cn("relative inline-flex shrink-0 select-none overflow-hidden", SIZES[size], isLightBotColor(color) && "ring-1 ring-inset ring-[rgba(28,22,51,0.12)]", working && "animate-pulse-ring", className)}
+      style={{ backgroundColor: color, ["--ring-color" as string]: `${color}88` }}
+    >
+      {back && <BotPortrait seed={back.avatar_seed} color={color} className="absolute bottom-0 right-[-14%] h-[82%] w-[82%]" />}
+      {front && <BotPortrait seed={front.avatar_seed} color={color} className={cn("absolute bottom-0 h-[82%] w-[82%]", back ? "left-[-14%]" : "left-[9%]")} />}
+    </span>
+  );
 };
 
 const PERSON_SIZES ={ 24: "h-6 w-6 text-[10px]", 32: "h-8 w-8 text-xs", 40: "h-10 w-10 text-sm", 56: "h-14 w-14 text-lg", 88: "h-[88px] w-[88px] text-3xl" } as const;
@@ -89,7 +118,7 @@ export const PersonAvatar: FC<PersonAvatarProps> = ({ name, email, size = 40, on
 };
 
 interface AvatarStackProps {
-  bots: { id: string; emoji: string; color: string; name: string }[];
+  bots: { id: string; avatar_seed: string; color: string; name: string }[];
   size?: 24 | 32 | 40;
   max?: number;
 }
@@ -98,7 +127,7 @@ interface AvatarStackProps {
 export const BotAvatarStack: FC<AvatarStackProps> = ({ bots, size = 32, max = 3 }) => (
   <span className="inline-flex items-center">
     {bots.slice(0, max).map((b, i) => (
-      <BotAvatar key={b.id} emoji={b.emoji} color={b.color} name={b.name} size={size} className={cn("ring-2 ring-surface-soft", i > 0 && (size === 24 ? "-ml-2" : size === 32 ? "-ml-2.5" : "-ml-3"))} />
+      <BotAvatar key={b.id} seed={b.avatar_seed} color={b.color} name={b.name} size={size} className={cn("ring-2 ring-surface-soft", i > 0 && (size === 24 ? "-ml-2" : size === 32 ? "-ml-2.5" : "-ml-3"))} />
     ))}
     {bots.length > max && <span className="-ml-2 inline-flex h-6 min-w-6 items-center justify-center rounded-full bg-surface-sunken px-1 text-[11px] font-bold text-muted-foreground ring-2 ring-surface-soft">+{bots.length - max}</span>}
   </span>

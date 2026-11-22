@@ -81,7 +81,7 @@ export class ApprovalsService {
                 is_urgent: input.action_type === 'PURCHASE_PAYMENT',
                 timeout_at: ms ? new Date(Date.now() + ms) : null,
             },
-            include: { bot: { select: { id: true, name: true, emoji: true, color: true } } },
+            include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } },
         });
         if (ms) await this.queue.add(Jobs.approvals.TIMEOUT, { approval_id: approval.id, auto_approve: autoApprove }, { jobId: `approval:${approval.id}`, delay: ms, attempts: 3 });
         if (input.conversation_id) await this.events.toConversation(input.conversation_id, ConversationEvents.APPROVAL_CREATED, approval);
@@ -104,7 +104,7 @@ export class ApprovalsService {
     list(actor: Actor, status: 'pending' | 'all' = 'pending') {
         return this.prisma.approval.findMany({
             where: { organization_id: actor.organization_id, requested_from_id: actor.user_id, ...(status === 'pending' ? { status: 'PENDING' } : {}) },
-            include: { bot: { select: { id: true, name: true, emoji: true, color: true } }, conversation: { select: { id: true, name: true, type: true } } },
+            include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } }, conversation: { select: { id: true, name: true, type: true } } },
             orderBy: { created_at: 'desc' },
             take: 100,
         });
@@ -113,7 +113,7 @@ export class ApprovalsService {
     async get(actor: Actor, id: string) {
         const a = await this.prisma.approval.findFirst({
             where: { id, organization_id: actor.organization_id },
-            include: { bot: { select: { id: true, name: true, emoji: true, color: true } }, conversation: { select: { id: true, name: true } }, resolved_by: { select: { id: true, name: true } } },
+            include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } }, conversation: { select: { id: true, name: true } }, resolved_by: { select: { id: true, name: true } } },
         });
         if (!a) throw new NotFoundException('Approval not found');
         if (a.requested_from_id !== actor.user_id) {
@@ -157,7 +157,7 @@ export class ApprovalsService {
     }
 
     private async afterResolved(id: string) {
-        const a = await this.prisma.approval.findUniqueOrThrow({ where: { id }, include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } });
+        const a = await this.prisma.approval.findUniqueOrThrow({ where: { id }, include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } });
         if (a.conversation_id) await this.events.toConversation(a.conversation_id, ConversationEvents.APPROVAL_RESOLVED, a);
         if (a.requested_from_id) await this.events.toUser(a.requested_from_id, UserEvents.APPROVALS_CHANGED, { approval_id: id });
         const run = await this.prisma.run.findUnique({ where: { id: a.run_id } });

@@ -431,7 +431,7 @@ export class ArtifactsService {
         const { artifact } = await this.require(actor, id, 'EDITOR');
         const rows = await this.prisma.artifactVersion.findMany({
             where: { artifact_id: id },
-            select: { id: true, version: true, status: true, label: true, change_summary: true, restored_from_version: true, published_at: true, created_at: true, created_by: { select: { id: true, name: true, email: true } }, run: { select: { bot: { select: { id: true, name: true, emoji: true, color: true } } } } },
+            select: { id: true, version: true, status: true, label: true, change_summary: true, restored_from_version: true, published_at: true, created_at: true, created_by: { select: { id: true, name: true, email: true } }, run: { select: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } } },
             orderBy: { version: 'desc' },
         });
         return rows.map(({ run, ...v }) => ({ ...v, bot: run?.bot ?? null, is_current: v.id === artifact.current_version_id, is_draft: v.id === artifact.draft_version_id }));
@@ -551,7 +551,7 @@ export class ArtifactsService {
         await this.require(actor, id, 'COMMENTER');
         const rows = await this.prisma.artifactComment.findMany({
             where: { artifact_id: id, deleted_at: null },
-            include: { author: { select: { id: true, name: true, email: true } }, mentioned_bot: { select: { id: true, name: true, emoji: true, color: true } } },
+            include: { author: { select: { id: true, name: true, email: true } }, mentioned_bot: { select: { id: true, name: true, avatar_seed: true, color: true } } },
             orderBy: { created_at: 'asc' },
         });
         const map = (c: (typeof rows)[number]) => ({ id: c.id, content: c.content, anchor: c.anchor, author: c.author, mentioned_bot: c.mentioned_bot, resolved_at: c.resolved_at, created_at: c.created_at, is_mine: c.author_id === actor.user_id });

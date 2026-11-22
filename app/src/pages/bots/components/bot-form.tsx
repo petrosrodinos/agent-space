@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { botFormSchema, type BotFormValues } from "../validation-schemas/bot.schema";
-import { ColorSwatches, EmojiPicker, ModelSelect } from "./bot-pickers";
+import { AvatarPicker, ColorSwatches, ModelSelect } from "./bot-pickers";
 
 interface BotFormProps {
   defaultValues: BotFormValues;
@@ -24,7 +24,7 @@ export const BotForm: FC<BotFormProps> = ({ defaultValues, submitLabel, loading,
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <div className="flex items-center gap-4">
-          <FormField control={form.control} name="emoji" render={({ field }) => <EmojiPicker value={field.value} color={color} onChange={field.onChange} />} />
+          <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} />} />
           <FormField
             control={form.control}
             name="name"

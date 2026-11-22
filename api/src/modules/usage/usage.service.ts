@@ -168,7 +168,7 @@ export class UsageService {
         ]);
         const [users, bots, models, limits] = await Promise.all([
             this.prisma.user.findMany({ where: { id: { in: byUser.map((u) => u.user_id).filter(Boolean) as string[] } }, select: { id: true, name: true, email: true } }),
-            this.prisma.bot.findMany({ where: { id: { in: byBot.map((b) => b.bot_id).filter(Boolean) as string[] } }, select: { id: true, name: true, emoji: true, color: true } }),
+            this.prisma.bot.findMany({ where: { id: { in: byBot.map((b) => b.bot_id).filter(Boolean) as string[] } }, select: { id: true, name: true, avatar_seed: true, color: true } }),
             this.prisma.aiModel.findMany({ where: { id: { in: byModel.map((m) => m.model_id).filter(Boolean) as string[] } }, select: { id: true, name: true, provider: true } }),
             this.prisma.usageLimit.findMany({ where: { organization_id: actor.organization_id } }),
         ]);

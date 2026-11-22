@@ -37,7 +37,7 @@ const WidgetsPage: FC = () => {
           {data.map((w) => (
             <li key={w.id} className="card-lift flex items-center gap-2 rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
               <Link to={Routes.widgets.detail(w.id)} className="flex min-w-0 flex-1 items-center gap-3">
-                {w.bot ? <BotAvatar emoji={w.bot.emoji} color={w.bot.color} name={w.bot.name} /> : <LayoutDashboard className="h-9 w-9 shrink-0 text-muted-foreground" />}
+                {w.bot ? <BotAvatar seed={w.bot.avatar_seed} color={w.bot.color} name={w.bot.name} /> : <LayoutDashboard className="h-9 w-9 shrink-0 text-muted-foreground" />}
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-bold text-ink">{w.title}</p>
                   <p className="mt-0.5 truncate text-xs text-muted-foreground">

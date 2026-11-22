@@ -5,7 +5,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { ArrowDown, Pin, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { BotAvatar } from "@/components/ui/bot-avatar";
+import { BotAvatar, GroupAvatar } from "@/components/ui/bot-avatar";
 import { EmptyState } from "@/components/ui/empty-state";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetDescription, SheetTitle } from "@/components/ui/sheet";
@@ -311,11 +311,9 @@ const ConversationPage: FC = () => {
               {!messagesQuery.hasNextPage && conversation && (
                 <div className="mb-6 flex flex-col items-center pt-6 text-center">
                   {conversation.type === ConversationTypes.DIRECT && conversation.bots[0] ? (
-                    <BotAvatar emoji={conversation.bots[0].emoji} color={conversation.bots[0].color} size={88} followCursor />
+                    <BotAvatar seed={conversation.bots[0].avatar_seed} color={conversation.bots[0].color} size={88} followCursor />
                   ) : (
-                    <span className="inline-flex h-[88px] w-[88px] items-center justify-center rounded-xl text-5xl" style={{ backgroundColor: conversation.color }}>
-                      {conversation.emoji}
-                    </span>
+                    <GroupAvatar bots={conversation.bots} color={conversation.color} name={conversation.name} size={88} />
                   )}
                   <h2 className="mt-3 font-display text-2xl font-bold text-ink">{conversation.name}</h2>
                   {welcome ? <Markdown className="mt-2 max-w-md text-muted-foreground">{welcome}</Markdown> : <p className="mt-1 max-w-md text-sm text-muted-foreground">{conversation.type === ConversationTypes.DIRECT ? conversation.bots[0]?.description : "Talk to a specific bot with @name, or just ask — the lead bot coordinates."}</p>}

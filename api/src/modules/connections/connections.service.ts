@@ -16,7 +16,7 @@ import { CatalogQuery, ConnectComposioDto, CreateApiKeyConnectionDto, SetToolPer
 
 const CONN_INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
-    bot_restrictions: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
+    bot_restrictions: { include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } },
     credential: { select: { id: true, masked_hint: true, status: true } },
 } satisfies Prisma.ConnectionInclude;
 

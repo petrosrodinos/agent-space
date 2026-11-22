@@ -66,7 +66,7 @@ export class SkillsService {
             },
             include: {
                 owner: { select: { id: true, name: true } },
-                bots: { where: { bot: { organization_id: actor.organization_id, deleted_at: null } }, include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
+                bots: { where: { bot: { organization_id: actor.organization_id, deleted_at: null } }, include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } },
                 shares: true,
             },
             orderBy: [{ is_starter: 'asc' }, { updated_at: 'desc' }],
@@ -99,7 +99,7 @@ export class SkillsService {
             include: {
                 owner: { select: { id: true, name: true, email: true } },
                 shares: { include: { user: { select: { id: true, name: true, email: true } } } },
-                bots: { where: { bot: { organization_id: actor.organization_id, deleted_at: null } }, include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
+                bots: { where: { bot: { organization_id: actor.organization_id, deleted_at: null } }, include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } },
                 versions: { orderBy: { version: 'desc' }, take: 50, include: { created_by: { select: { id: true, name: true } } } },
                 files: { where: { file: { deleted_at: null } }, include: { file: { select: { id: true, filename: true, mimetype: true, size: true, created_at: true } } }, orderBy: { created_at: 'asc' } },
             },

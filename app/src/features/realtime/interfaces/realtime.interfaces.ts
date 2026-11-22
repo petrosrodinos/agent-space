@@ -54,7 +54,7 @@ export interface DeviceCall {
   permission: "ASK_EACH_TIME" | "ALWAYS_ALLOW" | "NEVER";
   run_id: string;
   conversation_id: string | null;
-  bot: { id: string; name: string; emoji: string | null };
+  bot: { id: string; name: string; avatar_seed: string; color: string };
   summary: string;
   timeout_ms: number;
 }

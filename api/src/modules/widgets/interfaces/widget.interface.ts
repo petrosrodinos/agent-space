@@ -14,7 +14,7 @@ export interface WidgetView {
     refresh_prompt: string | null;
     conversation_id: string | null;
     source_message_id: string | null;
-    bot: { id: string; name: string; emoji: string | null; color: string | null } | null;
+    bot: { id: string; name: string; avatar_seed: string; color: string | null } | null;
     blocks: unknown[];
     fallback_text: string;
     refreshed_at: string;

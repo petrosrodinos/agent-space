@@ -10,7 +10,6 @@ export class CreateDirectDto {
 export class CreateConversationDto {
     @ApiProperty({ enum: ['GROUP', 'SHARED_BOT'] }) @IsIn(['GROUP', 'SHARED_BOT']) type: 'GROUP' | 'SHARED_BOT';
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(80) name?: string;
-    @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(16) emoji?: string;
     @ApiPropertyOptional() @IsOptional() @Matches(/^#[0-9a-fA-F]{6}$/) color?: string;
     @ApiProperty({ isArray: true }) @IsArray() @ArrayMaxSize(20) @IsUUID('all', { each: true }) bot_ids: string[];
     @ApiPropertyOptional({ isArray: true }) @IsOptional() @IsArray() @ArrayMaxSize(100) @IsUUID('all', { each: true }) user_ids?: string[];
@@ -19,7 +18,6 @@ export class CreateConversationDto {
 
 export class UpdateConversationDto {
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(80) name?: string;
-    @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(16) emoji?: string;
     @ApiPropertyOptional() @IsOptional() @Matches(/^#[0-9a-fA-F]{6}$/) color?: string;
     @ApiPropertyOptional() @IsOptional() @IsUUID() lead_bot_id?: string | null;
 }

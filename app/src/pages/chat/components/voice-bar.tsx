@@ -28,7 +28,7 @@ const Waveform: FC<{ level: number; color: string; big?: boolean }> = ({ level, 
 
 interface Props {
   voice: VoiceSession;
-  bot: { name: string; emoji: string; color: string } | null;
+  bot: { name: string; avatar_seed: string; color: string } | null;
 }
 
 /**
@@ -127,7 +127,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
     return (
       <div className="fixed inset-0 z-50 flex flex-col items-center justify-between bg-canvas px-6 pb-[calc(24px+env(safe-area-inset-bottom))] pt-16" role="dialog" aria-label="Voice mode">
         <div className="flex flex-col items-center gap-4 text-center">
-          {bot && <BotAvatar emoji={bot.emoji} color={bot.color} size={88} name={bot.name} />}
+          {bot && <BotAvatar seed={bot.avatar_seed} color={bot.color} size={88} name={bot.name} />}
           <p className="font-display text-2xl font-bold text-ink">{bot?.name}</p>
           <p className="flex items-center gap-1.5 text-sm font-semibold text-muted-foreground" aria-live="polite">{spinning && <Loader2 className="h-4 w-4 animate-spin" />} {label}</p>
         </div>
@@ -147,7 +147,7 @@ export const VoiceBar: FC<Props> = ({ voice, bot }) => {
     <div className="space-y-2 rounded-xl border-[1.5px] border-primary bg-surface p-2.5 pl-3 shadow-pop" role="region" aria-label="Voice mode">
       <div className="flex flex-wrap items-center gap-3">
         <div className="flex min-w-0 flex-1 items-center gap-3">
-          {bot && <BotAvatar emoji={bot.emoji} color={bot.color} size={40} />}
+          {bot && <BotAvatar seed={bot.avatar_seed} color={bot.color} size={40} />}
           <div className="min-w-0">
             <p className="flex items-center gap-1.5 text-xs font-semibold text-muted-foreground" aria-live="polite">
               {spinning && <Loader2 className="h-3 w-3 animate-spin" />} {label}

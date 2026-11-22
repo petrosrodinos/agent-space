@@ -398,7 +398,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
       case MessagePartTypes.CONSULTED:
         return (
           <span key={i} className="my-1 mr-1 inline-flex items-center gap-1.5 rounded-full bg-surface-sunken py-1 pl-1 pr-2.5 text-xs font-semibold text-muted-foreground">
-            <BotAvatar emoji={p.bot.emoji} color={p.bot.color} size={24} /> Asked {p.bot.name}…
+            <BotAvatar seed={p.bot.avatar_seed} color={p.bot.color} size={24} /> Asked {p.bot.name}…
           </span>
         );
       case MessagePartTypes.ARTIFACT:
@@ -462,7 +462,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
     <div className={cn("group relative flex animate-slide-up touch-pan-y gap-2.5", isFirstOfGroup ? "mt-5" : "mt-1")} {...longPress}>
       {swipeHint}
       {mobileMenu}
-      <div className="w-10 shrink-0">{isFirstOfGroup && <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} working={working && streaming} />}</div>
+      <div className="w-10 shrink-0">{isFirstOfGroup && <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} working={working && streaming} />}</div>
       <div className="relative min-w-0 flex-1">
         {isFirstOfGroup && (
           <div className="mb-0.5 flex items-center gap-2">

@@ -45,7 +45,7 @@ export const VersionsPanel: FC<Props> = ({ artifact: a, previewId, compareId, on
         {(data ?? []).map((v) => (
           <li key={v.id} className={cn("rounded-lg border p-3", previewId === v.id ? "border-primary bg-primary-soft" : "border-hairline")}>
             <div className="flex items-start gap-2.5">
-              {v.bot ? <BotAvatar emoji={v.bot.emoji} color={v.bot.color} size={32} /> : <PersonAvatar name={v.created_by?.name} email={v.created_by?.email} size={32} />}
+              {v.bot ? <BotAvatar seed={v.bot.avatar_seed} color={v.bot.color} size={32} /> : <PersonAvatar name={v.created_by?.name} email={v.created_by?.email} size={32} />}
               <div className="min-w-0 flex-1">
                 <div className="flex flex-wrap items-center gap-1.5">
                   <span className="text-sm font-bold text-ink">Version {v.version}</span>

@@ -491,7 +491,7 @@ export const BotPanel: FC<{
           <>
             <div className="flex animate-pop-in flex-col items-center text-center">
               <BotAvatar
-                emoji={bot.emoji}
+                seed={bot.avatar_seed}
                 color={bot.color}
                 name={bot.name}
                 size={88}

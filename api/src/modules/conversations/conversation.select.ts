@@ -1,6 +1,6 @@
 import { Prisma } from 'generated/prisma';
 
-export const BOT_BRIEF = { id: true, name: true, emoji: true, color: true, description: true, is_sensitive: true, cloud_computer_enabled: true, deleted_at: true } satisfies Prisma.BotSelect;
+export const BOT_BRIEF = { id: true, name: true, avatar_seed: true, color: true, description: true, is_sensitive: true, cloud_computer_enabled: true, deleted_at: true } satisfies Prisma.BotSelect;
 export const USER_BRIEF = { id: true, name: true, email: true, avatar_file_id: true } satisfies Prisma.UserSelect;
 
 export const MESSAGE_INCLUDE = {

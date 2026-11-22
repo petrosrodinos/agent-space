@@ -42,8 +42,8 @@ function totpOrThrow(input: string): string {
 
 const CRED_INCLUDE = {
     owner: { select: { id: true, name: true, email: true } },
-    last_used_bot: { select: { id: true, name: true, emoji: true, color: true } },
-    bots: { include: { bot: { select: { id: true, name: true, emoji: true, color: true } } } },
+    last_used_bot: { select: { id: true, name: true, avatar_seed: true, color: true } },
+    bots: { include: { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } },
     connection: { select: { id: true, label: true } },
 } satisfies Prisma.CredentialInclude;
 
@@ -292,8 +292,8 @@ export class CredentialsService {
     async usage(actor: Actor, id: string) {
         await this.get(actor, id);
         const [bots, conn] = await Promise.all([
-            this.prisma.botCredential.findMany({ where: { credential_id: id }, include: { bot: { select: { id: true, name: true, emoji: true } } } }),
-            this.prisma.connection.findFirst({ where: { credential_id: id, deleted_at: null }, include: { bot_connections: { include: { bot: { select: { id: true, name: true, emoji: true } } } } } }),
+            this.prisma.botCredential.findMany({ where: { credential_id: id }, include: { bot: { select: { id: true, name: true, avatar_seed: true } } } }),
+            this.prisma.connection.findFirst({ where: { credential_id: id, deleted_at: null }, include: { bot_connections: { include: { bot: { select: { id: true, name: true, avatar_seed: true } } } } } }),
         ]);
         const toolServers = await this.prisma.toolServer.findMany({ where: { credential_id: id, deleted_at: null }, select: { id: true, name: true } });
         return { bots: [...bots.map((b) => b.bot), ...(conn?.bot_connections.map((b) => b.bot) ?? [])], tool_servers: toolServers };
@@ -303,7 +303,7 @@ export class CredentialsService {
         await this.get(actor, id);
         const rows = await this.prisma.credentialEvent.findMany({ where: { credential_id: id }, orderBy: { created_at: 'desc' }, take: 200, include: { actor_user: { select: { name: true, email: true } } } });
         const botIds = [...new Set(rows.map((r) => r.actor_bot_id).filter(Boolean))] as string[];
-        const bots = await this.prisma.bot.findMany({ where: { id: { in: botIds } }, select: { id: true, name: true, emoji: true } });
+        const bots = await this.prisma.bot.findMany({ where: { id: { in: botIds } }, select: { id: true, name: true, avatar_seed: true } });
         return rows.map((r) => ({ id: r.id, type: r.type, action: r.action, created_at: r.created_at, user: r.actor_user, bot: bots.find((b) => b.id === r.actor_bot_id) ?? null, metadata: r.metadata }));
     }
 }

@@ -7,7 +7,7 @@ export interface Widget {
   refresh_prompt: string | null;
   conversation_id: string | null;
   source_message_id: string | null;
-  bot: { id: string; name: string; emoji: string; color: string } | null;
+  bot: { id: string; name: string; avatar_seed: string; color: string } | null;
   blocks: UiBlock[];
   fallback_text: string;
   refreshed_at: string;

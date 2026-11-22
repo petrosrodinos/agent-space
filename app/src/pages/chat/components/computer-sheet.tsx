@@ -28,7 +28,7 @@ export const ComputerSheet: FC<{ bots: BotBrief[]; open: boolean; onOpenChange: 
                 onClick={() => setBotId(b.id)}
                 className={cn("inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-sm font-semibold", b.id === current.id ? "border-primary bg-primary-soft" : "border-hairline")}
               >
-                <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
+                <BotAvatar seed={b.avatar_seed} color={b.color} size={24} /> {b.name}
               </button>
             ))}
           </div>

@@ -73,7 +73,6 @@ export interface Conversation {
   id: string;
   type: ConversationType;
   name: string;
-  emoji: string;
   color: string;
   lead_bot: BotBrief | null;
   is_temporary: boolean;
@@ -218,7 +217,7 @@ export interface SendMessageDto {
 export interface SearchHit {
   id: string;
   conversation: { id: string; name: string | null; type: ConversationType };
-  author: { name: string | null; emoji?: string; color?: string } | null;
+  author: { name: string | null; avatar_seed?: string; color?: string } | null;
   author_type: string;
   snippet: string;
   created_at: string;
@@ -248,7 +247,7 @@ export type SharedMessage =
       deleted: false;
       author_type: MessageAuthorType;
       author_name: string;
-      author_emoji: string | null;
+      author_avatar_seed: string | null;
       author_color: string | null;
       content: string | null;
       status: MessageStatus;
@@ -260,7 +259,7 @@ export type SharedMessage =
     };
 
 export interface SharedConversationPage {
-  conversation: { name: string; emoji: string | null; color: string | null; bots: { name: string; emoji: string; color: string }[] };
+  conversation: { name: string; color: string | null; bots: { name: string; avatar_seed: string; color: string }[] };
   mode: ConversationShareMode;
   shared_by: string | null;
   shared_at: string;

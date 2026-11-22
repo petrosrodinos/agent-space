@@ -337,7 +337,7 @@ const ShareToBotDialog: FC<{ item: SharedItem; onClose: () => void }> = ({ item,
               onClick={() => setBotId(b.id)}
               className={cn("flex w-full items-center gap-3 rounded-md border p-2 text-left", botId === b.id ? "border-primary ring-2 ring-primary" : "border-hairline")}
             >
-              <BotAvatar emoji={b.emoji} color={b.color} name={b.name} size={32} />
+              <BotAvatar seed={b.avatar_seed} color={b.color} name={b.name} size={32} />
               <span className="line-clamp-1 text-sm font-semibold text-ink">{b.name}</span>
             </button>
           ))}

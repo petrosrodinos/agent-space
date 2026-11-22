@@ -1574,7 +1574,10 @@ model BotTemplate {
   id                    String        @id @default(uuid())
   key                   String        @unique
   name                  String
-  emoji                 String
+  /// Deprecated, no longer read or written. Drop once every deployment runs the avatar_seed code.
+  emoji                 String        @default("")
+  /// Seed for the generated flat-portrait avatar (same generator as bots).
+  avatar_seed           String        @default(dbgenerated("substr(md5(random()::text), 1, 12)"))
   color                 String
   description           String
   instructions          String
@@ -1636,7 +1639,10 @@ model Bot {
 
   // Identity
   name                  String
+  /// Deprecated, no longer read or written. Drop once every deployment runs the avatar_seed code.
   emoji                 String   @default("🤖")
+  /// Seed for the generated flat-portrait avatar. Shuffling picks a new one; the colour stays the bot colour.
+  avatar_seed           String   @default(dbgenerated("substr(md5(random()::text), 1, 12)"))
   color                 String   @default("#6366F1")
   description           String?
   image_file_id         String?  @unique
@@ -1930,6 +1936,7 @@ model Conversation {
   organization_id String
   type            ConversationType
   name            String?
+  /// Deprecated, no longer read or written (groups show their bots' portraits). Drop with Bot.emoji.
   emoji           String?
   color           String?
   lead_bot_id     String?

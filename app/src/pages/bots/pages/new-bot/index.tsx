@@ -18,7 +18,7 @@ import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
 import { BotForm } from "../../components/bot-form";
 import { describeBotSchema, type BotFormValues, type DescribeBotFormValues } from "../../validation-schemas/bot.schema";
-import { DEFAULT_BOT_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { randomAvatarSeed } from "@/components/ui/bot-portrait";
 
 const CreateModes = { TEMPLATE: "template", DESCRIBE: "describe", FORM: "form" } as const;
 type Mode = (typeof CreateModes)[keyof typeof CreateModes];
@@ -28,7 +28,8 @@ const MODES: { id: Mode; label: string }[] = [
   { id: CreateModes.FORM, label: "From scratch" },
 ];
 
-const DEFAULTS: BotFormValues = { name: "", emoji: DEFAULT_BOT_EMOJI, color: "#6B4EFF", description: "", instructions: "", model_id: null };
+/** "From scratch" starts with a random face; the colour is the user's choice. */
+const newBotDefaults = (): BotFormValues => ({ name: "", avatar_seed: randomAvatarSeed(), color: "#4A4560", description: "", instructions: "", model_id: null });
 
 const NewBotPage: FC = () => {
   const [mode, setMode] = useState<Mode>(CreateModes.TEMPLATE);
@@ -76,7 +77,7 @@ const NewBotPage: FC = () => {
                   className={cn("card-lift flex flex-col rounded-lg border bg-surface p-4 text-left shadow-sticker", picked?.id === t.id ? "border-primary ring-2 ring-primary/30" : "border-hairline")}
                 >
                   <div className="flex items-center gap-3">
-                    <BotAvatar emoji={t.emoji} color={t.color} size={56} name={t.name} />
+                    <BotAvatar seed={t.avatar_seed} color={t.color} size={56} name={t.name} />
                     <div className="min-w-0">
                       <p className="text-[17px] font-bold text-ink">{t.name}</p>
                       <p className="text-xs text-muted-foreground">{t.model?.name ?? "Recommended"}</p>
@@ -146,7 +147,7 @@ const NewBotPage: FC = () => {
             <>
               <p className="mb-4 text-sm text-muted-foreground">Here's a draft. Adjust anything, then create it.</p>
               <BotForm
-                defaultValues={{ name: draft.name, emoji: draft.emoji, color: draft.color, description: draft.description, instructions: draft.instructions, model_id: draft.model_id }}
+                defaultValues={{ name: draft.name, avatar_seed: randomAvatarSeed(), color: draft.color, description: draft.description, instructions: draft.instructions, model_id: draft.model_id }}
                 submitLabel="Create bot"
                 loading={create.isPending || openDirect.isPending}
                 onBack={() => setDraft(null)}
@@ -162,7 +163,7 @@ const NewBotPage: FC = () => {
           <div className="mb-4 flex items-center gap-2 text-sm text-muted-foreground">
             <PenLine className="h-4 w-4" /> Everything can be changed later in the bot's settings — or just by asking it.
           </div>
-          <BotForm defaultValues={DEFAULTS} submitLabel="Create bot" loading={create.isPending || openDirect.isPending} onSubmit={(v) => createFromValues(v)} />
+          <BotForm defaultValues={newBotDefaults()} submitLabel="Create bot" loading={create.isPending || openDirect.isPending} onSubmit={(v) => createFromValues(v)} />
         </div>
       )}
     </PageContainer>

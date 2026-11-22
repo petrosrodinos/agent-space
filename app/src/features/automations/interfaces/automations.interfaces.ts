@@ -61,7 +61,7 @@ export interface Automation {
   results_conversation_id: string | null;
   results_conversation: { id: string; name: string | null; type: string } | null;
   source_conversation_id: string | null;
-  bot: { id: string; name: string; emoji: string; color: string; deleted_at: string | null };
+  bot: { id: string; name: string; avatar_seed: string; color: string; deleted_at: string | null };
   skill: { id: string; name: string; emoji: string | null; slug: string } | null;
   connections: AutomationConnection[];
   pre_approvals: AutomationPreApproval[];

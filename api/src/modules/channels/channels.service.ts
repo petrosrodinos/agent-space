@@ -53,7 +53,7 @@ export class ChannelsService {
 
     // ---------------- Settings (the member's own links) ----------------
 
-    private view(l: { id: string; channel: ExternalChannel; status: ChannelLinkStatus; external_id: string | null; inbound_token: string | null; link_code: string | null; link_code_expires_at: Date | null; last_message_at: Date | null; created_at: Date; bot: { id: string; name: string; emoji: string | null; color: string | null } }) {
+    private view(l: { id: string; channel: ExternalChannel; status: ChannelLinkStatus; external_id: string | null; inbound_token: string | null; link_code: string | null; link_code_expires_at: Date | null; last_message_at: Date | null; created_at: Date; bot: { id: string; name: string; avatar_seed: string; color: string | null } }) {
         const codeValid = !!l.link_code && !!l.link_code_expires_at && l.link_code_expires_at > new Date();
         return {
             id: l.id,
@@ -71,7 +71,7 @@ export class ChannelsService {
         };
     }
 
-    private readonly linkInclude = { bot: { select: { id: true, name: true, emoji: true, color: true } } } as const;
+    private readonly linkInclude = { bot: { select: { id: true, name: true, avatar_seed: true, color: true } } } as const;
 
     async list(actor: Actor) {
         const links = await this.prisma.channelLink.findMany({ where: { organization_id: actor.organization_id, user_id: actor.user_id }, include: this.linkInclude, orderBy: { created_at: 'asc' } });

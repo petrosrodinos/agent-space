@@ -35,7 +35,7 @@ export interface DeviceCall {
     permission: DeviceToolPermission;
     run_id: string;
     conversation_id: string | null;
-    bot: { id: string; name: string; emoji: string | null };
+    bot: { id: string; name: string; avatar_seed: string; color: string };
     /** A short line for the "Ask each time" card: "Sales Sam wants to …". */
     summary: string;
     timeout_ms: number;
@@ -178,7 +178,7 @@ export class DeviceToolsService {
             permission: device.permissions.get(tool) ?? 'ASK_EACH_TIME',
             run_id: ctx.run.id,
             conversation_id: ctx.conversation_id,
-            bot: { id: ctx.bot.id, name: ctx.bot.name, emoji: ctx.bot.emoji ?? null },
+            bot: { id: ctx.bot.id, name: ctx.bot.name, avatar_seed: ctx.bot.avatar_seed, color: ctx.bot.color },
             summary,
             timeout_ms: timeout,
         };

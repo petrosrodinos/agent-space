@@ -157,7 +157,7 @@ export const SecretInputCard: FC<{ part: SecretPart }> = ({ part }) => {
                 {(bots ?? []).map((b) => (
                   <label key={b.id} className="inline-flex min-h-[36px] cursor-pointer items-center gap-2 rounded-full border border-hairline bg-surface-soft px-2.5 py-1 text-sm">
                     <Checkbox checked={botIds.includes(b.id)} onCheckedChange={(c) => setBotIds((ids) => (c ? [...ids, b.id] : ids.filter((x) => x !== b.id)))} />
-                    <BotAvatar emoji={b.emoji} color={b.color} size={24} />
+                    <BotAvatar seed={b.avatar_seed} color={b.color} size={24} />
                     {b.name}
                   </label>
                 ))}

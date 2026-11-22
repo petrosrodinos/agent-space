@@ -52,7 +52,7 @@ export const ApprovalCard: FC<{ approval: Approval; showConversation?: boolean }
   return (
     <article className="rounded-lg border-[1.5px] border-sunshine bg-warning-soft p-5 shadow-sticker-strong">
       <div className="mb-3 flex items-start gap-3">
-        <BotAvatar emoji={approval.bot.emoji} color={approval.bot.color} name={approval.bot.name} size={40} />
+        <BotAvatar seed={approval.bot.avatar_seed} color={approval.bot.color} name={approval.bot.name} size={40} />
         <div className="min-w-0 flex-1">
           <h3 className="text-[17px] font-bold text-ink">{approval.title}</h3>
           <p className="text-xs text-muted-foreground">

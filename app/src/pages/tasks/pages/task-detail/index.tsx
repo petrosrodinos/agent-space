@@ -100,7 +100,7 @@ const TaskDetailPage: FC = () => {
     <PageContainer>
       {back}
       <div className="mb-4 flex flex-col gap-4 rounded-lg border border-hairline bg-surface p-5 shadow-sticker sm:flex-row sm:items-center">
-        <BotAvatar emoji={task.bot.emoji} color={task.bot.color} name={task.bot.name} size={56} working={task.status === RunStatuses.RUNNING} />
+        <BotAvatar seed={task.bot.avatar_seed} color={task.bot.color} name={task.bot.name} size={56} working={task.status === RunStatuses.RUNNING} />
         <div className="min-w-0 flex-1">
           <h1 className="font-display text-2xl font-bold text-ink">{task.title}</h1>
           <p className="text-sm text-muted-foreground">

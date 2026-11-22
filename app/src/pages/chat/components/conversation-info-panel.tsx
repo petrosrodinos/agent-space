@@ -13,12 +13,11 @@ import { useMembers } from "@/features/organizations/hooks/use-organizations";
 import type { Conversation } from "@/features/conversations/interfaces/conversations.interfaces";
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { ConversationTypeOptions } from "@/config/constants/dropdowns/shared/status.options";
-import { BotEmojiSuggestions } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ColorSwatches } from "@/pages/bots/components/bot-pickers";
 import { BotPanel } from "./bot-panel";
 
-/** Side panel: name/emoji/colour, people and bots (add/remove), lead bot (§7.1, §7.2). */
+/** Side panel: name/colour, people and bots (add/remove), lead bot (§7.1, §7.2). */
 export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: string; onClose?: () => void; menu?: ReactNode }> = ({ conversation: c, meId, onClose, menu }) => {
   const update = useUpdateConversation();
   const add = useAddParticipants();
@@ -73,13 +72,6 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
                   Save
                 </Button>
               </div>
-              <div className="flex flex-wrap gap-1 pt-1" aria-label="Emoji">
-                {BotEmojiSuggestions.slice(0, 12).map((e) => (
-                  <button key={e} type="button" onClick={() => update.mutate({ id: c.id, emoji: e })} className={`inline-flex h-9 w-9 items-center justify-center rounded-sm text-lg ${c.emoji === e ? "bg-primary-soft ring-2 ring-primary" : "hover:bg-surface-sunken"}`} aria-label={`Emoji ${e}`}>
-                    {e}
-                  </button>
-                ))}
-              </div>
               <div className="space-y-1.5 pt-2">
                 <Label>Colour</Label>
                 <ColorSwatches value={c.color} onChange={(color) => color !== c.color && update.mutate({ id: c.id, color })} disabled={update.isPending} />
@@ -96,7 +88,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
             {c.bots.map((b) => (
               <li key={b.id} className="flex items-center gap-3 rounded-md p-1.5">
                 <button type="button" onClick={() => setViewBotId(b.id)} className="flex min-w-0 flex-1 items-center gap-3 rounded-md text-left hover:bg-surface-sunken" aria-label={`View ${b.name}`}>
-                  <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
+                  <BotAvatar seed={b.avatar_seed} color={b.color} size={32} name={b.name} />
                   <span className="min-w-0 flex-1">
                     <span className="block truncate font-bold text-ink">{b.name}</span>
                     {c.lead_bot?.id === b.id && c.type === ConversationTypes.GROUP && (
@@ -166,7 +158,7 @@ export const ConversationInfoPanel: FC<{ conversation: Conversation; meId: strin
                   .map((b) => (
                     <label key={b.id} className="flex min-h-[44px] cursor-pointer items-center gap-3 rounded-md px-2 hover:bg-surface-sunken">
                       <Checkbox checked={pickBots.includes(b.id)} onCheckedChange={(v) => setPickBots((s) => (v ? [...s, b.id] : s.filter((x) => x !== b.id)))} />
-                      <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
+                      <BotAvatar seed={b.avatar_seed} color={b.color} size={24} /> {b.name}
                     </label>
                   ))}
               </div>

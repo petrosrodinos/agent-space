@@ -2,7 +2,7 @@ import { useState, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlarmClock, AppWindow, Bot, CheckCheck, KeyRound, LayoutDashboard, ListChecks, MessageSquare, Plug, Settings, Sparkles } from "lucide-react";
 import { CommandDialog, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
-import { BotAvatar } from "@/components/ui/bot-avatar";
+import { BotAvatar, ConversationAvatar } from "@/components/ui/bot-avatar";
 import { useConversations, useGlobalSearch, useOpenDirect } from "@/features/conversations/hooks/use-conversations";
 import { useBots } from "@/features/bots/hooks/use-bots";
 import { useUiStore } from "@/stores/ui";
@@ -46,7 +46,7 @@ export const CommandPalette: FC = () => {
           <CommandGroup heading="Conversations">
             {conversations.slice(0, 8).map((c) => (
               <CommandItem key={c.id} value={`conv ${c.name}`} onSelect={() => go(Routes.chat.conversation(c.id))} className="gap-2">
-                <span className="text-lg">{c.emoji}</span> {c.name}
+                <ConversationAvatar conversation={c} size={24} /> {c.name}
               </CommandItem>
             ))}
           </CommandGroup>
@@ -62,7 +62,7 @@ export const CommandPalette: FC = () => {
                 }
                 className="gap-2"
               >
-                <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
+                <BotAvatar seed={b.avatar_seed} color={b.color} size={24} /> {b.name}
               </CommandItem>
             ))}
           </CommandGroup>

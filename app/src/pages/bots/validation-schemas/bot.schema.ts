@@ -2,10 +2,11 @@ import { z } from "zod";
 import { ReplyLanguageChoices, Creativities, BotClarifyingModes, GroupResponseModes, InteractiveRepliesModes, MemoryScopes, BotVisibilities, BotEditPolicies, MaxTaskDurations } from "@/features/bots/interfaces/bots.interfaces";
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Pick a colour");
+const avatarSeed = z.string().regex(/^[a-zA-Z0-9]{4,32}$/, "Pick an avatar");
 
 export const botFormSchema = z.object({
   name: z.string().trim().min(1, "Give your bot a name").max(60),
-  emoji: z.string().trim().min(1).max(16),
+  avatar_seed: avatarSeed,
   color: hex,
   description: z.string().max(160).optional(),
   instructions: z.string().trim().min(10, "Describe the bot's role in a sentence or two").max(20000),
@@ -14,7 +15,7 @@ export const botFormSchema = z.object({
 export type BotFormValues = z.infer<typeof botFormSchema>;
 
 /** Quick-create modal: identity only, the rest uses API defaults. */
-export const quickBotSchema = botFormSchema.pick({ name: true, emoji: true, color: true });
+export const quickBotSchema = botFormSchema.pick({ name: true, avatar_seed: true, color: true });
 export type QuickBotFormValues = z.infer<typeof quickBotSchema>;
 
 export const describeBotSchema = z.object({
@@ -24,7 +25,7 @@ export type DescribeBotFormValues = z.infer<typeof describeBotSchema>;
 
 export const identitySchema = z.object({
   name: z.string().trim().min(1, "Required").max(60),
-  emoji: z.string().trim().min(1).max(16),
+  avatar_seed: avatarSeed,
   color: hex,
   description: z.string().max(160),
   welcome_message: z.string().max(1000),

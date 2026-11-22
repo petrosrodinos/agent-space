@@ -24,5 +24,5 @@ export const cancelSecretRequest = (dto: { run_id: string; request_id: string })
 export const updateCredential = (id: string, dto: { label?: string; service_name?: string; bot_ids?: string[]; visibility?: Visibility }) => request<Credential>(() => axiosInstance.patch(ApiRoutes.credentials.one(id), dto));
 export const replaceCredential = (id: string, dto: ReplaceCredentialDto) => request<Credential>(() => axiosInstance.post(ApiRoutes.credentials.replace(id), dto));
 export const deleteCredential = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.credentials.one(id)));
-export const getCredentialUsage = (id: string) => request<{ bots: { id: string; name: string; emoji: string }[]; tool_servers: { id: string; name: string }[] }>(() => axiosInstance.get(ApiRoutes.credentials.usage(id)));
+export const getCredentialUsage = (id: string) => request<{ bots: { id: string; name: string; avatar_seed: string }[]; tool_servers: { id: string; name: string }[] }>(() => axiosInstance.get(ApiRoutes.credentials.usage(id)));
 export const getCredentialHistory = (id: string) => request<CredentialEvent[]>(() => axiosInstance.get(ApiRoutes.credentials.history(id)));

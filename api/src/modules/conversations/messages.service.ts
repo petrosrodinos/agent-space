@@ -301,7 +301,7 @@ export class MessagesService {
                 content: { contains: q.trim(), mode: 'insensitive' },
                 conversation: { deleted_at: null, is_temporary: false, participants: { some: { user_id: actor.user_id, left_at: null } } },
             },
-            include: { conversation: { select: { id: true, name: true, type: true } }, author_bot: { select: { name: true, emoji: true, color: true } }, author_user: { select: { name: true } } },
+            include: { conversation: { select: { id: true, name: true, type: true } }, author_bot: { select: { name: true, avatar_seed: true, color: true } }, author_user: { select: { name: true } } },
             orderBy: { created_at: 'desc' },
             take: 30,
         });

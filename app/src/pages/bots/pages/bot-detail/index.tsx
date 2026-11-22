@@ -214,7 +214,7 @@ const BotDetailPage: FC = () => {
           <aside className="w-60 shrink-0 space-y-5">
             <div className="space-y-3 px-3">
               <div className="flex items-center gap-3">
-                <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={40} />
+                <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={40} />
                 <div className="min-w-0 flex-1">
                   <p className="truncate text-[16px] font-bold text-ink">{bot.name}</p>
                   {bot.description && <p className="truncate text-sm text-muted-foreground">{bot.description}</p>}
@@ -247,7 +247,7 @@ const BotDetailPage: FC = () => {
           onBack={backToOverview}
           center={
             <span className="flex h-11 min-w-0 items-center gap-2 rounded-full border border-hairline bg-surface-sunken py-1 pl-1.5 pr-4 shadow-sticker">
-              <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={32} className="rounded-full" />
+              <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={32} className="rounded-full" />
               <span className="truncate text-[16px] font-bold text-ink">{SECTION_LABELS[section]}</span>
             </span>
           }
@@ -265,7 +265,7 @@ const BotDetailPage: FC = () => {
       />
       <Frame>
         <div className="flex flex-col items-center text-center">
-          <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={120} followCursor />
+          <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={120} followCursor />
           <h1 className="mt-4 font-display text-[30px] font-bold leading-tight text-ink">{bot.name}</h1>
           {bot.description && <p className="mt-1 max-w-md text-[15px] text-muted-foreground">{bot.description}</p>}
           <div className="mt-4 flex gap-2">

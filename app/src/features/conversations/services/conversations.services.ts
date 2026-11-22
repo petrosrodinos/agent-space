@@ -7,9 +7,9 @@ import { ConversationTypes } from "../interfaces/conversations.interfaces";
 export const getConversations = (params: { archived?: boolean; search?: string } = {}) => request<Conversation[]>(() => axiosInstance.get(ApiRoutes.conversations.root, { params }));
 export const getConversation = (id: string) => request<Conversation>(() => axiosInstance.get(ApiRoutes.conversations.one(id)));
 export const openDirect = (dto: { bot_id: string; is_temporary?: boolean }) => request<Conversation>(() => axiosInstance.post(ApiRoutes.conversations.direct, dto));
-export const createConversation = (dto: { type: typeof ConversationTypes.GROUP | typeof ConversationTypes.SHARED_BOT; name?: string; emoji?: string; color?: string; bot_ids: string[]; user_ids?: string[]; lead_bot_id?: string }) =>
+export const createConversation = (dto: { type: typeof ConversationTypes.GROUP | typeof ConversationTypes.SHARED_BOT; name?: string; color?: string; bot_ids: string[]; user_ids?: string[]; lead_bot_id?: string }) =>
   request<Conversation>(() => axiosInstance.post(ApiRoutes.conversations.root, dto));
-export const updateConversation = (id: string, dto: { name?: string; emoji?: string; color?: string; lead_bot_id?: string | null }) => request<Conversation>(() => axiosInstance.patch(ApiRoutes.conversations.one(id), dto));
+export const updateConversation = (id: string, dto: { name?: string; color?: string; lead_bot_id?: string | null }) => request<Conversation>(() => axiosInstance.patch(ApiRoutes.conversations.one(id), dto));
 export const updateMyConversation = (id: string, dto: { is_favourite?: boolean; is_archived?: boolean; is_muted?: boolean; folder_id?: string | null }) =>
   request<{ ok: boolean }>(() => axiosInstance.patch(ApiRoutes.conversations.me(id), dto));
 export const markRead = (id: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.conversations.read(id)));

@@ -410,7 +410,7 @@ export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
           <ul className="divide-y divide-hairline">{data.by_member.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5"><PersonAvatar name={r.user?.name} email={r.user?.email} size={24} /><span className="min-w-0 flex-1 truncate text-sm">{r.user?.name ?? r.user?.email ?? "System"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_member.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
         </SettingsCard>
         <SettingsCard title="By bot">
-          <ul className="divide-y divide-hairline">{data.by_bot.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5">{r.bot ? <BotAvatar emoji={r.bot.emoji} color={r.bot.color} size={24} /> : null}<span className="min-w-0 flex-1 truncate text-sm">{r.bot?.name ?? "Other"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_bot.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
+          <ul className="divide-y divide-hairline">{data.by_bot.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5">{r.bot ? <BotAvatar seed={r.bot.avatar_seed} color={r.bot.color} size={24} /> : null}<span className="min-w-0 flex-1 truncate text-sm">{r.bot?.name ?? "Other"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_bot.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
         </SettingsCard>
         <SettingsCard title="By model">
           <ul className="divide-y divide-hairline">{data.by_model.map((r, i) => <li key={i} className="flex items-center gap-2 py-2.5"><span className="min-w-0 flex-1 truncate text-sm">{r.model?.name ?? "Other"}</span><span className="text-sm font-bold">{formatMoney(r.cost)}</span></li>)}{!data.by_model.length && <li className="py-3 text-sm text-muted-foreground">No usage yet.</li>}</ul>
@@ -426,7 +426,7 @@ export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
               const pct = l.monthly_limit > 0 ? Math.min(100, Math.round((spent / l.monthly_limit) * 100)) : 100;
               return (
                 <li key={l.id} className="flex flex-wrap items-center gap-3 py-2.5">
-                  {member ? <PersonAvatar name={member.name} email={member.email} size={24} /> : bot ? <BotAvatar emoji={bot.emoji} color={bot.color} size={24} /> : null}
+                  {member ? <PersonAvatar name={member.name} email={member.email} size={24} /> : bot ? <BotAvatar seed={bot.avatar_seed} color={bot.color} size={24} /> : null}
                   <span className="min-w-0 flex-1">
                     <span className="block truncate text-sm font-semibold text-ink">{member ? (member.name ?? member.email) : bot ? bot.name : getDropdownOptionLabel(UsageLimitScopeOptions, l.scope)}</span>
                     <span className="mt-1 block h-1.5 w-full max-w-[220px] overflow-hidden rounded-full bg-surface-sunken" aria-label={`${pct}% used`}>
@@ -454,7 +454,7 @@ export const UsageSection: FC<{ isAdmin: boolean }> = ({ isAdmin }) => {
                 <SelectContent>
                   {limitScope === UsageLimitScopes.MEMBER
                     ? (members ?? []).map((m) => <SelectItem key={m.user.id} value={m.user.id}>{m.user.name ?? m.user.email}</SelectItem>)
-                    : (bots ?? []).map((b) => <SelectItem key={b.id} value={b.id}>{b.emoji} {b.name}</SelectItem>)}
+                    : (bots ?? []).map((b) => <SelectItem key={b.id} value={b.id}><span className="flex items-center gap-2"><BotAvatar seed={b.avatar_seed} color={b.color} size={24} />{b.name}</span></SelectItem>)}
                 </SelectContent>
               </Select>
             )}
@@ -492,7 +492,7 @@ export const ActivitySection: FC = () => {
                 {data?.data.map((a) => (
                   <TableRow key={a.id}>
                     <TableCell className="whitespace-nowrap text-xs text-muted-foreground">{formatDateTime(a.created_at)}</TableCell>
-                    <TableCell className="text-sm">{a.actor_bot ? `${a.actor_bot.emoji} ${a.actor_bot.name}` : a.actor_user?.name ?? a.actor_user?.email ?? "System"}</TableCell>
+                    <TableCell className="text-sm">{a.actor_bot ? a.actor_bot.name : a.actor_user?.name ?? a.actor_user?.email ?? "System"}</TableCell>
                     <TableCell><code className="rounded-xs bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code></TableCell>
                     <TableCell className="max-w-[260px] truncate text-xs text-muted-foreground">{a.connection?.label ?? ""} {a.metadata ? JSON.stringify(a.metadata).slice(0, 80) : ""}</TableCell>
                   </TableRow>
@@ -504,7 +504,7 @@ export const ActivitySection: FC = () => {
             {data?.data.map((a) => (
               <li key={a.id} className="py-2.5">
                 <code className="rounded-xs bg-surface-sunken px-1.5 py-0.5 text-xs">{a.action}</code>
-                <p className="mt-1 text-sm">{a.actor_bot ? `${a.actor_bot.emoji} ${a.actor_bot.name}` : a.actor_user?.name ?? "System"}</p>
+                <p className="mt-1 text-sm">{a.actor_bot ? a.actor_bot.name : a.actor_user?.name ?? "System"}</p>
                 <p className="text-xs text-muted-foreground">{timeAgo(a.created_at)}</p>
               </li>
             ))}

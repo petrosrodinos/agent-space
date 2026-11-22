@@ -38598,6 +38598,7 @@ export namespace Prisma {
     key: string | null
     name: string | null
     emoji: string | null
+    avatar_seed: string | null
     color: string | null
     description: string | null
     instructions: string | null
@@ -38617,6 +38618,7 @@ export namespace Prisma {
     key: string | null
     name: string | null
     emoji: string | null
+    avatar_seed: string | null
     color: string | null
     description: string | null
     instructions: string | null
@@ -38636,6 +38638,7 @@ export namespace Prisma {
     key: number
     name: number
     emoji: number
+    avatar_seed: number
     color: number
     description: number
     instructions: number
@@ -38667,6 +38670,7 @@ export namespace Prisma {
     key?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     instructions?: true
@@ -38686,6 +38690,7 @@ export namespace Prisma {
     key?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     instructions?: true
@@ -38705,6 +38710,7 @@ export namespace Prisma {
     key?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     instructions?: true
@@ -38813,6 +38819,7 @@ export namespace Prisma {
     key: string
     name: string
     emoji: string
+    avatar_seed: string
     color: string
     description: string
     instructions: string
@@ -38853,6 +38860,7 @@ export namespace Prisma {
     key?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     instructions?: boolean
@@ -38879,6 +38887,7 @@ export namespace Prisma {
     key?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     instructions?: boolean
@@ -38901,6 +38910,7 @@ export namespace Prisma {
     key?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     instructions?: boolean
@@ -38923,6 +38933,7 @@ export namespace Prisma {
     key?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     instructions?: boolean
@@ -38939,7 +38950,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type BotTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "name" | "emoji" | "color" | "description" | "instructions" | "welcome_message" | "conversation_starters" | "suggested_services" | "model_id" | "voice" | "approval_level" | "cloud_computer" | "sort_order" | "is_active" | "created_at" | "updated_at", ExtArgs["result"]["botTemplate"]>
+  export type BotTemplateOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "key" | "name" | "emoji" | "avatar_seed" | "color" | "description" | "instructions" | "welcome_message" | "conversation_starters" | "suggested_services" | "model_id" | "voice" | "approval_level" | "cloud_computer" | "sort_order" | "is_active" | "created_at" | "updated_at", ExtArgs["result"]["botTemplate"]>
   export type BotTemplateInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     model?: boolean | BotTemplate$modelArgs<ExtArgs>
     starter_skills?: boolean | BotTemplate$starter_skillsArgs<ExtArgs>
@@ -38966,7 +38977,14 @@ export namespace Prisma {
       id: string
       key: string
       name: string
+      /**
+       * Deprecated, no longer read or written. Drop once every deployment runs the avatar_seed code.
+       */
       emoji: string
+      /**
+       * Seed for the generated flat-portrait avatar (same generator as bots).
+       */
+      avatar_seed: string
       color: string
       description: string
       instructions: string
@@ -39412,6 +39430,7 @@ export namespace Prisma {
     readonly key: FieldRef<"BotTemplate", 'String'>
     readonly name: FieldRef<"BotTemplate", 'String'>
     readonly emoji: FieldRef<"BotTemplate", 'String'>
+    readonly avatar_seed: FieldRef<"BotTemplate", 'String'>
     readonly color: FieldRef<"BotTemplate", 'String'>
     readonly description: FieldRef<"BotTemplate", 'String'>
     readonly instructions: FieldRef<"BotTemplate", 'String'>
@@ -42042,6 +42061,7 @@ export namespace Prisma {
     is_starter: boolean | null
     name: string | null
     emoji: string | null
+    avatar_seed: string | null
     color: string | null
     description: string | null
     image_file_id: string | null
@@ -42094,6 +42114,7 @@ export namespace Prisma {
     is_starter: boolean | null
     name: string | null
     emoji: string | null
+    avatar_seed: string | null
     color: string | null
     description: string | null
     image_file_id: string | null
@@ -42146,6 +42167,7 @@ export namespace Prisma {
     is_starter: number
     name: number
     emoji: number
+    avatar_seed: number
     color: number
     description: number
     image_file_id: number
@@ -42209,6 +42231,7 @@ export namespace Prisma {
     is_starter?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     image_file_id?: true
@@ -42261,6 +42284,7 @@ export namespace Prisma {
     is_starter?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     image_file_id?: true
@@ -42313,6 +42337,7 @@ export namespace Prisma {
     is_starter?: true
     name?: true
     emoji?: true
+    avatar_seed?: true
     color?: true
     description?: true
     image_file_id?: true
@@ -42453,6 +42478,7 @@ export namespace Prisma {
     is_starter: boolean
     name: string
     emoji: string
+    avatar_seed: string
     color: string
     description: string | null
     image_file_id: string | null
@@ -42525,6 +42551,7 @@ export namespace Prisma {
     is_starter?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     image_file_id?: boolean
@@ -42610,6 +42637,7 @@ export namespace Prisma {
     is_starter?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     image_file_id?: boolean
@@ -42669,6 +42697,7 @@ export namespace Prisma {
     is_starter?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     image_file_id?: boolean
@@ -42728,6 +42757,7 @@ export namespace Prisma {
     is_starter?: boolean
     name?: boolean
     emoji?: boolean
+    avatar_seed?: boolean
     color?: boolean
     description?: boolean
     image_file_id?: boolean
@@ -42772,7 +42802,7 @@ export namespace Prisma {
     updated_at?: boolean
   }
 
-  export type BotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "created_by_id" | "template_id" | "duplicated_from_id" | "is_starter" | "name" | "emoji" | "color" | "description" | "image_file_id" | "welcome_message" | "conversation_starters" | "instructions" | "model_id" | "creativity" | "style_override" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "lock_style" | "reply_language" | "clarifying_questions" | "group_response" | "web_search_enabled" | "image_generation_enabled" | "document_creation_enabled" | "interactive_replies_mode" | "artifacts_enabled" | "cloud_computer_enabled" | "use_skills_automatically" | "org_knowledge_enabled" | "voice_mode_enabled" | "voice" | "spoken_reply_style" | "memory_enabled" | "memory_scope" | "can_ask_other_bots" | "can_be_asked" | "is_sensitive" | "approval_level" | "max_task_duration" | "monthly_usage_limit" | "visibility" | "edit_policy" | "is_archived" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["bot"]>
+  export type BotOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "organization_id" | "created_by_id" | "template_id" | "duplicated_from_id" | "is_starter" | "name" | "emoji" | "avatar_seed" | "color" | "description" | "image_file_id" | "welcome_message" | "conversation_starters" | "instructions" | "model_id" | "creativity" | "style_override" | "reply_length" | "reply_tone" | "reply_formatting" | "emoji_usage" | "lock_style" | "reply_language" | "clarifying_questions" | "group_response" | "web_search_enabled" | "image_generation_enabled" | "document_creation_enabled" | "interactive_replies_mode" | "artifacts_enabled" | "cloud_computer_enabled" | "use_skills_automatically" | "org_knowledge_enabled" | "voice_mode_enabled" | "voice" | "spoken_reply_style" | "memory_enabled" | "memory_scope" | "can_ask_other_bots" | "can_be_asked" | "is_sensitive" | "approval_level" | "max_task_duration" | "monthly_usage_limit" | "visibility" | "edit_policy" | "is_archived" | "deleted_at" | "created_at" | "updated_at", ExtArgs["result"]["bot"]>
   export type BotInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     organization?: boolean | OrganizationDefaultArgs<ExtArgs>
     created_by?: boolean | Bot$created_byArgs<ExtArgs>
@@ -42870,7 +42900,14 @@ export namespace Prisma {
        */
       is_starter: boolean
       name: string
+      /**
+       * Deprecated, no longer read or written. Drop once every deployment runs the avatar_seed code.
+       */
       emoji: string
+      /**
+       * Seed for the generated flat-portrait avatar. Shuffling picks a new one; the colour stays the bot colour.
+       */
+      avatar_seed: string
       color: string
       description: string | null
       image_file_id: string | null
@@ -43375,6 +43412,7 @@ export namespace Prisma {
     readonly is_starter: FieldRef<"Bot", 'Boolean'>
     readonly name: FieldRef<"Bot", 'String'>
     readonly emoji: FieldRef<"Bot", 'String'>
+    readonly avatar_seed: FieldRef<"Bot", 'String'>
     readonly color: FieldRef<"Bot", 'String'>
     readonly description: FieldRef<"Bot", 'String'>
     readonly image_file_id: FieldRef<"Bot", 'String'>
@@ -56157,7 +56195,13 @@ export namespace Prisma {
       organization_id: string
       type: $Enums.ConversationType
       name: string | null
+      /**
+       * Deprecated, no longer read or written (groups show their bots' portraits). Drop with Bot.emoji.
+       */
       emoji: string | null
+      /**
+       * Deprecated, no longer read or written. Drop with Bot.emoji.
+       */
       color: string | null
       lead_bot_id: string | null
       created_by_id: string | null
@@ -123287,6 +123331,7 @@ export namespace Prisma {
     key: 'key',
     name: 'name',
     emoji: 'emoji',
+    avatar_seed: 'avatar_seed',
     color: 'color',
     description: 'description',
     instructions: 'instructions',
@@ -123332,6 +123377,7 @@ export namespace Prisma {
     is_starter: 'is_starter',
     name: 'name',
     emoji: 'emoji',
+    avatar_seed: 'avatar_seed',
     color: 'color',
     description: 'description',
     image_file_id: 'image_file_id',
@@ -128739,6 +128785,7 @@ export namespace Prisma {
     key?: StringFilter<"BotTemplate"> | string
     name?: StringFilter<"BotTemplate"> | string
     emoji?: StringFilter<"BotTemplate"> | string
+    avatar_seed?: StringFilter<"BotTemplate"> | string
     color?: StringFilter<"BotTemplate"> | string
     description?: StringFilter<"BotTemplate"> | string
     instructions?: StringFilter<"BotTemplate"> | string
@@ -128764,6 +128811,7 @@ export namespace Prisma {
     key?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     instructions?: SortOrder
@@ -128792,6 +128840,7 @@ export namespace Prisma {
     NOT?: BotTemplateWhereInput | BotTemplateWhereInput[]
     name?: StringFilter<"BotTemplate"> | string
     emoji?: StringFilter<"BotTemplate"> | string
+    avatar_seed?: StringFilter<"BotTemplate"> | string
     color?: StringFilter<"BotTemplate"> | string
     description?: StringFilter<"BotTemplate"> | string
     instructions?: StringFilter<"BotTemplate"> | string
@@ -128817,6 +128866,7 @@ export namespace Prisma {
     key?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     instructions?: SortOrder
@@ -128846,6 +128896,7 @@ export namespace Prisma {
     key?: StringWithAggregatesFilter<"BotTemplate"> | string
     name?: StringWithAggregatesFilter<"BotTemplate"> | string
     emoji?: StringWithAggregatesFilter<"BotTemplate"> | string
+    avatar_seed?: StringWithAggregatesFilter<"BotTemplate"> | string
     color?: StringWithAggregatesFilter<"BotTemplate"> | string
     description?: StringWithAggregatesFilter<"BotTemplate"> | string
     instructions?: StringWithAggregatesFilter<"BotTemplate"> | string
@@ -128967,6 +129018,7 @@ export namespace Prisma {
     is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
+    avatar_seed?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
     description?: StringNullableFilter<"Bot"> | string | null
     image_file_id?: StringNullableFilter<"Bot"> | string | null
@@ -129051,6 +129103,7 @@ export namespace Prisma {
     is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrderInput | SortOrder
     image_file_id?: SortOrderInput | SortOrder
@@ -129139,6 +129192,7 @@ export namespace Prisma {
     is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
+    avatar_seed?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
     description?: StringNullableFilter<"Bot"> | string | null
     welcome_message?: StringNullableFilter<"Bot"> | string | null
@@ -129222,6 +129276,7 @@ export namespace Prisma {
     is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrderInput | SortOrder
     image_file_id?: SortOrderInput | SortOrder
@@ -129283,6 +129338,7 @@ export namespace Prisma {
     is_starter?: BoolWithAggregatesFilter<"Bot"> | boolean
     name?: StringWithAggregatesFilter<"Bot"> | string
     emoji?: StringWithAggregatesFilter<"Bot"> | string
+    avatar_seed?: StringWithAggregatesFilter<"Bot"> | string
     color?: StringWithAggregatesFilter<"Bot"> | string
     description?: StringNullableWithAggregatesFilter<"Bot"> | string | null
     image_file_id?: StringNullableWithAggregatesFilter<"Bot"> | string | null
@@ -138299,7 +138355,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -138323,7 +138380,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -138348,6 +138406,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -138372,6 +138431,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -138395,7 +138455,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -138417,6 +138478,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -138437,6 +138499,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -138532,6 +138595,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -138614,6 +138678,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -138688,6 +138753,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -138770,6 +138836,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -138848,6 +138915,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -138897,6 +138965,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -138948,6 +139017,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -148569,6 +148639,7 @@ export namespace Prisma {
     key?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     instructions?: SortOrder
@@ -148594,6 +148665,7 @@ export namespace Prisma {
     key?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     instructions?: SortOrder
@@ -148613,6 +148685,7 @@ export namespace Prisma {
     key?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     instructions?: SortOrder
@@ -148864,6 +148937,7 @@ export namespace Prisma {
     is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     image_file_id?: SortOrder
@@ -148921,6 +148995,7 @@ export namespace Prisma {
     is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     image_file_id?: SortOrder
@@ -148973,6 +149048,7 @@ export namespace Prisma {
     is_starter?: SortOrder
     name?: SortOrder
     emoji?: SortOrder
+    avatar_seed?: SortOrder
     color?: SortOrder
     description?: SortOrder
     image_file_id?: SortOrder
@@ -169983,6 +170059,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -170063,6 +170140,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -172467,6 +172545,7 @@ export namespace Prisma {
     is_starter?: BoolFilter<"Bot"> | boolean
     name?: StringFilter<"Bot"> | string
     emoji?: StringFilter<"Bot"> | string
+    avatar_seed?: StringFilter<"Bot"> | string
     color?: StringFilter<"Bot"> | string
     description?: StringNullableFilter<"Bot"> | string | null
     image_file_id?: StringNullableFilter<"Bot"> | string | null
@@ -176266,6 +176345,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -176347,6 +176427,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -176585,6 +176666,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -176666,6 +176748,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -178704,6 +178787,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -178784,6 +178868,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -183145,6 +183230,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -183226,6 +183312,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -183308,7 +183395,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -183331,7 +183419,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -183823,6 +183912,7 @@ export namespace Prisma {
     key?: StringFilter<"BotTemplate"> | string
     name?: StringFilter<"BotTemplate"> | string
     emoji?: StringFilter<"BotTemplate"> | string
+    avatar_seed?: StringFilter<"BotTemplate"> | string
     color?: StringFilter<"BotTemplate"> | string
     description?: StringFilter<"BotTemplate"> | string
     instructions?: StringFilter<"BotTemplate"> | string
@@ -184392,6 +184482,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -184472,6 +184563,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -184692,7 +184784,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -184715,7 +184808,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -184822,6 +184916,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -184845,6 +184940,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -185043,7 +185139,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -185066,7 +185163,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -185215,6 +185313,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -185238,6 +185337,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -185506,7 +185606,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -185529,7 +185630,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -185558,6 +185660,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -185639,6 +185742,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -185717,6 +185821,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -185797,6 +185902,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -187497,6 +187603,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -187520,6 +187627,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -187554,6 +187662,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -187635,6 +187744,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -188407,6 +188517,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -188488,6 +188599,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -188577,6 +188689,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -188658,6 +188771,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -188731,6 +188845,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -188812,6 +188927,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -188974,6 +189090,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189055,6 +189172,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189207,6 +189325,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -189288,6 +189407,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -189420,6 +189540,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189501,6 +189622,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189623,6 +189745,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -189704,6 +189827,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -189854,6 +189978,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -189935,6 +190060,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190075,6 +190201,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -190156,6 +190283,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -190312,6 +190440,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190393,6 +190522,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -190642,6 +190772,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -190723,6 +190854,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -191195,6 +191327,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -191276,6 +191409,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192212,6 +192346,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -192293,6 +192428,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -192697,6 +192833,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -192778,6 +192915,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -193730,6 +193868,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -193811,6 +193950,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -194943,6 +195083,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -195024,6 +195165,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -196099,6 +196241,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -196180,6 +196323,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -196512,6 +196656,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -196593,6 +196738,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -197006,6 +197152,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -197087,6 +197234,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -198604,6 +198752,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -198685,6 +198834,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -201705,6 +201855,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -201786,6 +201937,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -202271,6 +202423,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -202352,6 +202505,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -203317,6 +203471,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -203398,6 +203553,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -203829,6 +203985,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -203910,6 +204067,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -205302,6 +205460,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -205383,6 +205542,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -205975,6 +206135,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -206056,6 +206217,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -206587,6 +206749,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -206668,6 +206831,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -207178,6 +207342,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -207259,6 +207424,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -213397,6 +213563,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -213478,6 +213645,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -213860,6 +214028,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -213941,6 +214110,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -216432,6 +216602,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -216513,6 +216684,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -216681,6 +216853,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -216762,6 +216935,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -217081,6 +217255,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -217162,6 +217337,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -217677,6 +217853,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -217758,6 +217935,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -220153,6 +220331,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -220234,6 +220413,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -221405,6 +221585,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -221486,6 +221667,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -221758,6 +221940,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -221839,6 +222022,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -222141,6 +222325,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -222222,6 +222407,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -224106,6 +224292,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -224187,6 +224374,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -224982,6 +225170,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -225063,6 +225252,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228056,6 +228246,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -228137,6 +228328,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -228711,6 +228903,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -228792,6 +228985,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229213,6 +229407,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -229294,6 +229489,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -229492,6 +229688,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -229573,6 +229770,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -230528,6 +230726,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -230609,6 +230808,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -231173,6 +231373,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -231254,6 +231455,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -232472,6 +232674,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     welcome_message?: string | null
@@ -232553,6 +232756,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -232963,6 +233167,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -233044,6 +233249,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -233309,6 +233515,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -234404,6 +234611,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -234484,6 +234692,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -234561,6 +234770,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -237127,6 +237337,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -237785,6 +237996,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -237865,6 +238077,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -237942,6 +238155,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -239664,6 +239878,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -239711,7 +239926,8 @@ export namespace Prisma {
     id?: string
     key: string
     name: string
-    emoji: string
+    emoji?: string
+    avatar_seed?: string
     color: string
     description: string
     instructions: string
@@ -239932,6 +240148,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240013,6 +240230,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240090,6 +240308,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240138,6 +240357,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -240161,6 +240381,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -240184,6 +240405,7 @@ export namespace Prisma {
     key?: StringFieldUpdateOperationsInput | string
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: StringFieldUpdateOperationsInput | string
     instructions?: StringFieldUpdateOperationsInput | string
@@ -240627,6 +240849,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -240693,6 +240916,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240773,6 +240997,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240850,6 +241075,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -240917,6 +241143,7 @@ export namespace Prisma {
     is_starter?: boolean
     name: string
     emoji?: string
+    avatar_seed?: string
     color?: string
     description?: string | null
     image_file_id?: string | null
@@ -241379,6 +241606,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     welcome_message?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241459,6 +241687,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null
@@ -241536,6 +241765,7 @@ export namespace Prisma {
     is_starter?: BoolFieldUpdateOperationsInput | boolean
     name?: StringFieldUpdateOperationsInput | string
     emoji?: StringFieldUpdateOperationsInput | string
+    avatar_seed?: StringFieldUpdateOperationsInput | string
     color?: StringFieldUpdateOperationsInput | string
     description?: NullableStringFieldUpdateOperationsInput | string | null
     image_file_id?: NullableStringFieldUpdateOperationsInput | string | null

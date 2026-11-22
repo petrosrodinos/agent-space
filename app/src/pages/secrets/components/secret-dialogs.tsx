@@ -213,7 +213,7 @@ export const ChooseBotsDialog: FC<{ secret: Credential | null; isAdmin: boolean;
           {bots?.map((b) => (
             <label key={b.id} className="flex min-h-[48px] cursor-pointer items-center gap-3 py-2">
               <Checkbox checked={sel.has(b.id)} onCheckedChange={(v) => setSel((s) => { const n = new Set(s); if (v) n.add(b.id); else n.delete(b.id); return n; })} />
-              <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
+              <BotAvatar seed={b.avatar_seed} color={b.color} size={32} name={b.name} />
               <span className="font-semibold">{b.name}</span>
             </label>
           ))}
@@ -230,7 +230,7 @@ export const ChooseBotsDialog: FC<{ secret: Credential | null; isAdmin: boolean;
 export const DeleteSecretDialog: FC<{ secret: Credential | null; onClose: () => void }> = ({ secret, onClose }) => {
   const del = useDeleteCredential();
   const { data: usage } = useCredentialUsage(secret?.id ?? null);
-  const users = [...(usage?.bots.map((b) => `${b.emoji} ${b.name}`) ?? []), ...(usage?.tool_servers.map((t) => t.name) ?? [])];
+  const users = [...(usage?.bots.map((b) => b.name) ?? []), ...(usage?.tool_servers.map((t) => t.name) ?? [])];
   return (
     <ConfirmationDialog
       isOpen={!!secret}
@@ -262,7 +262,7 @@ export const HistorySheet: FC<{ secret: Credential | null; onClose: () => void }
               <li key={e.id} className="py-3">
                 <p className="text-sm font-bold text-ink">{getDropdownOptionLabel(CredentialEventOptions, e.type)}{e.action ? ` · ${e.action}` : ""}</p>
                 <p className="text-xs text-muted-foreground">
-                  {e.bot ? `${e.bot.emoji} ${e.bot.name}` : ""}{e.bot && e.user ? " for " : ""}{e.user?.name ?? e.user?.email ?? ""} · {formatDateTime(e.created_at)}
+                  {e.bot ? e.bot.name : ""}{e.bot && e.user ? " for " : ""}{e.user?.name ?? e.user?.email ?? ""} · {formatDateTime(e.created_at)}
                 </p>
               </li>
             ))}

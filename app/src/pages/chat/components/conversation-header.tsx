@@ -4,7 +4,7 @@ import { Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { CircleButton } from "@/components/ui/circle-button";
 import { MobileTopBar } from "@/components/layout/mobile-top-bar";
-import { BotAvatar, BotAvatarStack } from "@/components/ui/bot-avatar";
+import { BotAvatar, BotAvatarStack, GroupAvatar } from "@/components/ui/bot-avatar";
 import type { Conversation } from "@/features/conversations/interfaces/conversations.interfaces";
 import { Routes } from "@/routes/routes";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
@@ -36,11 +36,9 @@ const TitlePill: FC<{ conversation: Conversation; working: string[]; panelOpen: 
       )}
     >
       {c.type === ConversationTypes.GROUP ? (
-        <span className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-full text-lg" style={{ backgroundColor: c.color }}>
-          {c.emoji}
-        </span>
+        <GroupAvatar bots={c.bots} color={c.color} name={c.name} size={32} working={working.length > 0} className="rounded-full" />
       ) : lead ? (
-        <BotAvatar emoji={lead.emoji} color={lead.color} name={lead.name} size={32} working={working.length > 0} className="rounded-full" />
+        <BotAvatar seed={lead.avatar_seed} color={lead.color} name={lead.name} size={32} working={working.length > 0} className="rounded-full" />
       ) : (
         <BotAvatarStack bots={c.bots} size={24} max={2} />
       )}

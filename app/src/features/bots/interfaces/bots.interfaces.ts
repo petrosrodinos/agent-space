@@ -16,7 +16,7 @@ export interface BotTemplate {
   id: string;
   key: string;
   name: string;
-  emoji: string;
+  avatar_seed: string;
   color: string;
   description: string;
   instructions: string;
@@ -77,7 +77,8 @@ export type ActionType = (typeof ActionTypes)[keyof typeof ActionTypes];
 export interface BotBrief {
   id: string;
   name: string;
-  emoji: string;
+  /** Seed for the generated portrait avatar. */
+  avatar_seed: string;
   color: string;
   description?: string | null;
   is_sensitive?: boolean;
@@ -141,7 +142,6 @@ export type UpdateBotDto = Partial<CreateBotDto>;
 
 export interface BotDraft {
   name: string;
-  emoji: string;
   color: string;
   description: string;
   instructions: string;

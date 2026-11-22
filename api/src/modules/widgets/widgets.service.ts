@@ -211,7 +211,7 @@ export class WidgetsService {
 
     private async views(rows: { id: string; title: string; refresh_prompt: string | null; conversation_id: string | null; source_message_id: string | null; spec: Prisma.JsonValue; created_at: Date; updated_at: Date }[]): Promise<WidgetView[]> {
         const botIds = [...new Set(rows.map((r) => (r.spec as unknown as WidgetSpec).bot_id).filter((b): b is string => !!b))];
-        const bots = botIds.length ? await this.prisma.bot.findMany({ where: { id: { in: botIds } }, select: { id: true, name: true, emoji: true, color: true } }) : [];
+        const bots = botIds.length ? await this.prisma.bot.findMany({ where: { id: { in: botIds } }, select: { id: true, name: true, avatar_seed: true, color: true } }) : [];
         const byId = new Map(bots.map((b) => [b.id, b]));
         return rows.map((r) => {
             const s = r.spec as unknown as WidgetSpec;

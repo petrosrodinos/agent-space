@@ -80,7 +80,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
     el.style.height = `${Math.min(el.scrollHeight, 8 * 24 + 16)}px`;
   }, [text]);
 
-  type PickerOption = { id: string; insert: string; label: string; sub: string; bot?: { emoji: string; color: string }; user?: { name: string | null; email: string } };
+  type PickerOption = { id: string; insert: string; label: string; sub: string; bot?: { avatar_seed: string; color: string }; user?: { name: string | null; email: string } };
   const options = useMemo<PickerOption[]>(() => {
     if (!picker) return [];
     const q = picker.query.toLowerCase();
@@ -227,7 +227,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
               }}
               className={cn("flex w-full items-center gap-2.5 rounded-md px-2 py-2 text-left", i === active ? "bg-primary-soft" : "hover:bg-surface-sunken")}
             >
-              {o.bot ? <BotAvatar emoji={o.bot.emoji} color={o.bot.color} size={24} /> : o.user ? <PersonAvatar name={o.user.name} email={o.user.email} size={24} /> : null}
+              {o.bot ? <BotAvatar seed={o.bot.avatar_seed} color={o.bot.color} size={24} /> : o.user ? <PersonAvatar name={o.user.name} email={o.user.email} size={24} /> : null}
               <span className="min-w-0">
                 <span className="block truncate text-sm font-bold text-ink">{o.label}</span>
                 <span className="block truncate text-xs text-muted-foreground">{o.sub}</span>
@@ -294,7 +294,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
                   <DropdownMenuLabel className="eyebrow px-2">Talk to</DropdownMenuLabel>
                   {conversation.bots.map((b) => (
                     <DropdownMenuItem key={b.id} onSelect={() => onVoice(b.id)} className="gap-2 rounded-sm py-2">
-                      <BotAvatar emoji={b.emoji} color={b.color} size={24} /> {b.name}
+                      <BotAvatar seed={b.avatar_seed} color={b.color} size={24} /> {b.name}
                       {conversation.lead_bot?.id === b.id && <span className="ml-auto text-xs text-muted-foreground">Lead</span>}
                     </DropdownMenuItem>
                   ))}

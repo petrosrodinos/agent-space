@@ -11,7 +11,7 @@ import { SaveShareDto, SharedConversationQuery } from './dto/conversation.dto';
 const PUBLIC_MESSAGE_SELECT = {
     id: true, author_type: true, content: true, status: true, created_at: true, updated_at: true, edited_at: true, deleted_at: true, parts: true,
     author_user: { select: { name: true } },
-    author_bot: { select: { name: true, emoji: true, color: true } },
+    author_bot: { select: { name: true, avatar_seed: true, color: true } },
     files: { select: { file: { select: { filename: true, mimetype: true } } } },
 } satisfies Prisma.MessageSelect;
 
@@ -82,7 +82,7 @@ export class ConversationSharesService {
             deleted: false as const,
             author_type: m.author_type,
             author_name: m.author_type === MessageAuthorType.BOT ? (m.author_bot?.name ?? 'Assistant') : (m.author_user?.name ?? 'Someone'),
-            author_emoji: m.author_bot?.emoji ?? null,
+            author_avatar_seed: m.author_bot?.avatar_seed ?? null,
             author_color: m.author_bot?.color ?? null,
             content: m.content,
             status: m.status,
@@ -105,8 +105,8 @@ export class ConversationSharesService {
                 created_by: { select: { name: true } },
                 conversation: {
                     select: {
-                        id: true, name: true, emoji: true, color: true, type: true, deleted_at: true,
-                        participants: { where: { left_at: null, bot_id: { not: null } }, select: { bot: { select: { name: true, emoji: true, color: true } } } },
+                        id: true, name: true, color: true, type: true, deleted_at: true,
+                        participants: { where: { left_at: null, bot_id: { not: null } }, select: { bot: { select: { name: true, avatar_seed: true, color: true } } } },
                     },
                 },
             },
@@ -135,7 +135,6 @@ export class ConversationSharesService {
         return {
             conversation: {
                 name: c.name ?? (c.type === 'DIRECT' ? first?.name : null) ?? 'Conversation',
-                emoji: c.emoji ?? (c.type !== 'GROUP' ? first?.emoji : null) ?? null,
                 color: c.color ?? (c.type !== 'GROUP' ? first?.color : null) ?? null,
                 bots: c.participants.map((p) => p.bot!).filter(Boolean),
             },

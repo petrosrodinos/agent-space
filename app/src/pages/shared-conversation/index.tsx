@@ -2,7 +2,9 @@ import type { FC } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Bot, FileText, Link2Off } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { BotAvatar } from "@/components/ui/bot-avatar";
+import { BotAvatar, ConversationAvatar } from "@/components/ui/bot-avatar";
+import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
+import { FALLBACK_BOT_COLOR } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { Markdown } from "@/components/ui/markdown";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useSharedConversation } from "@/features/conversations/hooks/use-shared-conversation";
@@ -13,7 +15,6 @@ import { cn } from "@/lib/utils";
 
 type Visible = Extract<SharedMessage, { deleted: false }>;
 
-const FALLBACK_BOT_COLOR = "#1C1C1C";
 
 const Bubble: FC<{ m: Visible }> = ({ m }) => {
   const mine = m.author_type === MessageAuthorTypes.USER;
@@ -22,7 +23,7 @@ const Bubble: FC<{ m: Visible }> = ({ m }) => {
     <div className={cn("flex gap-3", mine && "justify-end")}>
       {!mine && (
         <div className="mt-1 shrink-0">
-          {m.author_emoji ? <BotAvatar emoji={m.author_emoji} color={m.author_color ?? FALLBACK_BOT_COLOR} name={m.author_name} size={32} /> : <span className="inline-flex h-8 w-8 items-center justify-center rounded-sm bg-surface-sunken text-muted-foreground"><Bot className="h-4 w-4" /></span>}
+          {m.author_avatar_seed ? <BotAvatar seed={m.author_avatar_seed} color={m.author_color ?? FALLBACK_BOT_COLOR} name={m.author_name} size={32} /> : <span className="inline-flex h-8 w-8 items-center justify-center rounded-sm bg-surface-sunken text-muted-foreground"><Bot className="h-4 w-4" /></span>}
         </div>
       )}
       <div className={cn("min-w-0 max-w-[85%]", mine && "text-right")}>
@@ -90,7 +91,7 @@ const SharedConversationPage: FC = () => {
     <div className="min-h-dvh bg-canvas">
       <header className="sticky top-0 z-10 border-b border-hairline bg-canvas/90 backdrop-blur">
         <div className="mx-auto flex w-full max-w-3xl items-center gap-3 px-4 py-3">
-          {c.emoji && c.color ? <BotAvatar emoji={c.emoji} color={c.color} name={c.name} size={40} /> : <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-surface-sunken text-muted-foreground"><Bot className="h-5 w-5" /></span>}
+          {c.bots.length ? <ConversationAvatar conversation={{ type: c.bots.length > 1 ? ConversationTypes.GROUP : ConversationTypes.DIRECT, name: c.name, color: c.color, bots: c.bots.map((b, i) => ({ ...b, id: String(i) })) }} size={40} /> : <span className="inline-flex h-10 w-10 items-center justify-center rounded-md bg-surface-sunken text-muted-foreground"><Bot className="h-5 w-5" /></span>}
           <div className="min-w-0 flex-1">
             <h1 className="truncate font-display text-lg font-bold text-ink">{c.name}</h1>
             <p className="flex items-center gap-1.5 text-xs text-muted-foreground">

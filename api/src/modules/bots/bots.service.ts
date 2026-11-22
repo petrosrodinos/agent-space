@@ -16,14 +16,13 @@ const DEFAULT_INSTRUCTIONS = 'You are a helpful, capable AI co-worker. Be clear 
 /** The bot every new account starts with. It greets the user and configures itself through chat (update_bot tool). */
 const STARTER_BOT = {
     name: 'Assistant',
-    emoji: '🤖',
     color: '#4A4560',
     description: 'Your first bot. Tell it what you need and it will set itself up.',
     instructions:
         DEFAULT_INSTRUCTIONS +
         '\n\nSetup: you were just created as the user\'s first bot and have not been configured yet. Help the user set you up through this chat. ' +
         'Ask, one or two at a time, what they want you to help with, a name they would like to call you, and how you should reply (tone, length). ' +
-        'Then use the update_bot tool on "this bot" to apply it: name, emoji, colour, a one-line description, and FULL new instructions describing your role, goals and tone (leave out this setup paragraph). ' +
+        'Then use the update_bot tool on "this bot" to apply it: name, colour, a one-line description, and FULL new instructions describing your role, goals and tone (leave out this setup paragraph). ' +
         'If the user just wants to get on with a task, help them with it and offer setup later.',
     welcome_message: 'Hi! I\'m your new assistant, and I\'m not set up yet. Tell me what you\'d like help with (your inbox, research, writing, sales, anything) and what you\'d like to call me, and I\'ll configure myself right here in the chat.',
     conversation_starters: ['Help me set you up', 'Be my personal assistant for email and calendar', 'Help me with research and writing', 'What can you do?'],
@@ -118,7 +117,8 @@ export class BotsService {
                     created_by_id: actor.user_id,
                     template_id: template?.id,
                     name: dto.name.trim(),
-                    emoji: dto.emoji || template?.emoji || '🤖',
+                    // No seed and no template → the column default picks a random one.
+                    avatar_seed: dto.avatar_seed || template?.avatar_seed || undefined,
                     color: dto.color || template?.color || BOT_COLORS[Math.floor(Math.random() * BOT_COLORS.length)],
                     description: dto.description ?? template?.description,
                     instructions: dto.instructions?.trim() || template?.instructions || DEFAULT_INSTRUCTIONS,
@@ -151,7 +151,6 @@ export class BotsService {
                 created_by_id: userId,
                 is_starter: true,
                 name: STARTER_BOT.name,
-                emoji: STARTER_BOT.emoji,
                 color: STARTER_BOT.color,
                 description: STARTER_BOT.description,
                 instructions: STARTER_BOT.instructions,
@@ -178,7 +177,7 @@ export class BotsService {
 
     private pickSettings(dto: Partial<CreateBotDto>) {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        const { name, emoji, color, description, instructions, welcome_message, conversation_starters, model_id, template_id, voice, approval_level, cloud_computer_enabled, monthly_usage_limit, ...rest } = dto;
+        const { name, avatar_seed, color, description, instructions, welcome_message, conversation_starters, model_id, template_id, voice, approval_level, cloud_computer_enabled, monthly_usage_limit, ...rest } = dto;
         return { ...rest, ...(monthly_usage_limit !== undefined ? { monthly_usage_limit: monthly_usage_limit === null ? null : new Prisma.Decimal(monthly_usage_limit) } : {}) };
     }
 
@@ -255,7 +254,7 @@ export class BotsService {
                 {
                     role: 'system',
                     content:
-                        'You design AI assistant bots for a workplace app. Return ONLY a JSON object with keys: name (max 30 chars, friendly, may be alliterative like "Sales Sam"), emoji (one emoji), color (one of ' +
+                        'You design AI assistant bots for a workplace app. Return ONLY a JSON object with keys: name (max 30 chars, friendly, may be alliterative like "Sales Sam"), color (one of ' +
                         BOT_COLORS.join(', ') +
                         '), description (one line, max 120 chars), instructions (role, goals, rules and tone in plain language, 80-200 words, second person "You are..."), conversation_starters (array of 4 short prompts), suggested_services (array of lowercase service slugs like gmail, googlecalendar, hubspot, slack, notion, googledrive, github, linear), template_key (closest of: ' +
                         templates.map((t) => t.key).join(', ') +
@@ -274,7 +273,6 @@ export class BotsService {
         const model = draft.model_hint === 'fast' ? allowed.find((m) => m.labels.includes('fast')) : allowed.find((m) => m.is_recommended) ?? allowed[0];
         return {
             name: String(draft.name ?? 'New bot').slice(0, 60),
-            emoji: String(draft.emoji ?? '🤖').slice(0, 16),
             color: BOT_COLORS.includes(draft.color) ? draft.color : BOT_COLORS[0],
             description: String(draft.description ?? '').slice(0, 160),
             instructions: String(draft.instructions ?? DEFAULT_INSTRUCTIONS).slice(0, 20000),

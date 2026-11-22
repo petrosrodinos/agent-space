@@ -26,7 +26,7 @@ const BotCard: FC<{ bot: Bot; onDelete: (b: Bot) => void }> = ({ bot, onDelete }
     <div className="card-lift flex flex-col rounded-lg border border-hairline bg-surface p-4 shadow-sticker">
       <div className="flex items-start gap-3">
         <button onClick={() => navigate(Routes.bots.detail(bot.id))} aria-label={`${bot.name} settings`}>
-          <BotAvatar emoji={bot.emoji} color={bot.color} name={bot.name} size={56} />
+          <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={56} />
         </button>
         <div className="min-w-0 flex-1">
           <button onClick={() => navigate(Routes.bots.detail(bot.id))} className="block max-w-full truncate text-left text-[17px] font-bold text-ink hover:underline">

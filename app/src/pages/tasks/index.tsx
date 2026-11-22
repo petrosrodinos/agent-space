@@ -38,7 +38,7 @@ const TasksPage: FC = () => {
             {data.data.map((t) => (
               <li key={t.id}>
                 <Link to={Routes.tasks.detail(t.id)} className="card-lift flex items-center gap-3 rounded-lg border border-hairline bg-surface p-3 shadow-sticker sm:p-4">
-                  <BotAvatar emoji={t.bot.emoji} color={t.bot.color} name={t.bot.name} working={t.status === RunStatuses.RUNNING} />
+                  <BotAvatar seed={t.bot.avatar_seed} color={t.bot.color} name={t.bot.name} working={t.status === RunStatuses.RUNNING} />
                   <div className="min-w-0 flex-1">
                     <p className="truncate font-bold text-ink">{t.title}</p>
                     <p className="truncate text-xs text-muted-foreground">

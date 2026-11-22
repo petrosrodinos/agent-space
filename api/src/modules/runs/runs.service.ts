@@ -140,7 +140,7 @@ export class RunsService {
                 skip: (q.page - 1) * q.limit,
                 take: q.limit,
                 include: {
-                    bot: { select: { id: true, name: true, emoji: true, color: true } },
+                    bot: { select: { id: true, name: true, avatar_seed: true, color: true } },
                     conversation: { select: { id: true, name: true, type: true } },
                     trigger_message: { select: { content: true } },
                     model: { select: { name: true } },
@@ -175,7 +175,7 @@ export class RunsService {
         const r = await this.prisma.run.findUniqueOrThrow({
             where: { id },
             include: {
-                bot: { select: { id: true, name: true, emoji: true, color: true } },
+                bot: { select: { id: true, name: true, avatar_seed: true, color: true } },
                 conversation: { select: { id: true, name: true, type: true } },
                 steps: { orderBy: { sequence: 'asc' } },
                 approvals: { orderBy: { created_at: 'asc' } },

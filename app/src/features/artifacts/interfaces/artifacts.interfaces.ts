@@ -87,7 +87,7 @@ export interface ArtifactVersion {
   published_at: string | null;
   created_at: string;
   created_by: PersonBrief | null;
-  bot: { id: string; name: string; emoji: string; color: string } | null;
+  bot: { id: string; name: string; avatar_seed: string; color: string } | null;
   is_current: boolean;
   is_draft: boolean;
 }
@@ -128,7 +128,7 @@ export interface ArtifactCommentItem {
   content: string;
   anchor: Record<string, unknown> | null;
   author: PersonBrief | null;
-  mentioned_bot: { id: string; name: string; emoji: string; color: string } | null;
+  mentioned_bot: { id: string; name: string; avatar_seed: string; color: string } | null;
   resolved_at: string | null;
   created_at: string;
   is_mine: boolean;

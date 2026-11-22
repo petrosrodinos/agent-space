@@ -203,7 +203,7 @@ export const LimitBotsDialog: FC<{ connection: Connection | null; onClose: () =>
           {bots?.map((b) => (
             <label key={b.id} className="flex min-h-[48px] cursor-pointer items-center gap-3 py-2">
               <Checkbox checked={sel.has(b.id)} onCheckedChange={(v) => setSel((s) => { const n = new Set(s); if (v) n.add(b.id); else n.delete(b.id); return n; })} />
-              <BotAvatar emoji={b.emoji} color={b.color} size={32} name={b.name} />
+              <BotAvatar seed={b.avatar_seed} color={b.color} size={32} name={b.name} />
               <span className="font-semibold">{b.name}</span>
             </label>
           ))}

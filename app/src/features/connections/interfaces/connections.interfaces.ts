@@ -97,7 +97,7 @@ export interface CredentialEvent {
   action: string | null;
   created_at: string;
   user: { name: string | null; email: string } | null;
-  bot: { id: string; name: string; emoji: string } | null;
+  bot: { id: string; name: string; avatar_seed: string } | null;
 }
 
 export interface CreateCredentialDto {

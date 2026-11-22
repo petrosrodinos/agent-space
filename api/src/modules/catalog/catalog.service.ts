@@ -82,7 +82,7 @@ export class CatalogService implements OnApplicationBootstrap {
         for (const [i, t] of TEMPLATE_SEEDS.entries()) {
             const data = {
                 name: t.name,
-                emoji: t.emoji,
+                avatar_seed: t.avatar_seed,
                 color: t.color,
                 description: t.description,
                 instructions: t.instructions,

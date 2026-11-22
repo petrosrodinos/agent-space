@@ -29,7 +29,7 @@ import { timeAgo } from "@/lib/date";
 import {
   abilitiesSchema, behaviourSchema, identitySchema, sharingSchema, type AbilitiesFormValues, type BehaviourFormValues, type IdentityFormValues, type SharingFormValues,
 } from "../validation-schemas/bot.schema";
-import { ColorSwatches, EmojiPicker, ModelSelect } from "./bot-pickers";
+import { AvatarPicker, ColorSwatches, ModelSelect } from "./bot-pickers";
 import { SaveBar, SelectField, SwitchField } from "./form-fields";
 import { ReplyLanguageChoices, ActionTypes, MemoryKinds, ApprovalOverrideChoices, type ApprovalOverrideChoice } from "@/features/bots/interfaces/bots.interfaces";
 import { ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
@@ -45,7 +45,7 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
   const update = useUpdateBot(bot.id);
   const ro = !bot.can_edit;
   const defaults = useMemo<IdentityFormValues>(
-    () => ({ name: bot.name, emoji: bot.emoji, color: bot.color, description: bot.description ?? "", welcome_message: bot.welcome_message ?? "", starters: bot.conversation_starters.map((value) => ({ value })) }),
+    () => ({ name: bot.name, avatar_seed: bot.avatar_seed, color: bot.color, description: bot.description ?? "", welcome_message: bot.welcome_message ?? "", starters: bot.conversation_starters.map((value) => ({ value })) }),
     [bot],
   );
   const form = useForm<IdentityFormValues>({ resolver: zodResolver(identitySchema), defaultValues: defaults });
@@ -56,13 +56,13 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
     <Form {...form}>
       <form
         onSubmit={form.handleSubmit((v) =>
-          update.mutate({ name: v.name, emoji: v.emoji, color: v.color, description: v.description || null, welcome_message: v.welcome_message || null, conversation_starters: v.starters.map((s) => s.value.trim()).filter(Boolean) }),
+          update.mutate({ name: v.name, avatar_seed: v.avatar_seed, color: v.color, description: v.description || null, welcome_message: v.welcome_message || null, conversation_starters: v.starters.map((s) => s.value.trim()).filter(Boolean) }),
         )}
       >
         <SettingsCard title="Identity" description="How the bot looks in chats and lists.">
           <div className="space-y-5 py-3">
             <div className="flex items-center gap-4">
-              <FormField control={form.control} name="emoji" render={({ field }) => <EmojiPicker value={field.value} color={color} onChange={field.onChange} disabled={ro} />} />
+              <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} disabled={ro} />} />
               <FormField
                 control={form.control}
                 name="name"

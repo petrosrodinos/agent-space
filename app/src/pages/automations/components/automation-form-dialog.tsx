@@ -1,3 +1,4 @@
+import { BotAvatar } from "@/components/ui/bot-avatar";
 import { useEffect, type FC } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
@@ -90,7 +91,7 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
                   <FormLabel>Bot</FormLabel>
                   <Select value={field.value} onValueChange={field.onChange}>
                     <FormControl><SelectTrigger><SelectValue placeholder="Choose a bot" /></SelectTrigger></FormControl>
-                    <SelectContent>{bots?.map((b) => <SelectItem key={b.id} value={b.id}>{b.emoji} {b.name}</SelectItem>)}</SelectContent>
+                    <SelectContent>{bots?.map((b) => <SelectItem key={b.id} value={b.id}><span className="flex items-center gap-2"><BotAvatar seed={b.avatar_seed} color={b.color} size={24} />{b.name}</span></SelectItem>)}</SelectContent>
                   </Select>
                   <FormMessage />
                 </FormItem>

@@ -24,10 +24,8 @@ export function isLightBotColor(color: string | null | undefined): boolean {
   return !!(c && "light" in c && c.light);
 }
 
-export const BotEmojiSuggestions = ["🤖", "🧑‍💼", "💼", "📣", "🛟", "🔎", "🗂️", "📊", "✍️", "🧠", "🚀", "💡", "🦉", "🐙", "🦊", "🌟", "📚", "🛠️", "💰", "⚖️", "🎨", "🧪", "🗓️", "📬"];
+/** Used when a bot or group has no colour (e.g. an older shared link). Graphite. */
+export const FALLBACK_BOT_COLOR = "#4A4560";
 
-/** Default avatar emoji for a new group (users can change it). */
-export const DEFAULT_GROUP_EMOJI = "🚀";
-/** Default avatar emoji for a new bot and a new skill (users choose their own). */
-export const DEFAULT_BOT_EMOJI = "🤖";
+/** Default emoji for a new skill. */
 export const DEFAULT_SKILL_EMOJI = "📘";

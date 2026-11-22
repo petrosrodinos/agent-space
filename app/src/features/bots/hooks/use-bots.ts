@@ -23,7 +23,7 @@ export const useCreateBot = () => {
     mutationFn: createBot,
     onSuccess: (bot) => {
       qc.invalidateQueries({ queryKey: [QueryKeys.BOTS] });
-      toast({ title: `Say hi to ${bot.emoji} ${bot.name}!` });
+      toast({ title: `Say hi to ${bot.name}!` });
     },
     onError: (e) => toast({ title: "Could not create the bot", description: e.message, variant: "error" }),
   });

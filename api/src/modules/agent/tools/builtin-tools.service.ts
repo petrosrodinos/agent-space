@@ -1,3 +1,4 @@
+import { randomBytes } from 'crypto';
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { plainToInstance } from 'class-transformer';
@@ -403,7 +404,7 @@ export class BuiltinToolsService {
             parameters: obj({
                 bot: { type: 'string', description: 'Bot name or id ("this bot" for yourself)' },
                 name: { type: 'string' },
-                emoji: { type: 'string' },
+                shuffle_avatar: { type: 'boolean', description: 'Give the bot a new random portrait avatar' },
                 color: { type: 'string', description: 'Colour name (grape, tangerine, sunshine, mint, bubblegum, sky, lime, coral, lavender, teal, ocean, graphite) or #hex' },
                 description: { type: 'string' },
                 instructions: { type: 'string', description: 'The FULL new instructions (rewrite, keeping what should stay)' },
@@ -423,12 +424,13 @@ export class BuiltinToolsService {
                 // eslint-disable-next-line @typescript-eslint/no-unused-vars
                 const { bot: _b, ...changes } = a;
                 if (changes.instructions) changes.instructions = `${String(changes.instructions).slice(0, 400)}${String(changes.instructions).length > 400 ? '…' : ''}`;
-                return { title: `Update ${bot.emoji} ${bot.name}`, action_type: 'OTHER', preview: { kind: 'change', target: bot.name, bot_id: bot.id, changes: this.describeChanges(changes) } };
+                return { title: `Update ${bot.name}`, action_type: 'OTHER', preview: { kind: 'change', target: bot.name, bot_id: bot.id, changes: this.describeChanges(changes) } };
             },
             execute: async (a, ctx) => {
                 const bot = await this.findBot(ctx, a.bot);
                 const dto: UpdateBotDto = {};
-                for (const k of ['name', 'emoji', 'description', 'instructions', 'approval_level', 'creativity', 'web_search_enabled', 'memory_enabled', 'welcome_message'] as const) if (a[k] !== undefined) (dto as any)[k] = a[k];
+                if (a.shuffle_avatar) dto.avatar_seed = randomBytes(6).toString('hex');
+                for (const k of ['name', 'description', 'instructions', 'approval_level', 'creativity', 'web_search_enabled', 'memory_enabled', 'welcome_message'] as const) if (a[k] !== undefined) (dto as any)[k] = a[k];
                 if (a.color) {
                     const c = String(a.color).toLowerCase().trim();
                     dto.color = /^#[0-9a-f]{6}$/i.test(c) ? c : COLORS[c];
@@ -449,7 +451,7 @@ export class BuiltinToolsService {
                 const errors = await validate(plainToInstance(UpdateBotDto, dto));
                 if (errors.length) throw new Error(`Invalid change: ${errors.map((e) => Object.values(e.constraints ?? {}).join(', ')).join('; ')}`);
                 const updated = await this.bots.update(ctx.actor!, bot.id, dto, 'chat');
-                return { output: { updated: true, bot: { name: updated.name, emoji: updated.emoji, color: updated.color, model: updated.model?.name } } };
+                return { output: { updated: true, bot: { name: updated.name, color: updated.color, model: updated.model?.name } } };
             },
         };
     }
@@ -638,7 +640,7 @@ export class BuiltinToolsService {
                 if (target.id === ctx.bot.id) throw new Error('You cannot ask yourself');
                 if (!target.can_be_asked) throw new Error(`${target.name} does not accept questions from other bots`);
                 const answer = await this.consult(ctx, target, String(a.question));
-                await ctx.addPart({ type: 'consulted', bot: { id: target.id, name: target.name, emoji: target.emoji, color: target.color }, question: String(a.question).slice(0, 300) });
+                await ctx.addPart({ type: 'consulted', bot: { id: target.id, name: target.name, avatar_seed: target.avatar_seed, color: target.color }, question: String(a.question).slice(0, 300) });
                 return { output: { bot: target.name, answer } };
             },
         };

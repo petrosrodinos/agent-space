@@ -141,7 +141,7 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
             <div>
               <dt className="eyebrow mb-1">Bot</dt>
               <dd className="flex items-center gap-2">
-                <BotAvatar emoji={a.bot.emoji} color={a.bot.color} size={32} name={a.bot.name} />
+                <BotAvatar seed={a.bot.avatar_seed} color={a.bot.color} size={32} name={a.bot.name} />
                 <Link to={Routes.bots.detail(a.bot.id)} className="font-bold text-ink hover:underline">{a.bot.name}</Link>
               </dd>
             </div>

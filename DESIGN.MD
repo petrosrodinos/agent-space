@@ -241,7 +241,7 @@ components:
     backgroundColor: "{bot-colors.<color>.fill}"
     rounded: "{rounded.md}"      # soft squircle — bots; people are perfect circles
     sizes: [24px, 32px, 40px, 56px, 88px]
-    emojiScale: 0.6
+    content: generated flat portrait (from avatar_seed), filling the squircle
   person-avatar:
     rounded: "{rounded.full}"
     sizes: [24px, 32px, 40px, 56px, 88px]
@@ -350,7 +350,7 @@ The personality is **calm, friendly and confident**. The chrome is neutral and q
 - **Neutral monochrome by default.** A clean white canvas with near-black text in light mode; a near-black canvas (`#0A0A0A`) with white text in dark mode. No tinted surfaces, no brand hue in the chrome.
 - **Primary is black (light) / white (dark)** — `{colors.primary}` is the single action colour: primary buttons, the user's own chat bubbles, links, focus rings and selected states.
 - **Colour is opt-in.** Each person can pick a **colour theme** per organisation (Settings > Appearance) — 13 presets from Neutral to Ocean, Forest, Sunset or Grape. A theme swaps the primary colour and lightly tints the surfaces; everything else stays the same.
-- **Bots bring the colour.** Each bot picks one of 12 bright bot colours plus an emoji. Bot colours are the most saturated thing on screen, so users recognise bots instantly.
+- **Bots bring the colour.** Each bot picks one of 12 bright bot colours plus a generated portrait. Bot colours are the most saturated thing on screen, so users recognise bots instantly.
 - **Chunky and round.** Pill buttons, 20px cards, squircle bot avatars, bubbly chat messages.
 - **Soft shadows** — a faint 1–2px shadow under cards and buttons; larger blurred shadows only on floating things (menus, dialogs, composer).
 - **Characterful headlines** in Bricolage Grotesque, bold and tightly tracked; everything else in Plus Jakarta Sans, a rounded, friendly sans that stays very readable at small sizes.
@@ -445,7 +445,7 @@ People can personalise the app with a **colour theme**, stored **per user per or
 
 ## Bot colours
 
-Bots are the stars of the interface. Every bot has **one emoji + one bot colour**, chosen when it's created (a random colour is suggested).
+Bots are the stars of the interface. Every bot has **one generated flat portrait + one bot colour**. New bots start with a random face; the picker offers random presets and Shuffle.
 
 | Name | Fill | Soft | Feels like |
 |---|---|---|---|
@@ -463,14 +463,14 @@ Bots are the stars of the interface. Every bot has **one emoji + one bot colour*
 | Graphite | #4A4560 | #ECEAF2 | Quiet — utilities |
 
 **Where the bot colour appears**
-- Avatar fill (with the emoji on top).
+- Avatar fill (behind the portrait; the shirt is tinted from it).
 - A 3px colour bar on the left of the bot's name in group chats.
 - Its soft tint behind the bot's name tag, its conversation in the sidebar when selected, and the header of its bot profile.
 - The cursor and highlight colour when the bot is working on its cloud computer or editing an artifact.
 
 **Rules**
 - Bot colours are **identity, not meaning** — never use them for status, actions or errors.
-- Text on a bot fill is the emoji only. Bot names are always written in `{colors.ink}` next to the avatar, never on the fill.
+- Nothing but the portrait goes on a bot fill. Bot names are always written in `{colors.ink}` next to the avatar, never on the fill.
 - Sunshine and Lime are light fills: their avatars get a 1px `rgba(0,0,0,0.12)` inner border to stay crisp on light surfaces.
 
 ## Typography
@@ -593,7 +593,7 @@ Motion is **quick and bouncy**, used to show cause and effect — never to slow 
 ## Components
 
 ### Bot avatar
-Squircle (`{rounded.md}`) filled with the bot's colour, emoji centred at 60% of the size. Sizes 24 / 32 / 40 / 56 / 88px. When the bot is working, a ring in its colour softly pulses around the avatar. In groups, stacked avatars overlap by 30% with a 2px canvas-coloured outline.
+Squircle (`{rounded.md}`) filled with the bot's colour, with the bot's flat portrait (skin, hair, glasses, expression from its `avatar_seed`) standing in it. Groups show their first two bots side by side on the group colour. Sizes 24 / 32 / 40 / 56 / 88px. When the bot is working, a ring in its colour softly pulses around the avatar. In groups, stacked avatars overlap by 30% with a 2px canvas-coloured outline.
 
 ### Person avatar
 Circle with photo, or initials on a soft bot-colour tint chosen from the person's name. Same sizes as bot avatars. Online status: 10px Mint dot.

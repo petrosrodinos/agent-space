@@ -32,13 +32,13 @@ import { useVoiceSession } from "@/features/voice/hooks/use-voice-session";
 import { MessageItem, type MessageActions } from "../../components/message-item";
 import { ConversationHeader } from "../../components/conversation-header";
 import { ConversationInfoPanel } from "../../components/conversation-info-panel";
-import { BotPanel } from "../../components/bot-panel";
+import { BotPanel, PanelSkeleton } from "../../components/bot-panel";
 import { ConversationMenu } from "../../components/conversation-menu";
 import { MobileTopBar, useBack } from "@/components/layout/mobile-top-bar";
 import { ResizableAside } from "@/components/ui/resizable-aside";
 import { CONVERSATION_PANEL_WIDTH, useUiStore } from "@/stores/ui";
 import { QueryKeys } from "@/config/constants/query-keys";
-import { ConversationTypes, ConversationViews, MessageAuthorTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
+import { ConversationTypes, ConversationViews, MessageAuthorTypes, MessageStatuses, MessagePartTypes, SecretInputStatuses, ComputerHandoffStatuses, AskUserStatuses } from "@/features/conversations/interfaces/conversations.interfaces";
 import { ApprovalStatuses, ACTIVE_RUN_STATUSES } from "@/features/tasks/interfaces/tasks.interfaces";
 import { ActivityStepsDisplays, SendWithKeys } from "@/features/users/interfaces/users.interfaces";
 
@@ -52,7 +52,7 @@ function isWorking(m: Message, runStatus: RunStatusMap | undefined) {
   const live = runStatus?.[m.author_bot.id];
   if (live && live.run_id === m.run_id && !ACTIVE.includes(live.status)) return false;
   if (m.run && !ACTIVE.includes(m.run.status)) return false;
-  return !m.parts.some((p) => (p.type === MessagePartTypes.APPROVAL && p.status === ApprovalStatuses.PENDING) || (p.type === MessagePartTypes.SECRET_INPUT && p.status === SecretInputStatuses.PENDING) || (p.type === MessagePartTypes.COMPUTER_HANDOFF && p.status === ComputerHandoffStatuses.WAITING));
+  return !m.parts.some((p) => (p.type === MessagePartTypes.APPROVAL && p.status === ApprovalStatuses.PENDING) || (p.type === MessagePartTypes.SECRET_INPUT && p.status === SecretInputStatuses.PENDING) || (p.type === MessagePartTypes.ASK_USER && p.status === AskUserStatuses.PENDING) || (p.type === MessagePartTypes.COMPUTER_HANDOFF && p.status === ComputerHandoffStatuses.WAITING));
 }
 
 const MessagesSkeleton: FC = () => (
@@ -110,6 +110,8 @@ const ConversationPage: FC = () => {
   // Phones: the panel is its own page (/c/:id/details) over the chat, with a back button. The chat stays mounted underneath
   // so going back keeps its scroll position.
   const detailsPage = view === ConversationViews.DETAILS;
+  // The phone details page is a full overlay; the chat's own skeletons would show through its fade-in.
+  const phoneDetails = isPhone && detailsPage;
   const back = useBack(Routes.chat.conversation(conversationId));
   // Wider screens have no details page: fall back to the chat with the panel open.
   useEffect(() => {
@@ -315,14 +317,16 @@ const ConversationPage: FC = () => {
             onSearch={() => setSearchOpen(true)}
           />
         ) : (
-          <div className="absolute inset-x-0 top-0 z-30 flex h-[68px] items-center gap-3 px-3 md:justify-center">
-            <Skeleton className="h-11 w-48 rounded-full" />
-          </div>
+          !phoneDetails && (
+            <div className="absolute inset-x-0 top-0 z-30 flex h-[68px] items-center gap-3 px-3 md:justify-center">
+              <Skeleton className="h-11 w-48 rounded-full" />
+            </div>
+          )
         )}
 
         <div ref={scroller} onScroll={onScroll} className="scrollbar-thin relative min-h-0 flex-1 overflow-y-auto overflow-x-hidden" role="log" aria-live="polite" aria-label="Messages">
           {messagesQuery.isPending || convPending ? (
-            <MessagesSkeleton />
+            phoneDetails ? null : <MessagesSkeleton />
           ) : (
             <div className="mx-auto w-full max-w-[760px] px-3 pb-6 pt-[calc(72px+env(safe-area-inset-top))] sm:px-4 md:pt-[72px]">
               {messagesQuery.isFetchingNextPage && <Skeleton className="mx-auto mb-4 h-6 w-32 rounded-full" />}
@@ -359,6 +363,7 @@ const ConversationPage: FC = () => {
                       models={models ?? []}
                       actions={actions}
                       canAnswerApprovals
+                      accentColor={conversation.type === ConversationTypes.DIRECT ? (conversation.bots[0]?.color ?? conversation.color) : conversation.color}
                     />
                   </div>
                 );
@@ -412,7 +417,7 @@ const ConversationPage: FC = () => {
           {panelContent}
         </ResizableAside>
       )}
-      {conversation && isPhone && detailsPage && (
+      {isPhone && detailsPage && (
         <div className="absolute inset-0 z-40 flex flex-col bg-canvas duration-300 animate-in fade-in slide-in-from-right-8">
           <MobileTopBar
             className="static"
@@ -420,7 +425,9 @@ const ConversationPage: FC = () => {
             actions={menu}
           />
           <div className="min-h-0 flex-1">
-            {conversation.type === ConversationTypes.DIRECT && leadBotId ? (
+            {!conversation ? (
+              <PanelSkeleton />
+            ) : conversation.type === ConversationTypes.DIRECT && leadBotId ? (
               <BotPanel botId={leadBotId} working={working.includes(leadBotId)} />
             ) : (
               <ConversationInfoPanel conversation={conversation} meId={me?.user.id ?? ""} />

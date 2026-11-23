@@ -325,6 +325,18 @@ export class AgentRunnerService {
                 if (!pi.result) return true;
                 const r = pi.result;
                 const part = state.parts![pi.part_index] as any;
+                if (part?.type === 'ask-user') {
+                    const answered = r.status === 'answered' && typeof r.answer === 'string' && r.answer.trim();
+                    const answer = answered ? String(r.answer).slice(0, 2000) : null;
+                    Object.assign(part, { status: answered ? 'answered' : 'skipped', answer });
+                    const toolPart = state.parts!.find((p) => p.type === 'tool' && (p as any).call_id === call.id);
+                    if (toolPart) Object.assign(toolPart, { status: answered ? 'done' : 'stopped' });
+                    await this.finishStep(pi.step_id, answered ? 'COMPLETED' : 'SKIPPED', { status: answered ? 'answered' : 'skipped' });
+                    state.messages!.push({ role: 'tool', tool_call_id: call.id, content: JSON.stringify(answered ? { status: 'answered', answer } : { status: 'skipped', note: 'The user chose not to answer. Make a sensible assumption, say what you assumed, and continue.' }) });
+                    state.pending_input = null;
+                    await this.saveParts(state);
+                    continue;
+                }
                 if (part?.type === 'computer_handoff') {
                     // The user handed the cloud computer back (or cancelled) — §9.2, §9.4.
                     const done = r.status === 'done';

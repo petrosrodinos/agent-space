@@ -26,6 +26,7 @@ import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BotAvatar } from "@/components/ui/bot-avatar";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
 import { SegmentedControl } from "@/components/ui/segmented-control";
 import { KnowledgePanel } from "@/components/layout/knowledge-panel";
 import { VoicePicker } from "@/components/layout/voice-picker";
@@ -439,6 +440,15 @@ const DeleteSection: FC<{ bot: Bot }> = ({ bot }) => {
   );
 };
 
+/** The single loading placeholder for the details panel (also used by the phone details page while the conversation loads). */
+export const PanelSkeleton: FC = () => (
+  <div className="flex flex-col items-center gap-3 px-4 pt-2">
+    <Skeleton className="h-[88px] w-[88px] rounded-2xl" />
+    <Skeleton className="h-6 w-36" />
+    <Skeleton className="mt-6 h-40 w-full rounded-lg" />
+  </div>
+);
+
 /**
  * Bot side panel (Grok-style): avatar, click-to-rename name, Activity (automations, tasks, computer, voice) and Library.
  * Shown for the bot of a direct chat, and for a bot opened from a group's details (`onBack` returns to the group).
@@ -451,6 +461,11 @@ export const BotPanel: FC<{
   menu?: ReactNode;
 }> = ({ botId, working, onClose, onBack, menu }) => {
   const { data: bot, isPending } = useBot(botId);
+  // Same query keys the sections use, so they hit the cache; gating on them here shows ONE skeleton instead of one per section.
+  const automations = useBotAutomations(botId);
+  const tasks = useBotTasks(botId);
+  const activityReady = !automations.isPending && !tasks.isPending;
+  const update = useUpdateBot(botId);
   const [tab, setTab] = useState<BotPanelTab>(BotPanelTabs.ACTIVITY);
 
   return (
@@ -481,23 +496,25 @@ export const BotPanel: FC<{
         </div>
       )}
       <div className="scrollbar-thin min-h-0 flex-1 overflow-y-auto px-4 pb-6">
-        {isPending || !bot ? (
-          <div className="flex flex-col items-center gap-3">
-            <Skeleton className="h-[88px] w-[88px] rounded-2xl" />
-            <Skeleton className="h-6 w-36" />
-            <Skeleton className="mt-6 h-40 w-full rounded-lg" />
-          </div>
+        {isPending || !bot || !activityReady ? (
+          <PanelSkeleton />
         ) : (
           <>
             <div className="flex animate-pop-in flex-col items-center text-center">
-              <BotAvatar
-                seed={bot.avatar_seed}
-                color={bot.color}
-                name={bot.name}
-                size={88}
-                working={working}
-                followCursor
-              />
+              {bot.can_edit ? (
+                <AvatarPicker
+                  seed={bot.avatar_seed}
+                  color={bot.color}
+                  name={bot.name}
+                  size={88}
+                  working={working}
+                  followCursor
+                  onSeedChange={(avatar_seed) => update.mutate({ avatar_seed })}
+                  onColorChange={(color) => update.mutate({ color })}
+                />
+              ) : (
+                <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={88} working={working} followCursor />
+              )}
               <EditableName bot={bot} />
               {bot.description && (
                 <p className="mt-0.5 line-clamp-2 max-w-[300px] text-[13px] text-muted-foreground">

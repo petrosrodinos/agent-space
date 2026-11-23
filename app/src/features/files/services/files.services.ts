@@ -51,6 +51,9 @@ export async function uploadFile(file: File, purpose: UploadPurpose, opts: { con
   return request<StoredFile>(() => axiosInstance.post(ApiRoutes.files.confirm(created.file.id)), "The upload could not be confirmed.");
 }
 
+/** AI avatar preview from a text prompt, as a data URL. Nothing is stored until the user sets it. */
+export const generateAvatarImage = (prompt: string) => request<{ data_url: string }>(() => axiosInstance.post(ApiRoutes.files.generate_avatar, { prompt }), "Could not generate an avatar.");
+
 export const getFileUrl = (id: string, inline = false) => request<{ url: string; filename: string; mimetype: string; expires_at: string }>(() => axiosInstance.get(ApiRoutes.files.url(id), { params: { inline } }));
 
 /** Text content of a text-like file for in-app previews (capped server-side at 1 MB). */

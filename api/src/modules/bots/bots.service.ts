@@ -9,6 +9,7 @@ import { ModelsService } from '../catalog/models.service';
 import { UTILITY_MODEL, VOICES } from '../catalog/catalog.data';
 import { DEFAULT_CONVERSATION_STARTERS, defaultWelcomeMessage, welcomeMessageData } from './bot-welcome.utils';
 import { CreateBotDto, SetApprovalRulesDto, SetBotConnectionsDto, UpdateBotDto } from './dto/bot.dto';
+import { FilesService } from '../files/files.service';
 
 const BOT_COLORS = ['#6B4EFF', '#FF7A3D', '#FFC83D', '#1FC98E', '#FF5FAE', '#38B6FF', '#9BD62F', '#FF5A5F', '#B18CFF', '#17B5B0', '#3A6BFF', '#4A4560'];
 const DEFAULT_INSTRUCTIONS = 'You are a helpful, capable AI co-worker. Be clear and concise, take action with the tools you have, and ask before doing anything hard to undo.';
@@ -51,6 +52,7 @@ export class BotsService {
         private readonly activity: ActivityService,
         private readonly models: ModelsService,
         private readonly openrouter: OpenRouterService,
+        private readonly files: FilesService,
     ) { }
 
     async list(actor: Actor, search?: string) {
@@ -106,6 +108,7 @@ export class BotsService {
         await this.checkModelAllowed(actor.organization_id, dto.model_id);
         if (dto.voice && !VOICES.includes(dto.voice)) throw new BadRequestException('Unknown voice');
 
+        await this.files.assertAvatarSeed(actor.organization_id, dto.avatar_seed);
         const template = dto.template_id ? await this.prisma.botTemplate.findUnique({ where: { id: dto.template_id }, include: { starter_skills: true } }) : null;
         if (dto.template_id && !template) throw new BadRequestException('Unknown template');
         const userSettings = await this.prisma.userSettings.findUnique({ where: { user_id: actor.user_id } });
@@ -186,6 +189,7 @@ export class BotsService {
         this.checkPrivileged(actor, dto);
         if (dto.model_id) await this.checkModelAllowed(actor.organization_id, dto.model_id);
         if (dto.voice && !VOICES.includes(dto.voice)) throw new BadRequestException('Unknown voice');
+        await this.files.assertAvatarSeed(actor.organization_id, dto.avatar_seed);
         // Org-wide → private by a non-admin, or sensitive changes, are privileged too.
         if (!isAdminRole(actor.role) && bot.is_sensitive && dto.is_sensitive === false) throw new ForbiddenException('Only Owners and Admins can change Sensitive');
         // eslint-disable-next-line @typescript-eslint/no-unused-vars

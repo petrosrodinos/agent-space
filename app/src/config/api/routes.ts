@@ -200,7 +200,7 @@ export const ApiRoutes = {
     comments: (id: string) => `/artifacts/${id}/comments`,
     comment: (id: string, commentId: string) => `/artifacts/${id}/comments/${commentId}`,
   },
-  files: { uploads: "/files/uploads", confirm: (id: string) => `/files/${id}/confirm`, one: (id: string) => `/files/${id}`, url: (id: string) => `/files/${id}/url`, text: (id: string) => `/files/${id}/text`, sheets: (id: string) => `/files/${id}/sheets` },
+  files: { uploads: "/files/uploads", generate_avatar: "/files/avatar/generate", confirm: (id: string) => `/files/${id}/confirm`, one: (id: string) => `/files/${id}`, url: (id: string) => `/files/${id}/url`, text: (id: string) => `/files/${id}/text`, sheets: (id: string) => `/files/${id}/sheets` },
   notifications: { root: "/notifications", read_all: "/notifications/read-all", read: (id: string) => `/notifications/${id}/read`, preferences: "/notifications/preferences" },
   usage: { root: "/usage", limits: "/usage/limits", charges: "/usage/charges" },
   activity: { root: "/activity" },

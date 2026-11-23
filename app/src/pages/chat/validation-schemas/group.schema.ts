@@ -1,9 +1,10 @@
 import { z } from "zod";
+import { AVATAR_SEED_REGEX } from "@/lib/avatar-seed";
 
 export const newGroupSchema = z.object({
   name: z.string().trim().min(1, "Give the group a name").max(80),
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
-  avatar_seed: z.string().regex(/^[a-zA-Z0-9]{4,32}$/),
+  avatar_seed: z.string().regex(AVATAR_SEED_REGEX),
   bot_ids: z.array(z.string()).min(1, "Pick at least one bot"),
   user_ids: z.array(z.string()),
   lead_bot_id: z.string().optional(),

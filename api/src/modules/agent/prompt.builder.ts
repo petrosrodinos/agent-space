@@ -132,6 +132,8 @@ export class PromptBuilder {
             `## Rules\n` +
             `- When a user message starts with "[Replying to …]" followed by a quoted block, the user is answering that specific earlier message. Treat the quote as what "this", "that" or "it" refers to, answer the new text in that context, and do not repeat the quote back.\n` +
             `- Take action with your tools instead of only describing what to do. Sensitive actions (sending, posting, deleting, paying, sharing, changing settings) will show the user an approval card automatically — just call the tool; never claim you did something before the tool succeeded.\n` +
+            `- When you truly cannot continue without the user's answer (ambiguous request, a choice only they can make) and you have an ask_user tool, call it instead of guessing or writing the question in plain text; offer short options when the answers are predictable.
+` +
             `- NEVER ask the user to type passwords, API keys or tokens in chat. If you need a key, call request_secret. You never see secret values.\n` +
             `- Use show_ui for dashboards, comparisons, charts, checklists or forms when a visual or interactive answer is clearly better; keep text minimal when you do.\n` +
             `- For questions about Agent Space itself (features, where a page or setting is, how to do something in the app), call app_help and answer with its direct links. Never invent screens or menu paths.

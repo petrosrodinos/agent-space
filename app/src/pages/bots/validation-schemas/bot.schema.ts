@@ -1,8 +1,9 @@
 import { z } from "zod";
+import { AVATAR_SEED_REGEX } from "@/lib/avatar-seed";
 import { ReplyLanguageChoices, Creativities, BotClarifyingModes, GroupResponseModes, InteractiveRepliesModes, MemoryScopes, BotVisibilities, BotEditPolicies, MaxTaskDurations } from "@/features/bots/interfaces/bots.interfaces";
 
 const hex = z.string().regex(/^#[0-9a-fA-F]{6}$/, "Pick a colour");
-const avatarSeed = z.string().regex(/^[a-zA-Z0-9]{4,32}$/, "Pick an avatar");
+const avatarSeed = z.string().regex(AVATAR_SEED_REGEX, "Pick an avatar");
 
 export const botFormSchema = z.object({
   name: z.string().trim().min(1, "Give your bot a name").max(60),

@@ -6,7 +6,7 @@ import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import { Markdown } from "@/components/ui/markdown";
 import { Textarea } from "@/components/ui/textarea";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuSub, DropdownMenuSubContent, DropdownMenuSubTrigger, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
-import { botSoftColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
+import { botSoftColor, isLightBotColor } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { MessageAuthorTypes, MessagePartTypes, MessageSources, MessageStatuses, type Message, type MessagePart } from "@/features/conversations/interfaces/conversations.interfaces";
 import type { ActivityStepsDisplay } from "@/features/users/interfaces/users.interfaces";
 import type { AiModel } from "@/features/bots/interfaces/bots.interfaces";
@@ -19,6 +19,7 @@ import { ActivitySteps, SourceChips, type ActivityItem } from "./activity-steps"
 import { ApprovalCard } from "./approval-card";
 import { InteractiveReply } from "./interactive-reply";
 import { SecretInputCard } from "./secret-input-card";
+import { AskUserCard } from "./ask-user-card";
 import { FileChip, FileChipTones } from "./file-chip";
 import { ArtifactCard } from "./artifact-card";
 import { ReplyQuote, ReplyQuoteVariants } from "./reply-quote";
@@ -63,6 +64,8 @@ interface Props {
   models: AiModel[];
   actions: MessageActions;
   canAnswerApprovals: boolean;
+  /** Conversation colour (bot colour for direct chats, group colour otherwise); tints the viewer's own bubbles. */
+  accentColor?: string | null;
 }
 
 /** A small camera or screen icon on spoken messages that came with a picture (§7.6). */
@@ -207,7 +210,7 @@ const Reactions: FC<{ m: Message; meId: string; onReact: (e: string) => void; al
     </div>
   ) : null;
 
-export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, working, activityMode, models, actions, canAnswerApprovals }) => {
+export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, working, activityMode, models, actions, canAnswerApprovals, accentColor }) => {
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState(m.content ?? "");
   const pressTimer = useRef<number | null>(null);
@@ -307,7 +310,10 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
               </div>
             </div>
           ) : (
-            <div className={cn("relative max-w-[min(560px,88%)] rounded-lg rounded-br-xs bg-primary px-4 py-2.5 text-[15px] text-primary-foreground shadow-sticker", m.pending && "opacity-70")}>
+            <div
+              className={cn("relative max-w-[min(560px,88%)] rounded-lg rounded-br-xs px-4 py-2.5 text-[15px] shadow-sticker", !accentColor && "bg-primary text-primary-foreground", m.pending && "opacity-70")}
+              style={accentColor ? { backgroundColor: accentColor, color: isLightBotColor(accentColor) ? "#0d0d0f" : "#ffffff" } : undefined}
+            >
               <ActionsMenu m={m} mine models={models} actions={actions} onStartEdit={() => setEditing(true)} />
               {quote}
               {m.source === MessageSources.VOICE && <Mic className="mr-1 inline h-3.5 w-3.5 opacity-80" aria-label="Spoken" />}
@@ -389,6 +395,8 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
         return <ApprovalCard key={p.approval_id} part={p} canAnswer={canAnswerApprovals} />;
       case MessagePartTypes.SECRET_INPUT:
         return <SecretInputCard key={p.request_id} part={p} />;
+      case MessagePartTypes.ASK_USER:
+        return <AskUserCard key={p.request_id} part={p} />;
       case MessagePartTypes.COMPUTER_HANDOFF:
         return <ComputerHandoffCard key={p.request_id} part={p} runId={m.run_id} botName={bot.name} canAct={!m.run?.user_id || m.run.user_id === meId} />;
       case MessagePartTypes.SKILL:
@@ -461,7 +469,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
         )}
         {!streaming && <ActionsMenu m={m} mine={false} models={models} actions={actions} onStartEdit={() => undefined} />}
         {segment(m.parts).map((seg, i) => (seg.kind === SegmentKinds.STEPS ? <ActivitySteps key={`s${i}`} items={seg.items} mode={activityMode} working={streaming && working} runId={m.run_id} /> : renderPart(seg.part, seg.index)))}
-        {streaming && working && !hasText && !m.parts.some((p) => p.type === MessagePartTypes.APPROVAL || p.type === MessagePartTypes.SECRET_INPUT) && <TypingDots color={bot.color} />}
+        {streaming && working && !hasText && !m.parts.some((p) => p.type === MessagePartTypes.APPROVAL || p.type === MessagePartTypes.SECRET_INPUT || p.type === MessagePartTypes.ASK_USER) && <TypingDots color={bot.color} />}
         {m.status === MessageStatuses.STOPPED && !hasText && <p className="text-xs text-muted-foreground">Stopped.</p>}
         <Reactions m={m} meId={meId} onReact={(e) => actions.onReact(m, e)} align={ReactionAligns.START} />
         {followUps && !streaming && (

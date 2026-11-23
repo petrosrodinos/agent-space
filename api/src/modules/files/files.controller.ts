@@ -1,7 +1,7 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Put, Query, Req, Res, UseGuards, BadRequestException, PayloadTooLargeException } from '@nestjs/common';
 import { ApiBearerAuth, ApiProperty, ApiPropertyOptional, ApiTags } from '@nestjs/swagger';
-import { SkipThrottle } from '@nestjs/throttler';
-import { IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min } from 'class-validator';
+import { SkipThrottle, Throttle } from '@nestjs/throttler';
+import { IsIn, IsInt, IsOptional, IsString, IsUUID, MaxLength, Min, MinLength } from 'class-validator';
 import type { Request, Response } from 'express';
 import { createReadStream, promises as fs } from 'fs';
 import * as path from 'path';
@@ -9,10 +9,15 @@ import { JwtGuard } from '@/shared/guards/jwt.guard';
 import { OrgGuard, type OrgMembership } from '@/shared/guards/org.guard';
 import { CurrentMembership } from '@/shared/decorators/org-roles.decorator';
 import { StorageService } from '@/integrations/storage/storage.service';
+import { OpenRouterService } from '@/integrations/openrouter/openrouter.service';
 import type { Actor } from '../bots/bots.service';
 import { FilesService, UploadPurpose } from './files.service';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
+
+class GenerateAvatarDto {
+    @ApiProperty({ example: 'playful, colourful, friendly robot' }) @IsString() @MinLength(3) @MaxLength(300) prompt: string;
+}
 
 class CreateUploadDto {
     @ApiProperty() @IsString() @MaxLength(255) filename: string;
@@ -30,12 +35,22 @@ export class FilesController {
     constructor(
         private readonly files: FilesService,
         private readonly storage: StorageService,
+        private readonly openrouter: OpenRouterService,
     ) { }
 
     @Post('uploads')
     @UseGuards(JwtGuard, OrgGuard)
     createUpload(@CurrentMembership() m: OrgMembership, @Body() dto: CreateUploadDto) {
         return this.files.createUpload(actor(m), dto);
+    }
+
+    /** Avatar preview from a text prompt. Nothing is stored: the client crops it and uploads the result like any image. */
+    @Post('avatar/generate')
+    @UseGuards(JwtGuard, OrgGuard)
+    @Throttle({ default: { limit: 10, ttl: 60_000 } })
+    async generateAvatar(@Body() dto: GenerateAvatarDto) {
+        const prompt = `A square avatar illustration for an AI assistant: ${dto.prompt.trim()}. Centered subject, clean flat background, no text, no watermark.`;
+        return { data_url: await this.openrouter.generateImage(prompt) };
     }
 
     @Post(':id/confirm')

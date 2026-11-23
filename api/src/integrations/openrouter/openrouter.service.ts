@@ -103,6 +103,21 @@ export class OpenRouterService {
         });
     }
 
+    /** One image from a text prompt, as a `data:` URL. Uses an image-capable model through the same OpenRouter key. */
+    async generateImage(prompt: string, model = this.config.get<string>('AVATAR_IMAGE_MODEL') || 'google/gemini-2.5-flash-image'): Promise<string> {
+        const res = await fetch(`${BASE_URL}/chat/completions`, {
+            method: 'POST',
+            headers: this.headers(),
+            body: JSON.stringify({ model, messages: [{ role: 'user', content: prompt }], modalities: ['image', 'text'], stream: false }),
+            signal: AbortSignal.timeout(90_000),
+        });
+        if (!res.ok) throw new ServiceUnavailableException(`Image generation failed (${res.status})`);
+        const json: any = await res.json();
+        const url: unknown = json.choices?.[0]?.message?.images?.[0]?.image_url?.url;
+        if (typeof url !== 'string' || !url.startsWith('data:image/')) throw new ServiceUnavailableException('The model did not return an image. Try a different description.');
+        return url;
+    }
+
     /** Non-streaming completion for small internal tasks (drafting a bot, titles, summaries). */
     async complete(opts: Omit<ChatStreamOptions, 'onTextDelta' | 'onToolCallStart'> & { json?: boolean }): Promise<ChatResult> {
         const body = JSON.parse(this.body(opts, false));

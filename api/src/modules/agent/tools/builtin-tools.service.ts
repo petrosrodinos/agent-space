@@ -70,6 +70,8 @@ export class BuiltinToolsService {
         const ui = org?.interactive_replies_mode !== 'OFF' && bot.interactive_replies_mode !== 'OFF' && ctx.user_settings?.interactive_replies !== false;
         if (ui) t.push(this.showUi());
         if (bot.document_creation_enabled && org?.builtin_document_creation !== false && ctx.conversation_id) t.push(this.createDocument());
+        const clarify = bot.clarifying_questions !== 'USER_PREFERENCE' ? bot.clarifying_questions : ctx.user_settings?.clarifying_questions || 'BALANCED';
+        if (ctx.actor && clarify !== 'ASSUME_AND_PROCEED') t.push(this.askUser());
         if (ctx.actor) {
             t.push(this.requestSecret(), this.listSecrets(), this.updateSecret(), this.deleteSecret());
             t.push(this.listBots(), this.updateBot(), this.updateMySettings(), this.listModels());
@@ -227,6 +229,47 @@ export class BuiltinToolsService {
                 });
                 await ctx.addPart({ type: 'file', file_id: file.id, filename: file.filename, mimetype: file.mimetype, size: Number(file.size) });
                 return { output: { file_id: file.id, filename: file.filename, size: Number(file.size) } };
+            },
+        };
+    }
+
+    // ---------------- Ask the user (clarifying question) ----------------
+
+    private askUser(): ToolDef {
+        return {
+            name: 'ask_user',
+            description:
+                'Pause and ask the user one clarifying question when you cannot continue without their answer (ambiguous request, a choice only they can make). Offer 2-6 short options when the answers are predictable; the user can always type their own answer. Do not use it for passwords or keys (use request_secret) or for things you can reasonably assume. You get back their answer.',
+            parameters: obj(
+                {
+                    question: { type: 'string', description: 'One short, specific question' },
+                    options: { type: 'array', items: { type: 'string' }, description: 'Optional suggested answers, 2-6 short choices' },
+                    allow_free_text: { type: 'boolean', description: 'Let the user type their own answer (default true)' },
+                },
+                ['question'],
+            ),
+            step_type: 'TOOL_CALL',
+            runs_on: 'server',
+            title: (a) => `Asking: ${String(a.question ?? '').slice(0, 60)}`,
+            execute: async (a, ctx) => {
+                const request_id = `ask_${randomToken(8)}`;
+                const options = Array.isArray(a.options) ? a.options.map((o: unknown) => String(o).slice(0, 80)).filter(Boolean).slice(0, 6) : [];
+                return {
+                    wait: 'input',
+                    request_id,
+                    part: {
+                        type: 'ask-user',
+                        request_id,
+                        run_id: ctx.run.id,
+                        for_user_id: ctx.run.user_id,
+                        for_user_name: ctx.user?.name ?? ctx.user?.email ?? 'Someone',
+                        question: String(a.question).slice(0, 500),
+                        options,
+                        allow_free_text: a.allow_free_text !== false || options.length === 0,
+                        answer: null,
+                        status: 'pending',
+                    },
+                };
             },
         };
     }

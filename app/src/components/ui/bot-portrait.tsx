@@ -1,4 +1,6 @@
-import { memo, type FC, type ReactNode } from "react";
+import { memo, useState, type FC, type ReactNode } from "react";
+import { avatarFileId } from "@/lib/avatar-seed";
+import { useFileUrl } from "@/features/files/hooks/use-files";
 
 /**
  * Flat-portrait bot avatars. Every look (skin tone, hair, glasses, expression, shirt) is derived from the bot's
@@ -93,6 +95,21 @@ interface BotPortraitProps {
 
 /** The figure only, on a transparent background (viewBox 0 0 100 100). Callers paint the bot colour behind it. */
 export const BotPortrait: FC<BotPortraitProps> = memo(({ seed, color, className }) => {
+  const fileId = avatarFileId(seed);
+  return fileId ? <PortraitImage fileId={fileId} seed={seed} color={color} className={className} /> : <GeneratedPortrait seed={seed} color={color} className={className} />;
+});
+BotPortrait.displayName = "BotPortrait";
+
+/** An uploaded or AI-generated avatar. Falls back to a generated face while loading or when the file can't be read (e.g. a shared link). */
+const PortraitImage: FC<BotPortraitProps & { fileId: string }> = ({ fileId, seed, color, className }) => {
+  const { data, isError } = useFileUrl(fileId);
+  const [broken, setBroken] = useState(false);
+  if (isError || broken) return <GeneratedPortrait seed={seed} color={color} className={className} />;
+  if (!data) return <span className={className} aria-hidden />;
+  return <img src={data.url} alt="" aria-hidden draggable={false} onError={() => setBroken(true)} className={`${className ?? ""} object-cover`} />;
+};
+
+const GeneratedPortrait: FC<BotPortraitProps> = ({ seed, color, className }) => {
   const r = seededRandom(seed || "bot");
   const skin = pick(r, SKIN_TONES);
   const hairColor = pick(r, HAIR_COLORS);
@@ -132,5 +149,4 @@ export const BotPortrait: FC<BotPortraitProps> = memo(({ seed, color, className 
       )}
     </svg>
   );
-});
-BotPortrait.displayName = "BotPortrait";
+};

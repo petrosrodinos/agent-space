@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { CircleButton } from "@/components/ui/circle-button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { BotAvatar } from "@/components/ui/bot-avatar";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
 import { EmptyState } from "@/components/ui/empty-state";
 import { ListGroup, ListRow } from "@/components/ui/list-group";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
@@ -15,7 +16,7 @@ import { PageContainer, PageHeader } from "@/components/ui/page-header";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 import { ComputerTab } from "../../components/computer-tab";
-import { useBot, useDeleteBot, useDuplicateBot } from "@/features/bots/hooks/use-bots";
+import { useBot, useDeleteBot, useDuplicateBot, useUpdateBot } from "@/features/bots/hooks/use-bots";
 import { useOpenDirect } from "@/features/conversations/hooks/use-conversations";
 import { useCurrentOrganization } from "@/features/organizations/hooks/use-organizations";
 import type { Bot } from "@/features/bots/interfaces/bots.interfaces";
@@ -159,6 +160,7 @@ const BotDetailPage: FC = () => {
   const openDirect = useOpenDirect();
   const duplicate = useDuplicateBot();
   const del = useDeleteBot();
+  const updateBot = useUpdateBot(botId);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const navigate = useNavigate();
   const backToOverview = useBack(Routes.bots.detail(botId));
@@ -265,7 +267,11 @@ const BotDetailPage: FC = () => {
       />
       <Frame>
         <div className="flex flex-col items-center text-center">
-          <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={120} followCursor />
+          {bot.can_edit ? (
+            <AvatarPicker seed={bot.avatar_seed} color={bot.color} name={bot.name} size={120} followCursor onSeedChange={(avatar_seed) => updateBot.mutate({ avatar_seed })} onColorChange={(color) => updateBot.mutate({ color })} />
+          ) : (
+            <BotAvatar seed={bot.avatar_seed} color={bot.color} name={bot.name} size={120} followCursor />
+          )}
           <h1 className="mt-4 font-display text-[30px] font-bold leading-tight text-ink">{bot.name}</h1>
           {bot.description && <p className="mt-1 max-w-md text-[15px] text-muted-foreground">{bot.description}</p>}
           <div className="mt-4 flex gap-2">

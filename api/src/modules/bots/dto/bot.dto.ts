@@ -7,10 +7,11 @@ import {
     ActionType, ApprovalLevel, ApprovalOverride, AppLanguage, BotClarifyingQuestions, BotEditPolicy, BotGroupResponse, BotVisibility, Creativity,
     EmojiUsage, InteractiveRepliesMode, MaxTaskDuration, MemoryScope, ReplyFormatting, ReplyLength, ReplyTone, SpokenReplyStyle,
 } from 'generated/prisma';
+import { AVATAR_SEED_REGEX } from '@/shared/utils/avatar.utils';
 
 export class CreateBotDto {
     @ApiProperty({ example: 'Sales Sam' }) @IsString() @MinLength(1) @MaxLength(60) name: string;
-    @ApiPropertyOptional({ example: 'k3f9a1c2b7d4', description: 'Seed for the generated portrait avatar. Omit for a random one.' }) @IsOptional() @Matches(/^[a-zA-Z0-9]{4,32}$/) avatar_seed?: string;
+    @ApiPropertyOptional({ example: 'k3f9a1c2b7d4', description: 'Seed for the generated portrait avatar, or file:<id> for an uploaded image. Omit for a random one.' }) @IsOptional() @Matches(AVATAR_SEED_REGEX) avatar_seed?: string;
     @ApiPropertyOptional({ example: '#FF7A3D' }) @IsOptional() @Matches(/^#[0-9a-fA-F]{6}$/) color?: string;
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(160) description?: string | null;
     @ApiPropertyOptional() @IsOptional() @IsString() @MaxLength(20000) instructions?: string;

@@ -1,7 +1,7 @@
 {
   "name": "agentspace-desktop",
   "productName": "Agent Space",
-  "version": "1.0.8",
+  "version": "1.0.9",
   "description": "Agent Space desktop app (Windows, Mac) — the app/ build inside Electron (§14.2)",
   "private": true,
   "main": "dist/main.js",

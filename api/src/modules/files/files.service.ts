@@ -5,6 +5,7 @@ import { StorageService } from '@/integrations/storage/storage.service';
 import { newId } from '@/shared/utils/security/crypto.utils';
 import { AccessService } from '../access/access.service';
 import type { Actor } from '../bots/bots.service';
+import { avatarFileId } from '@/shared/utils/avatar.utils';
 
 const MAX_BYTES: Record<MaxFileSize, number> = { MB_25: 25 * 1024 ** 2, MB_50: 50 * 1024 ** 2, MB_100: 100 * 1024 ** 2 };
 const BLOCKED_EXT = /\.(exe|msi|bat|cmd|com|scr|ps1|vbs|jar|sh|app|dmg|apk|dll)$/i;
@@ -139,6 +140,14 @@ export class FilesService {
             return { name, rows, truncated };
         });
         return { sheets, filename: f.filename };
+    }
+
+    /** A `file:<id>` avatar seed must point at a ready image in the same organisation. Hash seeds pass untouched. */
+    async assertAvatarSeed(orgId: string, seed: string | null | undefined) {
+        const fileId = avatarFileId(seed);
+        if (!fileId) return;
+        const f = await this.prisma.file.findFirst({ where: { id: fileId, organization_id: orgId, deleted_at: null, status: 'READY' } });
+        if (!f || !/^image\//.test(f.mimetype)) throw new BadRequestException('That avatar image is not available');
     }
 
     async get(actor: Actor, id: string) {

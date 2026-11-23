@@ -29,7 +29,8 @@ import { timeAgo } from "@/lib/date";
 import {
   abilitiesSchema, behaviourSchema, identitySchema, sharingSchema, type AbilitiesFormValues, type BehaviourFormValues, type IdentityFormValues, type SharingFormValues,
 } from "../validation-schemas/bot.schema";
-import { AvatarPicker, ColorSwatches, ModelSelect } from "./bot-pickers";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
+import { ModelSelect } from "./bot-pickers";
 import { SaveBar, SelectField, SwitchField } from "./form-fields";
 import { ReplyLanguageChoices, ActionTypes, MemoryKinds, ApprovalOverrideChoices, type ApprovalOverrideChoice } from "@/features/bots/interfaces/bots.interfaces";
 import { ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
@@ -62,7 +63,7 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
         <SettingsCard title="Identity" description="How the bot looks in chats and lists.">
           <div className="space-y-5 py-3">
             <div className="flex items-center gap-4">
-              <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} disabled={ro} />} />
+              <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker seed={field.value} color={color} onSeedChange={field.onChange} onColorChange={(c) => form.setValue("color", c, { shouldDirty: true })} disabled={ro} />} />
               <FormField
                 control={form.control}
                 name="name"
@@ -77,7 +78,6 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
                 )}
               />
             </div>
-            <FormField control={form.control} name="color" render={({ field }) => <FormItem><FormLabel>Colour</FormLabel><ColorSwatches value={field.value} onChange={field.onChange} disabled={ro} /></FormItem>} />
             <FormField
               control={form.control}
               name="description"

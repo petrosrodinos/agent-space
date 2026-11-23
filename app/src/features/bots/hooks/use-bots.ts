@@ -39,6 +39,7 @@ export const useUpdateBot = (id: string) => {
       qc.setQueryData([QueryKeys.BOT, id], bot);
       qc.invalidateQueries({ queryKey: [QueryKeys.BOTS] });
       qc.invalidateQueries({ queryKey: [QueryKeys.CONVERSATIONS] });
+      qc.invalidateQueries({ queryKey: [QueryKeys.CONVERSATION] });
       toast({ title: "Bot saved", duration: 1500 });
     },
     onError: (e) => toast({ title: "Could not save the bot", description: e.message, variant: "error" }),

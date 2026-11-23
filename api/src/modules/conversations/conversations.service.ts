@@ -10,6 +10,7 @@ import { welcomeMessageData } from '../bots/bot-welcome.utils';
 import { BOT_BRIEF, USER_BRIEF } from './conversation.select';
 import { MessageEventsService } from './message-events.service';
 import { AddParticipantsDto, ConversationListQuery, CreateConversationDto, CreateDirectDto, UpdateConversationDto, UpdateMyConversationDto } from './dto/conversation.dto';
+import { FilesService } from '../files/files.service';
 
 const CONVERSATION_INCLUDE = {
     participants: {
@@ -28,6 +29,7 @@ export class ConversationsService {
         private readonly events: EventsService,
         private readonly activity: ActivityService,
         private readonly messageEvents: MessageEventsService,
+        private readonly files: FilesService,
     ) { }
 
     private shape(c: Prisma.ConversationGetPayload<{ include: typeof CONVERSATION_INCLUDE }>, me?: { is_favourite: boolean; is_archived: boolean; is_muted: boolean; unread_count: number; folder_id: string | null; last_read_at: Date | null }) {
@@ -163,6 +165,7 @@ export class ConversationsService {
         const userIds = [...new Set([actor.user_id, ...(dto.user_ids ?? [])])];
         await this.validateUsers(actor.organization_id, userIds);
         await this.validateBots(actor, dto.bot_ids);
+        await this.files.assertAvatarSeed(actor.organization_id, dto.avatar_seed);
         const lead = dto.lead_bot_id && dto.bot_ids.includes(dto.lead_bot_id) ? dto.lead_bot_id : dto.bot_ids[0];
         const c = await this.prisma.conversation.create({
             data: {
@@ -183,6 +186,7 @@ export class ConversationsService {
 
     async update(actor: Actor, id: string, dto: UpdateConversationDto) {
         const me = await this.access.requireParticipant(id, actor.user_id);
+        await this.files.assertAvatarSeed(actor.organization_id, dto.avatar_seed);
         if (dto.lead_bot_id) {
             const isBot = await this.prisma.conversationParticipant.count({ where: { conversation_id: id, bot_id: dto.lead_bot_id, left_at: null } });
             if (!isBot) throw new BadRequestException('The lead bot must be in the conversation');

@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { botFormSchema, type BotFormValues } from "../validation-schemas/bot.schema";
-import { AvatarPicker, ColorSwatches, ModelSelect } from "./bot-pickers";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
+import { ModelSelect } from "./bot-pickers";
 
 interface BotFormProps {
   defaultValues: BotFormValues;
@@ -24,7 +25,7 @@ export const BotForm: FC<BotFormProps> = ({ defaultValues, submitLabel, loading,
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-5">
         <div className="flex items-center gap-4">
-          <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} />} />
+          <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker seed={field.value} color={color} onSeedChange={field.onChange} onColorChange={(c) => form.setValue("color", c, { shouldDirty: true })} />} />
           <FormField
             control={form.control}
             name="name"
@@ -39,17 +40,6 @@ export const BotForm: FC<BotFormProps> = ({ defaultValues, submitLabel, loading,
             )}
           />
         </div>
-        <FormField
-          control={form.control}
-          name="color"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Colour</FormLabel>
-              <ColorSwatches value={field.value} onChange={field.onChange} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         <FormField
           control={form.control}
           name="description"

@@ -277,7 +277,9 @@ export class VoiceService implements OnModuleDestroy {
                 await this.saveBotMessage(live as Live);
             },
         };
-        const { tools: toolDefs, summary } = await this.runner.buildTools(ctx);
+        const { tools: builtTools, summary } = await this.runner.buildTools(ctx);
+        // ask_user pauses a run until a card is tapped; a live voice session has no run to resume, so the bot just asks out loud.
+        const toolDefs = builtTools.filter((t) => t.name !== 'ask_user');
         const voiceTools = this.voiceTools(live as Live);
         const all = [...toolDefs, ...voiceTools];
         const tools = new Map(all.map((t) => [t.name, t]));

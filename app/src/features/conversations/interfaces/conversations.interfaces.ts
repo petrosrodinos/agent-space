@@ -22,6 +22,7 @@ export const MessagePartTypes = {
   UI: "ui",
   APPROVAL: "approval",
   SECRET_INPUT: "secret-input",
+  ASK_USER: "ask-user",
   SKILL: "skill",
   CONSULTED: "consulted",
   FILE: "file",
@@ -50,6 +51,9 @@ export type SecretKind = (typeof SecretKinds)[keyof typeof SecretKinds];
 
 export const ComputerHandoffKinds = { SIGN_IN: "sign_in", TWO_STEP_CODE: "two_step_code", CAPTCHA: "captcha", OTHER: "other" } as const;
 export type ComputerHandoffKind = (typeof ComputerHandoffKinds)[keyof typeof ComputerHandoffKinds];
+
+export const AskUserStatuses = { PENDING: "pending", ANSWERED: "answered", SKIPPED: "skipped" } as const;
+export type AskUserStatus = (typeof AskUserStatuses)[keyof typeof AskUserStatuses];
 
 export const ComputerHandoffStatuses = { WAITING: "waiting", DONE: "done", CANCELLED: "cancelled" } as const;
 export type ComputerHandoffStatus = (typeof ComputerHandoffStatuses)[keyof typeof ComputerHandoffStatuses];
@@ -103,6 +107,7 @@ export type MessagePart =
   | { type: T["FOLLOW_UPS"]; items: string[] }
   | { type: T["NOTICE"]; text: string }
   | { type: T["AUTOMATION"]; automation_id: string; name: string; schedule: string | null; next_run_at: string | null }
+  | { type: T["ASK_USER"]; request_id: string; run_id: string; for_user_id: string; for_user_name: string; question: string; options: string[]; allow_free_text: boolean; answer: string | null; status: AskUserStatus }
   | { type: T["COMPUTER_HANDOFF"]; request_id: string; bot_id: string; reason: string; kind: ComputerHandoffKind; status: ComputerHandoffStatus }
   | { type: T["ERROR"]; message: string }
   | { type: T["INTERACTION"]; message_id: string; component_id: string; payload: Record<string, unknown>; total_responses: number }

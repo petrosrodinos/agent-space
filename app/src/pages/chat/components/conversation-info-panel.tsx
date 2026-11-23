@@ -18,7 +18,7 @@ import type { Conversation } from "@/features/conversations/interfaces/conversat
 import { getDropdownOptionLabel } from "@/lib/dropdown-option-label.utils";
 import { ConversationTypeOptions } from "@/config/constants/dropdowns/shared/status.options";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
-import { AvatarPicker, ColorSwatches } from "@/pages/bots/components/bot-pickers";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
 import { BotPanel } from "./bot-panel";
 
 const AddModes = { BOTS: "BOTS", PEOPLE: "PEOPLE" } as const;
@@ -35,7 +35,7 @@ const GroupIdentityForm: FC<{ conversation: Conversation }> = ({ conversation: c
     <Form {...form}>
       <form className="space-y-4" onSubmit={form.handleSubmit((v) => update.mutate({ id: c.id, name: v.name.trim(), color: v.color, avatar_seed: v.avatar_seed }))}>
         <div className="flex items-center gap-4">
-          <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} />} />
+          <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker seed={field.value} color={color} onSeedChange={field.onChange} onColorChange={(c) => form.setValue("color", c, { shouldDirty: true })} />} />
           <FormField
             control={form.control}
             name="name"
@@ -50,7 +50,6 @@ const GroupIdentityForm: FC<{ conversation: Conversation }> = ({ conversation: c
             )}
           />
         </div>
-        <FormField control={form.control} name="color" render={({ field }) => <FormItem><FormLabel>Colour</FormLabel><ColorSwatches value={field.value} onChange={field.onChange} /></FormItem>} />
         <Button type="submit" variant="outline" className="w-full" disabled={!form.formState.isDirty} loading={update.isPending}>
           Save
         </Button>

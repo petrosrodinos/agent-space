@@ -17,7 +17,7 @@ import { useMe } from "@/features/users/hooks/use-users";
 import { BotColorOptions } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { Routes } from "@/routes/routes";
 import { cn } from "@/lib/utils";
-import { AvatarPicker, ColorSwatches } from "@/pages/bots/components/bot-pickers";
+import { AvatarPicker } from "@/components/avatar-picker/avatar-picker";
 import { randomAvatarSeed } from "@/components/ui/bot-portrait";
 import { newGroupSchema, type NewGroupFormData } from "../validation-schemas/group.schema";
 import { ConversationTypes } from "@/features/conversations/interfaces/conversations.interfaces";
@@ -98,7 +98,7 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
           )}
         >
           <div className="flex items-center gap-4">
-            <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker value={field.value} color={color} onChange={field.onChange} />} />
+            <FormField control={form.control} name="avatar_seed" render={({ field }) => <AvatarPicker seed={field.value} color={color} onSeedChange={field.onChange} onColorChange={(c) => form.setValue("color", c, { shouldDirty: true })} />} />
             <FormField
               control={form.control}
               name="name"
@@ -113,17 +113,6 @@ export const NewGroupForm: FC<NewChatStepProps> = ({ onDone, onBack, closeRef })
               )}
             />
           </div>
-          <FormField
-            control={form.control}
-            name="color"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Colour</FormLabel>
-                <ColorSwatches value={field.value} onChange={field.onChange} />
-                <FormMessage />
-              </FormItem>
-            )}
-          />
           <FormField
             control={form.control}
             name="bot_ids"

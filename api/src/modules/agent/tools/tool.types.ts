@@ -19,6 +19,15 @@ export interface ToolContext {
     secrets_used: string[];
     /** Adds a part to the bot's message (interactive reply, file, sources…) and publishes it. */
     addPart: (part: MessagePart) => Promise<void>;
+    /** Connected-service tools the bot loaded during this run with find_connection_tools (kept in the run state). */
+    loaded_tools?: LoadedTool[];
+    /** Set when a tool changed the bot's tool set mid-run; the run loop rebuilds the tools before the next step. */
+    tools_changed?: boolean;
+}
+
+export interface LoadedTool {
+    service: string;
+    slug: string;
 }
 
 export interface ToolWaitForInput {

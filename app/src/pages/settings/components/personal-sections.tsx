@@ -218,7 +218,7 @@ export const ProfileSection: FC = () => {
                 <FormItem>
                   <FormLabel>About me</FormLabel>
                   <FormControl>
-                    <Textarea
+                    <Textarea dictation
                       rows={3}
                       placeholder="Your role, responsibilities and how you like to work"
                       {...field}

@@ -14,6 +14,7 @@ const { runFiles, FILE_LIMITS } = require(path.join(dist, 'files.js'));
 const { matchBlockedApp, cleanBlockedList } = require(path.join(dist, 'blocked.js'));
 const { screenshotSize, shotToDip, assertInShot, dipToPhysical, fitWidth } = require(path.join(dist, 'coords.js'));
 const { parseKeyCombo } = require(path.join(dist, 'keys.js'));
+const { assertBrowsableUrl, isSecretField, toCdpKey, shotToPage } = require(path.join(dist, 'browser-logic.js'));
 
 let passed = 0;
 let failed = 0;
@@ -255,6 +256,47 @@ await test('combos', () => {
     assert.deepEqual(parseKeyCombo('alt+F4', 'win32'), ['LeftAlt', 'F4']);
     assert.throws(() => parseKeyCombo('ctrl+banana'), /Unknown key/);
     assert.throws(() => parseKeyCombo(''), /needs/);
+});
+
+
+console.log('Browser');
+await test('only web addresses open', () => {
+    assert.equal(assertBrowsableUrl('https://example.com/a?b=1'), 'https://example.com/a?b=1');
+    assert.equal(assertBrowsableUrl('example.com'), 'https://example.com/');
+    assert.throws(() => assertBrowsableUrl('file:///C:/Windows/win.ini'), /Only http/);
+    assert.throws(() => assertBrowsableUrl('javascript:alert(1)'), /Only http/);
+    assert.throws(() => assertBrowsableUrl('chrome://settings'), /Only http/);
+    assert.throws(() => assertBrowsableUrl('https://user:pw@example.com'), /user name/);
+    assert.throws(() => assertBrowsableUrl(''), /needs/);
+});
+await test('password, card and code fields are secret', () => {
+    assert.equal(isSecretField({ type: 'password' }), true);
+    assert.equal(isSecretField({ type: 'text', autocomplete: 'cc-number' }), true);
+    assert.equal(isSecretField({ type: 'text', autocomplete: 'one-time-code' }), true);
+    assert.equal(isSecretField({ type: 'text', name: 'user_password' }), true);
+    assert.equal(isSecretField({ type: 'text', id: 'card-number' }), true);
+    assert.equal(isSecretField({ type: 'text', name: 'email', autocomplete: 'email' }), false);
+    assert.equal(isSecretField({ type: 'search', name: 'q' }), false);
+    assert.equal(isSecretField(null), false);
+});
+await test('key combos for the browser', () => {
+    assert.deepEqual(toCdpKey('Enter'), { key: 'Enter', code: 'Enter', vk: 13, text: '\r', modifiers: 0 });
+    const a = toCdpKey('ctrl+a', 'win32');
+    assert.deepEqual([a.key, a.modifiers, a.text, a.commands], ['a', 2, undefined, ['selectAll']]);
+    assert.equal(toCdpKey('cmd+a', 'darwin').modifiers, 4);
+    assert.equal(toCdpKey('cmd+a', 'win32').modifiers, 2);
+    assert.deepEqual([toCdpKey('shift+Tab').key, toCdpKey('shift+Tab').modifiers], ['Tab', 8]);
+    assert.equal(toCdpKey('ArrowDown').key, 'ArrowDown');
+    assert.equal(toCdpKey('shift+a').text, 'A');
+    assert.equal(toCdpKey('F5').vk, 116);
+    assert.throws(() => toCdpKey('ctrl+banana'), /Unknown key/);
+    assert.throws(() => toCdpKey('ctrl'), /only modifier/);
+    assert.throws(() => toCdpKey('a+b'), /Only one/);
+});
+await test('screenshot position maps to the page', () => {
+    assert.deepEqual(shotToPage(640, 400, { width: 1280, height: 800 }, { width: 1280, height: 800 }), { x: 640, y: 400 });
+    assert.deepEqual(shotToPage(100, 100, { width: 1280, height: 800 }, { width: 1920, height: 1200 }), { x: 150, y: 150 });
+    assert.throws(() => shotToPage(1280, 0, { width: 1280, height: 800 }, { width: 1280, height: 800 }), /outside/);
 });
 
 await fs.rm(tmp, { recursive: true, force: true });

@@ -105,6 +105,8 @@ export class FilesService {
         if (f.organization_id && f.organization_id !== actor.organization_id) throw new NotFoundException('File not found');
         if (f.uploaded_by_id === actor.user_id) return f;
         if (f.conversation_id && (await this.access.isParticipant(f.conversation_id, actor.user_id))) return f;
+        // Files attached to a message the user can see (e.g. a message forwarded into their group) stay readable there.
+        if (await this.prisma.messageFile.count({ where: { file_id: f.id, message: { deleted_at: null, conversation: { deleted_at: null, participants: { some: { user_id: actor.user_id, left_at: null } } } } } })) return f;
         if (f.bot_id && (await this.prisma.bot.count({ where: { id: f.bot_id, ...this.access.usableBotsWhere(actor.organization_id, actor.user_id) } }))) return f;
         if (f.bucket === 'PUBLIC') return f;
         throw new ForbiddenException('You do not have access to this file');

@@ -8,6 +8,7 @@ export const DesktopToolOptions: { id: DesktopToolKind; label: string; descripti
   { id: DesktopToolKinds.LOCAL_TOOL_SERVERS, label: "Local tool servers", description: "Tool servers (MCP) that run only on this computer." },
   { id: DesktopToolKinds.CLIPBOARD, label: "Clipboard", description: "Copy results to the clipboard; read it only when you ask." },
   { id: DesktopToolKinds.OPEN, label: "Open", description: "Open links, files and apps on this computer." },
+  { id: DesktopToolKinds.BROWSER, label: "Browser", description: "Browse the web in a separate window with its own sign-ins, apart from your normal browser. You can watch it, and it never types passwords. Asks once per task." },
   { id: DesktopToolKinds.CONTROL_COMPUTER, label: "Control my computer", description: "Use the apps on this computer to finish a task. Asks every time, for one task, at most 30 minutes." },
 ];
 

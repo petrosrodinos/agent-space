@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Bot, Conversation, OrganizationSettings, Run, User, UserSettings } from 'generated/prisma';
+import { Bot, Conversation, OrganizationSettings, Prisma, Run, User, UserSettings } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { StorageService } from '@/integrations/storage/storage.service';
 import { ChatContentPart, ChatMessage } from '@/integrations/openrouter/openrouter.service';
@@ -23,11 +23,28 @@ export interface PromptContext {
     supports_vision: boolean;
     /** Whether this run got the cloud computer tools (bot, organisation and automation settings all allow it). */
     computer_available: boolean;
+    /** The bot has no cloud computer switched on, but may turn one on itself with computer_turn_on. */
+    computer_can_turn_on?: boolean;
     /** Saved website logins this bot may use for the acting user — metadata only. */
     website_logins: { id: string; label: string; website: string | null; password_manager: boolean }[];
 }
 
 import { isExtractable, TEXT_MIME } from '@/shared/utils/files/text-extract.utils';
+
+const HISTORY_INCLUDE = {
+    author_user: { select: { name: true, email: true } },
+    author_bot: { select: { id: true, name: true } },
+    files: { include: { file: true } },
+    reply_to: { select: { content: true, deleted_at: true, author_user: { select: { name: true, email: true } }, author_bot: { select: { id: true, name: true } }, _count: { select: { files: true } } } },
+} satisfies Prisma.MessageInclude;
+type HistoryMessage = Prisma.MessageGetPayload<{ include: typeof HISTORY_INCLUDE }>;
+
+export interface UserTurnOptions {
+    bot_id: string;
+    /** Group chats prefix every turn with the speaker's name. */
+    is_group: boolean;
+    vision: boolean;
+}
 
 /** Builds the system prompt and the conversation history sent to the model. */
 @Injectable()
@@ -125,11 +142,17 @@ export class PromptBuilder {
                 `- Never type passwords, card numbers or two-step codes yourself with computer_type. When a site needs a sign-in, use computer_sign_in if a saved login exists for that site; otherwise, and for text/email codes or "prove you're human" checks, call computer_ask_user and wait.\n` +
                 logins +
                 `- Set the effect of clicks and key presses honestly (submit_form, send_message, purchase…); important ones are shown to the user for approval.\n` +
-                `- Bring data in with copy_to_computer (stored files, public URLs, or API requests through connected accounts — the sign-in never reaches the computer) and share results with copy_from_computer.`,
+                `- Bring data in with copy_to_computer (stored files, public URLs, or API requests through connected accounts — the sign-in never reaches the computer) and share results with copy_from_computer.\n` +
+                `- When you have finished with the computer, call computer_turn_off so it stops running (files and sign-ins are kept; using it again switches it back on).`,
+            );
+        } else if (ctx.computer_can_turn_on) {
+            s.push(
+                `## Your cloud computer\nYour cloud computer is switched off. Do not tell the user it is unavailable or ask them to open settings: when a task needs it (real .xlsx/.docx files, scripts, careful website browsing, or work that must run while the user's own computer is off, such as automations), call computer_turn_on with a short reason, then carry on with the computer_* tools it gives you.`,
             );
         }
         s.push(
             `## Rules\n` +
+            `- Your tools are reloaded from the current settings on every message, so a setting the user just changed (cloud computer, connected accounts, tool servers, skills) already applies to their next message in this same chat. NEVER tell the user to start a new chat or restart anything for a tool to appear. If a tool you expect is missing, say so plainly and, if a setting is the cause, tell them where to turn it on (use app_help for the page); then they can simply send their next message.\n` +
             `- When a user message starts with "[Replying to …]" followed by a quoted block, the user is answering that specific earlier message. Treat the quote as what "this", "that" or "it" refers to, answer the new text in that context, and do not repeat the quote back.\n` +
             `- Take action with your tools instead of only describing what to do. Sensitive actions (sending, posting, deleting, paying, sharing, changing settings) will show the user an approval card automatically — just call the tool; never claim you did something before the tool succeeded.\n` +
             `- When you truly cannot continue without the user's answer (ambiguous request, a choice only they can make) and you have an ask_user tool, call it instead of guessing or writing the question in plain text; offer short options when the answers are predictable.
@@ -175,22 +198,16 @@ export class PromptBuilder {
                 ...(trigger ? { created_at: { lte: trigger.created_at } } : {}),
                 author_type: { in: ['USER', 'BOT'] },
             },
-            include: {
-                author_user: { select: { name: true, email: true } },
-                author_bot: { select: { id: true, name: true } },
-                files: { include: { file: true } },
-                reply_to: { select: { content: true, deleted_at: true, author_user: { select: { name: true, email: true } }, author_bot: { select: { id: true, name: true } }, _count: { select: { files: true } } } },
-            },
+            include: HISTORY_INCLUDE,
             orderBy: { created_at: 'desc' },
             take: opts.limit ?? 40,
         });
-        const isGroup = ctx.conversation?.type !== 'DIRECT';
+        const turn = { bot_id: ctx.bot.id, is_group: ctx.conversation?.type !== 'DIRECT', vision: opts.vision };
         const out: ChatMessage[] = [];
         for (const m of rows.reverse()) {
-            let text = m.content ?? '';
-            if (m.secret_masked && m.author_type === 'USER') text += '\n\n(Note: something that looked like a secret was masked before reaching you. Do not ask for it in chat — use request_secret.)';
             if (m.author_type === 'BOT' && m.author_bot?.id === ctx.bot.id) {
                 // Tell the model which actions already ran in that turn, so it never repeats them.
+                const text = m.content ?? '';
                 const parts = Array.isArray(m.parts) ? (m.parts as any[]) : [];
                 const actions = parts
                     .filter((p) => p?.type === 'tool' || p?.type === 'approval')
@@ -199,35 +216,50 @@ export class PromptBuilder {
                 if (text || note) out.push({ role: 'assistant', content: `${text}${note}`.trim() });
                 continue;
             }
-            const speaker = m.author_type === 'BOT' ? `${m.author_bot?.name} (bot)` : m.author_user?.name || m.author_user?.email || 'User';
-            const prefix = isGroup || m.author_type === 'BOT' ? `[${speaker}]: ` : '';
-            const quote = this.replyQuote(m.reply_to, ctx.bot.id);
-            const parts: ChatContentPart[] = [{ type: 'text', text: `${prefix}${quote}${text}` }];
-            for (const mf of m.files) {
-                const f = mf.file;
-                if (f.status !== 'READY' || f.deleted_at) continue;
-                if (/^image\//.test(f.mimetype) && opts.vision && Number(f.size) < 8 * 1024 * 1024) {
-                    try {
-                        const data = await this.storage.read(f.bucket, f.object_path);
-                        parts.push({ type: 'image_url', image_url: { url: `data:${f.mimetype};base64,${data.toString('base64')}` } });
-                    } catch {
-                        parts.push({ type: 'text', text: `[Attached image: ${f.filename} (could not be loaded)]` });
-                    }
-                } else if (TEXT_MIME.test(f.mimetype) && Number(f.size) < 2 * 1024 * 1024) {
-                    try {
-                        const data = (await this.storage.read(f.bucket, f.object_path)).toString('utf8').slice(0, 40_000);
-                        parts.push({ type: 'text', text: `\n--- Attached file: ${f.filename} ---\n${data}\n--- end of ${f.filename} ---` });
-                    } catch {
-                        parts.push({ type: 'text', text: `[Attached file: ${f.filename} (could not be read)]` });
-                    }
-                } else {
-                    parts.push({ type: 'text', text: `[Attached file: ${f.filename} (${f.mimetype}, ${Math.round(Number(f.size) / 1024)} KB, file_id: ${f.id}${isExtractable(f.mimetype, f.filename) ? ' — read it with read_file' : ''})]` });
-                }
-            }
-            out.push({ role: 'user', content: parts.length === 1 ? (parts[0] as any).text : parts });
+            out.push(await this.userTurn(m, turn));
         }
         // The model needs the conversation to end on a user turn.
         while (out.length && out[out.length - 1].role === 'assistant') out.pop();
         return out;
+    }
+
+    /** Follow-ups sent while a run is working, as user turns in the order they were written. */
+    async userTurns(messageIds: string[], opts: UserTurnOptions): Promise<ChatMessage[]> {
+        const rows = await this.prisma.message.findMany({ where: { id: { in: messageIds }, deleted_at: null }, include: HISTORY_INCLUDE, orderBy: { created_at: 'asc' } });
+        const out: ChatMessage[] = [];
+        for (const m of rows) out.push(await this.userTurn(m, opts));
+        return out;
+    }
+
+    /** One message from a person (or another bot) as a user turn: speaker prefix, reply quote and attachments. */
+    private async userTurn(m: HistoryMessage, opts: UserTurnOptions): Promise<ChatMessage> {
+        let text = m.content ?? '';
+        if (m.secret_masked && m.author_type === 'USER') text += '\n\n(Note: something that looked like a secret was masked before reaching you. Do not ask for it in chat — use request_secret.)';
+        const speaker = m.author_type === 'BOT' ? `${m.author_bot?.name} (bot)` : m.author_user?.name || m.author_user?.email || 'User';
+        const prefix = opts.is_group || m.author_type === 'BOT' ? `[${speaker}]: ` : '';
+        const quote = this.replyQuote(m.reply_to, opts.bot_id);
+        const parts: ChatContentPart[] = [{ type: 'text', text: `${prefix}${quote}${text}` }];
+        for (const mf of m.files) {
+            const f = mf.file;
+            if (f.status !== 'READY' || f.deleted_at) continue;
+            if (/^image\//.test(f.mimetype) && opts.vision && Number(f.size) < 8 * 1024 * 1024) {
+                try {
+                    const data = await this.storage.read(f.bucket, f.object_path);
+                    parts.push({ type: 'image_url', image_url: { url: `data:${f.mimetype};base64,${data.toString('base64')}` } });
+                } catch {
+                    parts.push({ type: 'text', text: `[Attached image: ${f.filename} (could not be loaded)]` });
+                }
+            } else if (TEXT_MIME.test(f.mimetype) && Number(f.size) < 2 * 1024 * 1024) {
+                try {
+                    const data = (await this.storage.read(f.bucket, f.object_path)).toString('utf8').slice(0, 40_000);
+                    parts.push({ type: 'text', text: `\n--- Attached file: ${f.filename} ---\n${data}\n--- end of ${f.filename} ---` });
+                } catch {
+                    parts.push({ type: 'text', text: `[Attached file: ${f.filename} (could not be read)]` });
+                }
+            } else {
+                parts.push({ type: 'text', text: `[Attached file: ${f.filename} (${f.mimetype}, ${Math.round(Number(f.size) / 1024)} KB, file_id: ${f.id}${isExtractable(f.mimetype, f.filename) ? ' — read it with read_file' : ''})]` });
+            }
+        }
+        return { role: 'user', content: parts.length === 1 ? (parts[0] as any).text : parts };
     }
 }

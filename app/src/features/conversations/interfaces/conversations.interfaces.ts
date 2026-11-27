@@ -35,6 +35,8 @@ export const MessagePartTypes = {
   INTERACTION: "interaction",
   ARTIFACT: "artifact",
   CLIENT_REF: "client-ref",
+  /** A message shared into this conversation from another one; carries who wrote the original. */
+  FORWARDED: "forwarded",
   /** §7.6: the spoken message came with a camera or screen picture. */
   VISUAL: "visual",
 } as const;
@@ -88,7 +90,7 @@ export interface Conversation {
   created_at: string;
   bots: (BotBrief & { participant_id: string })[];
   users: (PersonBrief & { participant_id: string })[];
-  me: { is_favourite: boolean; is_archived: boolean; is_muted: boolean; unread_count: number; folder_id: string | null; last_read_at: string | null } | null;
+  me: { is_favourite: boolean; is_archived: boolean; is_muted: boolean; unread_count: number; folder_id: string | null; last_read_at: string | null; draft?: string | null } | null;
   last_message?: { id: string; preview: string; author_type: string; author_name: string | null; created_at: string } | null;
   pending_approvals?: number;
   working_bot_ids?: string[];
@@ -96,6 +98,7 @@ export interface Conversation {
 
 export type MessagePart =
   | { type: T["TEXT"]; text: string }
+  | { type: T["FORWARDED"]; message_id: string; author_type: MessageAuthorType; author_name: string | null }
   | { type: T["TOOL"]; call_id: string; step_id: string; name: string; title: string; status: ToolPartStatus; error?: string; duration_ms?: number; undo?: { label: string; until: string }; undone?: boolean }
   | { type: T["UI"]; id: string; title: string; blocks: UiBlock[]; fallback_text: string }
   | { type: T["APPROVAL"]; approval_id: string; title: string; action_type: string; preview: ApprovalPreview; status: string; requires_tap?: boolean; tool?: string }

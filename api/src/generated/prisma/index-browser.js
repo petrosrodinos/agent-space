@@ -696,6 +696,8 @@ exports.Prisma.ConversationParticipantScalarFieldEnum = {
   is_muted: 'is_muted',
   last_read_at: 'last_read_at',
   unread_count: 'unread_count',
+  draft: 'draft',
+  draft_updated_at: 'draft_updated_at',
   joined_at: 'joined_at',
   left_at: 'left_at'
 };
@@ -1526,7 +1528,8 @@ exports.DeviceToolKind = exports.$Enums.DeviceToolKind = {
   CONTACTS: 'CONTACTS',
   SEND_VIA_APPS: 'SEND_VIA_APPS',
   DEVICE_CALENDAR: 'DEVICE_CALENDAR',
-  LOCATION: 'LOCATION'
+  LOCATION: 'LOCATION',
+  BROWSER: 'BROWSER'
 };
 
 exports.DeviceToolPermission = exports.$Enums.DeviceToolPermission = {

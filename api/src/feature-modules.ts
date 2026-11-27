@@ -11,6 +11,7 @@ import { AutomationsModule } from './modules/automations/automations.module';
 import { KnowledgeModule } from './modules/knowledge/knowledge.module';
 import { ComputersModule } from './modules/computers/computers.module';
 import { VoiceModule } from './modules/voice/voice.module';
+import { DictationModule } from './modules/dictation/dictation.module';
 import { DesktopReleasesModule } from './modules/desktop-releases/desktop-releases.module';
 import { AndroidReleasesModule } from './modules/android-releases/android-releases.module';
 import { WidgetsModule } from './modules/widgets/widgets.module';
@@ -18,4 +19,4 @@ import { AppLinksModule } from './modules/app-links/app-links.module';
 import { ChannelsModule } from './modules/channels/channels.module';
 
 /** Feature modules registered in AppModule. Kept in one list so api/worker roles share the same graph. */
-export const FEATURE_MODULES = [CatalogModule, UsageModule, FilesModule, BotsModule, ConversationsModule, ConnectionsModule, SkillsModule, RealtimeModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule, VoiceModule, DesktopReleasesModule, AndroidReleasesModule, WidgetsModule, AppLinksModule, ChannelsModule];
+export const FEATURE_MODULES = [CatalogModule, UsageModule, FilesModule, BotsModule, ConversationsModule, ConnectionsModule, SkillsModule, RealtimeModule, AutomationsModule, ArtifactsModule, KnowledgeModule, ComputersModule, VoiceModule, DictationModule, DesktopReleasesModule, AndroidReleasesModule, WidgetsModule, AppLinksModule, ChannelsModule];

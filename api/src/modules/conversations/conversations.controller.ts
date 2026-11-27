@@ -10,8 +10,8 @@ import { ConversationsService } from './conversations.service';
 import { MessagesService } from './messages.service';
 import { ConversationSharesService } from './conversation-shares.service';
 import {
-    AddParticipantsDto, ConversationListQuery, ConversationListSchema, CreateConversationDto, CreateDirectDto, CreateFolderDto, EditMessageDto,
-    InteractionDto, MessagesQuery, MessagesQuerySchema, ReactDto, RetryMessageDto, SaveShareDto, SendMessageDto, SharedConversationQuery, SharedConversationQuerySchema, UpdateConversationDto, UpdateMyConversationDto,
+    AddParticipantsDto, ConversationListQuery, ConversationListSchema, CreateConversationDto, CreateDirectDto, CreateFolderDto, EditMessageDto, ForwardMessageDto,
+    InteractionDto, MessagesQuery, MessagesQuerySchema, ReactDto, RetryMessageDto, SaveDraftDto, SaveShareDto, SendMessageDto, SharedConversationQuery, SharedConversationQuerySchema, UpdateConversationDto, UpdateMyConversationDto,
 } from './dto/conversation.dto';
 
 const actor = (m: OrgMembership): Actor => ({ user_id: m.user_id, organization_id: m.organization_id, role: m.role });
@@ -71,6 +71,11 @@ export class ConversationsController {
     @Patch(':id/me')
     updateMine(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: UpdateMyConversationDto) {
         return this.conversations.updateMine(actor(m), id, dto);
+    }
+
+    @Put(':id/draft')
+    saveDraft(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: SaveDraftDto) {
+        return this.conversations.saveDraft(actor(m), id, dto);
     }
 
     @Post(':id/read')
@@ -145,6 +150,11 @@ export class MessagesController {
     @Get('search')
     search(@CurrentMembership() m: OrgMembership, @Query('q') q: string) {
         return this.messages.search(actor(m), q);
+    }
+
+    @Post(':id/forward')
+    forward(@CurrentMembership() m: OrgMembership, @Param('id', ParseUUIDPipe) id: string, @Body() dto: ForwardMessageDto) {
+        return this.messages.forward(actor(m), id, dto);
     }
 
     @Patch(':id')

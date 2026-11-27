@@ -27,6 +27,7 @@ import { toast } from "@/hooks/use-toast";
 import { dayLabel, formatDateTime } from "@/lib/date";
 import { Routes } from "@/routes/routes";
 import { Composer } from "../../components/composer";
+import { ShareMessageDialog } from "../../components/share-message-dialog";
 import { VoiceBar } from "../../components/voice-bar";
 import { useVoiceSession } from "@/features/voice/hooks/use-voice-session";
 import { MessageItem, type MessageActions } from "../../components/message-item";
@@ -132,6 +133,7 @@ const ConversationPage: FC = () => {
   const [pinnedOpen, setPinnedOpen] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [deletingMsg, setDeletingMsg] = useState<Message | null>(null);
+  const [sharingMsg, setSharingMsg] = useState<Message | null>(null);
   const [query, setQuery] = useState("");
   const [prefill, setPrefill] = useState<string | null>(null);
   const [replyingToId, setReplyingToId] = useState<string | null>(null);
@@ -264,6 +266,7 @@ const ConversationPage: FC = () => {
         else send.mutate({ content: text });
       },
       onReply: (m) => setReplyingToId(m.id),
+      onShare: (m) => setSharingMsg(m),
       onJumpToMessage: (id) => void jumpToMessage(id),
     }),
     [retry, react, pin, edit, send, jumpToMessage, voiceSessionId, sendVoiceText],
@@ -391,6 +394,7 @@ const ConversationPage: FC = () => {
             {conversation && voice.active && <VoiceBar voice={voice} bot={conversation.bots.find((b) => b.id === voice.botId) ?? conversation.lead_bot ?? conversation.bots[0] ?? null} />}
             {conversation && !voice.active && (
               <Composer
+                key={conversation.id}
                 conversation={conversation}
                 sendWith={me?.settings.send_with ?? SendWithKeys.ENTER}
                 working={working.length > 0}
@@ -531,6 +535,7 @@ const ConversationPage: FC = () => {
           })
         }
       />
+      <ShareMessageDialog message={sharingMsg} onClose={() => setSharingMsg(null)} />
       <ConfirmationDialog
         isOpen={!!deletingMsg}
         onClose={() => setDeletingMsg(null)}

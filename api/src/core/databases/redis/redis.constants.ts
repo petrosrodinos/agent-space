@@ -10,8 +10,13 @@ export const RedisKeys = {
     computerLock: (botId: string) => `lock:computer:${botId}`,
     automationLock: (automationId: string) => `lock:automation:${automationId}`,
     runCancel: (runId: string) => `run:${runId}:cancel`,
+    /** Ids of follow-up messages sent while the run is working; the run loop reads them between steps. */
+    runInbox: (runId: string) => `run:${runId}:inbox`,
     modelsCache: () => `cache:openrouter:models`,
-    composioToolsCache: (toolkit: string) => `cache:composio:tools:${toolkit}`,
+    /** The tools a bot is offered for a toolkit: `{ tools, complete }` (complete = the whole toolkit, nothing to search for). */
+    composioToolsCache: (toolkit: string) => `cache:composio:agent-tools:${toolkit}`,
+    /** One tool's definition, kept after a bot loaded it with find_connection_tools. */
+    composioToolCache: (slug: string) => `cache:composio:tool:${slug}`,
     composioAllToolsCache: (toolkit: string) => `cache:composio:all-tools:${toolkit}`,
     rateLimit: (key: string) => `ratelimit:${key}`,
     /** §14.3 device tools: online marker (refreshed while the app is connected), pub/sub channel, request owner and reply list. */

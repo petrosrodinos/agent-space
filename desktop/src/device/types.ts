@@ -11,6 +11,7 @@ export const DesktopToolKinds = {
   CLIPBOARD: "CLIPBOARD",
   OPEN: "OPEN",
   CONTROL_COMPUTER: "CONTROL_COMPUTER",
+  BROWSER: "BROWSER",
 } as const;
 export type DesktopToolKind = (typeof DesktopToolKinds)[keyof typeof DesktopToolKinds];
 
@@ -148,6 +149,54 @@ export interface ControlEvent {
   reason: string;
 }
 
+/** Browser tool: a separate browser window the bot drives (its own sign-ins, never the user's own browser profile). */
+export const BrowserActions = { OPEN: "open", SNAPSHOT: "snapshot", CLICK: "click", TYPE: "type", KEY: "key", SCROLL: "scroll", BACK: "back", WAIT: "wait", CLOSE: "close" } as const;
+export type BrowserAction = (typeof BrowserActions)[keyof typeof BrowserActions];
+
+export interface BrowserRequest {
+  action: BrowserAction;
+  /** open: an http(s) address. */
+  url?: string;
+  /** click/type: the number of an element from the latest snapshot. */
+  ref?: number;
+  /** click/type without a ref: a position in screenshot pixels. */
+  x?: number;
+  y?: number;
+  /** type: the text to enter. */
+  text?: string;
+  /** type: press Enter afterwards. */
+  press_enter?: boolean;
+  /** key: e.g. "Enter", "Tab", "ctrl+a". */
+  keys?: string;
+  /** scroll: "down" (default) or "up", in screens. */
+  direction?: "up" | "down";
+  amount?: number;
+  /** wait: milliseconds (max 5000). */
+  ms?: number;
+}
+
+export interface BrowserElement {
+  ref: number;
+  /** link, button, field, checkbox, … */
+  kind: string;
+  label: string;
+  href?: string;
+  /** Current value of a field (never for password fields). */
+  value?: string;
+}
+
+export interface BrowserResult {
+  ok: boolean;
+  url: string;
+  title: string;
+  /** Visible text of the page, shortened. */
+  text: string;
+  /** Things that can be clicked or typed into, numbered for click/type. */
+  elements: BrowserElement[];
+  screenshot: CapturedImage | null;
+  error?: string;
+}
+
 export interface DeviceBridge {
   /** Which device tools this build and OS support (e.g. no CONTROL_COMPUTER when the input library failed to load). */
   capabilities(): Promise<DesktopToolKind[]>;
@@ -184,4 +233,7 @@ export interface DeviceBridge {
   resumeControl(grantId: string): Promise<{ ok: true }>;
   endControl(grantId: string): Promise<{ ok: true }>;
   onControlEvent(cb: (e: ControlEvent) => void): () => void;
+
+  // Browser: one action in the bot's own browser window.
+  browser(req: BrowserRequest): Promise<BrowserResult>;
 }

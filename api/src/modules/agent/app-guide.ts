@@ -115,7 +115,8 @@ Main pages (left sidebar on desktop; on phones the grid button in Chats opens [T
     cloud_computer: `# Cloud computer
 - Bots with the cloud computer turned on get a private Linux computer with a browser, Python and Node.js. It keeps files and website sign-ins between tasks.
 - Watch it live from the chat, take control when a site needs a sign-in or a "prove you're human" check, and see a step-by-step timeline.
-- Turn it on and manage files and saved logins on the bot's Computer tab in [Bots]({{app}}/bots).`,
+- Turn it on and manage files and saved logins on the bot's Computer tab in [Bots]({{app}}/bots).
+- A bot can also turn its own computer on when a task needs it (the user confirms in chat; automations the user allowed to use the computer need no extra step) and turn it off again when finished, so automations keep working while the user's own computer is off.`,
 
     personal_settings: `# Personal settings
 - [Profile]({{app}}/settings/profile) — name, photo and details bots use about you.
@@ -143,6 +144,7 @@ Main pages (left sidebar on desktop; on phones the grid button in Chats opens [T
     apps: `# Desktop and mobile apps
 - Web, Windows/Mac desktop, iPhone and Android all share the same account and chats.
 - Desktop adds a global quick-ask shortcut, notifications, launch at start-up, drag-and-drop files and "look at my screen".
+- Desktop bots can also browse the web in a separate browser window with its own sign-ins (apart from the user's normal browser; the user can watch, signs in themselves, and the bot never types passwords) and, if allowed, control the computer. Turn each on or off under Settings → Devices → This computer.
 - Mobile adds push notifications with approvals on the lock screen, Face ID / fingerprint, camera and document scanner, and sharing to a bot.
 - Downloads and connected devices: [Settings → Devices]({{app}}/settings/devices).`,
 };

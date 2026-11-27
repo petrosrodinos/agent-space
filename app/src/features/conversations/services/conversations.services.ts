@@ -12,6 +12,7 @@ export const createConversation = (dto: { type: typeof ConversationTypes.GROUP |
 export const updateConversation = (id: string, dto: { name?: string; color?: string; avatar_seed?: string; lead_bot_id?: string | null }) => request<Conversation>(() => axiosInstance.patch(ApiRoutes.conversations.one(id), dto));
 export const updateMyConversation = (id: string, dto: { is_favourite?: boolean; is_archived?: boolean; is_muted?: boolean; folder_id?: string | null }) =>
   request<{ ok: boolean }>(() => axiosInstance.patch(ApiRoutes.conversations.me(id), dto));
+export const saveDraft = (id: string, content: string) => request<{ ok: boolean }>(() => axiosInstance.put(ApiRoutes.conversations.draft(id), { content }));
 export const markRead = (id: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.conversations.read(id)));
 export const deleteConversation = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.conversations.one(id)));
 export const clearConversation = (id: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.conversations.clear(id)));
@@ -24,6 +25,7 @@ export const sendMessage = (id: string, dto: SendMessageDto) => request<{ messag
 export const editMessage = (id: string, dto: { content: string; rerun?: boolean }) => request<Message>(() => axiosInstance.patch(ApiRoutes.messages.one(id), dto));
 export const deleteMessage = (id: string) => request<{ ok: boolean }>(() => axiosInstance.delete(ApiRoutes.messages.one(id)));
 export const retryMessage = (id: string, dto: { model_id?: string; branch?: boolean }) => request<{ run: { id: string } }>(() => axiosInstance.post(ApiRoutes.messages.retry(id), dto));
+export const forwardMessage = (id: string, conversationId: string) => request<{ message: Message }>(() => axiosInstance.post(ApiRoutes.messages.forward(id), { conversation_id: conversationId }));
 export const reactToMessage = (id: string, emoji: string) => request<{ ok: boolean }>(() => axiosInstance.post(ApiRoutes.messages.reactions(id), { emoji }));
 export const togglePin = (id: string) => request<{ ok: boolean; is_pinned: boolean }>(() => axiosInstance.post(ApiRoutes.messages.pin(id)));
 export const interact = (id: string, dto: { component_id: string; payload: Record<string, unknown> }) => request<{ ok: boolean; total_responses: number }>(() => axiosInstance.post(ApiRoutes.messages.interactions(id), dto));

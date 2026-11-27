@@ -1,6 +1,6 @@
 import { memo, useRef, useState, type FC, type ReactNode, type TouchEvent } from "react";
 import { Link } from "react-router-dom";
-import { AlarmClock, AlertCircle, BookOpen, ClipboardCheck, Copy, GitBranch, Mic, MoreHorizontal, Pencil, Pin, RefreshCw, Reply, SmilePlus, Trash2, Users } from "lucide-react";
+import { AlarmClock, AlertCircle, BookOpen, ClipboardCheck, Copy, Forward, GitBranch, Mic, MoreHorizontal, Pencil, Pin, RefreshCw, Reply, SmilePlus, Trash2, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import { Markdown } from "@/components/ui/markdown";
@@ -52,6 +52,7 @@ export interface MessageActions {
   onDelete: (m: Message) => void;
   onFollowUp: (text: string) => void;
   onReply: (m: Message) => void;
+  onShare: (m: Message) => void;
   onJumpToMessage: (id: string) => void;
 }
 
@@ -137,6 +138,9 @@ const MessageMenuContent: FC<{ m: Message; mine: boolean; models: AiModel[]; act
       }}
     >
       <Copy className="h-4 w-4" /> Copy
+    </DropdownMenuItem>
+    <DropdownMenuItem className="gap-2 rounded-sm" onSelect={() => actions.onShare(m)}>
+      <Forward className="h-4 w-4" /> Forward to…
     </DropdownMenuItem>
     <DropdownMenuSub>
       <DropdownMenuSubTrigger className="gap-2 rounded-sm">
@@ -243,10 +247,20 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
       <Reply className="h-4 w-4" />
     </span>
   );
-  const quote = m.reply_to && (
-    <div className="mb-1.5 w-full min-w-[160px]">
-      <ReplyQuote reply={m.reply_to} meId={meId} variant={mine ? ReplyQuoteVariants.ON_PRIMARY : ReplyQuoteVariants.ON_SURFACE} onJump={actions.onJumpToMessage} />
-    </div>
+  const forwarded = m.parts.find((p) => p.type === MessagePartTypes.FORWARDED) as Extract<MessagePart, { type: typeof MessagePartTypes.FORWARDED }> | undefined;
+  const quote = (
+    <>
+      {forwarded && (
+        <p className="mb-1 flex items-center gap-1 text-xs font-semibold opacity-80">
+          <Forward className="h-3 w-3" aria-hidden /> Forwarded{forwarded.author_name ? ` from ${forwarded.author_name}` : ""}
+        </p>
+      )}
+      {m.reply_to && (
+        <div className="mb-1.5 w-full min-w-[160px]">
+          <ReplyQuote reply={m.reply_to} meId={meId} variant={mine ? ReplyQuoteVariants.ON_PRIMARY : ReplyQuoteVariants.ON_SURFACE} onJump={actions.onJumpToMessage} />
+        </div>
+      )}
+    </>
   );
   const mobileMenu = (
     <DropdownMenu open={menuOpen} onOpenChange={setMenuOpen}>
@@ -292,7 +306,7 @@ export const MessageItem: FC<Props> = memo(({ message: m, meId, isFirstOfGroup, 
           {mobileMenu}
           {editing ? (
             <div className="w-full max-w-[min(560px,90%)] space-y-2">
-              <Textarea value={draft} onChange={(e) => setDraft(e.target.value)} autoFocus className="min-h-[90px]" aria-label="Edit message" />
+              <Textarea dictation value={draft} onChange={(e) => setDraft(e.target.value)} autoFocus className="min-h-[90px]" aria-label="Edit message" />
               <div className="flex justify-end gap-2">
                 <Button variant="ghost" size="sm" onClick={() => setEditing(false)}>
                   Cancel

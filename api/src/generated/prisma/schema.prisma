@@ -69,6 +69,7 @@ enum DeviceToolKind {
   SEND_VIA_APPS
   DEVICE_CALENDAR
   LOCATION
+  BROWSER
 }
 
 enum DeviceToolPermission {
@@ -1389,7 +1390,7 @@ model OrganizationSettings {
 
   // Device tools
   device_tools_enabled       Boolean                  @default(true)
-  allowed_device_tools       DeviceToolKind[]         @default([LOCAL_FILES, SCREEN, LOCAL_TOOL_SERVERS, CLIPBOARD, OPEN, CONTROL_COMPUTER, CAMERA_SCANNER, CONTACTS, SEND_VIA_APPS, DEVICE_CALENDAR, LOCATION])
+  allowed_device_tools       DeviceToolKind[]         @default([LOCAL_FILES, SCREEN, LOCAL_TOOL_SERVERS, CLIPBOARD, OPEN, CONTROL_COMPUTER, CAMERA_SCANNER, CONTACTS, SEND_VIA_APPS, DEVICE_CALENDAR, LOCATION, BROWSER])
   members_local_tool_servers Boolean                  @default(true)
   automations_desktop_tools  Boolean                  @default(true)
   biometric_approval_scopes  BiometricApprovalScope[] @default([])
@@ -1997,18 +1998,21 @@ model ConversationShare {
 }
 
 model ConversationParticipant {
-  id              String    @id @default(uuid())
-  conversation_id String
-  user_id         String?
-  bot_id          String?
-  folder_id       String?
-  is_favourite    Boolean   @default(false)
-  is_archived     Boolean   @default(false)
-  is_muted        Boolean   @default(false)
-  last_read_at    DateTime?
-  unread_count    Int       @default(0)
-  joined_at       DateTime  @default(now())
-  left_at         DateTime?
+  id               String    @id @default(uuid())
+  conversation_id  String
+  user_id          String?
+  bot_id           String?
+  folder_id        String?
+  is_favourite     Boolean   @default(false)
+  is_archived      Boolean   @default(false)
+  is_muted         Boolean   @default(false)
+  last_read_at     DateTime?
+  unread_count     Int       @default(0)
+  /// Unsent composer text, per user per conversation, so it follows them across devices.
+  draft            String?
+  draft_updated_at DateTime?
+  joined_at        DateTime  @default(now())
+  left_at          DateTime?
 
   conversation Conversation        @relation(fields: [conversation_id], references: [id], onDelete: Cascade)
   user         User?               @relation(fields: [user_id], references: [id], onDelete: Cascade)

@@ -32,6 +32,10 @@ export class UpdateMyConversationDto {
     @ApiPropertyOptional() @IsOptional() @IsUUID() folder_id?: string | null;
 }
 
+export class SaveDraftDto {
+    @ApiProperty({ description: 'Unsent composer text; empty clears the draft' }) @IsString() @MaxLength(32000) content: string;
+}
+
 export class AddParticipantsDto {
     @ApiPropertyOptional({ isArray: true }) @IsOptional() @IsArray() @IsUUID('all', { each: true }) user_ids?: string[];
     @ApiPropertyOptional({ isArray: true }) @IsOptional() @IsArray() @IsUUID('all', { each: true }) bot_ids?: string[];
@@ -45,6 +49,10 @@ export class SendMessageDto {
     @ApiPropertyOptional({ description: 'User chose "Send anyway" on the secret warning (§8.8)' }) @IsOptional() @IsBoolean() send_anyway?: boolean;
     @ApiPropertyOptional({ description: 'Client-generated id for optimistic UI' }) @IsOptional() @IsString() @MaxLength(64) client_id?: string;
     @ApiPropertyOptional({ enum: ['TEXT', 'VOICE'] }) @IsOptional() @IsIn(['TEXT', 'VOICE']) source?: 'TEXT' | 'VOICE';
+}
+
+export class ForwardMessageDto {
+    @ApiProperty({ description: 'Conversation to post the forwarded message into' }) @IsUUID() conversation_id: string;
 }
 
 export class EditMessageDto {

@@ -55,7 +55,7 @@ export const NewTaskDialog: FC<{ open: boolean; onClose: () => void }> = ({ open
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>What should it do?</FormLabel>
-                    <FormControl><Textarea rows={5} placeholder="Research the 10 top competitors and build a comparison table" {...field} /></FormControl>
+                    <FormControl><Textarea dictation rows={5} placeholder="Research the 10 top competitors and build a comparison table" {...field} /></FormControl>
                     <FormMessage />
                   </FormItem>
                 )}

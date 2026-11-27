@@ -1,6 +1,6 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { extractFollowUps } from './follow-ups.utils';
-import { Prisma, RunStatus } from 'generated/prisma';
+import { Prisma, Run, RunStatus } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService, HeldLock } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
@@ -14,7 +14,8 @@ import { UsageService } from '../usage/usage.service';
 import { ApprovalsService } from '../approvals/approvals.service';
 import { ActivityService } from '../activity/activity.service';
 import { decideApproval } from './approval-policy';
-import { PromptBuilder, TEMPERATURE } from './prompt.builder';
+import { PromptBuilder, TEMPERATURE, UserTurnOptions } from './prompt.builder';
+import { RunsService } from '../runs/runs.service';
 import { BuiltinToolsService } from './tools/builtin-tools.service';
 import { ConnectionToolsService } from './tools/connection-tools.service';
 import { AutomationToolsService } from './tools/automation-tools.service';
@@ -26,7 +27,7 @@ import { DeviceToolsService } from './tools/device-tools.service';
 import { ChannelsService } from '../channels/channels.service';
 import { UNDO_WINDOW_MS } from './undo/undo.rules';
 import { AutomationsService } from '../automations/automations.service';
-import { MessagePart, ToolContext, ToolDef } from './tools/tool.types';
+import { LoadedTool, MessagePart, ToolContext, ToolDef } from './tools/tool.types';
 
 const MAX_STEPS = 16;
 const TOOL_TIMEOUT_MS = 120_000;
@@ -46,6 +47,8 @@ interface RunState {
     pending_input?: { request_id: string; call_id: string; for_user_id: string | null; part_index: number; step_id: string; result?: Record<string, any> } | null;
     seq?: number;
     model_openrouter_id?: string;
+    /** Connected-service tools added with find_connection_tools; kept so a resumed run still has them. */
+    loaded_tools?: LoadedTool[];
 }
 
 const FINAL: RunStatus[] = ['COMPLETED', 'FAILED', 'STOPPED'];
@@ -80,6 +83,7 @@ export class AgentRunnerService {
         private readonly automations: AutomationsService,
         private readonly deviceTools: DeviceToolsService,
         private readonly channels: ChannelsService,
+        private readonly runs: RunsService,
     ) { }
 
     private cancelled(runId: string) {
@@ -169,11 +173,23 @@ export class AgentRunnerService {
                 state.parts!.push(part);
                 await this.saveParts(state);
             },
+            loaded_tools: (state.loaded_tools ??= []),
         };
 
         const { tools: toolDefs, summary } = await this.buildTools(ctx);
-        const tools = new Map(toolDefs.map((t) => [t.name, t]));
-        const toolSchemas: ChatToolDef[] = toolDefs.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } }));
+        let tools = new Map(toolDefs.map((t) => [t.name, t]));
+        let toolSchemas: ChatToolDef[] = toolDefs.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } }));
+        // A bot that turns its own cloud computer on mid-run gets the computer tools straight away, not only in the next chat;
+        // tools found with find_connection_tools are added the same way.
+        let computerWasOn = bot.cloud_computer_enabled;
+        const refreshTools = async () => {
+            if (ctx.bot.cloud_computer_enabled === computerWasOn && !ctx.tools_changed) return;
+            computerWasOn = ctx.bot.cloud_computer_enabled;
+            ctx.tools_changed = false;
+            const next = (await this.buildTools(ctx)).tools;
+            tools = new Map(next.map((t) => [t.name, t]));
+            toolSchemas = next.map((t) => ({ type: 'function', function: { name: t.name, description: t.description, parameters: t.parameters } }));
+        };
 
         if (!state.messages) {
             const pctx = { run, bot, user, user_settings: userSettings, org_settings: orgSettings, org_name: org.name, conversation, connection_summary: summary, supports_vision: resolved.model.supports_vision, ...(await this.computerPrompt(ctx, tools)) };
@@ -186,16 +202,20 @@ export class AgentRunnerService {
             state.messages = [{ role: 'system', content: automation ? `${system}\n\n${automation.system}` : system }, ...history];
         }
 
+        const turnOptions: UserTurnOptions = { bot_id: bot.id, is_group: conversation?.type !== 'DIRECT', vision: !!resolved.model.supports_vision };
+
         try {
             // ---- Resume a waiting tool call (input or approval) ----
             if (state.pending) {
                 const waiting = await this.processToolCalls(ctx, state, tools);
                 if (waiting) return;
+                await refreshTools();
             }
 
             for (let step = 0; step < MAX_STEPS; step++) {
                 if (await this.cancelled(run.id)) return this.stop(run.id, state);
                 if (run.deadline_at && Date.now() > run.deadline_at.getTime()) return this.fail(run.id, state, 'The maximum task duration for this bot was reached.');
+                await this.takeFollowUps(run, state, turnOptions, resolved.model.id);
 
                 const textIndex = this.ensureTextPart(state);
                 const flusher = this.deltaFlusher(run.conversation_id, state.message_id!, textIndex);
@@ -222,11 +242,16 @@ export class AgentRunnerService {
                 state.messages!.push({ role: 'assistant', content: result.content || null, ...(result.tool_calls.length ? { tool_calls: result.tool_calls } : {}) });
                 await this.saveParts(state);
 
-                if (!result.tool_calls.length) return this.complete(run.id, state, userSettings?.suggested_follow_ups !== false);
+                if (!result.tool_calls.length) {
+                    // A follow-up that arrived while the model was writing gets answered in this same run.
+                    if (await this.takeFollowUps(run, state, turnOptions, resolved.model.id)) continue;
+                    return this.complete(run.id, state, userSettings?.suggested_follow_ups !== false);
+                }
 
                 state.pending = { calls: result.tool_calls, index: 0 };
                 const waiting = await this.processToolCalls(ctx, state, tools);
                 if (waiting) return;
+                await refreshTools();
             }
             // Too many steps: ask the model to wrap up once more without tools.
             const final = await this.openrouter.complete({ model: resolved.model.openrouter_id, messages: [...state.messages!, { role: 'user', content: 'Please summarise what you did and what is left, briefly.' }], maxTokens: 800 });
@@ -245,7 +270,7 @@ export class AgentRunnerService {
     /** The cloud-computer part of the prompt context: only described when the run actually got the computer tools. */
     async computerPrompt(ctx: ToolContext, tools: Map<string, ToolDef>) {
         const computer_available = tools.has('computer_run');
-        return { computer_available, website_logins: computer_available ? await this.computerTools.websiteLogins(ctx) : [] };
+        return { computer_available, computer_can_turn_on: tools.has('computer_turn_on'), website_logins: computer_available ? await this.computerTools.websiteLogins(ctx) : [] };
     }
 
     async buildTools(ctx: ToolContext): Promise<{ tools: ToolDef[]; summary: string[] }> {
@@ -478,6 +503,48 @@ export class AgentRunnerService {
         return false;
     }
 
+    /**
+     * Follow-ups the user sent while this run was working (RunsService.steer) join the model's context as user turns.
+     * The reply so far is closed off and a new bot message continues below the follow-up, so the chat reads in order.
+     * Only called between steps, never between a tool call and its result. Returns true when there were any.
+     */
+    private async takeFollowUps(run: Run, state: RunState, opts: UserTurnOptions, modelId: string): Promise<boolean> {
+        if (!run.conversation_id) return false;
+        const ids = await this.runs.takeInbox(run.id);
+        if (!ids.length) return false;
+        const turns = await this.prompt.userTurns(ids, opts);
+        if (!turns.length) return false;
+        state.messages!.push(...turns);
+        await this.continueInNewMessage(run, state, modelId);
+        return true;
+    }
+
+    private async continueInNewMessage(run: Run, state: RunState, modelId: string) {
+        const previous = state.message_id!;
+        const kept = extractFollowUps(state.parts ?? []).parts.filter((p) => !(p.type === 'text' && !String((p as any).text ?? '').trim()));
+        if (kept.length) {
+            state.parts = kept;
+            await this.prisma.message.update({ where: { id: previous }, data: { status: 'COMPLETED', parts: kept as unknown as Prisma.InputJsonValue, content: this.textOf(state) } });
+            await this.afterMessage(run, state);
+        } else {
+            // Nothing written yet: drop the empty bubble instead of leaving a blank reply above the follow-up.
+            await this.prisma.message.delete({ where: { id: previous } });
+            await this.events.toConversation(run.conversation_id!, ConversationEvents.MESSAGE_DELETED, { id: previous, conversation_id: run.conversation_id });
+        }
+        const message = await this.prisma.message.create({
+            data: { organization_id: run.organization_id, conversation_id: run.conversation_id!, author_type: 'BOT', author_bot_id: run.bot_id, source: 'BOT', status: 'STREAMING', parts: [], run_id: run.id, model_id: modelId },
+        });
+        state.message_id = message.id;
+        state.parts = [];
+        await this.messageEvents.created(message.id);
+        await this.persistState(run.id, state);
+    }
+
+    /** Follow-ups that arrived after the run's last look at its inbox get their own reply. */
+    private async handOffFollowUps(run: Run) {
+        await this.runs.handOffInbox(run).catch((e) => this.logger.warn(`Follow-ups for run ${run.id}: ${(e as Error).message}`));
+    }
+
     /** Shows tool images (screenshots) to the model; only the latest two stay in the context to keep it small. */
     private pushImages(state: RunState, tool: string, images: string[]) {
         let seen = 0;
@@ -566,6 +633,7 @@ export class AgentRunnerService {
             }
         }
         await this.activity.log({ organization_id: run.organization_id, actor_bot_id: run.bot_id, on_behalf_of_id: run.user_id, action: 'run.completed', target_type: 'run', target_id: run.id, run_id: run.id, metadata: { type: run.type, cost: Number(run.cost) } });
+        await this.handOffFollowUps(run);
     }
 
     private async afterMessage(run: { conversation_id: string | null }, state: RunState) {
@@ -591,6 +659,7 @@ export class AgentRunnerService {
         if (run.type === 'TASK' && run.user_id) {
             await this.notifications.notify({ user_id: run.user_id, organization_id: run.organization_id, event: 'TASK_FAILED', title: `Task failed: ${run.title ?? 'task'}`, body: message, link_path: run.conversation_id ? `/c/${run.conversation_id}` : `/tasks/${run.id}` });
         }
+        await this.handOffFollowUps(run);
     }
 
     async stop(runId: string, state: RunState) {
@@ -606,6 +675,7 @@ export class AgentRunnerService {
         await this.computerTools.finishRun(runId);
         await this.deviceTools.finishRun(runId, run.user_id).catch(() => undefined);
         await this.statusEvent(run, 'STOPPED');
+        await this.handOffFollowUps(run);
     }
 
     /** Marks a run failed when its job errored unexpectedly outside the loop. */

@@ -63,6 +63,7 @@ export const ApiRoutes = {
     one: (id: string) => `/conversations/${id}`,
     me: (id: string) => `/conversations/${id}/me`,
     read: (id: string) => `/conversations/${id}/read`,
+    draft: (id: string) => `/conversations/${id}/draft`,
     clear: (id: string) => `/conversations/${id}/clear`,
     share: (id: string) => `/conversations/${id}/share`,
     participants: (id: string) => `/conversations/${id}/participants`,
@@ -76,6 +77,7 @@ export const ApiRoutes = {
     search: "/messages/search",
     one: (id: string) => `/messages/${id}`,
     retry: (id: string) => `/messages/${id}/retry`,
+    forward: (id: string) => `/messages/${id}/forward`,
     reactions: (id: string) => `/messages/${id}/reactions`,
     pin: (id: string) => `/messages/${id}/pin`,
     interactions: (id: string) => `/messages/${id}/interactions`,
@@ -160,6 +162,7 @@ export const ApiRoutes = {
     files: (id: string) => `/skills/${id}/files`,
     file: (id: string, fileId: string) => `/skills/${id}/files/${fileId}`,
   },
+  dictation: { transcribe: "/dictation/transcribe" },
   voice: {
     voices: "/voice/voices",
     models: "/voice/models",

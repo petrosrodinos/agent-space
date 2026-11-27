@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState, type FC, type Keyboa
 import { ArrowUp, AudioLines, Loader2, Paperclip, Square, X } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Button } from "@/components/ui/button";
+import { DictationButton } from "@/components/ui/dictation-button";
 import { BotAvatar, PersonAvatar } from "@/components/ui/bot-avatar";
 import { uploadFile, type StoredFile } from "@/features/files/services/files.services";
 import { useSkills } from "@/features/skills/hooks/use-skills";
@@ -10,6 +11,7 @@ import { replyPreviewOf } from "@/features/conversations/utils/messages-cache";
 import { findSecrets, guessService, stripSecrets } from "@/lib/secret-detection";
 import { formatBytes } from "@/lib/date";
 import { platform } from "@/platform";
+import { useConversationDraft } from "@/features/conversations/hooks/use-conversations";
 import { toast } from "@/hooks/use-toast";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
@@ -51,7 +53,23 @@ type Picker = { kind: (typeof PickerKinds)[keyof typeof PickerKinds]; query: str
 
 /** Floating composer (DESIGN.MD): attach, text (grows to 8 lines), @ bot picker, / skill picker, send ↔ stop. */
 export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled, onSend, onStop, prefill, onPrefillUsed, onVoice, replyingTo, onCancelReply, meId }) => {
-  const [text, setText] = useState("");
+  // Unsent text is stored server-side per user, so it survives navigation and follows the user across devices.
+  const draft = useConversationDraft(conversation.id, conversation.me?.draft);
+  const [text, setText] = useState(draft.initial);
+  const touched = useRef(false);
+  const saveDraft = draft.save;
+  const update = useCallback(
+    (value: string) => {
+      touched.current = true;
+      setText(value);
+      saveDraft(value);
+    },
+    [saveDraft],
+  );
+  // A draft arriving after mount (fresh fetch from another device) fills the box only if the user hasn't typed yet.
+  useEffect(() => {
+    if (!touched.current) setText(conversation.me?.draft ?? "");
+  }, [conversation.me?.draft]);
   const isMobile = useIsMobile();
   const [files, setFiles] = useState<Attachment[]>([]);
   const [picker, setPicker] = useState<Picker>(null);
@@ -63,11 +81,11 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
 
   useEffect(() => {
     if (prefill) {
-      setText(prefill);
+      update(prefill);
       onPrefillUsed?.();
       requestAnimationFrame(() => ref.current?.focus());
     }
-  }, [prefill, onPrefillUsed]);
+  }, [prefill, onPrefillUsed, update]);
 
   useEffect(() => {
     if (replyingTo) requestAnimationFrame(() => ref.current?.focus());
@@ -106,7 +124,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
     if (!picker) return;
     const caret = ref.current?.selectionStart ?? text.length;
     const next = text.slice(0, picker.start) + insert + text.slice(caret);
-    setText(next);
+    update(next);
     setPicker(null);
     requestAnimationFrame(() => {
       const pos = picker.start + insert.length;
@@ -139,7 +157,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
     if (!content.trim() && !ready.length) return;
     onSend({ content: content.trim() || ATTACHMENT_ONLY_CONTENT, file_ids: ready.length ? ready : undefined, send_anyway: sendAnyway || undefined, reply_to_message_id: replyingTo?.id });
     onCancelReply?.();
-    setText("");
+    update("");
     setFiles([]);
     setPicker(null);
   };
@@ -192,7 +210,11 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
   const target = conversation.type === ConversationTypes.GROUP ? conversation.name : (conversation.bots[0]?.name ?? "");
   const placeholder = replyingTo
     ? "Write your reply…"
-    : isMobile
+    : working
+      ? isMobile
+        ? "Add a follow-up"
+        : "Add a follow-up — the bot reads it while it works"
+      : isMobile
       ? `${conversation.type === ConversationTypes.GROUP ? "Message" : "Ask"} ${target}`
       : conversation.type === ConversationTypes.GROUP
         ? `Message ${target} — @mention a bot, / for skills`
@@ -267,7 +289,7 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
             disabled={disabled}
             rows={1}
             onChange={(e) => {
-              setText(e.target.value);
+              update(e.target.value);
               detectPicker(e.target.value, e.target.selectionStart);
             }}
             onKeyDown={onKeyDown}
@@ -282,6 +304,8 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
             aria-label="Message"
             className="scrollbar-thin max-h-[208px] min-h-[40px] min-w-0 flex-1 resize-none bg-transparent py-2 text-base leading-6 text-ink outline-none placeholder:text-muted-soft placeholder-shown:overflow-hidden placeholder-shown:text-ellipsis placeholder-shown:whitespace-nowrap md:text-[15px]"
           />
+          {/* Dictation types into the box (stays editable); the voice-mode button next to it is a separate feature. */}
+          <DictationButton target={ref} disabled={disabled} className="h-10 w-10" iconClassName="!h-5 !w-5" />
           {onVoice && !disabled && !text.trim() && !files.length && (
             conversation.bots.length > 1 ? (
               <DropdownMenu>
@@ -306,7 +330,8 @@ export const Composer: FC<Props> = ({ conversation, sendWith, working, disabled,
               </Button>
             )
           )}
-          {working ? (
+          {/* While a bot works, an empty box offers Stop; typing a follow-up turns it back into Send (the bot reads it mid-task). */}
+          {working && !text.trim() && !files.length ? (
             <Button type="button" size="icon" variant="outline" className="h-10 w-10 shrink-0" onClick={onStop} aria-label="Stop the bot">
               <Square className="!h-4 !w-4 fill-current" />
             </Button>

@@ -1,7 +1,7 @@
 import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
 import { InjectQueue } from '@nestjs/bullmq';
 import { Queue } from 'bullmq';
-import { Prisma, RunStatus, RunType } from 'generated/prisma';
+import { MessageSource, Prisma, RunStatus, RunType } from 'generated/prisma';
 import { PrismaService } from '@/core/databases/prisma/prisma.service';
 import { RedisService } from '@/core/databases/redis/redis.service';
 import { RedisKeys } from '@/core/databases/redis/redis.constants';
@@ -27,6 +27,11 @@ export interface StartRunInput {
 }
 
 export const ACTIVE_RUN_STATUSES: RunStatus[] = ['QUEUED', 'RUNNING', 'WAITING_APPROVAL', 'WAITING_INPUT', 'WAITING_DEVICE', 'WAITING_COMPUTER'];
+
+/** Runs a follow-up can join while they work. Channel-started runs are left out: their reply goes back as one message. */
+const STEERABLE_RUN_TYPES: RunType[] = ['CHAT_REPLY', 'TASK'];
+const STEERABLE_SOURCES: MessageSource[] = ['TEXT', 'VOICE'];
+const INBOX_TTL_SECONDS = 86_400;
 
 /** The agent-runs side of the API: creates run records and queues them; never does the work in the request (§14.4). */
 @Injectable()
@@ -66,6 +71,43 @@ export class RunsService {
         return run;
     }
 
+    /**
+     * Follow-up while the bot is working (Grok-style steering): instead of queueing a new reply behind the running one,
+     * the message goes into the run's inbox and the run reads it before its next step. Only the user who started the run
+     * can steer it. Returns the run, or null when no run of this bot is working on this user's behalf (start one instead).
+     */
+    async steer(conversationId: string, botId: string, userId: string, messageId: string) {
+        const run = await this.prisma.run.findFirst({
+            where: { conversation_id: conversationId, bot_id: botId, user_id: userId, status: 'RUNNING', type: { in: STEERABLE_RUN_TYPES }, trigger_message: { source: { in: STEERABLE_SOURCES } } },
+            orderBy: { created_at: 'desc' },
+        });
+        if (!run) return null;
+        const key = this.redis.key(RedisKeys.runInbox(run.id));
+        await this.redis.client.multi().rpush(key, messageId).expire(key, INBOX_TTL_SECONDS).exec();
+        // The run may have finished (or started waiting) between the read and the push. If the message is still in the
+        // inbox, take it back and let the caller start a normal reply; if the run already took it, the run owns it.
+        const now = await this.prisma.run.findUnique({ where: { id: run.id }, select: { status: true } });
+        if (now?.status === 'RUNNING') return run;
+        const reclaimed = await this.redis.client.lrem(key, 0, messageId);
+        return reclaimed ? null : run;
+    }
+
+    /** Takes every follow-up waiting in a run's inbox (atomic, so each message is read exactly once). */
+    async takeInbox(runId: string): Promise<string[]> {
+        const key = this.redis.key(RedisKeys.runInbox(runId));
+        const res = await this.redis.client.multi().lrange(key, 0, -1).del(key).exec();
+        return (res?.[0]?.[1] as string[] | undefined) ?? [];
+    }
+
+    /** A run that ended with follow-ups still unread answers them in a fresh reply, so no message is left unanswered. */
+    async handOffInbox(run: { id: string; organization_id: string; conversation_id: string | null; bot_id: string; user_id: string | null }) {
+        const ids = await this.takeInbox(run.id);
+        if (!ids.length || !run.conversation_id) return;
+        const last = await this.prisma.message.findFirst({ where: { id: { in: ids }, deleted_at: null }, orderBy: { created_at: 'desc' }, select: { id: true, author_user_id: true } });
+        if (!last) return;
+        await this.start({ organization_id: run.organization_id, conversation_id: run.conversation_id, bot_id: run.bot_id, user_id: last.author_user_id ?? run.user_id, type: 'CHAT_REPLY', trigger_message_id: last.id });
+    }
+
     /** Adds a `resume` job for a run that was waiting for approval or input (§14.4 "Waiting doesn't hold a worker"). */
     async resume(runId: string, reason: string) {
         await this.queue.add(Jobs.agentRuns.RESUME, { run_id: runId, reason }, { jobId: `${runId}:resume:${Date.now()}`, priority: RunPriority.CHAT_REPLY });
@@ -97,6 +139,7 @@ export class RunsService {
             await this.prisma.message.updateMany({ where: { run_id: id, status: { in: ['PENDING', 'STREAMING'] } }, data: { status: 'STOPPED' } });
             if (run.conversation_id) await this.events.toConversation(run.conversation_id, ConversationEvents.RUN_STATUS, { run_id: id, bot_id: run.bot_id, status: 'STOPPED' });
             if (run.user_id) await this.events.toUser(run.user_id, UserEvents.TASK_UPDATED, { run_id: id, status: 'STOPPED' });
+            await this.handOffInbox(run);
         }
         return { ok: true };
     }

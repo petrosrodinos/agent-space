@@ -88,7 +88,7 @@ export const SkillForm: FC<SkillFormProps> = ({ defaultValues, readOnly, isNew, 
                 <FormItem>
                   <FormLabel>When to use it</FormLabel>
                   <FormControl>
-                    <Textarea rows={2} disabled={ro} placeholder="Use when a new client signs, to run the standard onboarding steps." {...field} />
+                    <Textarea dictation rows={2} disabled={ro} placeholder="Use when a new client signs, to run the standard onboarding steps." {...field} />
                   </FormControl>
                   <FormDescription>Bots read this to decide when the skill applies.</FormDescription>
                   <FormMessage />
@@ -102,7 +102,7 @@ export const SkillForm: FC<SkillFormProps> = ({ defaultValues, readOnly, isNew, 
                 <FormItem>
                   <FormLabel>Steps and rules</FormLabel>
                   <FormControl>
-                    <Textarea rows={10} disabled={ro} placeholder={"1. Create the client in the CRM\n2. Set up a shared folder\n3. …"} {...field} />
+                    <Textarea dictation rows={10} disabled={ro} placeholder={"1. Create the client in the CRM\n2. Set up a shared folder\n3. …"} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

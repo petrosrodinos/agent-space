@@ -9,6 +9,7 @@ import { randomToken, newId } from '@/shared/utils/security/crypto.utils';
 import { hostMatchesDomain, normalizeWebsiteDomain, totpCode } from '@/shared/utils/security/website-login.utils';
 import { AccessService } from '../../access/access.service';
 import { ActivityService } from '../../activity/activity.service';
+import { BotsService } from '../../bots/bots.service';
 import { FilesService } from '../../files/files.service';
 import { BROWSER_DEBUG_PORT, ComputersService, HOME, OPEN_BROWSER, OPEN_BROWSER_PATH, WORKSPACE } from '../../computers/computers.service';
 import { SIGN_IN_SCRIPT, SIGN_IN_STEPS, SignInErrors, SignInField, SignInFields, SignInScriptInput, SignInScriptResult } from '../../computers/sign-in.script';
@@ -55,20 +56,23 @@ export class ComputerToolsService {
         private readonly activity: ActivityService,
         private readonly secrets: SecretStoreService,
         private readonly onePassword: OnePasswordConnectService,
+        private readonly bots: BotsService,
     ) { }
 
     async tools(ctx: ToolContext): Promise<ToolDef[]> {
         if (!(await this.allowedForRun(ctx))) return [];
-        return [this.runCommand(), this.writeFile(), this.readFile(), this.listFiles(), this.copyTo(), this.copyFrom(), this.openUrl(), this.screenshot(), this.click(), this.type(), this.key(), this.scroll(), this.signIn(), this.askUser()];
+        if (!ctx.bot.cloud_computer_enabled) return (await this.mayTurnOn(ctx)) ? [this.turnOn(ctx)] : [];
+        return [this.runCommand(), this.writeFile(), this.readFile(), this.listFiles(), this.copyTo(), this.copyFrom(), this.openUrl(), this.screenshot(), this.click(), this.type(), this.key(), this.scroll(), this.signIn(), this.askUser(), this.turnOff()];
     }
 
     /**
-     * Whether this run may use the cloud computer: the bot has one, the organisation allows it for the acting user, and
-     * automation runs additionally need the automation's "uses cloud computer" switch and the organisation's
-     * "automations may use the cloud computer" setting — both checked at run time, so later changes apply (§9, §10).
+     * Whether this run may use a cloud computer at all (the bot's own switch is checked separately): the organisation
+     * allows it for the acting user, and automation runs additionally need the automation's "uses cloud computer"
+     * switch and the organisation's "automations may use the cloud computer" setting — all checked at run time, so
+     * later changes apply (§9, §10).
      */
     private async allowedForRun(ctx: ToolContext): Promise<boolean> {
-        if (!ctx.bot.cloud_computer_enabled || !ctx.actor) return false;
+        if (!ctx.actor) return false;
         const s = ctx.org_settings;
         if (s && !s.cloud_computers_enabled) return false;
         if (s?.cloud_computers_who === 'OWNERS_ADMINS' && ctx.actor.role === 'MEMBER') return false;
@@ -78,6 +82,64 @@ export class ComputerToolsService {
             if (!ar?.automation.uses_cloud_computer) return false;
         }
         return true;
+    }
+
+    /** Switching the feature on for a bot is a bot setting, so only someone who may edit the bot (the acting user) can have the bot do it. */
+    private async mayTurnOn(ctx: ToolContext): Promise<boolean> {
+        try {
+            await this.access.requireEditableBot(ctx.organization_id, ctx.actor!.user_id, ctx.bot.id);
+            return true;
+        } catch {
+            return false;
+        }
+    }
+
+    // ---------------- Turning the computer on and off ----------------
+
+    /**
+     * Lets a bot that has no cloud computer give itself one when a task needs it, so work (including automations that run
+     * while the user is away) isn't blocked on someone visiting the bot's settings. In chat the user confirms first; an
+     * automation the user already allowed to use the computer needs no extra confirmation.
+     */
+    private turnOn(ctx: ToolContext): ToolDef {
+        return {
+            name: 'computer_turn_on',
+            description:
+                'Turn on your own cloud computer (a private Linux desktop with a browser, Python and Node.js that keeps its files and website sign-ins). Use it when a task needs more than your other tools can do: building real .xlsx/.docx files, running scripts, browsing sites properly, or work an automation must do without the user\'s own computer being on. ' +
+                'After it succeeds the computer_* tools are available straight away. In chat the user confirms first.',
+            parameters: obj({ reason: { type: 'string', description: 'Why you need the computer, in one short sentence the user will read' } }, ['reason']),
+            step_type: 'TOOL_CALL',
+            runs_on: 'server',
+            confirm: !ctx.run.automation_run_id,
+            title: () => 'Turning on my cloud computer',
+            preview: async (a) => ({ title: 'Turn on cloud computer', action_type: 'OTHER', preview: { kind: 'change', target: ctx.bot.name, bot_id: ctx.bot.id, changes: [{ field: 'cloud_computer', to: 'On' }, { field: 'reason', to: String(a.reason ?? '').slice(0, 300) || 'The task needs it' }] } }),
+            execute: async (_a, c) => {
+                await this.bots.update(c.actor!, c.bot.id, { cloud_computer_enabled: true }, 'chat');
+                // This run's tool list is rebuilt from the bot, so the computer tools appear without a new chat.
+                c.bot.cloud_computer_enabled = true;
+                return { output: { turned_on: true, note: 'Your cloud computer is on. It starts the first time you use a computer_* tool (about a minute). Continue with the task using those tools.' } };
+            },
+        };
+    }
+
+    /** Pauses the computer to stop it running (and being billed) once the work is done; files and sign-ins are kept and the next use resumes it. */
+    private turnOff(): ToolDef {
+        return {
+            name: 'computer_turn_off',
+            description: 'Turn off (pause) your cloud computer when you have finished using it, so it stops running. Files and website sign-ins are kept; it switches back on by itself the next time you use a computer_* tool. Share any results you want to keep with copy_from_computer first.',
+            parameters: obj({}),
+            step_type: 'COMPUTER_ACTION',
+            runs_on: 'server',
+            title: () => 'Turning off my cloud computer',
+            execute: async (_a, ctx) => {
+                const c = await this.prisma.cloudComputer.findUnique({ where: { bot_id: ctx.bot.id } });
+                if (!c?.daytona_sandbox_id || c.status !== 'RUNNING') return { output: { turned_off: true, note: 'The computer was not running.' } };
+                const controller = await this.computers.controllerOf(c.id);
+                if (controller) throw new Error(`${controller.name ?? 'A person'} is using the computer right now, so it was left on.`);
+                await this.computers.pause(ctx.actor!, ctx.bot.id);
+                return { output: { turned_off: true, note: 'The computer is paused. Using any computer_* tool again switches it back on.' } };
+            },
+        };
     }
 
     /** Credentials with no bot list may be used by every bot; otherwise only by the listed ones (same rule as access keys). */
@@ -168,7 +230,8 @@ export class ComputerToolsService {
     private runCommand(): ToolDef {
         return {
             name: 'computer_run',
-            description: `Run a shell command on your private cloud computer (Ubuntu, Python 3, Node.js, Chromium; you can pip/npm install). Working folder: ${WORKSPACE}. Files persist between tasks. Use for data processing, scripts, conversions and downloads. Long-running servers should be started in the background (&).`,
+            description: `Run a bash command on your private cloud computer (Ubuntu, Python 3, Node.js, Chromium; you can pip/npm install). Working folder: ${WORKSPACE}. Files persist between tasks. Use for data processing, scripts, conversions and file work. Long-running servers should be started in the background (&). ` +
+                `Direct internet from this computer can be limited to package sites (pip, npm, GitHub); if curl or the browser cannot reach a site, do not keep retrying: fetch any public page or file with copy_to_computer instead, and search or read pages with web_search / read_webpage.`,
             parameters: obj({ command: { type: 'string' }, cwd: { type: 'string', description: `Folder, default ${WORKSPACE}` }, timeout_seconds: { type: 'number', description: 'Default 120, max 600' } }, ['command']),
             step_type: 'COMPUTER_ACTION',
             runs_on: 'server',
@@ -176,7 +239,9 @@ export class ComputerToolsService {
             execute: async (a, ctx) => {
                 const { sandbox } = await this.sandbox(ctx);
                 const timeout = Math.min(Math.max(Number(a.timeout_seconds) || 120, 5), 600);
-                const r = await sandbox.process.executeCommand(String(a.command), this.path(a.cwd), undefined, timeout);
+                // The sandbox's login shell is zsh, which rejects unquoted "?" and "*" in URLs. Commands are written for bash, so run them in bash.
+                const script = Buffer.from(String(a.command), 'utf8').toString('base64');
+                const r = await sandbox.process.executeCommand(`bash -c "$(printf %s '${script}' | base64 -d)"`, this.path(a.cwd), undefined, timeout);
                 const out = r.result ?? '';
                 return { output: { exit_code: r.exitCode, output: out.length > 12_000 ? `${out.slice(0, 4000)}\n…[${out.length - 10_000} characters cut]…\n${out.slice(-6000)}` : out } };
             },
@@ -378,6 +443,11 @@ export class ComputerToolsService {
                 const url = new URL(String(a.url));
                 if (!/^https?:$/.test(url.protocol)) throw new Error('Only http(s) pages can be opened');
                 const { sandbox, session } = await this.sandbox(ctx);
+                // Some sandboxes can only reach package sites. Check first, so the bot gets a clear answer instead of a browser error page.
+                const probe = await sandbox.process.executeCommand(`curl -s -o /dev/null -m 8 -w '%{http_code}' '${url.origin.replace(/'/g, '%27')}/'`, undefined, undefined, 20).catch(() => null);
+                if (probe && probe.result.trim().endsWith('000')) {
+                    throw new Error(`This cloud computer cannot reach ${url.hostname} directly (its internet access is limited), so the browser cannot open it. Fetch the page with copy_to_computer (url: "${url.toString()}"), or read it with read_webpage / web_search, and process it with computer_run. Do not retry computer_open_url for this site.`);
+                }
                 // Refresh the launcher each time so computers created by older versions get the current flags.
                 await sandbox.fs.uploadFile(Buffer.from(OPEN_BROWSER), OPEN_BROWSER_PATH);
                 await sandbox.process.executeCommand(`chmod +x ${OPEN_BROWSER_PATH} && ${OPEN_BROWSER_PATH} '${url.toString().replace(/'/g, '%27')}'`, undefined, undefined, 30);
@@ -427,7 +497,7 @@ export class ComputerToolsService {
             parameters: obj({ text: { type: 'string' }, press_enter: { type: 'boolean' }, effect: effectParam }, ['text', 'effect']),
             step_type: 'COMPUTER_ACTION',
             runs_on: 'server',
-            title: (a) => `⌨️ Typing "${String(a.text).slice(0, 40)}${String(a.text).length > 40 ? '…' : ''}"`,
+            title: (a) => `Typing "${String(a.text).slice(0, 40)}${String(a.text).length > 40 ? '…' : ''}"`,
             classify: (a) => (a.press_enter ? (EFFECT_ACTION[String(a.effect)] ?? null) : null),
             preview: async (a, ctx) => this.preview(a, ctx, `Type "${String(a.text).slice(0, 200)}" and press Enter on the cloud computer`),
             execute: async (a, ctx) => {
@@ -446,7 +516,7 @@ export class ComputerToolsService {
             parameters: obj({ keys: { type: 'string' }, effect: effectParam }, ['keys', 'effect']),
             step_type: 'COMPUTER_ACTION',
             runs_on: 'server',
-            title: (a) => `⌨️ Pressing ${String(a.keys).slice(0, 30)}`,
+            title: (a) => `Pressing ${String(a.keys).slice(0, 30)}`,
             classify: (a) => EFFECT_ACTION[String(a.effect)] ?? null,
             preview: async (a, ctx) => this.preview(a, ctx, `Press ${a.keys} on the cloud computer`),
             execute: async (a, ctx) => {

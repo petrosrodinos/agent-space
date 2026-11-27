@@ -44,7 +44,7 @@ export const EditWidgetDialog: FC<{ widget: Widget | null; onClose: () => void }
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>What the bot is asked</FormLabel>
-                  <FormControl><Textarea rows={4} {...field} /></FormControl>
+                  <FormControl><Textarea dictation rows={4} {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )}

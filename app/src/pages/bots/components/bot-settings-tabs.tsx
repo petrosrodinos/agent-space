@@ -98,7 +98,7 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
                 <FormItem>
                   <FormLabel>Welcome message</FormLabel>
                   <FormControl>
-                    <Textarea disabled={ro} rows={2} placeholder="Shown when someone starts a new chat" {...field} />
+                    <Textarea dictation disabled={ro} rows={2} placeholder="Shown when someone starts a new chat" {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -114,7 +114,7 @@ export const IdentityTab: FC<TabProps> = ({ bot }) => {
                       name={`starters.${i}.value`}
                       render={({ field }) => (
                         <div className="min-w-0 flex-1">
-                          <Textarea disabled={ro} rows={2} placeholder="e.g. What can you help me with?" className="min-h-[64px] resize-y" {...field} aria-label={`Starter ${i + 1}`} />
+                          <Textarea dictation disabled={ro} rows={2} placeholder="e.g. What can you help me with?" className="min-h-[64px] resize-y" {...field} aria-label={`Starter ${i + 1}`} />
                         </div>
                       )}
                     />
@@ -192,7 +192,7 @@ export const BehaviourTab: FC<TabProps> = ({ bot }) => {
                 <FormItem>
                   <FormLabel>Instructions</FormLabel>
                   <FormControl>
-                    <Textarea rows={10} disabled={ro} {...field} />
+                    <Textarea dictation rows={10} disabled={ro} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>

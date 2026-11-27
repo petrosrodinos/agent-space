@@ -19,7 +19,7 @@ const INLINE_MAX_BYTES = 1024 ** 2;
 
 /** Defaults when the user never touched a switch: ask each time; control my computer starts off (§14.3). */
 const DEFAULT_PERMISSION: Partial<Record<DeviceToolKind, DeviceToolPermission>> = { CONTROL_COMPUTER: 'NEVER' };
-const DESKTOP_KINDS: DeviceToolKind[] = ['LOCAL_FILES', 'SCREEN', 'LOCAL_TOOL_SERVERS', 'CLIPBOARD', 'OPEN', 'CONTROL_COMPUTER'];
+const DESKTOP_KINDS: DeviceToolKind[] = ['LOCAL_FILES', 'SCREEN', 'LOCAL_TOOL_SERVERS', 'CLIPBOARD', 'OPEN', 'CONTROL_COMPUTER', 'BROWSER'];
 const MOBILE_KINDS: DeviceToolKind[] = ['CAMERA_SCANNER', 'CONTACTS', 'SEND_VIA_APPS', 'DEVICE_CALENDAR', 'LOCATION'];
 /** Mobile ops — mirror app/src/platform/mobile-device-ops.ts. */
 const MobileOps = { SCAN: 'scan', CONTACTS_SEARCH: 'contacts_search', SEND_VIA_APP: 'send_via_app', CALENDAR_LIST: 'calendar_list', CALENDAR_CREATE: 'calendar_create', LOCATION_CURRENT: 'location_current' } as const;
@@ -136,6 +136,7 @@ export class DeviceToolsService {
         add('CLIPBOARD', (l) => this.clipboard(l));
         add('OPEN', (l) => this.open(l));
         add('CONTROL_COMPUTER', (l) => this.controlComputer(l));
+        add('BROWSER', (l) => this.browser(l));
         const servers = usable('LOCAL_TOOL_SERVERS');
         for (const d of servers) out.push(...(await this.localServerTools(d)));
 
@@ -504,6 +505,97 @@ export class DeviceToolsService {
             title: () => 'Checking your location',
             timeout_ms: () => USER_TIMEOUT_MS + 10_000,
             execute: async (a, ctx) => ({ output: await this.call(ctx, this.pick(phones, a), 'LOCATION', MobileOps.LOCATION_CURRENT, {}, 'see where you are right now', false) }),
+        };
+    }
+
+    /**
+     * Browser (§14.3): a separate browser window on the user's computer that the bot drives. It has its own sign-ins and
+     * never uses the user's own browser profile. Pages come back as numbered elements plus visible text (so it works
+     * without a vision model) and a screenshot for models that can see. The first call of a run asks the user to allow it.
+     */
+    private browser(devices: OnlineDevice[]): ToolDef {
+        const actions = ['open', 'snapshot', 'click', 'type', 'key', 'scroll', 'back', 'wait', 'close'] as const;
+        const submits = (a: any) => a.action === 'click' || a.action === 'key' || (a.action === 'type' && !!a.press_enter);
+        const host = (u: unknown) => {
+            try {
+                return new URL(/^[a-z][a-z0-9+.-]*:/i.test(String(u)) ? String(u) : `https://${u}`).hostname;
+            } catch {
+                return 'a page';
+            }
+        };
+        return {
+            name: 'browser',
+            description:
+                "Browse the web in a separate browser window on the user's own computer, which they can watch. It keeps its own sign-ins, apart from the user's normal browser. Start with action \"open\" and a web address. Every action returns the page: its address, title, visible text, and a numbered list of things you can click or type into (use their \"ref\" number), plus a screenshot if you can see images. " +
+                'Actions: open (url), snapshot (look again), click (ref, or x and y from the screenshot), type (ref, text; replaces what is in the field; press_enter to submit), key (e.g. "Enter", "Tab", "ctrl+a"), scroll (direction, amount in screens), back, wait (ms), close. Element numbers change after every action: use the latest ones. ' +
+                'Never type passwords, card numbers or one-time codes (it is refused). When a site needs a sign-in, tell the user to sign in themselves in the browser window on their computer and to say when they are done, then continue. ' +
+                'Set "effect" honestly on clicks and key presses that submit, send, buy or delete: those are shown to the user for approval first. Use this for work the user wants on their own computer; for unattended work or automations use your cloud computer.',
+            parameters: obj(
+                {
+                    action: { type: 'string', enum: actions },
+                    url: { type: 'string', description: 'open: the web address, e.g. "https://example.com"' },
+                    ref: { type: 'number', description: 'click/type: the number of an element from the latest result' },
+                    x: { type: 'number', description: 'click/type without a ref: position in the screenshot, pixels from the top-left' },
+                    y: { type: 'number' },
+                    text: { type: 'string', description: 'type: the text to enter. For a dropdown, the option to choose.' },
+                    press_enter: { type: 'boolean', description: 'type: press Enter afterwards (submits a search or form)' },
+                    keys: { type: 'string', description: 'key: e.g. "Enter", "Tab", "Escape", "ctrl+a", "PageDown"' },
+                    direction: { type: 'string', enum: ['up', 'down'], description: 'scroll: default down' },
+                    amount: { type: 'number', description: 'scroll: how many screens, default 1' },
+                    ms: { type: 'number', description: 'wait: milliseconds, at most 5000' },
+                    describe: { type: 'string', description: 'What you are clicking or typing into, e.g. "the Search box"' },
+                    effect: { ...effectParam, description: `${effectParam.description} Optional: leave out for actions that only read or move around.` },
+                    ...this.computerParam(devices),
+                },
+                ['action'],
+            ),
+            step_type: 'DEVICE_TOOL',
+            runs_on: 'device',
+            title: (a) => {
+                const on = this.pick(devices, a).name;
+                switch (a.action) {
+                    case 'open': return `Opening ${host(a.url)} on ${on}`;
+                    case 'snapshot': return `Looking at the page on ${on}`;
+                    case 'click': return `Clicking ${String(a.describe ?? 'on the page').slice(0, 50)} on ${on}`;
+                    case 'type': return `Typing${a.describe ? ` in ${String(a.describe).slice(0, 40)}` : ''} on ${on}`;
+                    case 'key': return `Pressing ${String(a.keys ?? '').slice(0, 30)} on ${on}`;
+                    case 'scroll': return `Scrolling ${a.direction === 'up' ? 'up' : 'down'} on ${on}`;
+                    case 'back': return `Going back on ${on}`;
+                    case 'close': return `Closing the browser on ${on}`;
+                    default: return `Browsing on ${on}`;
+                }
+            },
+            classify: (a) => (submits(a) ? (EFFECT_ACTION[String(a.effect)] ?? null) : null),
+            preview: async (a) => ({
+                title: `${a.action === 'type' ? 'Type and press Enter' : a.action === 'key' ? `Press ${a.keys}` : 'Click'} "${a.describe ?? ''}" in the browser on ${this.pick(devices, a).name}`,
+                action_type: EFFECT_ACTION[String(a.effect)] ?? 'OTHER',
+                preview: { kind: 'tool', device: this.pick(devices, a).name, input: { action: a.action, describe: a.describe, text: typeof a.text === 'string' ? a.text.slice(0, 200) : undefined } },
+            }),
+            timeout_ms: () => USER_TIMEOUT_MS + 10_000,
+            execute: async (a, ctx) => {
+                if (!actions.includes(a.action)) throw new Error(`action must be one of: ${actions.join(', ')}`);
+                const d = this.pick(devices, a);
+                // eslint-disable-next-line @typescript-eslint/no-unused-vars
+                const { computer, effect, describe, ...req } = a;
+                const summary = a.action === 'open' ? `open ${host(a.url)} in a browser window` : 'use the browser window';
+                const res = await this.call(ctx, d, 'BROWSER', 'browser', req, summary, true);
+                if (res?.denied) return { output: { denied: true, note: 'The user did not allow it. Do not try again unless they ask.' } };
+                const shot = res?.screenshot?.dataUrl as string | undefined;
+                if (shot) {
+                    const png = Buffer.from(shot.split(',')[1] ?? '', 'base64');
+                    if (png.length) await this.storeReplayFrame(ctx, png).catch((e) => this.logger.warn(`Replay frame: ${(e as Error).message}`));
+                }
+                const output = {
+                    ok: res?.ok !== false,
+                    ...(res?.error ? { error: res.error } : {}),
+                    url: res?.url ?? '',
+                    title: res?.title ?? '',
+                    page_text: res?.text ?? '',
+                    elements: Array.isArray(res?.elements) ? res.elements : [],
+                    ...(shot && ctx.supports_vision ? { screen: `Screenshot attached (${res.screenshot.width}×${res.screenshot.height}; x and y are pixels from the top-left).` } : {}),
+                };
+                return { output, ...(shot && ctx.supports_vision ? { images: [shot] } : {}) };
+            },
         };
     }
 

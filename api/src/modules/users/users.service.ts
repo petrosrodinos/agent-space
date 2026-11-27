@@ -86,7 +86,7 @@ export class UsersService {
     async deviceTools(userId: string, id: string) {
         const d = await this.prisma.device.findFirst({ where: { id, user_id: userId }, include: { tool_permissions: true } });
         if (!d) throw new NotFoundException('Device not found');
-        const kinds: DeviceToolKind[] = d.platform === 'DESKTOP' ? ['LOCAL_FILES', 'SCREEN', 'LOCAL_TOOL_SERVERS', 'CLIPBOARD', 'OPEN', 'CONTROL_COMPUTER'] : ['CAMERA_SCANNER', 'CONTACTS', 'SEND_VIA_APPS', 'DEVICE_CALENDAR', 'LOCATION'];
+        const kinds: DeviceToolKind[] = d.platform === 'DESKTOP' ? ['LOCAL_FILES', 'SCREEN', 'LOCAL_TOOL_SERVERS', 'CLIPBOARD', 'OPEN', 'CONTROL_COMPUTER', 'BROWSER'] : ['CAMERA_SCANNER', 'CONTACTS', 'SEND_VIA_APPS', 'DEVICE_CALENDAR', 'LOCATION'];
         const permissions = Object.fromEntries(kinds.map((k) => [k, d.tool_permissions.find((p) => p.tool === k)?.permission ?? (k === 'CONTROL_COMPUTER' ? 'NEVER' : 'ASK_EACH_TIME')]));
         return { device_id: d.id, platform: d.platform, is_online: d.is_online, capabilities: d.capabilities, allowed_folders: d.allowed_folders, blocked_apps: d.blocked_apps, permissions };
     }

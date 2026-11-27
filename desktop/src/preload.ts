@@ -60,5 +60,6 @@ contextBridge.exposeInMainWorld('agentspaceDesktop', {
         resumeControl: (grantId: string) => ipcRenderer.invoke('device:resumeControl', grantId),
         endControl: (grantId: string) => ipcRenderer.invoke('device:endControl', grantId),
         onControlEvent: (cb: (e: unknown) => void) => listen('device:control-event', cb),
+        browser: (req: unknown) => ipcRenderer.invoke('device:browser', req),
     },
 });

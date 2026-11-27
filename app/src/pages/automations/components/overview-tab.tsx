@@ -1,6 +1,6 @@
 import { useEffect, useState, type FC } from "react";
 import { Link } from "react-router-dom";
-import { AlertTriangle, Mail, Plug, Plus, ShieldCheck, Trash2 } from "lucide-react";
+import { AlertTriangle, Download, Mail, Plug, Plus, ShieldCheck, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Input } from "@/components/ui/input";
@@ -22,6 +22,27 @@ import { AutomationStatuses, ResultDestinationKinds } from "@/features/automatio
 import { ConnectionStatuses } from "@/features/connections/interfaces/connections.interfaces";
 import { DEFAULT_SKILL_EMOJI } from "@/config/constants/dropdowns/shared/bot-colors.options";
 import { DEFAULT_TIMEZONE } from "@/config/constants/browser.constants";
+import { platform } from "@/platform";
+import { toast } from "@/hooks/use-toast";
+
+/** File-name-safe version of the automation name, e.g. "Daily sales digest" → "daily-sales-digest". */
+const fileSlug = (name: string) => name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "automation";
+
+/**
+ * Downloads only the automation's saved instructions as plain text, ready to paste into another bot.
+ * Nothing else (bot prompt, schedule, connections, pre-approvals) goes into the file.
+ */
+const downloadPrompt = (a: Automation) => {
+  const prompt = a.instructions.trim();
+  if (!prompt) {
+    toast({ title: "Nothing to export", description: "This automation has no instructions yet.", variant: "error" });
+    return;
+  }
+  const url = URL.createObjectURL(new Blob([`${prompt}
+`], { type: "text/plain;charset=utf-8" }));
+  platform.files.download(url, `${fileSlug(a.name)}-prompt.txt`);
+  setTimeout(() => URL.revokeObjectURL(url), 10_000);
+};
 
 export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) => {
   const update = useUpdateAutomation();
@@ -65,10 +86,18 @@ export const OverviewTab: FC<{ automation: Automation }> = ({ automation: a }) =
             </div>
             <div className="space-y-1.5">
               <Label htmlFor="automation-instructions">Instructions</Label>
-              <Textarea id="automation-instructions" rows={7} value={instructions} onChange={(e) => setInstructions(e.target.value)} maxLength={20000} />
+              <Textarea dictation id="automation-instructions" rows={7} value={instructions} onChange={(e) => setInstructions(e.target.value)} maxLength={20000} />
             </div>
             {a.pre_approvals.length > 0 && instructions.trim() !== a.instructions && <p className="text-xs font-semibold text-warning">Changing the instructions means you'll confirm its pre-approvals again.</p>}
-            <div className="flex justify-end">
+            <div className="flex justify-end gap-2">
+              <Button
+                variant="outline"
+                disabled={!a.instructions.trim()}
+                title={instructions.trim() !== a.instructions ? "Downloads the saved instructions. Save first to include your edits." : "Download the instructions to reuse with another bot"}
+                onClick={() => downloadPrompt(a)}
+              >
+                <Download /> Download prompt
+              </Button>
               <Button
                 disabled={(!name.trim() || name === a.name) && (instructions.trim().length < 3 || instructions.trim() === a.instructions)}
                 loading={update.isPending}

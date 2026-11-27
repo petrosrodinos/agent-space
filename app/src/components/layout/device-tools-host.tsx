@@ -7,13 +7,13 @@ import type { DeviceCall } from "@/features/realtime/interfaces/realtime.interfa
 import { setDeviceToolPermission } from "@/features/users/services/users.services";
 import { DeviceToolPermissions } from "@/features/users/interfaces/users.interfaces";
 import { getDesktopBridge } from "@/platform/desktop-bridge";
-import { ControlStates, type ControlRequest, type DeviceBridge, type DisplayInfo, type ScreenSource } from "@/platform/device-bridge";
+import { ControlStates, type BrowserRequest, type ControlRequest, type DeviceBridge, type DisplayInfo, type ScreenSource } from "@/platform/device-bridge";
 import { toast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 
 /** Control my computer lasts for the task, at most 30 minutes (§14.3). */
 const CONTROL_GRANT_MS = 30 * 60_000;
-const CallOps = { FILES: "files", SCREEN: "screen", CLIPBOARD_WRITE: "clipboard_write", CLIPBOARD_READ: "clipboard_read", OPEN: "open", LOCAL_TOOL: "local_tool", CONTROL: "control", END_CONTROL: "end_control" } as const;
+const CallOps = { FILES: "files", SCREEN: "screen", CLIPBOARD_WRITE: "clipboard_write", CLIPBOARD_READ: "clipboard_read", OPEN: "open", LOCAL_TOOL: "local_tool", CONTROL: "control", BROWSER: "browser", END_CONTROL: "end_control" } as const;
 const PromptKinds = { ASK: "ask", SCREEN: "screen", CONTROL: "control" } as const;
 
 type Answer = { allow: false } | { allow: true; always?: boolean; sourceId?: string; displayId?: string };
@@ -43,6 +43,7 @@ const DeviceToolsHostInner: FC<{ device: DeviceBridge }> = ({ device }) => {
   const [prompt, setPrompt] = useState<Prompt | null>(null);
   const answerRef = useRef<((a: Answer) => void) | null>(null);
   const grants = useRef(new Map<string, { grantId: string; expiresAt: number }>()); // run id → control grant
+  const browserRuns = useRef(new Set<string>()); // run ids the user allowed to use the browser window
   const queue = useRef(Promise.resolve());
 
   const ask = useCallback(
@@ -129,6 +130,14 @@ const DeviceToolsHostInner: FC<{ device: DeviceBridge }> = ({ device }) => {
           const image = await device.captureSource(a.sourceId);
           return { name: sources.find((s) => s.id === a.sourceId)?.name ?? "Screen", image };
         }
+        case CallOps.BROWSER: {
+          // One question per task, not per click: allowing the browser covers the whole run.
+          if (!browserRuns.current.has(call.run_id)) {
+            if (!(await allowed())) return { denied: true };
+            browserRuns.current.add(call.run_id);
+          }
+          return device.browser(args as unknown as BrowserRequest);
+        }
         case CallOps.CONTROL: {
           let grant = grants.current.get(call.run_id);
           if (grant && grant.expiresAt < Date.now()) {
@@ -159,6 +168,7 @@ const DeviceToolsHostInner: FC<{ device: DeviceBridge }> = ({ device }) => {
     () =>
       realtime.onDeviceCall((call) => {
         if (call.op === CallOps.END_CONTROL) {
+          browserRuns.current.delete(call.run_id);
           const g = grants.current.get(call.run_id);
           if (g) {
             grants.current.delete(call.run_id);

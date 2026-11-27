@@ -81,7 +81,7 @@ export const SettingsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
         </div>
         <div className="space-y-1.5">
           <Label htmlFor="artifact-description">Description</Label>
-          <Textarea id="artifact-description" value={description} maxLength={500} rows={2} disabled={!canEdit} onChange={(e) => setDescription(e.target.value)} />
+          <Textarea dictation id="artifact-description" value={description} maxLength={500} rows={2} disabled={!canEdit} onChange={(e) => setDescription(e.target.value)} />
         </div>
         <div className="space-y-1.5">
           <Label>Type</Label>

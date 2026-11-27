@@ -91,7 +91,7 @@ export const KnowledgePanel: FC<{ botId: string | null; canEdit: boolean; title?
               }}
             >
               <Input placeholder="Title (e.g. Refund policy)" value={note.title} onChange={(e) => setNote((n) => ({ ...n, title: e.target.value }))} maxLength={200} aria-label="Note title" />
-              <Textarea rows={6} className="min-h-[140px] resize-y" placeholder="Facts, FAQs, policies…" value={note.content} onChange={(e) => setNote((n) => ({ ...n, content: e.target.value }))} aria-label="Note" />
+              <Textarea dictation rows={6} className="min-h-[140px] resize-y" placeholder="Facts, FAQs, policies…" value={note.content} onChange={(e) => setNote((n) => ({ ...n, content: e.target.value }))} aria-label="Note" />
               <Button type="submit" disabled={!note.content.trim()} loading={add.isPending}>
                 Add note
               </Button>

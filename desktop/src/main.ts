@@ -10,6 +10,7 @@ import os from 'os';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import { registerDeviceIpc } from './device';
+import { isBotBrowserSession } from './device/browser';
 import { checkForUpdates, getUpdateState, initUpdater, installUpdate } from './updater';
 
 const DEV = process.argv.includes('--dev') || !!process.env.AGENTSPACE_DEV_URL;
@@ -202,6 +203,8 @@ function hardenSession() {
     // Never let the page attach webviews or run with Node.
     app.on('web-contents-created', (_e, contents) => {
         contents.on('will-attach-webview', (ev) => ev.preventDefault());
+        // The bot's browser window browses the web on purpose; device/browser.ts applies its own, stricter rules to it.
+        if (isBotBrowserSession(contents.session)) return;
         contents.setWindowOpenHandler(({ url }) => {
             if (!isAppUrl(url)) openExternalSafe(url);
             return { action: 'deny' };

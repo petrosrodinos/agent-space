@@ -99,7 +99,7 @@ export const AutomationFormDialog: FC<{ open: boolean; onClose: () => void }> = 
               <FormField control={form.control} name="instructions" render={({ field }) => (
                 <FormItem>
                   <FormLabel>What should it do each time?</FormLabel>
-                  <FormControl><Textarea rows={4} placeholder="Summarise my unread emails and today's meetings, most important first." {...field} /></FormControl>
+                  <FormControl><Textarea dictation rows={4} placeholder="Summarise my unread emails and today's meetings, most important first." {...field} /></FormControl>
                   <FormMessage />
                 </FormItem>
               )} />

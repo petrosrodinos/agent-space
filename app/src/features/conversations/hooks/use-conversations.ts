@@ -1,15 +1,18 @@
+import { useCallback, useEffect, useRef } from "react";
 import { useInfiniteQuery, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "@/hooks/use-toast";
 import { useOrganizationStore } from "@/stores/organization";
 import { useAuthStore } from "@/stores/auth";
-import type { Message, SendMessageDto } from "../interfaces/conversations.interfaces";
+import type { Conversation, Message, SendMessageDto } from "../interfaces/conversations.interfaces";
 import { allMessages, messagesKey, removeMessage, replyPreviewOf, upsertMessage, type MessagesCache } from "../utils/messages-cache";
 import {
-  addParticipants, clearConversation, createConversation, deleteConversation, deleteMessage, editMessage, getConversation, getConversationShare, getConversations, getMessages, getPinned, interact, markRead,
-  openDirect, reactToMessage, removeParticipant, retryMessage, saveConversationShare, searchInConversation, searchMessages, sendMessage, stopConversationShare, stopRun, togglePin, updateConversation, updateMyConversation,
+  addParticipants, clearConversation, forwardMessage, createConversation, deleteConversation, deleteMessage, editMessage, getConversation, getConversationShare, getConversations, getMessages, getPinned, interact, markRead,
+  openDirect, reactToMessage, removeParticipant, retryMessage, saveConversationShare, searchInConversation, saveDraft, searchMessages, sendMessage, stopConversationShare, stopRun, togglePin, updateConversation, updateMyConversation,
 } from "../services/conversations.services";
 import { QueryKeys } from "@/config/constants/query-keys";
 import { MessageStatuses, MessagePartTypes, MessageAuthorTypes, MessageSources } from "../interfaces/conversations.interfaces";
+
+const DRAFT_SAVE_DELAY_MS = 700;
 
 export const useConversations = (archived = false) => {
   const org = useOrganizationStore((s) => s.current_id);
@@ -68,6 +71,34 @@ const useConvMutation = <T,>(fn: (v: T) => Promise<unknown>, success?: string, f
     },
     onError: (e: Error) => toast({ title: fail, description: e.message, variant: "error" }),
   });
+};
+
+/** Debounced, per-user server-side draft so unsent text follows the user across pages and devices. Flushes on unmount. */
+export const useConversationDraft = (conversationId: string, serverDraft: string | null | undefined) => {
+  const qc = useQueryClient();
+  const pending = useRef<string | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout>>(undefined);
+
+  const flush = useCallback(() => {
+    clearTimeout(timer.current);
+    const content = pending.current;
+    if (content === null) return;
+    pending.current = null;
+    qc.setQueryData<Conversation>([QueryKeys.CONVERSATION, conversationId], (c) => (c?.me ? { ...c, me: { ...c.me, draft: content || null } } : c));
+    void saveDraft(conversationId, content).catch(() => undefined);
+  }, [qc, conversationId]);
+
+  const save = useCallback(
+    (content: string) => {
+      pending.current = content;
+      clearTimeout(timer.current);
+      timer.current = setTimeout(flush, DRAFT_SAVE_DELAY_MS);
+    },
+    [flush],
+  );
+
+  useEffect(() => flush, [flush]);
+  return { initial: serverDraft ?? "", save };
 };
 
 export const useUpdateConversation = () => useConvMutation(({ id, ...dto }: { id: string; name?: string; color?: string; avatar_seed?: string; lead_bot_id?: string | null }) => updateConversation(id, dto), "Saved", "Could not save");
@@ -167,6 +198,14 @@ export const useDeleteMessage = (conversationId: string) => {
 };
 
 export const useRetryMessage = () => useMutation({ mutationFn: ({ id, ...dto }: { id: string; model_id?: string; branch?: boolean }) => retryMessage(id, dto), onError: (e) => toast({ title: "Could not retry", description: e.message, variant: "error" }) });
+export const useForwardMessage = () => {
+  const qc = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, conversationId }: { id: string; conversationId: string }) => forwardMessage(id, conversationId),
+    onSuccess: () => qc.invalidateQueries({ queryKey: [QueryKeys.CONVERSATIONS] }),
+    onError: (e) => toast({ title: "Could not forward", description: e.message, variant: "error" }),
+  });
+};
 export const useReact = () => useMutation({ mutationFn: ({ id, emoji }: { id: string; emoji: string }) => reactToMessage(id, emoji), onError: (e) => toast({ title: "Could not react", description: e.message, variant: "error" }) });
 export const useTogglePin = () => {
   const qc = useQueryClient();

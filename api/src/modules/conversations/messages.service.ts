@@ -9,7 +9,9 @@ import { NotificationsService } from '../notifications/notifications.service';
 import { RunsService } from '../runs/runs.service';
 import { MESSAGE_INCLUDE, serializeMessage } from './conversation.select';
 import { MessageEventsService } from './message-events.service';
-import { EditMessageDto, InteractionDto, MessagesQuery, RetryMessageDto, SendMessageDto } from './dto/conversation.dto';
+import { EditMessageDto, ForwardMessageDto, InteractionDto, MessagesQuery, RetryMessageDto, SendMessageDto } from './dto/conversation.dto';
+
+const ATTACHMENTS_ONLY_CONTENT = 'Sent attachments';
 
 @Injectable()
 export class MessagesService {
@@ -169,6 +171,13 @@ export class MessagesService {
 
         const runs = [];
         for (const bot of responders) {
+            // A bot already working on this user's request reads the message mid-run instead of replying after it (§7.2).
+            // A /skill starts its own run, so those are never folded into a running one.
+            const steered = !extra && !skill ? await this.runs.steer(conversationId, bot.id, actor.user_id, message.id) : null;
+            if (steered) {
+                runs.push(steered);
+                continue;
+            }
             runs.push(
                 await this.runs.start({
                     organization_id: conv.organization_id,
@@ -182,6 +191,57 @@ export class MessagesService {
             );
         }
         return { message: serialized, runs: runs.map((r) => ({ id: r.id, bot_id: r.bot_id, status: r.status })), secret_masked: masked };
+    }
+
+    /**
+     * Posts a copy of any bot or user message (text and files) into another conversation the user belongs to, as the
+     * user's own message with a "Forwarded from" label. It never starts bot runs and never parses mentions, so bots
+     * in the target stay quiet.
+     */
+    async forward(actor: Actor, messageId: string, dto: ForwardMessageDto) {
+        const source = await this.prisma.message.findFirst({
+            where: { id: messageId, deleted_at: null },
+            include: { files: { include: { file: { select: { id: true, status: true, deleted_at: true } } }, orderBy: { sort_order: 'asc' } }, author_bot: { select: { name: true } }, author_user: { select: { name: true, email: true } }, conversation: { select: { is_temporary: true, organization_id: true } } },
+        });
+        if (!source || source.conversation.organization_id !== actor.organization_id) throw new NotFoundException('Message not found');
+        await this.access.requireParticipant(source.conversation_id, actor.user_id);
+        if (source.author_type === 'SYSTEM') throw new BadRequestException('System messages cannot be forwarded');
+        if (source.conversation.is_temporary) throw new BadRequestException('Temporary chats cannot be shared');
+        if (source.conversation_id === dto.conversation_id) throw new BadRequestException('Pick a different conversation');
+
+        const target = await this.access.requireParticipant(dto.conversation_id, actor.user_id);
+        if (target.conversation.organization_id !== actor.organization_id) throw new NotFoundException('Conversation not found');
+
+        const fileIds = source.files.filter((f) => f.file.status === 'READY' && !f.file.deleted_at).map((f) => f.file_id);
+        const text = source.content?.trim() || (fileIds.length ? ATTACHMENTS_ONLY_CONTENT : '');
+        if (!text) throw new BadRequestException('There is nothing to share in this message');
+        // Forwarding a forward keeps pointing at the original author.
+        const earlier = Array.isArray(source.parts) ? (source.parts as { type?: string }[]).find((p) => p?.type === 'forwarded') : undefined;
+        const forwardedFrom = earlier ?? { type: 'forwarded', message_id: source.id, author_type: source.author_type, author_name: source.author_bot?.name ?? source.author_user?.name ?? source.author_user?.email ?? null };
+
+        const message = await this.prisma.$transaction(async (tx) => {
+            const m = await tx.message.create({
+                data: {
+                    organization_id: target.conversation.organization_id,
+                    conversation_id: dto.conversation_id,
+                    author_type: 'USER',
+                    author_user_id: actor.user_id,
+                    content: text,
+                    parts: [{ type: 'text', text }, forwardedFrom] as Prisma.InputJsonValue,
+                    secret_masked: source.secret_masked,
+                    files: fileIds.length ? { create: fileIds.map((file_id, i) => ({ file_id, sort_order: i })) } : undefined,
+                },
+            });
+            await tx.conversation.update({ where: { id: dto.conversation_id }, data: { last_message_at: new Date(), message_count: { increment: 1 } } });
+            await tx.conversationParticipant.updateMany({ where: { conversation_id: dto.conversation_id, user_id: { not: actor.user_id }, left_at: null }, data: { unread_count: { increment: 1 } } });
+            await tx.conversationParticipant.updateMany({ where: { conversation_id: dto.conversation_id, user_id: actor.user_id }, data: { last_read_at: new Date(), unread_count: 0 } });
+            return m;
+        });
+
+        const serialized = await this.messageEvents.created(message.id);
+        const members = await this.prisma.conversationParticipant.findMany({ where: { conversation_id: dto.conversation_id, user_id: { not: null }, left_at: null }, select: { user_id: true } });
+        await this.events.toUsers(members.map((u) => u.user_id!), UserEvents.CONVERSATIONS_CHANGED, { conversation_id: dto.conversation_id });
+        return { message: serialized };
     }
 
     private async ownUserMessage(actor: Actor, id: string) {

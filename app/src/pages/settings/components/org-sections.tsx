@@ -93,7 +93,7 @@ export const OrganizationSection: FC = () => {
                 render={({ field }) => (
                   <FormItem>
                     <FormLabel>Company instructions</FormLabel>
-                    <FormControl><Textarea rows={5} placeholder="We're Acme, a B2B analytics company. Friendly, concise tone. Never promise discounts." {...field} /></FormControl>
+                    <FormControl><Textarea dictation rows={5} placeholder="We're Acme, a B2B analytics company. Friendly, concise tone. Never promise discounts." {...field} /></FormControl>
                     <FormDescription>Applied to every bot in the organisation.</FormDescription>
                     <FormMessage />
                   </FormItem>

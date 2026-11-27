@@ -130,7 +130,7 @@ const NewBotPage: FC = () => {
                     <FormItem>
                       <FormLabel>What should your bot do?</FormLabel>
                       <FormControl>
-                        <Textarea rows={5} placeholder="Make me a sales assistant that preps me for calls and keeps HubSpot updated" {...field} />
+                        <Textarea dictation rows={5} placeholder="Make me a sales assistant that preps me for calls and keeps HubSpot updated" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

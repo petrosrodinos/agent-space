@@ -513,7 +513,8 @@ export const DeviceToolKind: {
   CONTACTS: 'CONTACTS',
   SEND_VIA_APPS: 'SEND_VIA_APPS',
   DEVICE_CALENDAR: 'DEVICE_CALENDAR',
-  LOCATION: 'LOCATION'
+  LOCATION: 'LOCATION',
+  BROWSER: 'BROWSER'
 };
 
 export type DeviceToolKind = (typeof DeviceToolKind)[keyof typeof DeviceToolKind]
@@ -58598,6 +58599,8 @@ export namespace Prisma {
     is_muted: boolean | null
     last_read_at: Date | null
     unread_count: number | null
+    draft: string | null
+    draft_updated_at: Date | null
     joined_at: Date | null
     left_at: Date | null
   }
@@ -58613,6 +58616,8 @@ export namespace Prisma {
     is_muted: boolean | null
     last_read_at: Date | null
     unread_count: number | null
+    draft: string | null
+    draft_updated_at: Date | null
     joined_at: Date | null
     left_at: Date | null
   }
@@ -58628,6 +58633,8 @@ export namespace Prisma {
     is_muted: number
     last_read_at: number
     unread_count: number
+    draft: number
+    draft_updated_at: number
     joined_at: number
     left_at: number
     _all: number
@@ -58653,6 +58660,8 @@ export namespace Prisma {
     is_muted?: true
     last_read_at?: true
     unread_count?: true
+    draft?: true
+    draft_updated_at?: true
     joined_at?: true
     left_at?: true
   }
@@ -58668,6 +58677,8 @@ export namespace Prisma {
     is_muted?: true
     last_read_at?: true
     unread_count?: true
+    draft?: true
+    draft_updated_at?: true
     joined_at?: true
     left_at?: true
   }
@@ -58683,6 +58694,8 @@ export namespace Prisma {
     is_muted?: true
     last_read_at?: true
     unread_count?: true
+    draft?: true
+    draft_updated_at?: true
     joined_at?: true
     left_at?: true
     _all?: true
@@ -58785,6 +58798,8 @@ export namespace Prisma {
     is_muted: boolean
     last_read_at: Date | null
     unread_count: number
+    draft: string | null
+    draft_updated_at: Date | null
     joined_at: Date
     left_at: Date | null
     _count: ConversationParticipantCountAggregateOutputType | null
@@ -58819,6 +58834,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: boolean
     unread_count?: boolean
+    draft?: boolean
+    draft_updated_at?: boolean
     joined_at?: boolean
     left_at?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -58838,6 +58855,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: boolean
     unread_count?: boolean
+    draft?: boolean
+    draft_updated_at?: boolean
     joined_at?: boolean
     left_at?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -58857,6 +58876,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: boolean
     unread_count?: boolean
+    draft?: boolean
+    draft_updated_at?: boolean
     joined_at?: boolean
     left_at?: boolean
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
@@ -58876,11 +58897,13 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: boolean
     unread_count?: boolean
+    draft?: boolean
+    draft_updated_at?: boolean
     joined_at?: boolean
     left_at?: boolean
   }
 
-  export type ConversationParticipantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversation_id" | "user_id" | "bot_id" | "folder_id" | "is_favourite" | "is_archived" | "is_muted" | "last_read_at" | "unread_count" | "joined_at" | "left_at", ExtArgs["result"]["conversationParticipant"]>
+  export type ConversationParticipantOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"id" | "conversation_id" | "user_id" | "bot_id" | "folder_id" | "is_favourite" | "is_archived" | "is_muted" | "last_read_at" | "unread_count" | "draft" | "draft_updated_at" | "joined_at" | "left_at", ExtArgs["result"]["conversationParticipant"]>
   export type ConversationParticipantInclude<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
     conversation?: boolean | ConversationDefaultArgs<ExtArgs>
     user?: boolean | ConversationParticipant$userArgs<ExtArgs>
@@ -58919,6 +58942,11 @@ export namespace Prisma {
       is_muted: boolean
       last_read_at: Date | null
       unread_count: number
+      /**
+       * Unsent composer text, per user per conversation, so it follows them across devices.
+       */
+      draft: string | null
+      draft_updated_at: Date | null
       joined_at: Date
       left_at: Date | null
     }, ExtArgs["result"]["conversationParticipant"]>
@@ -59358,6 +59386,8 @@ export namespace Prisma {
     readonly is_muted: FieldRef<"ConversationParticipant", 'Boolean'>
     readonly last_read_at: FieldRef<"ConversationParticipant", 'DateTime'>
     readonly unread_count: FieldRef<"ConversationParticipant", 'Int'>
+    readonly draft: FieldRef<"ConversationParticipant", 'String'>
+    readonly draft_updated_at: FieldRef<"ConversationParticipant", 'DateTime'>
     readonly joined_at: FieldRef<"ConversationParticipant", 'DateTime'>
     readonly left_at: FieldRef<"ConversationParticipant", 'DateTime'>
   }
@@ -123528,6 +123558,8 @@ export namespace Prisma {
     is_muted: 'is_muted',
     last_read_at: 'last_read_at',
     unread_count: 'unread_count',
+    draft: 'draft',
+    draft_updated_at: 'draft_updated_at',
     joined_at: 'joined_at',
     left_at: 'left_at'
   };
@@ -130237,6 +130269,8 @@ export namespace Prisma {
     is_muted?: BoolFilter<"ConversationParticipant"> | boolean
     last_read_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     unread_count?: IntFilter<"ConversationParticipant"> | number
+    draft?: StringNullableFilter<"ConversationParticipant"> | string | null
+    draft_updated_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     joined_at?: DateTimeFilter<"ConversationParticipant"> | Date | string
     left_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
@@ -130256,6 +130290,8 @@ export namespace Prisma {
     is_muted?: SortOrder
     last_read_at?: SortOrderInput | SortOrder
     unread_count?: SortOrder
+    draft?: SortOrderInput | SortOrder
+    draft_updated_at?: SortOrderInput | SortOrder
     joined_at?: SortOrder
     left_at?: SortOrderInput | SortOrder
     conversation?: ConversationOrderByWithRelationInput
@@ -130280,6 +130316,8 @@ export namespace Prisma {
     is_muted?: BoolFilter<"ConversationParticipant"> | boolean
     last_read_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     unread_count?: IntFilter<"ConversationParticipant"> | number
+    draft?: StringNullableFilter<"ConversationParticipant"> | string | null
+    draft_updated_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     joined_at?: DateTimeFilter<"ConversationParticipant"> | Date | string
     left_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     conversation?: XOR<ConversationScalarRelationFilter, ConversationWhereInput>
@@ -130299,6 +130337,8 @@ export namespace Prisma {
     is_muted?: SortOrder
     last_read_at?: SortOrderInput | SortOrder
     unread_count?: SortOrder
+    draft?: SortOrderInput | SortOrder
+    draft_updated_at?: SortOrderInput | SortOrder
     joined_at?: SortOrder
     left_at?: SortOrderInput | SortOrder
     _count?: ConversationParticipantCountOrderByAggregateInput
@@ -130322,6 +130362,8 @@ export namespace Prisma {
     is_muted?: BoolWithAggregatesFilter<"ConversationParticipant"> | boolean
     last_read_at?: DateTimeNullableWithAggregatesFilter<"ConversationParticipant"> | Date | string | null
     unread_count?: IntWithAggregatesFilter<"ConversationParticipant"> | number
+    draft?: StringNullableWithAggregatesFilter<"ConversationParticipant"> | string | null
+    draft_updated_at?: DateTimeNullableWithAggregatesFilter<"ConversationParticipant"> | Date | string | null
     joined_at?: DateTimeWithAggregatesFilter<"ConversationParticipant"> | Date | string
     left_at?: DateTimeNullableWithAggregatesFilter<"ConversationParticipant"> | Date | string | null
   }
@@ -139899,6 +139941,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
     conversation: ConversationCreateNestedOneWithoutParticipantsInput
@@ -139918,6 +139962,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -139929,6 +139975,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     conversation?: ConversationUpdateOneRequiredWithoutParticipantsNestedInput
@@ -139948,6 +139996,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -139963,6 +140013,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -139974,6 +140026,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -139989,6 +140043,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -149787,6 +149843,8 @@ export namespace Prisma {
     is_muted?: SortOrder
     last_read_at?: SortOrder
     unread_count?: SortOrder
+    draft?: SortOrder
+    draft_updated_at?: SortOrder
     joined_at?: SortOrder
     left_at?: SortOrder
   }
@@ -149806,6 +149864,8 @@ export namespace Prisma {
     is_muted?: SortOrder
     last_read_at?: SortOrder
     unread_count?: SortOrder
+    draft?: SortOrder
+    draft_updated_at?: SortOrder
     joined_at?: SortOrder
     left_at?: SortOrder
   }
@@ -149821,6 +149881,8 @@ export namespace Prisma {
     is_muted?: SortOrder
     last_read_at?: SortOrder
     unread_count?: SortOrder
+    draft?: SortOrder
+    draft_updated_at?: SortOrder
     joined_at?: SortOrder
     left_at?: SortOrder
   }
@@ -170253,6 +170315,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
     conversation: ConversationCreateNestedOneWithoutParticipantsInput
@@ -170270,6 +170334,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -172610,6 +172676,8 @@ export namespace Prisma {
     is_muted?: BoolFilter<"ConversationParticipant"> | boolean
     last_read_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     unread_count?: IntFilter<"ConversationParticipant"> | number
+    draft?: StringNullableFilter<"ConversationParticipant"> | string | null
+    draft_updated_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
     joined_at?: DateTimeFilter<"ConversationParticipant"> | Date | string
     left_at?: DateTimeNullableFilter<"ConversationParticipant"> | Date | string | null
   }
@@ -186185,6 +186253,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
     conversation: ConversationCreateNestedOneWithoutParticipantsInput
@@ -186202,6 +186272,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -193284,6 +193356,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
     conversation: ConversationCreateNestedOneWithoutParticipantsInput
@@ -193301,6 +193375,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -194003,6 +194079,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
     user?: UserCreateNestedOneWithoutParticipationsInput
@@ -194020,6 +194098,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -233221,6 +233301,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -234608,6 +234690,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     conversation?: ConversationUpdateOneRequiredWithoutParticipantsNestedInput
@@ -234625,6 +234709,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -234639,6 +234725,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -240835,6 +240923,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -241577,6 +241667,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     conversation?: ConversationUpdateOneRequiredWithoutParticipantsNestedInput
@@ -241594,6 +241686,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -241608,6 +241702,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -242816,6 +242912,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -242827,6 +242925,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     conversation?: ConversationUpdateOneRequiredWithoutParticipantsNestedInput
@@ -242844,6 +242944,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -242858,6 +242960,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -242872,6 +242976,8 @@ export namespace Prisma {
     is_muted?: boolean
     last_read_at?: Date | string | null
     unread_count?: number
+    draft?: string | null
+    draft_updated_at?: Date | string | null
     joined_at?: Date | string
     left_at?: Date | string | null
   }
@@ -243140,6 +243246,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     user?: UserUpdateOneWithoutParticipationsNestedInput
@@ -243157,6 +243265,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }
@@ -243171,6 +243281,8 @@ export namespace Prisma {
     is_muted?: BoolFieldUpdateOperationsInput | boolean
     last_read_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     unread_count?: IntFieldUpdateOperationsInput | number
+    draft?: NullableStringFieldUpdateOperationsInput | string | null
+    draft_updated_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
     joined_at?: DateTimeFieldUpdateOperationsInput | Date | string
     left_at?: NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   }

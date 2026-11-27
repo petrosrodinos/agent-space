@@ -342,7 +342,7 @@ const ShareToBotDialog: FC<{ item: SharedItem; onClose: () => void }> = ({ item,
             </button>
           ))}
         </div>
-        <Textarea value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Add a note" />
+        <Textarea dictation value={text} onChange={(e) => setText(e.target.value)} rows={4} placeholder="Add a note" />
         {item.files.length > 0 && (
           <ul className="space-y-1 text-sm text-muted-foreground">
             {item.files.map((f) => (

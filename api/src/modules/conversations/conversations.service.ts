@@ -9,7 +9,7 @@ import type { Actor } from '../bots/bots.service';
 import { welcomeMessageData } from '../bots/bot-welcome.utils';
 import { BOT_BRIEF, USER_BRIEF } from './conversation.select';
 import { MessageEventsService } from './message-events.service';
-import { AddParticipantsDto, ConversationListQuery, CreateConversationDto, CreateDirectDto, UpdateConversationDto, UpdateMyConversationDto } from './dto/conversation.dto';
+import { AddParticipantsDto, ConversationListQuery, CreateConversationDto, CreateDirectDto, SaveDraftDto, UpdateConversationDto, UpdateMyConversationDto } from './dto/conversation.dto';
 import { FilesService } from '../files/files.service';
 
 const CONVERSATION_INCLUDE = {
@@ -32,7 +32,7 @@ export class ConversationsService {
         private readonly files: FilesService,
     ) { }
 
-    private shape(c: Prisma.ConversationGetPayload<{ include: typeof CONVERSATION_INCLUDE }>, me?: { is_favourite: boolean; is_archived: boolean; is_muted: boolean; unread_count: number; folder_id: string | null; last_read_at: Date | null }) {
+    private shape(c: Prisma.ConversationGetPayload<{ include: typeof CONVERSATION_INCLUDE }>, me?: { is_favourite: boolean; is_archived: boolean; is_muted: boolean; unread_count: number; folder_id: string | null; last_read_at: Date | null; draft: string | null }) {
         const bots = c.participants.filter((p) => p.bot).map((p) => ({ ...p.bot!, participant_id: p.id }));
         const users = c.participants.filter((p) => p.user).map((p) => ({ ...p.user!, participant_id: p.id }));
         const first = bots[0];
@@ -204,6 +204,14 @@ export class ConversationsService {
         }
         await this.prisma.conversationParticipant.update({ where: { id: me.id }, data: dto });
         await this.events.toUser(actor.user_id, UserEvents.CONVERSATIONS_CHANGED, { conversation_id: id });
+        return { ok: true };
+    }
+
+    /** Per-user unsent message. Deliberately emits no realtime event so another open device never overwrites what is being typed. */
+    async saveDraft(actor: Actor, id: string, dto: SaveDraftDto) {
+        const me = await this.access.requireParticipant(id, actor.user_id);
+        const draft = dto.content.trim() ? dto.content : null;
+        await this.prisma.conversationParticipant.update({ where: { id: me.id }, data: { draft, draft_updated_at: draft ? new Date() : null } });
         return { ok: true };
     }
 

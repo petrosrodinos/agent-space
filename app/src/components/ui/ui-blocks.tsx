@@ -113,7 +113,7 @@ const FormBlock: FC<BlockProps> = ({ block, onAction, disabled }) => {
               </Label>
             )}
             {f.type === FormFieldTypes.TEXTAREA ? (
-              <Textarea id={id} placeholder={f.placeholder} value={str(values[f.name])} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))} disabled={disabled || submitted} />
+              <Textarea dictation id={id} placeholder={f.placeholder} value={str(values[f.name])} onChange={(e) => setValues((v) => ({ ...v, [f.name]: e.target.value }))} disabled={disabled || submitted} />
             ) : f.type === FormFieldTypes.SELECT ? (
               <Select value={str(values[f.name]) || undefined} onValueChange={(val) => setValues((v) => ({ ...v, [f.name]: val }))} disabled={disabled || submitted}>
                 <SelectTrigger id={id} aria-label={f.label ?? f.name}>

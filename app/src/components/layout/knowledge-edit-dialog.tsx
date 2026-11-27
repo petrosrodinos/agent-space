@@ -93,7 +93,7 @@ export const KnowledgeEditDialog: FC<KnowledgeEditDialogProps> = ({ itemId, botI
                   <Label htmlFor="k-content">{isText ? "Note" : "Text the bot reads"}</Label>
                   <span className="text-xs text-muted-foreground">{form.content.length.toLocaleString()} characters</span>
                 </div>
-                <Textarea
+                <Textarea dictation
                   id="k-content"
                   value={form.content}
                   onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}

@@ -77,7 +77,7 @@ export const CommentsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
           add.mutate({ id: a.id, content: text.trim(), mentioned_bot_id: bot === NO_BOT ? undefined : bot }, { onSuccess: () => (setText(""), setBot(NO_BOT)) });
         }}
       >
-        <Textarea value={text} onChange={(e) => setText(e.target.value)} placeholder={bot === NO_BOT ? "Leave a comment…" : "Tell the bot what to change…"} rows={3} maxLength={4000} aria-label="Comment" />
+        <Textarea dictation value={text} onChange={(e) => setText(e.target.value)} placeholder={bot === NO_BOT ? "Leave a comment…" : "Tell the bot what to change…"} rows={3} maxLength={4000} aria-label="Comment" />
         <div className="flex items-center gap-2">
           {isEditor && !!conversation?.bots.length && (
             <Select value={bot} onValueChange={setBot}>
@@ -127,7 +127,7 @@ export const CommentsPanel: FC<{ artifact: Artifact }> = ({ artifact: a }) => {
                     add.mutate({ id: a.id, content: reply.trim(), parent_comment_id: t.id }, { onSuccess: () => (setReply(""), setReplyTo(null)) });
                   }}
                 >
-                  <Textarea autoFocus value={reply} onChange={(e) => setReply(e.target.value)} rows={2} placeholder="Reply…" aria-label="Reply" className="min-h-[44px]" />
+                  <Textarea dictation autoFocus value={reply} onChange={(e) => setReply(e.target.value)} rows={2} placeholder="Reply…" aria-label="Reply" className="min-h-[44px]" />
                   <Button type="submit" size="icon" aria-label="Send reply" disabled={!reply.trim()} loading={add.isPending}>
                     <Send />
                   </Button>

@@ -230,16 +230,38 @@ export class ComposioService {
         });
     }
 
-    /** "Important" tools for a toolkit — the narrowed tool list offered to the model (§7.6 "same tool selection"). */
-    async listTools(toolkitSlug: string, limit = 25): Promise<ComposioTool[]> {
-        const map = (t: any): ComposioTool => ({
+    private mapTool(t: any, toolkitSlug: string): ComposioTool {
+        return {
             slug: t.slug,
             name: t.name,
             description: (t.description ?? t.human_description ?? '').slice(0, 900),
             toolkit: t.toolkit?.slug ?? toolkitSlug,
             input_parameters: t.input_parameters ?? { type: 'object', properties: {} },
             tags: t.tags ?? [],
-        });
+        };
+    }
+
+    /**
+     * Every tool of a toolkit with its input schema, when the toolkit has at most `max` tools; null when it is bigger
+     * (then the agent gets the important tools and searches for the rest).
+     */
+    async listSmallToolkitTools(toolkitSlug: string, max: number): Promise<ComposioTool[] | null> {
+        const res = await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&limit=${max + 1}`);
+        const items = (res.items ?? []).filter((t: any) => !t.is_deprecated);
+        if (res.next_cursor || items.length > max) return null;
+        return items.map((t: any) => this.mapTool(t, toolkitSlug));
+    }
+
+    /** Tools of a toolkit matching a plain-language query (e.g. "add label"), with their input schemas. */
+    async searchTools(toolkitSlug: string, query: string, limit = 8): Promise<ComposioTool[]> {
+        const q = new URLSearchParams({ toolkit_slug: toolkitSlug, search: query, limit: String(limit) });
+        const res = await this.call<any>(`/tools?${q}`);
+        return (res.items ?? []).filter((t: any) => !t.is_deprecated).map((t: any) => this.mapTool(t, toolkitSlug));
+    }
+
+    /** "Important" tools for a toolkit — the narrowed tool list offered to the model (§7.6 "same tool selection"). */
+    async listTools(toolkitSlug: string, limit = 25): Promise<ComposioTool[]> {
+        const map = (t: any) => this.mapTool(t, toolkitSlug);
         const important = await this.call<any>(`/tools?toolkit_slug=${encodeURIComponent(toolkitSlug)}&important=true&limit=${limit}`);
         let items = (important.items ?? []).filter((t: any) => !t.is_deprecated);
         if (items.length < 5) {

@@ -6,6 +6,7 @@
 import { app, dialog, ipcMain, shell, type BrowserWindow, type IpcMainInvokeEvent } from 'electron';
 import originalFs from 'original-fs';
 import path from 'path';
+import { runBrowser } from './browser';
 import { beginControl, control, controlAvailable, displays, endControl, getBlockedApps, registerControlBarIpc, resumeControl, setBlockedApps, stopControlOnQuit } from './control';
 import { runFiles } from './files';
 import { callLocalTool, hasRunningServers, listLocalTools, listToolServers, removeToolServer, saveToolServer, stopAllServers } from './mcp';
@@ -46,7 +47,7 @@ async function removeFolder(p: string): Promise<string[]> {
 }
 
 async function capabilities(): Promise<DesktopToolKind[]> {
-    const out: DesktopToolKind[] = [DesktopToolKinds.LOCAL_FILES, DesktopToolKinds.SCREEN, DesktopToolKinds.LOCAL_TOOL_SERVERS, DesktopToolKinds.CLIPBOARD, DesktopToolKinds.OPEN];
+    const out: DesktopToolKind[] = [DesktopToolKinds.LOCAL_FILES, DesktopToolKinds.SCREEN, DesktopToolKinds.LOCAL_TOOL_SERVERS, DesktopToolKinds.CLIPBOARD, DesktopToolKinds.OPEN, DesktopToolKinds.BROWSER];
     if (await controlAvailable()) out.push(DesktopToolKinds.CONTROL_COMPUTER);
     return out;
 }
@@ -78,6 +79,7 @@ export function registerDeviceIpc(getWin: () => BrowserWindow | null, guard: (e:
     handle('control', (grantId: string, req) => control(grantId, req as Parameters<typeof control>[1]));
     handle('resumeControl', (grantId: string) => resumeControl(grantId));
     handle('endControl', (grantId: string) => endControl(grantId));
+    handle('browser', (req: Parameters<typeof runBrowser>[0]) => runBrowser(req));
 
     registerControlBarIpc();
 

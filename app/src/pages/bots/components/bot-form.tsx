@@ -60,7 +60,7 @@ export const BotForm: FC<BotFormProps> = ({ defaultValues, submitLabel, loading,
             <FormItem>
               <FormLabel>Instructions</FormLabel>
               <FormControl>
-                <Textarea rows={7} placeholder="You are a sharp, upbeat sales assistant…" {...field} />
+                <Textarea dictation rows={7} placeholder="You are a sharp, upbeat sales assistant…" {...field} />
               </FormControl>
               <FormDescription>Role, goals, rules and tone in plain language.</FormDescription>
               <FormMessage />

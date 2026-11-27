@@ -55,7 +55,7 @@ export const ShareMessageDialog: FC<Props> = ({ message, onClose }) => {
                       }
                       className="gap-2.5"
                     >
-                      <BotAvatar seed={c.avatar_seed ?? c.bots[0]?.avatar_seed ?? c.id} color={c.color} size={28} />
+                      <BotAvatar seed={c.avatar_seed ?? c.bots[0]?.avatar_seed ?? c.id} color={c.color} size={24} />
                       <span className="truncate font-semibold">{c.name}</span>
                     </CommandItem>
                   ))}

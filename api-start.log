@@ -1759,3 +1759,10 @@ Node.js v22.23.1
 
 [41m[1m[30m Error [39m[22m[49m The application exited with code 3221225794. Waiting for file changes before restarting...
 
+[2J[3J[H[[90m4:56:19 PM[0m] File change detected. Starting incremental compilation...
+
+[[90m4:56:20 PM[0m] Found 0 errors. Watching for file changes.
+
+
+[41m[1m[30m Error [39m[22m[49m The application exited with code 3221225794. Waiting for file changes before restarting...
+
